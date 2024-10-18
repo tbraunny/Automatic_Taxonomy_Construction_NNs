@@ -1,2 +1,6 @@
 pandas
 numpy
+pydantic
+starlette[full]
+uvicorn
+fastapi[standard]
