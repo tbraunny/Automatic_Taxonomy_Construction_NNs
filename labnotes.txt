@@ -1,0 +1,11 @@
+Running Conda Environment:
+conda activate ATC
+
+history:
+
+10/18/2024:
+installed requirements on requirements.txt file
+downloaded on root, labmates said it was ok. Made sure to make a new user though.
+
+sudo apt-get install cuda-runtime-12-4
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
