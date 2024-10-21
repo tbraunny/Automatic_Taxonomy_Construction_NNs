@@ -1,4 +1,4 @@
-Ubuntu 24.04
+Ubuntu 22.04
 
 Environment:
 python = 3.10.15
