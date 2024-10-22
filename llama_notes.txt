@@ -4,33 +4,8 @@ https://github.com/meta-llama/llama-stack/blob/main/docs/getting_started.md
 commands:
 https://github.com/meta-llama/llama-stack/blob/main/docs/cli_reference.md
 
-
 configurations:
-Configuring API `inference`...
-> Configuring provider `(meta-reference)`
-Enter value for model (default: Llama3.1-8B-Instruct) (required): Llama3.1-8B-Instruct
-Enter value for torch_seed (optional): 
-Enter value for max_seq_len (default: 4096) (required): 4096
-Enter value for max_batch_size (default: 1) (required): 1
+To be explained at later time when finalized
 
-Configuring API `safety`...
-> Configuring provider `(meta-reference)`
-Do you want to configure llama_guard_shield? (y/n): y
-Entering sub-configuration for llama_guard_shield:
-Enter value for model (default: Llama-Guard-3-1B) (required): 
-Enter value for excluded_categories (default: []) (required): 
-Enter value for enable_prompt_guard (default: False) (optional): 
-
-Configuring API `agents`...
-> Configuring provider `(meta-reference)`
-Enter `type` for persistence_store (options: redis, sqlite, postgres) (default: sqlite): postgres
-
-Configuring PostgresKVStoreConfig:
-Enter value for namespace (optional): 
-Enter value for host (default: localhost) (required): 
-Enter value for port (default: 5432) (required): 
-Enter value for db (default: llamastack) (required): 
-Enter value for user (required): 
-This field is required. Please provide a value.
-Enter value for user (required): ATC
-Enter value for password (optional): 
+Run command:
+llama stack run 3.1-8B-Instruct-GPU --port 5000

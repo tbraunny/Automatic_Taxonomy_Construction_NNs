@@ -1,11 +1,13 @@
 Ubuntu 22.04
 
 Environment:
-python = 3.10.15
-cudatoolkit = 12.4
+llama stack automatically builds the required dependencies and reads your GPU
+
+Have to update versions when finalized
+
 ----------------------
 libraries:
-pytorch 
+pytorch = 3.10
 torchvision
 torchaudio
 transformers
@@ -15,9 +17,6 @@ numpy
 llama:
 llama-stack
 pydantic
-
-
-notdone:
 pydantic
 starlette[full]
 uvicorn
@@ -26,11 +25,7 @@ fastapi[standard]
 environment redownload:
 make python 3.10 conda environment
 
-then grab CUDA 12.4 
-https://pytorch.org/get-started/locally/
-
-then conda install transformer 
-
-pip install llama_stack
-
-important to note that ubuntu 24.04 doesnt work with Docker Desktop 10/18/2024
+pip install llama-stack inside new conda environment
+then build
+configure
+run
