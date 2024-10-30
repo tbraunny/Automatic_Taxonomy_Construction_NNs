@@ -111,6 +111,59 @@
             border: 1px solid #ddd;
             padding: 10px;
         }
+
+        /* Dropdown styling */
+        .dropdown {
+            margin-top: 10px;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 100%;
+            position: relative;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            background-color: #444;
+            min-width: 200px;
+            padding: 0;
+            z-index: 1;
+            border-radius: 4px;
+        }
+
+        .dropdown-content .sub-dropdown {
+            padding: 10px;
+            color: white;
+            border-bottom: 1px solid #555;
+        }
+
+        .dropdown-content .sub-dropdown:hover {
+            background-color: #555;
+        }
+
+        /* Nested dropdown styling */
+        .sub-dropdown .nested-dropdown-content {
+            display: none;
+            position: absolute;
+            left: 100%;
+            top: 0;
+            min-width: 150px;
+            background-color: #555;
+            border-radius: 4px;
+        }
+
+        .sub-dropdown:hover .nested-dropdown-content {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +172,21 @@
         <h1>Menu</h1>
         <button onclick="fetchRoot()">Generate Ontology</button>
         <button onclick="showTaxonomyImage()">Generate Taxonomy</button> <!-- Updated button to show image -->
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown">
+            Neural Networks
+            <div class="dropdown-content">
+                <div class="sub-dropdown">CNN
+                    <div class="nested-dropdown-content">
+                        <div>layers</div>
+                        <div>activation</div>
+                        <div>metric</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <button onclick="updateItem()">About / Open Source</button>
     </div>
 
@@ -128,6 +196,13 @@
         <p id="hello-message"></p>
         <p id="item-result"></p>
         <p id="update-result"></p>
+
+        <!-- Image that appears after button click -->
+        <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
+
+        <div class="prompt-container">
+            <input type="text" id="prompt" class="prompt-input" placeholder="Type your prompt here...">
+        </div>
 
         <!-- Image that appears after button click -->
         <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
