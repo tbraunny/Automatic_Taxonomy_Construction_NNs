@@ -21,6 +21,7 @@ async def load_pdf():
 
     return pages
 # Citation: https://python.langchain.com/docs/how_to/document_loader_pdf/
+# https://python.langchain.com/v0.1/docs/modules/data_connection/document_loaders/pdf/
 
 #Load and encode PDF pages, then index them
 async def main():
