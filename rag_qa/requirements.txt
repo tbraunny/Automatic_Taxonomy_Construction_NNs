@@ -1,0 +1,29 @@
+# chromadb
+# pymupdf
+# sentence-transformers
+# InstructorEmbedding 
+# torch 
+# transformers
+
+#For LangChain
+pypdf
+langchain
+langchain-community
+
+#For Llama-Index #pip install llama-index is specifc to openai usecases and may have more than we need
+llama-index-core 
+# llama-index-embeddings-openai
+llama-index-embeddings-huggingface
+llama-index-llms-openai
+# llama-index-readers-file 
+# llama-index-llms-ollama 
+# llama-index-embeddings-huggingface
+
+#To create virtual environment called venv
+# python3 -m venv venv
+
+#Activate venv #On Windows use `venv\Scripts\activate`
+# source venv/bin/activate
+
+#Install of pip requirements
+# pip install -r requirements.txt
