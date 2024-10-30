@@ -46,6 +46,7 @@ async def main():
 
 #Run async
 asyncio.run(main())
+
 #https://docs.llamaindex.ai/en/stable/examples/embeddings/huggingface/ #local embeddings w/ huggingface
 #Citation: https://docs.llamaindex.ai/en/stable/module_guides/models/embeddings/
 #Above link has example of how to store embendding in database (pinecone)

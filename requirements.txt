@@ -1,31 +1,51 @@
-Ubuntu 22.04
+# Ubuntu 22.04
 
-Environment:
-llama stack automatically builds the required dependencies and reads your GPU
+# Environment:
+# llama stack automatically builds the required dependencies and reads your GPU
 
-Have to update versions when finalized
+# Have to update versions when finalized
 
-----------------------
-libraries:
+# libraries:
 pytorch = 3.10
 torchvision
 torchaudio
 transformers
 pandas
 numpy
-----------------------
-llama:
+# llama:
 llama-stack
 pydantic
 pydantic
-starlette[full]
+starlette # [full]
 uvicorn
-fastapi[standard]
+fastapi # [standard]
 
-environment redownload:
-make python 3.10 conda environment
+# environment redownload:
+# make python 3.10 conda environment
 
-pip install llama-stack inside new conda environment
-then build
-configure
-run
+# pip install llama-stack inside new conda environment
+# then build
+# configure
+# run
+
+#For LangChain
+pypdf
+langchain
+langchain-community
+
+#For Llama-Index 
+#pip install llama-index is specifc to openai usecases and may have more than we need
+#Instead need to install dependencies seperately
+llama-index-core 
+llama-index-embeddings-huggingface
+llama-index-llms-openai
+
+#To create virtual environment called venv
+# python3 -m venv venv
+
+#Activate venv
+# Mac: source venv/bin/activate
+# Windows: venv\Scripts\activate
+
+#Install of pip requirements
+# pip install -r requirements.txt
