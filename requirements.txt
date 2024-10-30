@@ -12,6 +12,7 @@ torchaudio
 transformers
 pandas
 numpy
+
 # llama:
 llama-stack
 
@@ -27,7 +28,7 @@ llama-stack
 pypdf
 langchain
 langchain-community
-rapidocr-onnxruntime # For pdf extractor
+# rapidocr-onnxruntime # For pdf image extractor
 
 
 #For Llama-Index 
