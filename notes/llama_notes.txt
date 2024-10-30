@@ -9,3 +9,9 @@ To be explained at later time when finalized
 
 Run command:
 llama stack run 3.1-8B-Instruct-GPU --port 5000
+
+Setting up Llama-Index:
+https://docs.llamaindex.ai/en/stable/getting_started/installation/
+
+pip llama-index assumes openai usage; should install packages by need instead
+
