@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastAPI Frontend</title>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f8;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .sidebar button {
+            padding: 10px;
+            margin: 5px 0;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            cursor: pointer;
+        }
+
+        .sidebar button:hover {
+            background-color: #45a049;
+        }
+
+        /* Main content area styling */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .main-content h2 {
+            font-size: 1.2em;
+            margin-top: 0;
+        }
+
+        .main-content p, .main-content input, .main-content button {
+            margin: 10px 0;
+        }
+
+        /* Image styling */
+        #taxonomy-image {
+            max-width: 100%;           /* Make the image responsive */
+            height: auto;              /* Maintain aspect ratio */
+            max-height: calc(80vh); /* Prevent overflow, use vh for vertical space */
+            display: none;             /* Initially hidden */
+            object-fit: contain; 
+        }
+
+        /* Positioning the prompt container at the bottom */
+        .prompt-container {
+            position: fixed;
+            bottom: 0;
+            left: 350px; /* Adjust if sidebar width changes */
+            width: calc(90% - 350px); /* Full width minus sidebar */
+            background-color: #f7f7f8;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* File upload button styling */
+        .upload-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .upload-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Hide the image initially */
+        #taxonomy-image {
+            display: none;
+            max-width: 100%;
+            margin: -70px auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Section -->
+    <div class="sidebar">
+        <h1>Menu</h1>
+        <button onclick="fetchRoot()">Generate Ontology</button>
+        <button onclick="showTaxonomyImage()">Generate Taxonomy</button> <!-- Updated button to show image -->
+        <button onclick="updateItem()">About / Open Source</button>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="main-content">
+        <h2>Responses</h2>
+        <p id="hello-message"></p>
+        <p id="item-result"></p>
+        <p id="update-result"></p>
+
+        <!-- Image that appears after button click -->
+        <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
+
+        <div class="prompt-container">
+            <input type="text" id="prompt" class="prompt-input" placeholder="Type your prompt here...">
+        </div>
+
+        <!-- Hidden file upload input -->
+        <input type="file" id="file-upload" style="display:none;">
+    </div>
+
+    <!-- Floating Upload Button -->
+    <button class="upload-button" onclick="document.getElementById('file-upload').click()">📁</button>
+
+    <script>
+        async function fetchRoot() {
+            const response = await fetch('http://127.0.0.1:8000/');
+            const data = await response.json();
+            document.getElementById('hello-message').innerText = `Hello message: ${data.Hello}`;
+        }
+
+        async function fetchItem() {
+            const itemId = document.getElementById('item-id').value;
+            const response = await fetch(`http://127.0.0.1:8000/items/${itemId}`);
+            const data = await response.json();
+            document.getElementById('item-result').innerText = `Item data: ${JSON.stringify(data)}`;
+        }
+
+        async function updateItem() {
+            const itemId = document.getElementById('update-item-id').value;
+            const name = document.getElementById('update-item-name').value;
+            const price = parseFloat(document.getElementById('update-item-price').value);
+            const body = JSON.stringify({ name, price });
+
+            const response = await fetch(`http://127.0.0.1:8000/items/${itemId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: body,
+            });
+            const data = await response.json();
+            document.getElementById('update-result').innerText = `Update response: ${JSON.stringify(data)}`;
+        }
+
+        function showTaxonomyImage() {
+            const image = document.getElementById('taxonomy-image');
+            image.style.display = 'block'; // Show the image when button is clicked
+        }
+
+        document.getElementById('file-upload').addEventListener('change', async function() {
+            const formData = new FormData();
+            formData.append('file', this.files[0]);
+
+            const response = await fetch('http://127.0.0.1:8000/uploadfile/', {
+                method: 'POST',
+                body: formData,
+            });
+            const data = await response.json();
+            alert(`File uploaded: ${data.filename}`);
+        });
+    </script>
+</body>
+</html>
