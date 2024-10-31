@@ -164,30 +164,42 @@
         .sub-dropdown:hover .nested-dropdown-content {
             display: block;
         }
+
+        /* Responses section styling */
+        #responses {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            width: 300px;
+        }
     </style>
 </head>
 <body>
     <!-- Sidebar Section -->
     <div class="sidebar">
         <h1>Menu</h1>
-        <button onclick="fetchRoot()">Generate Ontology</button>
+        <button onclick="fetchRoot()">About / Open Source</button>
         <button onclick="showTaxonomyImage()">Generate Taxonomy</button> <!-- Updated button to show image -->
 
-        <!-- Dropdown Menu -->
+        <!-- Dropdown Menu for Definitions -->
         <div class="dropdown">
-            Neural Networks
+            Definitions
             <div class="dropdown-content">
                 <div class="sub-dropdown">CNN
                     <div class="nested-dropdown-content">
-                        <div>Layer Types</div>
-                        <div>Activations</div>
-                        <div>Metrics</div>
+                        <div class="sub-dropdown">Layers
+                            <div class="nested-dropdown-content">
+                                <button onclick="layer_type('Convolutional')">Convolutional Layer</button>
+                                <button onclick="layer_type('Pooling')">Pooling Layer</button>
+                                <button onclick="layer_type('Fully Connected')">Fully Connected Layer</button>
+                                <button onclick="layer_type('ReLU')">ReLU Layer</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <button onclick="updateItem()">About / Open Source</button>
     </div>
 
     <!-- Main Content Section -->
@@ -200,23 +212,12 @@
         <!-- Image that appears after button click -->
         <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
 
-        <div class="prompt-container">
-            <input type="text" id="prompt" class="prompt-input" placeholder="Type your prompt here...">
+        <!-- Section for displaying layer definitions -->
+        <div id="responses">
+            <h3>Layer Definitions</h3>
+            <p id="layerInfo">Click on a layer type to see its definition.</p>
         </div>
-
-        <!-- Image that appears after button click -->
-        <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
-
-        <div class="prompt-container">
-            <input type="text" id="prompt" class="prompt-input" placeholder="Type your prompt here...">
-        </div>
-
-        <!-- Hidden file upload input -->
-        <input type="file" id="file-upload" style="display:none;">
     </div>
-
-    <!-- Floating Upload Button -->
-    <button class="upload-button" onclick="document.getElementById('file-upload').click()">📁</button>
 
     <script>
         async function fetchRoot() {
@@ -225,26 +226,20 @@
             document.getElementById('hello-message').innerText = `Hello message: ${data.Hello}`;
         }
 
-        async function fetchItem() {
-            const itemId = document.getElementById('item-id').value;
-            const response = await fetch(`http://127.0.0.1:8000/items/${itemId}`);
-            const data = await response.json();
-            document.getElementById('item-result').innerText = `Item data: ${JSON.stringify(data)}`;
-        }
+        // Define the function to display layer definitions
+        function layer_type(layer) {
+            const layerInfo = document.getElementById("layerInfo");
 
-        async function updateItem() {
-            const itemId = document.getElementById('update-item-id').value;
-            const name = document.getElementById('update-item-name').value;
-            const price = parseFloat(document.getElementById('update-item-price').value);
-            const body = JSON.stringify({ name, price });
+            // Definitions for each layer type
+            const layerDefinitions = {
+                "Convolutional": "A Convolutional Layer applies a convolution operation to the input, passing the result to the next layer. It’s used primarily for feature extraction in image data.",
+                "Pooling": "A Pooling Layer reduces the spatial size of the representation to decrease the number of parameters and computation in the network, controlling overfitting.",
+                "Fully Connected": "A Fully Connected Layer connects every neuron in one layer to every neuron in another layer, allowing complex patterns and associations to be learned.",
+                "ReLU": "A ReLU (Rectified Linear Unit) Layer applies an activation function, introducing non-linearity to help the model learn complex patterns."
+            };
 
-            const response = await fetch(`http://127.0.0.1:8000/items/${itemId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: body,
-            });
-            const data = await response.json();
-            document.getElementById('update-result').innerText = `Update response: ${JSON.stringify(data)}`;
+            // Display the corresponding definition
+            layerInfo.innerText = layerDefinitions[layer];
         }
 
         function showTaxonomyImage() {
