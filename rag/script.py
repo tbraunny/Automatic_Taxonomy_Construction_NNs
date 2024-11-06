@@ -58,9 +58,13 @@ class EmbeddingModel:
         return self.embed_model
 
 class LLMModel:
-    def __init__(self, model_name):
+    def __init__(self, model_name, top_p = 0.2, temperature=0.1, top_k=10):
         print("Initializing the LLM...")
-        self.ollama_llm = OllamaLLM(model=model_name)
+        self.ollama_llm = OllamaLLM(
+            model=model_name,
+            top_p=top_p,
+            top_k=top_k,
+            temperature=temperature)
         self.llm_predictor = LangChainLLM(llm=self.ollama_llm)
         print("LLM initialized.")
 
@@ -89,14 +93,14 @@ class DocumentIndexer:
 
 def main():
     # Load and process the PDF
-    pdf_loader = PDFLoader("datasets/AlexNet.pdf")
+    pdf_loader = PDFLoader("rag/datasets/AlexNet.pdf")
     documents = pdf_loader.load()
 
     splitter = DocumentSplitter(chunk_size=1000, chunk_overlap=200)
     split_docs = splitter.split(documents)
 
     embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-    llm_predictor = LLMModel(model_name="llama3.2:3b").get_llm()
+    llm_predictor = LLMModel(model_name="llama3.2:1b").get_llm()
 
     indexer = DocumentIndexer(embed_model, llm_predictor)
     vector_index = indexer.create_index(split_docs)

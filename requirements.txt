@@ -7,7 +7,7 @@ pandas
 numpy
 
 # Rag Install
--r /rag/requirements.txt
+-r "rag/requirements.txt"
 
 
 # *** HOW TO VENV ***
