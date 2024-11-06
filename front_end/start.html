@@ -163,6 +163,7 @@
             border: 1px solid #ccc;
             background-color: #f0f0f0;
             width: 300px;
+            display:none;
         }
     </style>
 </head>
@@ -171,7 +172,7 @@
     <div class="sidebar">
         <h1>Menu</h1>
         <button onclick="fetchOntology()">Generate Ontology</button>
-        <button onclick="showTaxonomyImage()">Generate Taxonomy</button>
+        <button onclick="fetchTaxonomy()">Generate Taxonomy</button>
         <button onclick="display_about()">About / Open Source</button>
 
         <!-- Dropdown Menu for Definitions -->
@@ -200,12 +201,10 @@
     <!-- Main Content Section -->
     <div class="main-content">
         <h2>Responses</h2>
-        <p id="hello-message"></p>
-        <p id="item-result"></p>
-        <p id="update-result"></p>
 
         <!-- Image that appears after button click -->
         <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
+        <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
         
         <div id="about-section">
             <h3>About / Open Source</h3>
@@ -234,12 +233,6 @@
             document.getElementById('hello-message').innerText = `Hello message: ${data.Hello}`;
         }
 
-        async function fetchOntology() {
-            const response = await fetch('http://127.0.0.1:8000/ontology');
-            const data = await response.json();
-            document.getElementById('item-result').innerText = `Ontology generated: ${data}`;
-        }
-
         // Define the function to display layer definitions
         function layer_type(layer) {
             const layerInfo = document.getElementById("layerInfo");
@@ -261,7 +254,12 @@
             layerInfo.innerText = layerDefinitions[layer];
         }
 
-        function showTaxonomyImage() {
+        function fetchOntology() {
+            const image = document.getElementById('ontology-image')
+            image.style.display = 'block'; //show image when button clicked
+        }
+
+        function fetchTaxonomy() {
             const image = document.getElementById('taxonomy-image');
             image.style.display = 'block'; // Show the image when button is clicked
         }
@@ -287,7 +285,11 @@
         }
 
         function uploadFile() {
-            alert('File upload feature coming soon!'); // Placeholder action for file upload button
+            alert('Feature is on the way...'); // Placeholder action for file upload button
+        }
+
+        function query_prompt() {
+            alert(' DONT TOUCH THAT') // Placeholder
         }
     </script>
 </body>
