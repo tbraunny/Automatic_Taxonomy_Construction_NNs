@@ -1,0 +1,2 @@
+title,author,year,model_type,algorithm,activation,datatype,layers,parameters,task
+ImageNet Classification with Deep Convolutional Neural Networks,krizhevsky,2012,CNN,-,ReLU,images,8,0,classification

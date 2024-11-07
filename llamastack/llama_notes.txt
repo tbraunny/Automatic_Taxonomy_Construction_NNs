@@ -7,14 +7,14 @@ https://github.com/meta-llama/llama-stack/blob/main/docs/cli_reference.md
 Utilized this docker image for ollama inference:
 https://hub.docker.com/r/llamastack/distribution-ollama
 
-llama stack run run.yaml
-docker compose up
 Running Conda Environment:
-conda activate llamastack
+conda activate stack
 
 Run command:
-docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
-llama stack run run.yaml
+use the provided compose file by 
+docker compose up
+
+will run the run.yaml file as well
 
 --- possibly needed in the future, the current setup isnt configured to have chromadb.
 chromadb run:

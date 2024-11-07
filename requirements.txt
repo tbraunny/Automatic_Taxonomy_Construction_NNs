@@ -1,0 +1,26 @@
+# libraries:
+torch
+torchvision
+torchaudio
+transformers
+pandas
+numpy
+
+# Rag Install
+-r "rag/requirements.txt"
+
+
+# *** HOW TO VENV ***
+#To create virtual environment called venv
+# python3 -m venv venv
+
+#Activate venv
+# Mac: source venv/bin/activate
+# Windows: .\venv\Scripts\activate.bat
+
+#Install of pip requirements
+# pip install -r requirements.txt
+
+#Deactivate venv
+# deactivate
+# *******************

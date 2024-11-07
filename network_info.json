@@ -1,0 +1,49 @@
+{
+    "@context": {
+        "@vocab": "http://w3id.org/annett-o#"
+    },
+    "@graph": [
+        {
+            "@type": "ANNConfiguration",
+            "hasTopology": {
+                "NumberOfLayers": "N/A",
+                "LayerTypes": "1. Convolutional\n2. Pooling\n3. Fully Connected\n4. Convolutional\n5. Convolutional\n6. Convolutional\n7. Convolutional\n8. Convolutional\n9. Convolutional\n10. Convolutional\n11. Convolutional\n12. Convolutional\n13. Convolutional\n14. Convolutional\n15. Convolutional\n16. Convolutional\n17. Convolutional\n18. Convolutional\n19. Convolutional\n20. Convolutional",
+                "FilterSizes": "N/A",
+                "Stride": "N/A",
+                "Padding": "N/A",
+                "PoolingDetails": "1. Traditional local pooling: \n   - Size: 3x3\n   - Stride: 2\n\n2. Overlapping pooling:\n   - Size: 5x5\n   - Stride: 2"
+            },
+            "hasActivationFunction": {
+                "ActivationFunction": "N/A",
+                "ActivationFunctionPerLayer": "1. ReLU\n2. Sigmoid\n3. ReLU\n4. ReLU\n5. ReLU\n6. ReLU\n7. ReLU\n8. ReLU\n9. ReLU\n10. ReLU\n11. ReLU\n12. ReLU\n13. ReLU\n14. ReLU\n15. ReLU\n16. Sigmoid\n17. ReLU\n18. ReLU\n19. ReLU\n20. ReLU"
+            },
+            "hasLayerConnectivity": {
+                "ConnectionSequence": "1. Conv2d (256, 5x5, 48)\n2. MaxPool2d (3, 2, 2)\n3. Conv2d (384, 3x3, 256)\n4. MaxPool2d (2, 2, 2)\n5. Conv2d (384, 3x3, 192)\n6. MaxPool2d (2, 2, 2)\n7. Conv2d (256, 3x3, 192)\n8. Fully Connected (4096)",
+                "SkipConnections": "N/A",
+                "LayerDependencies": "1. Number of Layers - 8\n2. Filter Sizes:\n   - Convolutional Layer 1: 11x11, 3x3\n   - Convolutional Layer 2: 5x5, 48\n   - Convolutional Layer 3: 3x3, 256\n   - Convolutional Layer 4: 3x3, 256\n   - Convolutional Layer 5: 3x3, 64\n   - Convolutional Layer 6: 3x3, 64\n   - Convolutional Layer 7: 3x3, 4096\n   - Convolutional Layer 8: 3x3, 4096\n3. Dependencies:\n   - Response-normalization layers follow the first and second convolutional layers.\n   - Max-pooling layers follow both response-normalization layers as well as the fifth convolutional layer.\n   - ReLU non-linearity is applied to the output of every convolutional and fully-connected layer."
+            },
+            "hasTraining": {
+                "@type": "Training",
+                "Details": {
+                    "Algorithm": "N/A",
+                    "LearningRate": "N/A",
+                    "Momentum": "N/A",
+                    "WeightDecay": "N/A",
+                    "BatchSize": "N/A",
+                    "Epochs": "N/A",
+                    "Dropout": "N/A"
+                },
+                "usesDataset": {
+                    "Name": "ImageNet [6]",
+                    "Size": "60 million",
+                    "Classes": "N/A"
+                }
+            },
+            "hasEvaluation": {
+                "Top1ErrorRate": "18.2%",
+                "Top5ErrorRate": "18.2%",
+                "OtherMetrics": "- Top-1 (val) accuracy: 40.7%\n- Top-5 (val) accuracy: 18.2%\n- Top-5 (test) accuracy: 16.4% \n- Average FV accuracy: 15.3%\n- Average CNN accuracy: 38.1%\n- Average CNN* accuracy: 39.0%\n- Average CNN* accuracy with 7 CNNs: 36.7%"
+            }
+        }
+    ]
+}

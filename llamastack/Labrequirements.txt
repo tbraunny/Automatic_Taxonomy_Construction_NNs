@@ -1,6 +1,10 @@
 Ubuntu 22.04
 WSL2 - IMPORTANT: ensure WSL is configured with the correct amount of ram to load in the model
 
+Configured 
+
+
+
 Environment build commands:
 
 download miniconda
@@ -19,33 +23,3 @@ pip install accelerate -- forgot the version but it will prompt you to do so lat
 
 conda deactivate
 
-for the rest always use llamastack conda env not the one from build
-
-llama stack configure
-configurations:
-
-providers:
-  inference:
-  - provider_id: remote::ollama
-    provider_type: remote::ollama
-    config:
-      host: localhost
-      port: 11434
-  safety:
-  - provider_id: meta-reference
-    provider_type: meta-reference
-    config:
-      llama_guard_shield:
-        model: Llama-Guard-3-8B:int8
-        excluded_categories: []
-      enable_prompt_guard: true
-  agents:
-  - provider_id: meta-reference
-    provider_type: meta-reference
-    config:
-      persistence_store:
-        namespace: null
-        type: sqlite
-        db_path: /home/lukas/.llama/runtime/kvstore.db
-
-llama stack can now be ran
