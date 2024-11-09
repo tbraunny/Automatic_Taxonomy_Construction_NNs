@@ -1,25 +1,53 @@
-#Install Ollama in wsl: curl -fsSL https://ollama.com/install.sh | sh
+# starting new:
+#   - use ast to parse code
+#    - look for specific functions in CNN (ex. 'Module' , '__init__' , 'forward')
 
-#Hint: allocate max cpu cores and ram
-
-#First, start ollama server: ollama server
-#Ensure ollama is loaded: ls /home/richw/.ollama/models
-#       if not, pull: ollama pull llama3
-#
-
-
-#from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import PythonCodeTextSplitter
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import OllamaLLM
-
-from llama_index.core import VectorStoreIndex, Document
-from llama_index.llms.langchain import LangChainLLM
-from llama_index.embeddings.langchain import LangchainEmbedding
+import ast
 
 from extract_annetto import prompt_engr
+
+class CNN_parser(ast.NodeVisitor):
+    def __init__(self):
+        self.class_name = None
+        self.layers = []
+        self.forward_pass = []
+
+    def visit_classDef(self , node):
+        if any(base.id == 'Module' for base in node.bases if isinstance(base , ast.Attribute)):
+            self.class_name = node.name
+
+            for body_item in node.body:
+                if (isinstance(body_item , ast.FunctionDef) and body_item.name == '__init__'):
+                    self.visit_init(self , node)
+                elif (isinstance(body_item , ast.FunctionDef) and body_item.name == 'forward'):
+                    self.visit_forward_pass(self , node)
+            
+    def visit_init(self , node):
+        for info in node.body:
+            if isinstance(info , ast.Assign) and isinstance(info.targets[0] , ast.Attribute):
+                layer_name = info.target[0].attr # grab layer name
+                layer_type = 0
+
+                if isinstance(info.value , ast.Call): # if value of node is 
+                    print(info.value)
+                    if isinstance(info.value.func , ast.Attribute):
+                        layer_type = info.value.func.attr
+                    else:
+                        layer_type = info.value.func.id
+                    layer_values = [ast.dump(arg) for arg in info.value.args]
+
+                    self.layers.append((layer_name , layer_type , layer_values))
+
+    def visit_forward_pass(self , node):
+        for info in node.body:
+            if (isinstance(info , ast.Expr) and isinstance(info , ast.Call)):
+                self.forward_pass.append(info.dump(info.value))
+
+    def parse_code(self , node):
+        if isinstance(node.bases == 'CNN'):
+            self.visit_classDef(self , node)
+        print("placeholder" , node)
+
 
 class CodeLoader:
     def __init__(self, file_path):
@@ -110,3 +138,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+    path = '/file/path'
+    '''
+    for file in path:
+        open(file)
+        read(file)
+    '''
