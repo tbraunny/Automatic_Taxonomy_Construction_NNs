@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastAPI Frontend</title>
+    <title>Taxon Neuro</title>
     <style>
         body {
             display: flex;
@@ -95,7 +95,8 @@
             padding: 10px;
             border-top: 1px solid #ddd;
         }
-
+        
+        
         .prompt-input {
             width: 100%;
             padding: 10px;
@@ -112,6 +113,10 @@
             color: white;
             border: none;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
             font-size: 1.2em;
             cursor: pointer;
             display: inline;
@@ -144,7 +149,8 @@
             left: 0;
             background-color: #444;
             min-width: 200px;
-            padding: 0;
+            min-height: 70px;
+            padding: 5px;
             z-index: 1;
             border-radius: 4px;
         }
@@ -156,12 +162,17 @@
             left: 100%;
             top: 0;
             min-width: 150px;
+            min-height: 70px;
             background-color: #555;
             border-radius: 4px;
         }
 
         .sub-dropdown:hover .nested-dropdown-content {
             display: block;
+        }
+
+        .sub-dropdown {
+            margin-bottom: 20px;
         }
 
         /* Responses section styling */
@@ -228,11 +239,16 @@
 
     <!-- Prompt Container -->
     <div class="prompt-container">
-        <input class="prompt-input" type="text" placeholder="Type your prompt here...">
+        <input class="prompt-input" id="prompt-input" type="text" placeholder="Type your prompt here..." onkeydown="checkEnter(event)">
     </div>
 
     <!-- File Upload Button -->
-    <button class="upload-button" onclick="uploadFile()">+</button>
+    <!--<button class="upload-button" onclick="uploadFile()">+</button>-->
+
+    <form action="/api" method="post" enctype="multipart/form-data">
+        <input id="file" name="file" type="file" class="upload-button" onchange="uploadFile()" style="display: none;">
+        <label for="file" class="upload-button">+</label>
+    </form>
 
     <script>
         async function fetchRoot() {
@@ -245,6 +261,7 @@
         function layer_type(layer) {
             const layerInfo = document.getElementById("layerInfo");
             const definitionTitle = document.getElementById("definition-title");
+            const responses = document.getElementById("responses")
 
             // Definitions for each layer type
             const layerDefinitions = {
@@ -257,6 +274,14 @@
                 "Exponential": "Grows faster when mistakes are made, helps ensure no catastrophically incorrect predictions.",
             };
 
+            //responses.style.display = 'block'
+
+            if (responses.style.display === 'block') {
+                responses.style.display = 'none';  // Hide the image if it's currently visible
+            } else {
+                responses.style.display = 'block'; // Show the image if it's currently hidden
+            }
+
             // Update the title and display the corresponding definition
             definitionTitle.innerText = `${layer} Definition`;
             layerInfo.innerText = layerDefinitions[layer];
@@ -264,17 +289,26 @@
 
         function fetchOntology() {
             const image = document.getElementById('ontology-image')
-            image.style.display = 'block'; //show image when button clicked
+
+            if (image.style.display === 'block') {
+                image.style.display = 'none';  // Hide the image if it's currently visible
+            } else {
+                image.style.display = 'block'; // Show the image if it's currently hidden
+            }
         }
 
         function fetchTaxonomy() {
             const image = document.getElementById('taxonomy-image');
-            image.style.display = 'block'; // Show the image when button is clicked
+
+            if (image.style.display === 'block') {
+                image.style.display = 'none';  // Hide the image if it's currently visible
+            } else {
+                image.style.display = 'block'; // Show the image if it's currently hidden
+            }
         }
 
         function display_about() {
             const aboutSection = document.getElementById('about-section');
-            aboutSection.style.display = 'block';
 
             const layerDefinitionsBox = document.getElementById('responses');
             layerDefinitionsBox.style.display = 'none';
@@ -290,11 +324,69 @@
                 -Richard White <br> 
 
                 All content is open-source and welcomes contributions.</p>`;
+
+                if (aboutSection.style.display === 'block') {
+                    aboutSection.style.display = 'none';  // Hide the image if it's currently visible
+                } else {
+                    aboutSection.style.display = 'block'; // Show the image if it's currently hidden
+                }
         }
 
-        function uploadFile() {
-            alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+        function checkEnter(event) {
+            // Check if the pressed key is "Enter"
+            if (event.key === "Enter") {
+                // Prevent the default form submission if inside a form
+                event.preventDefault();
+
+                // Get the user's input from the prompt bar
+                const userInput = document.getElementById("prompt-input").value;
+
+                // Call the function to handle the input, passing in the user's text
+                handlePromptInput(userInput);
+
+                // Clear the input field after submission
+                document.getElementById("prompt-input").value = '';
+            }
         }
+
+        // Function to handle the user's input
+        function handlePromptInput(userInput) {
+            alert('DONT TOUCH THAT');
+        }
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', uploadFile);
+        
+        /** @param {Event} event */
+        function uploadFile(event) {
+            //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+            const form = event.currentTarget;
+            const url = new URL(form.action);
+            const formData = new FormData(form)
+            const searchParams = new URLSearchParams(formData);
+
+            /** @type {Parameters<fetch>[1]} */
+            const fetchOptions = {
+                method: form.method,
+            };
+
+            if (form.method.toLowerCase() === 'post') {
+                if (form.enctype === 'multipart/form-data') {
+                    fetchOptions.body = formData;
+                }
+                else {
+                    fetchOptions = searchParams;
+                }
+            }
+            else {
+                url.search = searchParams;
+            }            
+            
+            fetch(url , fetchOptions);
+            event.preventDefault();
+        }
+
+        
 
         function query_prompt() {
             alert('DONT TOUCH THAT'); // Placeholder

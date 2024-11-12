@@ -16,7 +16,7 @@ class Item(BaseModel):
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
-    with open("start.html", encoding="utf-8") as f:
+    with open("taxon_neuro.html", encoding="utf-8") as f:
         return f.read()
 
 @app.get("/items/{item_id}")

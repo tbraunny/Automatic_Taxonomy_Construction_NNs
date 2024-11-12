@@ -15,6 +15,7 @@ langchain-huggingface
 #Others
 torch
 transformers
+ast
 
 # llama-index-embeddings-huggingface
 # llama-index-embeddings-langchain
