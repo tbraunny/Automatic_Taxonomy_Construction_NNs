@@ -5,69 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taxon Neuro</title>
     <link rel="stylesheet" href="static/taxon_neuro_style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
 </head>
 <body>
-    <!-- Sidebar Section -->
-    <div class="sidebar">
-        <h1>Menu</h1>
-        <button onclick="fetchOntology()">Generate Ontology</button>
-        <button onclick="fetchTaxonomy()">Generate Taxonomy</button>
-        <button onclick="display_about()">About / Open Source</button>
+    <div id="app"></div>
+        <!-- Sidebar Section -->
+        <div class="sidebar">
+            <h1>Menu</h1>
+            <button onclick="fetchOntology()">Generate Ontology</button>
+            <button onclick="fetchTaxonomy()">Generate Taxonomy</button>
+            <button onclick="display_about()">About / Open Source</button>
 
-        <!-- Dropdown Menu for Definitions -->
-        <div class="dropdown">
-            Definitions
-            <div class="dropdown-content">
-                <div class="sub-dropdown">Layers
-                    <div class="nested-dropdown-content">
-                        <button onclick="layer_type('Convolutional')">Convolutional Layer</button>
-                        <button onclick="layer_type('Pooling')">Pooling Layer</button>
-                        <button onclick="layer_type('Fully Connected')">Fully Connected Layer</button>
-                        <button onclick="layer_type('ReLU')">ReLU Layer</button>
+            <!-- Dropdown Menu for Definitions -->
+            <div class="dropdown">
+                Definitions
+                <div class="dropdown-content">
+                    <div class="sub-dropdown">Layers
+                        <div class="nested-dropdown-content">
+                            <button onclick="layer_type('Convolutional')">Convolutional Layer</button>
+                            <button onclick="layer_type('Pooling')">Pooling Layer</button>
+                            <button onclick="layer_type('Fully Connected')">Fully Connected Layer</button>
+                            <button onclick="layer_type('ReLU')">ReLU Layer</button>
+                        </div>
                     </div>
-                </div>
-                <div class="sub-dropdown">Loss Functions
-                    <div class="nested-dropdown-content">
-                        <button onclick="layer_type('Hinge')">Hinge Loss</button>
-                        <button onclick="layer_type('Logistic')">Logistic</button>
-                        <button onclick="layer_type('Exponential')">Exponential</button>
+                    <div class="sub-dropdown">Loss Functions
+                        <div class="nested-dropdown-content">
+                            <button onclick="layer_type('Hinge')">Hinge Loss</button>
+                            <button onclick="layer_type('Logistic')">Logistic</button>
+                            <button onclick="layer_type('Exponential')">Exponential</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content Section -->
-    <div class="main-content">
-        <h2>Responses</h2>
+        <!-- Main Content Section -->
+        <div class="main-content">
+            <h2>Responses</h2>
 
-        <!-- Image that appears after button click -->
-        <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
-        <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
-        
-        <div id="about-section">
-            <h3>About / Open Source</h3>
-            <p>About section here</p>
+            <!-- Image that appears after button click -->
+            <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
+            <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
+            
+            <div id="about-section">
+                <h3>About / Open Source</h3>
+                <p>About section here</p>
+            </div>
+
+            <!-- Section for displaying layer definitions -->
+            <div id="responses">
+                <h3 id="definition-title">Layer Definitions</h3>
+                <p id="layerInfo">Click on a layer type to see its definition.</p>
+            </div>
         </div>
 
-        <!-- Section for displaying layer definitions -->
-        <div id="responses">
-            <h3 id="definition-title">Layer Definitions</h3>
-            <p id="layerInfo">Click on a layer type to see its definition.</p>
+        <!-- Prompt Container -->
+        <div class="prompt-container">
+            <input class="prompt-input" type="text" placeholder="Type your prompt here...">
         </div>
+
+        <!-- File Upload Button -->
+        <form action="/api" method="post" enctype="multipart/form-data">
+            <label for="file" class="upload-button">+</label>
+            <input id="file" name="file" type="file" style="display: none;" />
+        </form>
+
     </div>
-
-    <!-- Prompt Container -->
-    <div class="prompt-container">
-        <input class="prompt-input" type="text" placeholder="Type your prompt here...">
-    </div>
-
-    <!-- File Upload Button -->
-    <form action="/api" method="post" enctype="multipart/form-data">
-        <label for="file" class="upload-button">+</label>
-        <input id="file" name="file" type="file" style="display: none;" />
-    </form>
-
+    
     <script src="static/taxon_neuro_js.js"></script>
+
 </body>
 </html>

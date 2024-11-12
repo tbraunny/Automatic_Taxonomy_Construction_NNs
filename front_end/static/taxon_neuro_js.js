@@ -1,3 +1,54 @@
+const app = Vue.createApp({
+    data () {
+        return {
+            showAbout: false,
+            showTaxonomy: false,
+            showOntology: false,
+            definitionTitle: "Layer Definitions",
+            layerInfo: "Click on a layer to see its definition"
+        };
+    },
+
+    methods: {
+        toggleAbout() {
+            this.showAbout = !this.showAbout;
+        },
+        generateOntology() {
+            this.showOntology = true;
+            this.showTaxonomy = false;
+        },
+        generateTaxonomy() {
+            this.showTaxonomy = true;
+            this.showOntology = false;
+        },
+        showDefinition(type) {
+            this.definitionTitle = `${type} Layer`;
+            this.layerInfo = `This is the definition of the ${type} layer.`;
+        },
+        uploadFile(event) {
+            const fileInput = event.target;
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/api', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('File uploaded successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+            });
+        }
+    }
+
+});
+
+app.mount('#app')
+
+/*
 async function fetchRoot() {
     const response = await fetch('http://127.0.0.1:8000/');
     const data = await response.json();
@@ -103,38 +154,38 @@ function handlePromptInput(userInput) {
 
 const form = document.querySelector('form');
 form.addEventListener('submit', uploadFile);
-
+*/
 /** @param {Event} event */
-function uploadFile(event) {
-    //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
-    const form = event.currentTarget;
-    const url = new URL(form.action);
-    const formData = new FormData(form)
-    const searchParams = new URLSearchParams(formData);
+// function uploadFile(event) {
+//     //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+//     const form = event.currentTarget;
+//     const url = new URL(form.action);
+//     const formData = new FormData(form)
+//     const searchParams = new URLSearchParams(formData);
 
-    /** @type {Parameters<fetch>[1]} */
-    const fetchOptions = {
-        method: form.method,
-    };
+//     /** @type {Parameters<fetch>[1]} */
+//     const fetchOptions = {
+//         method: form.method,
+//     };
 
-    if (form.method.toLowerCase() === 'post') {
-        if (form.enctype === 'multipart/form-data') {
-            fetchOptions.body = formData;
-        }
-        else {
-            fetchOptions.body = searchParams;
-        }
-    }
-    else {
-        url.search = searchParams;
-    }            
+//     if (form.method.toLowerCase() === 'post') {
+//         if (form.enctype === 'multipart/form-data') {
+//             fetchOptions.body = formData;
+//         }
+//         else {
+//             fetchOptions.body = searchParams;
+//         }
+//     }
+//     else {
+//         url.search = searchParams;
+//     }            
     
-    fetch(url , fetchOptions);
-    event.preventDefault();
-}
+//     fetch(url , fetchOptions);
+//     event.preventDefault();
+// }
 
 
 
-function query_prompt() {
-    alert('DONT TOUCH THAT'); // Placeholder
-}
+// function query_prompt() {
+//     alert('DONT TOUCH THAT'); // Placeholder
+// }
