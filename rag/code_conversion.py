@@ -2,74 +2,93 @@
 #   - use ast to parse code
 #    - look for specific functions in CNN (ex. 'Module' , '__init__' , 'forward')
 
-#import ast
+import ast
 
 #from extract_annetto import prompt_engr
 
-def convert_py_to_txt(file):
-    with open(file) as f:
-        data = f.read()
-        f.close()
 
-    with open("model_code.txt" , mode="w") as f:
-        f.write(data)
-        f.close()
+# def convert_py_to_txt(file):
+#     with open(file) as f:
+#         data = f.read()
+#         f.close()
+
+#     with open("model_code.txt" , mode="w") as f:
+#         f.write(data)
+#         f.close()
 
 
-# class CNN_parser(ast.NodeVisitor):
-#     def __init__(self):
-#         self.class_name = None
-#         self.layers = []
-#         self.forward_pass = []
+class CNN_parser(ast.NodeVisitor):
+    def __init__(self):
+        self.class_name = None
+        self.layers = []
+        self.forward_pass = []
 
-#     def visit_classDef(self , node):
-#         if any(base.id == 'Module' for base in node.bases if isinstance(base , ast.Attribute)):
-#             self.class_name = node.name
-
-#             for body_item in node.body:
-#                 if (isinstance(body_item , ast.FunctionDef) and body_item.name == '__init__'):
-#                     self.visit_init(self , node)
-#                 elif (isinstance(body_item , ast.FunctionDef) and body_item.name == 'forward'):
-#                     self.visit_forward_pass(self , node)
+    def visit_ClassDef(self , node):
+        if any(
+            (isinstance(base, ast.Attribute) and base.attr == 'Module') or
+            (isinstance(base, ast.Name) and base.id == 'Module')
+            for base in node.bases):
             
-#     def visit_init(self , node):
-#         for info in node.body:
-#             if isinstance(info , ast.Assign) and isinstance(info.targets[0] , ast.Attribute):
-#                 layer_name = info.target[0].attr # grab layer name
-#                 layer_type = 0
+            self.class_name = node.name
 
-#                 if isinstance(info.value , ast.Call): # if value of node is 
-#                     print(info.value)
-#                     if isinstance(info.value.func , ast.Attribute):
-#                         layer_type = info.value.func.attr
-#                     else:
-#                         layer_type = info.value.func.id
-#                     layer_values = [ast.dump(arg) for arg in info.value.args]
+            for body_item in node.body:
+                if (isinstance(body_item , ast.FunctionDef) and body_item.name == '__init__'):
+                    self.visit_init(node)
+                elif (isinstance(body_item , ast.FunctionDef) and body_item.name == 'forward'):
+                    self.visit_forward_pass(node)
+            
+    def visit_init(self , node):
+        for info in node.body:
+            if isinstance(info , ast.Assign) and isinstance(info.targets[0] , ast.Attribute):
+                layer_name = info.target[0].attr # grab layer name
+                layer_type = None
 
-#                     self.layers.append((layer_name , layer_type , layer_values))
+                if isinstance(info.value , ast.Call): # if value of node is 
+                    print("Info in init: " , info.value)
+                    if isinstance(info.value.func , ast.Attribute):
+                        layer_type = info.value.func.attr
+                    elif isinstance(info.value.func , ast.Name):
+                        layer_type = info.value.func.id
 
-#     def visit_forward_pass(self , node):
-#         for info in node.body:
-#             if (isinstance(info , ast.Expr) and isinstance(info , ast.Call)):
-#                 self.forward_pass.append(info.dump(info.value))
+                    layer_values = [ast.dump(arg) for arg in info.value.args]
 
-#     def parse_code(self , node):
-#         if isinstance(node.bases == 'CNN'):
-#             self.visit_classDef(self , node)
-#         print("placeholder" , node)
+                    self.layers.append((layer_name , layer_type , layer_values))
+
+    def visit_forward_pass(self , node):
+        for info in node.body:
+            if (isinstance(info , ast.Assign) and isinstance(info.value , ast.Call)):
+                if isinstance(info.value.func , ast.Attribute) or isinstance(info.value.func , ast.Name):
+                    self.forward_pass.append(ast.dump(info.value))
+
+    def parse_code(self , code):
+        tree = ast.parse(code)
+        self.visit(tree)
 
 
-# class CodeLoader:
-#     def __init__(self, file_path):
-#         self.file_path = file_path
-#         self.code = []
+class CodeLoader:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.code = ""
 
-#     def load(self):
-#         print("Loading Code...")
-#         loader = PyPDFLoader(self.file_path)
-#         self.documents = loader.load()
-#         print(f"Loaded {len(self.documents)} pages from PDF.")
-#         return self.documents
+    def load(self):
+        print("Loading Code...")
+        with open(self.file_path , "r") as file:
+            self.code = file.read()
+        print("Finished loading code")
+
+        return self.code
+
+
+if __name__ == '__main__':
+    code_loader = CodeLoader("test.py")
+    code = code_loader.load()
+
+    parser = CNN_parser()
+    parser.parse_code(code)
+
+    print("Architecture: ")
+    print("\tLayers: " , parser.layers)
+    print("\tForward Pass: " , parser.forward_pass)
 
 # class DocumentSplitter:
 #     def __init__(self, chunk_size, chunk_overlap):
@@ -145,13 +164,3 @@ def convert_py_to_txt(file):
 #     vector_index = indexer.create_index(split_docs)
 
 #     prompt_engr(vector_index, llm_predictor)
-
-if __name__ == "__main__":
-    convert_py_to_txt("test.py")
-
-    path = '/file/path'
-    '''
-    for file in path:
-        open(file)
-        read(file)
-    '''
