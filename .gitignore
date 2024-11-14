@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
+
+count_code_lines.sh

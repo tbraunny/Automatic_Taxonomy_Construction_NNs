@@ -1,14 +1,4 @@
 # libraries:
-<<<<<<< HEAD
-torch
-=======
-torch#==2.5.1
->>>>>>> development
-torchvision
-torchaudio
-transformers
-pandas
-numpy
 
 # Rag Install
 -r "rag/requirements.txt"
