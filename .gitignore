@@ -4,4 +4,4 @@ __pycache__/
 *.pyo
 .DS_Store
 
-richie_dir/
+local_dir/
