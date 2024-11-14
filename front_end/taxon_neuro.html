@@ -7,14 +7,12 @@
     <link rel="stylesheet" href="static/taxon_neuro_style.css">
 </head>
 <body>
-    <!-- Sidebar Section -->
     <div class="sidebar">
         <h1>Menu</h1>
         <button onclick="fetchOntology()">Generate Ontology</button>
         <button onclick="fetchTaxonomy()">Generate Taxonomy</button>
         <button onclick="display_about()">About / Open Source</button>
 
-        <!-- Dropdown Menu for Definitions -->
         <div class="dropdown">
             Definitions
             <div class="dropdown-content">
@@ -35,13 +33,19 @@
                 </div>
             </div>
         </div>
+
+        <div id="responses">
+            <h3 id="definition-title">Layer Definitions</h3>
+            <p id="layerInfo">Click on a layer type to see its definition.</p>
+        </div>
+        
     </div>
 
-    <!-- Main Content Section -->
+        
+
     <div class="main-content">
         <h2>Responses</h2>
 
-        <!-- Image that appears after button click -->
         <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
         <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
         
@@ -50,20 +54,15 @@
             <p>About section here</p>
         </div>
 
-        <!-- Section for displaying layer definitions -->
-        <div id="responses">
-            <h3 id="definition-title">Layer Definitions</h3>
-            <p id="layerInfo">Click on a layer type to see its definition.</p>
+        <div id="chat-response">
+            <h3>Llama Response</h3>
+            <p>Llama response here</p>
         </div>
     </div>
 
-    <!-- Prompt Container -->
     <div class="prompt-container">
         <input class="prompt-input" id="prompt-input" type="text" placeholder="Type your prompt here..." onkeydown="checkEnter(event)">
     </div>
-
-    <!-- File Upload Button -->
-    <!--<button class="upload-button" onclick="uploadFile()">+</button>-->
 
     <form action="/api" method="post" enctype="multipart/form-data">
         <input id="file" name="file" type="file" class="upload-button" onchange="uploadFile()" style="display: none;">

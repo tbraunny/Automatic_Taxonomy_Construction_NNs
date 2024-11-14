@@ -72,11 +72,11 @@ function display_about() {
 
         All content is open-source and welcomes contributions.</p>`;
 
-        if (aboutSection.style.display === 'block') {
-            aboutSection.style.display = 'none';  // Hide the image if it's currently visible
-        } else {
-            aboutSection.style.display = 'block'; // Show the image if it's currently hidden
-        }
+    if (aboutSection.style.display === 'block') {
+        aboutSection.style.display = 'none';  // Hide the image if it's currently visible
+    } else {
+        aboutSection.style.display = 'block'; // Show the image if it's currently hidden
+    }
 }
 
 function checkEnter(event) {
@@ -98,7 +98,16 @@ function checkEnter(event) {
 
 // Function to handle the user's input
 function handlePromptInput(userInput) {
-    alert('DONT TOUCH THAT');
+    //alert('DONT TOUCH THAT');
+
+    //put chat functionality here
+    //pass user query to backend for later use
+    const chat = document.getElementById("chat-response")
+
+    chat.innerHTML = 
+    "<h3>You said:</h3><p>" + userInput + "</p><h3> Llama says:</h3><p>My functionality is limited, however I would love to answer your questions when <br>my creators finally finish me</p>";
+
+    chat.style.display = 'block';
 }
 
 const form = document.querySelector('form');
@@ -106,7 +115,6 @@ form.addEventListener('submit', uploadFile);
 
 /** @param {Event} event */
 function uploadFile(event) {
-    //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
     const form = event.currentTarget;
     const url = new URL(form.action);
     const formData = new FormData(form)
