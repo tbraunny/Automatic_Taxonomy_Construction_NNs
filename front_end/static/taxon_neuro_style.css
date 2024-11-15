@@ -170,10 +170,21 @@ body {
 
 /* Responses section styling */
 #responses {
-    margin-top: -40px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
-    width: 300px;
-    display:none;
+    position: relative;
+    margin: 5px;
+    padding: 0px;
+    width: 245px;
+    
+    display: none;
+}
+
+#chat-responses {
+    margin-top: 10px;
+    border-radius: 10px;
+    padding-top: 5px;
+    padding-left: 15px;
+    min-width: 250px;
+    width: auto;
+    background-color: #808080;
+    display: none;
 }

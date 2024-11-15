@@ -48,20 +48,20 @@ const app = Vue.createApp({
 
 app.mount('#app')
 
-/*
+
 async function fetchRoot() {
     const response = await fetch('http://127.0.0.1:8000/');
     const data = await response.json();
     document.getElementById('hello-message').innerText = `Hello message: ${data.Hello}`;
 }
 
-// Define the function to display layer definitions
+//Define the function to display layer definitions
 function layer_type(layer) {
     const layerInfo = document.getElementById("layerInfo");
     const definitionTitle = document.getElementById("definition-title");
     const responses = document.getElementById("responses")
 
-    // Definitions for each layer type
+    //Definitions for each layer type
     const layerDefinitions = {
         "Convolutional": "A Convolutional Layer applies a convolution operation to the input, passing the result to the next layer. It’s used primarily for feature extraction in image data.",
         "Pooling": "A Pooling Layer reduces the spatial size of the representation to decrease the number of parameters and computation in the network, controlling overfitting.",
@@ -80,7 +80,7 @@ function layer_type(layer) {
         responses.style.display = 'block'; // Show the image if it's currently hidden
     }
 
-    // Update the title and display the corresponding definition
+    //Update the title and display the corresponding definition
     definitionTitle.innerText = `${layer} Definition`;
     layerInfo.innerText = layerDefinitions[layer];
 }
@@ -131,61 +131,67 @@ function display_about() {
 }
 
 function checkEnter(event) {
-    // Check if the pressed key is "Enter"
+    //Check if the pressed key is "Enter"
     if (event.key === "Enter") {
-        // Prevent the default form submission if inside a form
+        //Prevent the default form submission if inside a form
         event.preventDefault();
 
         // Get the user's input from the prompt bar
         const userInput = document.getElementById("prompt-input").value;
 
-        // Call the function to handle the input, passing in the user's text
+        //Call the function to handle the input, passing in the user's text
         handlePromptInput(userInput);
 
-        // Clear the input field after submission
+        //Clear the input field after submission
         document.getElementById("prompt-input").value = '';
     }
 }
 
-// Function to handle the user's input
+//Function to handle the user's input
 function handlePromptInput(userInput) {
-    alert('DONT TOUCH THAT');
+    //alert('DONT TOUCH THAT');
+
+    const chat_response = document.getElementById("chat-responses");
+    chat_response.style.display = 'none';
+
+    chat_response.innerHTML = "<h3>You said: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
+    chat_response.style.display = 'block';
 }
 
 const form = document.querySelector('form');
 form.addEventListener('submit', uploadFile);
-*/
+
 /** @param {Event} event */
-// function uploadFile(event) {
-//     //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
-//     const form = event.currentTarget;
-//     const url = new URL(form.action);
-//     const formData = new FormData(form)
-//     const searchParams = new URLSearchParams(formData);
+function uploadFile(event) {
+    //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+    const form = event.currentTarget;
+    const url = new URL(form.action);
+    const formData = new FormData(form)
+    const searchParams = new URLSearchParams(formData);
 
-//     /** @type {Parameters<fetch>[1]} */
-//     const fetchOptions = {
-//         method: form.method,
-//     };
+    /** @type {Parameters<fetch>[1]} */
+    const fetchOptions = {
+        method: form.method,
+    };
 
-//     if (form.method.toLowerCase() === 'post') {
-//         if (form.enctype === 'multipart/form-data') {
-//             fetchOptions.body = formData;
-//         }
-//         else {
-//             fetchOptions.body = searchParams;
-//         }
-//     }
-//     else {
-//         url.search = searchParams;
-//     }            
+    if (form.method.toLowerCase() === 'post') {
+        if (form.enctype === 'multipart/form-data') {
+            fetchOptions.body = formData;
+        }
+        else {
+            fetchOptions.body = searchParams;
+        }
+    }
+    else {
+        url.search = searchParams;
+    }            
     
-//     fetch(url , fetchOptions);
-//     event.preventDefault();
-// }
+    fetch(url , fetchOptions);
+    event.preventDefault();
+}
 
 
 
-// function query_prompt() {
-//     alert('DONT TOUCH THAT'); // Placeholder
-// }
+function query_prompt() {
+    alert('DONT TOUCH THAT'); // Placeholder
+}
