@@ -17,6 +17,22 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
     """
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
 
+def get_property_range_type(property: Property) -> str:
+    """
+    Determines if the range of a property is atomic or refers to another class.
+
+    Args:
+        property (Property): The property for which to check the range.
+
+    Returns:
+        str: "atomic" if the range is a primitive datatype, otherwise "class".
+    """
+    # Assume range of primitive data types (e.g., string, int) is "atomic"
+    for range_type in property.range:
+        if issubclass(range_type, ThingClass):
+            return "class"
+    return "atomic"
+
 def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     Retrieves all restrictions (including cardinality restrictions) applied to a specified class.
@@ -58,7 +74,7 @@ def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = N
     if existing_class is not None:
         warnings.warn(f"Class '{class_name}' already exists.")
         return existing_class
-    
+
     # Set base class to Thing if no base_class is provided
     if base_class is None:
         base_class = ontology.Thing 
