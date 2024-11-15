@@ -1,20 +1,20 @@
-# libraries:
+-r "requirements/requirements-document_indexer.txt"
+-r "requirements/requirements-document_splitter.txt"
+-r "requirements/requirements-embedding_model.txt"
+-r "requirements/requirements-llm_model.txt"
+-r "requirements/requirements-pdf_loader.txt"
+-r "requirements/requirements-owl.txt"
 
-# Rag Install
--r "rag/requirements.txt"
+# # *** HOW TO VENV ***
 
-
-# *** HOW TO VENV ***
-#To create virtual environment called venv
+# # Create virtual environment
 # python3 -m venv venv
 
-#Activate venv
-# Mac: source venv/bin/activate
-# Windows: .\venv\Scripts\activate.bat
+# # Activate venv in WSL
+# source venv/bin/activate
 
-#Install of pip requirements
+# # Install requirements
 # pip install -r requirements.txt
 
-#Deactivate venv
+# # Deactivate virtual environment
 # deactivate
-# *******************
