@@ -4,18 +4,6 @@
 
 import ast
 
-#from extract_annetto import prompt_engr
-
-
-# def convert_py_to_txt(file):
-#     with open(file) as f:
-#         data = f.read()
-#         f.close()
-
-#     with open("model_code.txt" , mode="w") as f:
-#         f.write(data)
-#         f.close()
-
 
 class CNN_parser(ast.NodeVisitor):
     def __init__(self):
@@ -26,25 +14,23 @@ class CNN_parser(ast.NodeVisitor):
     def visit_ClassDef(self , node):
         if any(
             (isinstance(base, ast.Attribute) and base.attr == 'Module') or
-            (isinstance(base, ast.Name) and base.id == 'Module')
-            for base in node.bases):
-            
+            (isinstance(base, ast.Name) and base.id == 'Module') for base in node.bases):
+
             self.class_name = node.name
 
             for body_item in node.body:
                 if (isinstance(body_item , ast.FunctionDef) and body_item.name == '__init__'):
-                    self.visit_init(node)
+                    self.visit_init(body_item)
                 elif (isinstance(body_item , ast.FunctionDef) and body_item.name == 'forward'):
-                    self.visit_forward_pass(node)
+                    self.visit_forward_pass(body_item)
             
     def visit_init(self , node):
         for info in node.body:
             if isinstance(info , ast.Assign) and isinstance(info.targets[0] , ast.Attribute):
-                layer_name = info.target[0].attr # grab layer name
+                layer_name = info.targets[0].attr # grab layer name
                 layer_type = None
 
                 if isinstance(info.value , ast.Call): # if value of node is 
-                    print("Info in init: " , info.value)
                     if isinstance(info.value.func , ast.Attribute):
                         layer_type = info.value.func.attr
                     elif isinstance(info.value.func , ast.Name):
@@ -63,6 +49,12 @@ class CNN_parser(ast.NodeVisitor):
     def parse_code(self , code):
         tree = ast.parse(code)
         self.visit(tree)
+
+    def embed_outputs(self , layers , forward):
+        print("placeholder")
+
+        embeddings = 0
+        return embeddings
 
 
 class CodeLoader:
@@ -90,77 +82,11 @@ if __name__ == '__main__':
     print("\tLayers: " , parser.layers)
     print("\tForward Pass: " , parser.forward_pass)
 
-# class DocumentSplitter:
-#     def __init__(self, chunk_size, chunk_overlap):
-#         self.chunk_size = chunk_size
-#         self.chunk_overlap = chunk_overlap
+    embeddings = parser.embed_outputs(parser.layers , parser.forward_pass)
 
-#     def split(self, documents):
-#         print("Splitting documents into chunks...")
-#         text_splitter = RecursiveCharacterTextSplitter(
-#             chunk_size=self.chunk_size,
-#             chunk_overlap=self.chunk_overlap
-#         )
-#         split_docs = text_splitter.split_documents(documents)
-#         print(f"Split into {len(split_docs)} chunks.")
-#         return split_docs
-
-# class EmbeddingModel:
-#     def __init__(self, model_name):
-#         print("Initializing the embedding model...")
-#         self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)
-#         self.embed_model = LangchainEmbedding(self.embedding_model)
-#         print("Embedding model initialized.")
-
-#     def get_model(self):
-#         return self.embed_model
-
-# class LLMModel:
-#     def __init__(self, model_name, top_p = 0.2, temperature=0.1, top_k=10):
-#         print("Initializing the LLM...")
-#         self.ollama_llm = OllamaLLM(
-#             model=model_name,
-#             top_p=top_p,
-#             top_k=top_k,
-#             temperature=temperature)
-#         self.llm_predictor = LangChainLLM(llm=self.ollama_llm)
-#         print("LLM initialized.")
-
-#     def get_llm(self):
-#         return self.llm_predictor
-
-# class DocumentIndexer:
-#     def __init__(self, embed_model, llm_predictor):
-#         self.embed_model = embed_model
-#         self.llm_predictor = llm_predictor
-#         self.vector_index = None
-
-#     def create_index(self, documents):
-#         print("Creating LlamaIndex documents...")
-#         index_documents = [Document(text=doc.page_content) for doc in documents]
-#         print(f"Created {len(index_documents)} LlamaIndex documents.")
-
-#         print("Building the VectorStoreIndex...")
-#         self.vector_index = VectorStoreIndex.from_documents(
-#             index_documents, 
-#             embed_model=self.embed_model, 
-#             llm_predictor=self.llm_predictor
-#         )
-#         print("VectorStoreIndex built.")
-#         return self.vector_index
-
-# def main():
-#     # Load and process the PDF
-#     pdf_loader = PDFLoader("rag/datasets/AlexNet.pdf")
-#     documents = pdf_loader.load()
-
-#     splitter = DocumentSplitter(chunk_size=1000, chunk_overlap=200)
-#     split_docs = splitter.split(documents)
-
-#     embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-#     llm_predictor = LLMModel(model_name="llama3.2:1b").get_llm()
-
-#     indexer = DocumentIndexer(embed_model, llm_predictor)
-#     vector_index = indexer.create_index(split_docs)
-
-#     prompt_engr(vector_index, llm_predictor)
+    # successful outputs, need to parse these outputs
+    # comes in the form of the following:
+    # Layers:
+        # [('conv1', 'Conv2d', ['Constant(value=3)', 'Constant(value=20)', 'Constant(value=3)', 'Constant(value=1)']), ('conv2', 'Conv2d', ['Constant(value=20)', 'Constant(value=64)', 'Constant(value=3)', 'Constant(value=1)']), ('fc1', 'Linear', ['Constant(value=1600)', 'Constant(value=128)']), ('fc2', 'Linear', ['Constant(value=128)', 'Constant(value=2)']), ('bn1', 'BatchNorm2d', ['Constant(value=20)']), ('bn2', 'BatchNorm2d', ['Constant(value=64)']), ('dropout1', 'Dropout', ['Constant(value=0.5)']), ('dropout2', 'Dropout', ['Constant(value=0.25)'])]
+    # Forward pass:
+        #  ["Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='conv1', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='F', ctx=Load()), attr='leaky_relu', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='F', ctx=Load()), attr='max_pool2d', ctx=Load()), args=[Name(id='x', ctx=Load()), Constant(value=2)], keywords=[])", "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='bn1', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='dropout1', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='conv2', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='F', ctx=Load()), attr='leaky_relu', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='F', ctx=Load()), attr='max_pool2d', ctx=Load()), args=[Name(id='x', ctx=Load()), Constant(value=2)], keywords=[])", "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='bn2', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='x', ctx=Load()), attr='view', ctx=Load()), args=[Call(func=Attribute(value=Name(id='x', ctx=Load()), attr='size', ctx=Load()), args=[Constant(value=0)], keywords=[]), UnaryOp(op=USub(), operand=Constant(value=1))], keywords=[])", "Call(func=Attribute(value=Name(id='self', ctx=Load()), attr='fc1', ctx=Load()), args=[Name(id='x', ctx=Load())], keywords=[])", "Call(func=Attribute(value=Name(id='F', ctx=Load()), attr='relu', ctx=Load()), args=[Name(id='x', ctx=Load(ant(value=64)', 'Constant(value=3)', 'Constant(value=1)']), ('fc1', 'Linear', ['Constant(value=1600)', 'Constant(value=128)']), ('fc2', 'Linear', ['Constant(value=128)', 'Constant(value=2)']), ('bn1', 'BatchNorm2d', ['Constant(value=20)']), ('bn2', 'BatchNorm2d', ['Constant(value=64)']), ('dropout1', 'Dropout', ['Constant(value=0.5)']), ('dropout2', 'Dropout', ['Constant(value=0.25)'])]
