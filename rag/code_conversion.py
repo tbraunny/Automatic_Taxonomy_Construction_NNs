@@ -4,6 +4,7 @@
 
 import ast
 
+# so basically this is useless
 
 class CNN_parser(ast.NodeVisitor):
     def __init__(self):
