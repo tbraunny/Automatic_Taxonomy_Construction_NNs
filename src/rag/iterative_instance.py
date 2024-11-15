@@ -25,9 +25,12 @@ def get_architecture_name(llm):
         # f"Provide name for the main class in JSON format as a list, e.g., 
         # ['ANNConfiguration': 'ResNet50'] or ['ANNConfiguration': 'AlexNet']"
     )
+
     response = llm.aquery(name_prompt)
     architecture_name = clean_response(response, expected_type="atomic") # needs refinement for architecture name
     return architecture_name
+
+
 
 def instantiate_architecture(ontology, architecture_name):
     """
