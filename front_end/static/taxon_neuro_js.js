@@ -105,30 +105,42 @@ function fetchTaxonomy() {
     }
 }
 
-function display_about() {
-    const aboutSection = document.getElementById('about-section');
-
-    const layerDefinitionsBox = document.getElementById('responses');
-    layerDefinitionsBox.style.display = 'none';
-
-    aboutSection.innerHTML = `<h3>About / Open Source</h3>
-        <p>This project aims to provide automatic taxonomy construction for neural networks.<br>
-        It categorizes layers, architectures, and loss functions based on input given from the user.<br>
-        We are a 4-person team from the University of Nevada, Reno.<br>
-        Team Consists of:<br>
-        -Thomas Braun<br>
-        -Lukas Lac <br>
-        -Josue Ochoa <br>
-        -Richard White <br> 
-
-        All content is open-source and welcomes contributions.</p>`;
-
-        if (aboutSection.style.display === 'block') {
-            aboutSection.style.display = 'none';  // Hide the image if it's currently visible
-        } else {
-            aboutSection.style.display = 'block'; // Show the image if it's currently hidden
-        }
+function clearChat() {
+    alert("DONT TOUCH THAT");
 }
+
+function copyChatText() {
+    alert("I SAID DONT TOUCH THAT")
+}
+
+function regenerateChat() {
+    alert("STOP IT")
+}
+
+// function display_about() {
+//     const aboutSection = document.getElementById('about-section');
+
+//     const layerDefinitionsBox = document.getElementById('responses');
+//     layerDefinitionsBox.style.display = 'none';
+
+//     aboutSection.innerHTML = `<h3>About / Open Source</h3>
+//         <p>This project aims to provide automatic taxonomy construction for neural networks.<br>
+//         It categorizes layers, architectures, and loss functions based on input given from the user.<br>
+//         We are a 4-person team from the University of Nevada, Reno.<br>
+//         Team Consists of:<br>
+//         -Thomas Braun<br>
+//         -Lukas Lac <br>
+//         -Josue Ochoa <br>
+//         -Richard White <br> 
+
+//         All content is open-source and welcomes contributions.</p>`;
+
+//         if (aboutSection.style.display === 'block') {
+//             aboutSection.style.display = 'none';  // Hide the image if it's currently visible
+//         } else {
+//             aboutSection.style.display = 'block'; // Show the image if it's currently hidden
+//         }
+// }
 
 function checkEnter(event) {
     //Check if the pressed key is "Enter"

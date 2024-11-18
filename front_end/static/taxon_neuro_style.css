@@ -70,12 +70,101 @@ body {
     object-fit: contain;
 }
 
-#about-section {
+.generate-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #C81B1B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
     margin-top: 20px;
+}
+
+.generate-btn:hover {
+    background-color: #9E1010;
+}
+
+#about-section {
+    margin-top: 0px;
+    padding-left: 50px;
+    margin-left: 50px;
     padding: 10px;
+}
+
+#gen_ont {
+    margin-top: 0px;
+    padding-left: 50px;
+    margin-left: 50px;
+    padding: 10px;
+}
+
+select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
     border: 1px solid #ccc;
-    background-color: #e0e0e0;
-    display: none; /* Initially hidden */
+    width: 200px;
+    margin: 10px 0;
+}
+
+label {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+.back-button {
+    position: absolute; /* Position it above the sidebar */
+    top: 4px;          /* Distance from the top */
+    left: 0px;         /* Distance from the left */
+    background-color: transparent; /* Red background */
+    color: white;       /* White text */
+    border: none;       /* Remove default border */
+  /* Padding inside the button */
+    font-size: 16px;    /* Font size for the text */
+    cursor: pointer;   /* Cursor changes to pointer */
+    border-radius: 50%; /* Rounded corners */
+    border: 3px solid white;
+    justify-content: center;
+}
+
+.chat-options {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;  /* Space between buttons */
+}
+
+/* Chat buttons */
+.chat-button {
+    padding: 10px;
+    background-color: #C81B1B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.chat-button:hover {
+    background-color: #9E1010;
+}
+
+.back-button:hover {
+    background-color: #9E1010; /* Darker red on hover */
+}
+
+.left-border {
+    position: fixed; /* Keeps the sidebar fixed as you scroll */
+    top: 0;
+    left: 0;
+    width: 35px; /* Narrow width for a border-like appearance */
+    height: 100%; /* Full height of the page */
+    background-color: #C81B1B; /* Red color for the border */
+     /* Ensures it stays above the content */
 }
 
 /* Positioning the prompt container at the bottom */
@@ -194,7 +283,8 @@ body {
     padding-top: 5px;
     padding-left: 15px;
     min-width: 250px;
+    max-width: 950px;
     width: auto;
-    background-color: #808080;
+    background-color: #E0E0E0;
     display: none;
 }

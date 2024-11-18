@@ -10,11 +10,18 @@
 </head>
 <body>
     <div id="app"></div>
+
+        <div class="chat-options">
+            <button onclick="clearChat()" class="chat-button">Clear Chat</button>
+            <button onclick="copyChatText()" class="chat-button">Copy Text</button>
+            <button onclick="regenerateChat()" class="chat-button">Regenerate</button>
+        </div>
+
         <div class="sidebar">
             <h1>Menu</h1>
-            <button onclick="fetchOntology()">Generate Ontology</button>
-            <button onclick="fetchTaxonomy()">Generate Taxonomy</button>
-            <button onclick="display_about()">About / Open Source</button>
+            <button onclick="location.href='/gen_ont.html'">Generate Ontology</button>
+            <button onclick="location.href='/gen_tax.html'">Generate Taxonomy</button>
+            <button onclick="location.href='/about.html'">About / Open Source</button>
 
             <div class="dropdown">
                 Definitions
@@ -48,10 +55,7 @@
             <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
             <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
             
-            <div id="about-section">
-                <h3>About / Open Source</h3>
-                <p>About section here</p>
-            </div>
+            <div id="about-section"></div>
 
             <div id="chat-responses">
                 <h3>Chat Responses</h3>

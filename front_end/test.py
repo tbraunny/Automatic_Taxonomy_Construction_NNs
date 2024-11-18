@@ -18,6 +18,21 @@ class Item(BaseModel):
 def read_root():
     with open("taxon_neuro.html", encoding="utf-8") as f:
         return f.read()
+    
+@app.get("/about.html", response_class=HTMLResponse)
+def read_about():
+    with open("about.html", encoding="utf-8") as f:
+        return f.read()
+    
+@app.get("/gen_ont.html", response_class=HTMLResponse)
+def read_about():
+    with open("gen_ont.html", encoding="utf-8") as f:
+        return f.read()
+    
+@app.get("/gen_tax.html", response_class=HTMLResponse)
+def read_about():
+    with open("gen_tax.html", encoding="utf-8") as f:
+        return f.read()
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Union[str, None] = None):
