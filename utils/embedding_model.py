@@ -7,11 +7,13 @@ from utils.embedding_model import EmbeddingModel
 embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
 '''
 
+MODEL_NAME = 'all-MiniLM-L6-v2'
+
 class EmbeddingModel:
     """
     A utility class for initializing and retrieving an embedding model.
     """
-    def __init__(self, model_name):
+    def __init__(self, model_name=MODEL_NAME):
         """
         Constructor for embedding model.
         :param model_name: Name of the HuggingFace embedding model.
