@@ -8,12 +8,10 @@ response = query_llm(index, llm_predictor, query)
 
 from llama_index.core import VectorStoreIndex
 class LLM:
-    def __init__(self, index: VectorStoreIndex, llm_predictor):
+    def __init__(self, index: VectorStoreIndex, llm_model):
         self.index =index
-        self.llm_predictor=llm_predictor
+        self.llm_model=llm_model
 
-
-##NEEDS TO GET RELEVANT STUFF FIRST 
     def query(self, query: str) -> str:
         """
         Query the LLM with a given query using the provided vector store index.
@@ -22,6 +20,6 @@ class LLM:
         :param query: The query string.
         :return: The response from the LLM as a string.
         """
-        query_engine = self.index.as_query_engine(llm=self.llm_predictor)
+        query_engine = self.index.as_query_engine(llm=self.llm_model)
         response = query_engine.query(query)
         return response.text if hasattr(response, "text") else str(response)

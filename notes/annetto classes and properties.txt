@@ -1,4 +1,4 @@
-Base class: ANNConfiguration
+
 Classes in the ontology:
 - Dataset
 - EvaluationResult
@@ -63,8 +63,6 @@ Classes in the ontology:
 - Buildings
 - Urban
 - Categorical
-* Owlready2 * Warning: ignoring cyclic type of, involving storid 452
-
 - CategoricalCrossEntropy
 - Classification
 - Climate
@@ -74,9 +72,6 @@ Classes in the ontology:
 - ConcatLayer
 - Constant
 - WeightInitialization
-* Owlready2 * Warning: ignoring cyclic subclass of/subproperty of, involving:
-  http://w3id.org/annett-o/ConvolutionLayer
-
 - ConvolutionLayer
 - DeconvolutionLayer
 - Discrimination

@@ -1,11 +1,13 @@
-from langchain_huggingface import HuggingFaceEmbeddings
-from llama_index.embeddings.langchain import LangchainEmbedding
+
 
 '''
 Example usage:
 from utils.embedding_model import EmbeddingModel
 embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
 '''
+
+from langchain_huggingface import HuggingFaceEmbeddings
+from llama_index.embeddings.langchain import LangchainEmbedding
 
 MODEL_NAME = 'all-MiniLM-L6-v2'
 
@@ -20,8 +22,9 @@ class EmbeddingModel:
         :type model_name: string
         """
         print("Initializing the embedding model...")
-        self.embedding_model = HuggingFaceEmbeddings(model_name=model_name)
-        self.embed_model = LangchainEmbedding(self.embedding_model)
+        self.embed_model = LangchainEmbedding(
+            HuggingFaceEmbeddings(model_name=model_name)
+        )
         print("Embedding model initialized.")
 
     def get_model(self):

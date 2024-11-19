@@ -1,17 +1,21 @@
-from llama_index.core import VectorStoreIndex, Document
-
 '''
 Example usage:
 from utils.document_indexer import DocumentIndexer
-indexer = DocumentIndexer(embed_model, llm_predictor)
-vector_index = indexer.create_index(split_docs)
+
+query_engine = DocumentIndexer(embed_model, llm_model,split_docs).get_rag_query_engine()
+user_query='what is this about'
+response = query_engine.query(user_query)
 '''
+
+from llama_index.core import VectorStoreIndex, Document
+from llama_index.core import Settings
+
 
 class DocumentIndexer:
     """
     A utility class for creating and managing a document index.
     """
-    def __init__(self, embed_model, llm_predictor):
+    def __init__(self, embed_model, llm_model,documents):
         """
         Constructor for DocumentIndexer.
         :param embed_model: Embedding model object.
@@ -20,8 +24,12 @@ class DocumentIndexer:
         :type llm_predictor: LangChainLLM
         """
         self.embed_model = embed_model
-        self.llm_predictor = llm_predictor
+        self.llm_model = llm_model
+        # Set the global settings for LLM and embedding model
+        Settings.llm = self.llm_model
+        Settings.embed_model = self.embed_model
         self.vector_index = None
+        self.create_index(documents)
 
     def create_index(self, documents):
         """
@@ -39,7 +47,10 @@ class DocumentIndexer:
         self.vector_index = VectorStoreIndex.from_documents(
             index_documents, 
             embed_model=self.embed_model, 
-            llm_predictor=self.llm_predictor
+            llm_predictor=self.llm_model
         )
         print("VectorStoreIndex built.")
-        return self.vector_index
+        # return self.vector_index
+    
+    def get_rag_query_engine(self):
+        return self.vector_index.as_query_engine()

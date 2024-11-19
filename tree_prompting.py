@@ -8,28 +8,12 @@ from utils.query_llm import LLM
 from utils.pdf_loader import load_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
-from utils.document_splitter import DocumentSplitter
+from utils.document_splitter import chunk_document
 from utils.document_indexer import DocumentIndexer
 
 from utils.owl import *
 
-
-'''
-Example usage:
-from utils.ConversationTree import ConversationTree
-'''
-
-def get_prompt_data_properties(onto_class: ThingClass, property: Property) -> str:
-    prompt = f'Does {onto_class} have the data property {property.name}, if so what is its value'
-    return prompt
-
-def get_prompt_class(onto_class: ThingClass) -> str:
-    prompt = f'Does this have an {onto_class}'
-    return prompt
-
-def get_prompt_object_property(onto_class: ThingClass, property: Property) -> str:
-    prompt = f'Does {onto_class} have {property}'
-    return prompt
+QUESTIONS_DICT = None
     
 class OntologyTreeQuestioner:
     """
@@ -37,7 +21,7 @@ class OntologyTreeQuestioner:
     integrate with a conversation tree, and recursively ask questions for object properties.
     """
 
-    def __init__(self, ontology, base_class, conversation_tree, llm=None):
+    def __init__(self, ontology, conversation_tree, rag_query_engine):
         """
         Initialize with ontology, base class, and conversation tree.
         
@@ -46,9 +30,12 @@ class OntologyTreeQuestioner:
         :param conversation_tree: Instance of the ConversationTree class.
         """
         self.ontology = ontology
-        self.base_class = base_class
+        # Get base class
+        self.base_class = ontology.ANNConfiguration
+        print(f"Base class: {self.base_class.name}")
+
         self.conversation_tree = conversation_tree
-        self.llm=llm
+        self.llm=rag_query_engine
 
     def ask_question(self, parent_id, question):
         """
@@ -56,47 +43,29 @@ class OntologyTreeQuestioner:
         
         :param parent_id: ID of the parent node in the conversation tree.
         :param question: The question to ask.
-        :return: Mock answer as a string.
+        :return: Answer as a string.
         """
 
-        prompt_template = """prompt_template =
-        Please answer the following question concisely and in list format when applicable. Do not provide any additional context or verbose explanations. If the answer involves steps, points, or attributes, present them as a structured list. Otherwise, provide an atomic and precise response.
-        Question: {question}
-        Answer:
-        """
-        prompt = prompt_template.format(question=question)
-        print(f"Question: {question}")
-        answer = llm.query(question)
+        query = "".join([get_initial_prompt(),question])
+        response = self.llm.query(query)
+        final_response = self.llm.query(get_second_prompt(question,response)) 
 
-        self.conversation_tree.add_child(parent_id, question, answer)
-        return answer
+        print("Question:")
+        print(question)
+        print("-" * 50)
+        print("First Answer:")
+        print("-" * 50)
+        print(response)
+        print("-" * 50)
+        print("Second Answer:")
+        print("-" * 50)
+        print(final_response)
+        print("-" * 50)
 
 
-    def handle_property(self, parent_id, prop):
-        """
-        Handle a property by determining its type and recursively generating questions.
-        
-        :param parent_id: ID of the parent node in the conversation tree.
-        :param prop: The property to handle.
-        """
-        print(f"\nHandling property: {prop.name}")
+        self.conversation_tree.add_child(parent_id, question, final_response)
+        return final_response
 
-        range_type = get_property_range_type(prop)
-
-        if range_type == ' class':
-            # Ask a question about the property and explore its range
-            question = f"What is the relationship of '{prop.name}'?"
-            answer = self.ask_question(parent_id, question)
-
-            # Recursively handle classes in the range
-            for range_cls in prop.range:
-                self.ask_for_class(parent_id, range_cls)
-        elif range_type == 'atomic':
-            # Ask a question about the atomic property value
-            question = f"What is the value of '{prop.name}'?"
-            answer = self.ask_question(parent_id, question)
-        else:
-            print(f"Property '{prop.name}' is neither an ObjectProperty nor a DataProperty.")
 
     def ask_for_class(self, parent_id, cls):
         """
@@ -106,37 +75,80 @@ class OntologyTreeQuestioner:
         :param cls: The class to explore.
         """
         # Ask a question about the class
-        question = f"What can you tell me about the class '{cls.name}'?"
+        question = get_ontology_question(cls.name, QUESTIONS_DICT)
         answer = self.ask_question(parent_id, question)
+
+        if answer == "N/A":
+            return None
+        
+        # HELP ME HERE: If the answer is a single item, semantically match it with an object in the known ontology and ask_question on it
+
+        # HELP ME HERE: If the answer is a list of items, match each question semantically with an object in the known ontology and ask_question for each
+
+        # HELP ME HERE: If the answer is not semantically related to anything in the ontology, do not add this as a node to the tree
+
+        direct_properties = get_class_properties(self.ontology,cls)
+
+
+        connected_classes = get_property_class_range(direct_properties)
+
+        # Display the results
+        print("Direct properties and connected classes:")
+        for prop, classes in connected_classes.items():
+            print(f"Property: {prop}, Connected Classes: {classes}")
+
+         # Ask for each directly connected class
+        for prop, classes in connected_classes.items():
+            for cls_name in classes:
+                sub_cls = self.ontology[cls_name]
+                self.ask_for_class(parent_id + 1, sub_cls)
 
         # Create a new node for the class
         class_node_id = self.conversation_tree.node_id
 
-        # Iterate over properties of the class
-        properties = get_class_properties(self.ontology,cls)
-        for prop in properties:
-            self.handle_property(class_node_id, prop)
 
     def start(self):
         """
         Start the questioning process from the base class.
         """
-        print(f"Starting from base class: {self.base_class.name}")
-        root_question = (
-            """Define the name of the name of the architecture for the class 'ANNConfiguration' based on the given paper.
-             Provide only the name of a specific architecture for the class
-            'ANNConfiguration'. Examples names for different papers could be 'GoogleLeNet','ResNet50', or 'VGG16'. Only provide the name.
+        root_question = """Define the name of the architecture based on the given paper.
+            Provide only the name.
+            Example names for different papers could be 'GoogleLeNet','ResNet50', 'VGG16'. Only provide the name.
+            If no names of that types are provided, respond with "ANNConfiguration".
             """
-        )
+        
         root_answer = self.ask_question(0, root_question)
-        self.ask_for_class(0, self.base_class)
+
+        direct_properties = get_class_properties(self.ontology,self.base_class)
+
+
+        connected_classes = get_property_class_range(direct_properties)
+
+        # Display the results
+        print("Direct properties and connected classes:")
+        for prop, classes in connected_classes.items():
+            print(f"Property: {prop}, Connected Classes: {classes}")
+
+         # Ask for each directly connected class
+        for prop, classes in connected_classes.items():
+            for cls_name in classes:
+                cls = self.ontology[cls_name]
+                self.ask_for_class(1, cls)
+    
+
+def get_property_class_range(properties):
+    connected_classes = {}
+    
+    for prop in properties:
+        connected_classes[prop.name] = [cls.name for cls in prop.range]
+    return connected_classes
+
+
 
 
 class ConversationTree:
     """
     A class for managing and navigating a hierarchical conversation tree.
-    This tree structure can store questions, answers, and their relationships, 
-    enabling conversational context tracking.
     """
 
     def __init__(self):
@@ -161,6 +173,23 @@ class ConversationTree:
         self.nodes[parent_id]["children"].append(child_node)
         self.nodes[self.node_id] = child_node
 
+    def to_serializable(self, obj):
+        from requests.models import Response
+
+        """
+        Convert non-serializable objects to a JSON-compatible structure.
+        """
+        if isinstance(obj, dict):
+            return {key: self.to_serializable(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [self.to_serializable(item) for item in obj]
+        elif hasattr(obj, '__dict__'):
+            return self.to_serializable(vars(obj))
+        elif isinstance(obj, Response):  # Handle the `Response` object
+            return {"response_text": str(obj)}
+        else:
+            return obj
+
     def save_to_json(self, file_name):
         """
         Save the conversation tree to a JSON file.
@@ -168,65 +197,100 @@ class ConversationTree:
         :param file_name: Path to the file where the tree will be saved.
         """
         with open(file_name, "w") as f:
-            json.dump(self.tree, f, indent=4)
+            json.dump(self.to_serializable(self.tree), f, indent=4)
 
-#Look into this
 
-def parse_to_list(answer):
+def load_ontology_questions(json_path: str) -> dict:
     """
-    Converts a verbose answer to a list format.
-
-    :param answer: The raw answer string from the LLM.
-    :return: A list of answers or a single atomic response.
+    Loads ontology questions from a JSON file.
+    :param json_path: Path to the JSON file containing ontology questions.
+    :type json_path: str
+    :return: Dictionary of ontology questions.
+    :rtype: dict
     """
-    # Split by newline or bullets to extract list items
-    return [line.strip() for line in answer.split('\n') if line.strip()]
+    with open(json_path, 'r') as file:
+        questions = json.load(file)
+    return questions
+
+def get_ontology_question(entity: str, questions: dict) -> str:
+    """
+    Retrieves a question for a given entity and type (Classes, ObjectProperties, or DataProperties).
+    :param entity: The entity name (e.g., 'Dataset', 'batch_size').
+    :type entity: str
+    :param entity_type: The type of entity (e.g., 'Classes', 'ObjectProperties', 'DataProperties').
+    :type entity_type: str
+    :param questions: Dictionary of ontology questions.
+    :type questions: dict
+    :return: The associated question or a default message if not found.
+    :rtype: str
+    """
+    entity_type = "ObjectPrompts"
+    return questions.get(entity_type, {}).get(entity, f"No question found for '{entity}' in '{entity_type}'.")
+
+def get_initial_prompt() -> str:
+    initial_prompt = """
+                    Work out your chain of thought.
+                    If you do not know the answer to a question, respond with "N/A." and nothing else.
+                    Question:
+                    """
+    return initial_prompt
+
+def get_second_prompt(question: str,response: str) -> str:
+    second_prompt = f"""
+                Given the question "{question}" and it's response "{response}", rephrase the response to follow these formatting rules:
+                Single-item answers: If the question requires only one answer, respond with just that single answer.
+                Single-value answers: If the question requires only one value, respond with just that single value.
+                Listed answers: If the question requires multiple answers without order of priority, provide them as a list, with each answer as a single, complete item.
+                Numbered list answers: If the question requires multiple answers in a specific sequence or hierarchy, provide them as a numbered list, with each number followed by a single, complete item.
+                Use atomic answers for clarity, meaning each response should contain only one idea or concept per point. Ensure the format aligns with the nature of the question being asked.
+                If multiple questions is asked, respond with a list in the order the questions were asked and nothing else. Do not label your answers.
+                If the response says "N/A" or suggests that it does not know, reply with "N/A" and nothing else.
+
+                Single-item answer example:
+                Question: What is the capital of France?
+                Answer: Paris
+
+                Single-vlaue answer example:
+                Question: How many states are in the United States?
+                Answer: 50
+
+                Listed answers example:
+                Question: What are the primary colors in the American Flag?
+                Answer: Red, White, Blue
+
+                Numbered list example:
+                Question: What are the steps in painting a wall?
+                Answer: collect tools, 1 coat wall, 2 coat wall, 3 coat wall, wait to dry
+                """
+    return second_prompt
+
 
 
 # Example usage
 if __name__ == "__main__":
 
-    #Loads PDF to 
-    documents = load_pdf("data/papers/AlexNet.pdf")
+    pdf_path = "data/papers/AlexNet.pdf"
+    # pdf_path = "data/papers/ResNet.pdf"
+    documents = load_pdf(pdf_path)
+    chunked_docs = chunk_document(documents)
+    embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
+    llm_model = LLMModel(model_name="llama3.1:8b").get_llm()
+    indexer = DocumentIndexer(embed_model,llm_model,chunked_docs)
+    rag_query_engine = indexer.get_rag_query_engine()
 
-    splitter = DocumentSplitter(chunk_size=1000, chunk_overlap=200)
-    split_docs = splitter.split(documents)
-
-    embed_model = EmbeddingModel().get_model()
-    llm_predictor = LLMModel().get_llm()
-
-    indexer = DocumentIndexer(embed_model, llm_predictor)
-    vector_index = indexer.create_index(split_docs)
-
-    llm = LLM(vector_index,llm_predictor)
+    # Load questions from the ontology JSON file
+    json_path = "rag/ontology_prompts.json"
+    questions_dict = load_ontology_questions(json_path)
+    QUESTIONS_DICT = questions_dict
 
     # Load ontology
     ontology = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-
-    # Get base class
-    base_class = ontology.ANNConfiguration
-    print(f"Base class: {base_class.name}")
-
-    # List all classes
-    print("Classes in the ontology:")
-    for cls in ontology.classes():
-        print(f"- {cls.name}")
-
-    # List all object properties
-    print("\nObject Properties in the ontology:")
-    for prop in ontology.object_properties():
-        print(f"- {prop.name}")
-
-    # List all data properties
-    print("\nData Properties in the ontology:")
-    for prop in ontology.data_properties():
-        print(f"- {prop.name}")
 
     # Initialize the conversation tree
     tree = ConversationTree()
 
     # Initialize the OntologyTreeQuestioner
-    questioner = OntologyTreeQuestioner(ontology=ontology, base_class=base_class, conversation_tree=tree, llm=llm)
+    questioner = OntologyTreeQuestioner(ontology=ontology, conversation_tree=tree, rag_query_engine=rag_query_engine)
 
     # Start the questioning process
     questioner.start()
@@ -234,322 +298,18 @@ if __name__ == "__main__":
     # Save the conversation tree to JSON
     tree.save_to_json("local_dir/trash_conversation_tree.json")
 
-
-# class ConversationTree:
-#     """
-#     A class for managing and navigating a hierarchical conversation tree.
-#     This tree structure can store questions, answers, and their relationships, 
-#     enabling conversational context tracking.
-
-#     Attributes:
-#         tree (dict): The root node of the tree.
-#         node_id (int): A counter for generating unique IDs for nodes.
-#         current_node (dict): The current node in the tree.
-#         nodes (dict): A mapping of node IDs to nodes.
-#     """
-
-#     def __init__(self):
-#         """
-#         Initialize the conversation tree with a root node.
-#         """
-#         self.tree = {"id": 0, "question": None, "answer": None, "children": []}
-#         self.node_id = 0
-#         self.current_node = self.tree
-#         self.nodes = {0: self.tree}  # Map of node_id to tree nodes
-
-#     def add_child(self, parent_id, question, answer=None):
-#         """
-#         Add a child node to a specific parent node in the tree.
-        
-#         :param parent_id: ID of the parent node to attach the child to.
-#         :type parent_id: int
-#         :param question: Question for the child node.
-#         :type question: str
-#         :param answer: Optional answer for the child node.
-#         :type answer: str
-#         """
-#         self.node_id += 1
-#         child_node = {"id": self.node_id, "question": question, "answer": answer, "children": []}
-#         self.nodes[parent_id]["children"].append(child_node)
-#         self.nodes[self.node_id] = child_node
-
-#     def update_node_answer(self, node_id, answer):
-#         """
-#         Update the answer for a specific node in the tree.
-
-#         :param node_id: ID of the node to update.
-#         :type node_id: int
-#         :param answer: New answer for the node.
-#         :type answer: str
-#         """
-#         if node_id in self.nodes:
-#             self.nodes[node_id]["answer"] = answer
-
-#     def get_ancestor_context(self, node_id):
-#         """
-#         Retrieve the context of ancestor questions and answers for a specific node.
-        
-#         :param node_id: ID of the node for which to retrieve the context.
-#         :type node_id: int
-#         :return: A list of dictionaries containing ancestor questions and answers.
-#         :rtype: list
-#         """
-#         context = []
-#         current_node = self.nodes[node_id]
-#         while current_node.get("id") != 0:  # Stop at the root node
-#             context.insert(0, {
-#                 "question": current_node["question"],
-#                 "answer": current_node["answer"]
-#             })
-#             parent_node = next((node for node in self.nodes.values()
-#                                 if current_node in node["children"]), None)
-#             if parent_node:
-#                 current_node = parent_node
-#             else:
-#                 break
-#         return context
-
-#     def save_to_json(self, file_name):
-#         """
-#         Save the conversation tree to a JSON file.
-
-#         :param file_name: Path to the file where the tree will be saved.
-#         :type file_name: str
-#         """
-#         with open(file_name, "w") as f:
-#             json.dump(self.tree, f, indent=4)
-
-#     def load_from_json(self, file_name):
-#         """
-#         Load the conversation tree from a JSON file.
-
-#         :param file_name: Path to the JSON file to load.
-#         :type file_name: str
-#         """
-#         with open(file_name, "r") as f:
-#             self.tree = json.load(f)
-#             self._rebuild_node_map(self.tree)
-
-#     def _rebuild_node_map(self, node):
-#         """
-#         Rebuild the internal node map from a loaded tree structure.
-
-#         :param node: The current node in the tree structure.
-#         :type node: dict
-#         """
-#         self.nodes = {}
-#         self.node_id = 0
-#         self._rebuild_helper(node)
-
-#     def _rebuild_helper(self, node):
-#         """
-#         Helper function to recursively rebuild the node map.
-
-#         :param node: The current node to process.
-#         :type node: dict
-#         """
-#         self.nodes[node["id"]] = node
-#         self.node_id = max(self.node_id, node["id"])
-#         for child in node["children"]:
-#             self._rebuild_helper(child)
-
-# class OntologyTreeQuestioner:
-#     """
-#     A class to generate questions based on ontology classes and their properties.
-#     Recursively asks questions for object properties or terminates with atomic property values.
-#     """
-
-#     def __init__(self, ontology, base_class):
-#         """
-#         Initialize with ontology and base class.
-        
-#         :param ontology: Loaded ontology object.
-#         :param base_class: Base class to start questioning.
-#         """
-#         self.ontology = ontology
-#         self.base_class = base_class
-#         self.questions = []
-
-#     def ask_question(self, question: str):
-#         """
-#         Simulate asking a question and returning an answer (for demonstration).
-#         Replace this with an LLM or user interaction as needed.
-        
-#         :param question: The question to ask.
-#         :return: Mock answer as a string.
-#         """
-#         print(f"Question: {question}")
-#         return "Mock answer for demonstration"
-
-#     def get_class_properties(self, cls):
-#         """
-#         Get all properties associated with a class.
-        
-#         :param cls: The class to inspect.
-#         :return: List of properties.
-#         """
-#         return list(cls.get_properties())
-
-#     def handle_property(self, prop):
-#         """
-#         Handle a property by determining its type and recursively generating questions.
-        
-#         :param prop: The property to handle.
-#         """
-#         print(f"\nHandling property: {prop.name}")
-
-#         range_type = get_property_range_type(prop)
-
-#         if range_type == 'class':
-#             # Ask a question about the property and explore its range
-#             question = f"What is the relationship of '{prop.name}'?"
-#             answer = self.ask_question(question)
-
-#             # Recursively handle classes in the range
-#             for range_cls in prop.range:
-#                 self.ask_for_class(range_cls)
-        
-#         elif range_type == 'atomic':
-#             # Ask a question about the atomic property value
-#             question = f"What is the value of '{prop.name}'?"
-#             answer = self.ask_question(question)
-#         else:
-#             print(f"Property '{prop.name}' is neither an ObjectProperty nor a DataProperty.")
-
-#     def ask_for_class(self, cls):
-#         """
-#         Ask a question about the class and handle its properties.
-        
-#         :param cls: The class to explore.
-#         """
-#         # Ask a question about the class
-#         question = f"What can you tell me about the class '{cls.name}'?"
-#         answer = self.ask_question(question)
-
-#         # Iterate over properties of the class
-#         properties = self.get_class_properties(cls)
-#         for prop in properties:
-#             self.handle_property(prop)
-
-#     def start(self):
-#         """
-#         Start the questioning process from the base class.
-#         """
-#         print(f"Starting from base class: {self.base_class.name}")
-#         self.ask_for_class(self.base_class)
-
-
-# # Example usage
-# if __name__ == "__main__":
-#     # Load ontology
-#     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-
-#     # Get base class
-#     base_class = onto.ANNConfiguration
-#     print(f"Base class: {base_class.name}")
-
-#     # Initialize the OntologyTreeQuestioner
-#     questioner = OntologyTreeQuestioner(ontology=onto, base_class=base_class)
-
-#     # Start the questioning process
-#     questioner.start()
-
-
-# # Example usage
-# if __name__ == "__main__":
-#     """
-#     Demonstrates how to use the ConversationTree class for conversational context tracking.
-
-#     - Initialize a conversation tree.
-#     - Interact with an LLM to generate answers for questions.
-#     - Save and load the conversation tree as JSON.
-#     """
-
-#     # Initialize conversation tree
-#     tree = ConversationTree()
-
-
     
+    # # List all classes
+    # print("Classes in the ontology:")
+    # for cls in ontology.classes():
+    #     print(f"- {cls.name}")
 
-#     # Load ontology
-#     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
+    # # List all object properties
+    # print("\nObject Properties in the ontology:")
+    # for prop in ontology.object_properties():
+    #     print(f"- {prop.name}")
 
-#     #Get base class
-#     base_class = onto.ANNConfiguration
-#     print(f"Base class: {base_class.name}")
-
-#     # List all classes in the ontology
-#     for cls in onto.classes():
-#         break
-#         print(f"Class: {cls.name}")
-
-#     #Get all properties to a class
-#     class_properties = None
-#     class_properties = get_class_properties(onto,base_class)
-#     print(class_properties)
-
-#     possible_classes = None
-
-#     # for property in class_properties:
-#     #     possible_classes 
-
-#     # Define a function to get all properties of a class
-
-# # Get all properties of the base class
-# class_properties = get_class_properties(onto,base_class)
-
-# # Iterate over each property and print details
-# for prop in class_properties:
-#     print(f"\nProperty: {prop.name}")
-
-#     range_type = get_property_range_type(prop)
-    
-#     # Check if it is an ObjectProperty or DataProperty
-#     if range_type == 'class':
-#         print("  Type: ObjectProperty")
-        
-#         # Print possible classes (ranges) associated with the property
-#         ranges = prop.range
-#         if ranges:
-#             print("  Possible Classes (Range):")
-#             for r in ranges:
-#                 print(f"    - {r.name}")
-#         else:
-#             print("  Possible Classes (Range): None")
-
-#     elif range_type == 'atomic':
-#         print("  Type: DataProperty")
-        
-#         # Print the data range if specified
-#         ranges = prop.range
-#         if ranges:
-#             print("  Data Range:")
-#             for r in ranges:
-#                 print(f"    - {r}")
-#         else:
-#             print("  Data Range: None")
-#     else:
-#         print("  Type: Unknown property type")
-
-
-
-
-#     # # Root question
-#     # root_question = "What networks are in a GAN?"
-#     # root_answer = query_llm(root_question)
-#     # tree.add_child(0, root_question, root_answer)
-
-#     # # Add child questions
-#     # parent_id = 1  # ID of the root node
-#     # child_questions = [
-#     #     "How many layers does the generator network have?",
-#     #     "How many layers does the adversarial network have?"
-#     # ]
-#     # for question in child_questions:
-#     #     context = tree.get_ancestor_context(parent_id)
-#     #     answer = query_llm(question, context)
-#     #     tree.add_child(parent_id, question, answer)
-
-#     # # Save conversation to JSON
-#     # tree.save_to_json("local_dir/test_conversation_tree.json")
-
+    # # List all data properties
+    # print("\nData Properties in the ontology:")
+    # for prop in ontology.data_properties():
+    #     print(f"- {prop.name}")

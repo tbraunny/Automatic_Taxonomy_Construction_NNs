@@ -12,7 +12,7 @@ documents = pdf_loader.load()
 A utility class to load PDF documents using LangChain's PyPDFLoader.
 """
 
-def load_pdf(file_path=None):
+def load_pdf(file_path: str) -> list:
     """
     Loads the PDF into document objects.
     :return: List of documents loaded from the PDF.
@@ -27,3 +27,4 @@ def load_pdf(file_path=None):
         return documents
     else:
         print('\nPlease provide file path.')
+        return None
