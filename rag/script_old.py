@@ -18,7 +18,7 @@ from llama_index.core import VectorStoreIndex, Document
 from llama_index.llms.langchain import LangChainLLM
 from llama_index.embeddings.langchain import LangchainEmbedding
 
-from utils.placeholder_prompts import prompt_engr
+from utils.query_rag_llm import prompt_engr
 
 class PDFLoader:
     def __init__(self, file_path):

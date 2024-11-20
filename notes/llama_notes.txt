@@ -12,3 +12,9 @@ llama stack run 3.1-8B-Instruct-GPU --port 5000
 
 Setting up Llama-Index:
 https://docs.llamaindex.ai/en/stable/getting_started/installation/
+
+ollama in **linux** by default installs as a systemd service. This means ollama serve is always running in the background and is no longer required, triggering the "Error: listen tcp 127.0.0.1:11434: bind: address already in use"
+    To fix this, 
+    stop the service with "sudo systemctl stop ollama.service" 
+    and disable the service with "sudo systemctl disable ollama.service"
+    Now, ollama serve will work
