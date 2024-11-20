@@ -1,0 +1,26 @@
+{
+    "id": 0,
+    "question": null,
+    "answer": null,
+    "children": [
+        {
+            "id": 1,
+            "question": "What networks are in a GAN?",
+            "answer": "Mock answer for demonstration.",
+            "children": [
+                {
+                    "id": 2,
+                    "question": "How many layers does the generator network have?",
+                    "answer": "Mock answer for demonstration.",
+                    "children": []
+                },
+                {
+                    "id": 3,
+                    "question": "How many layers does the adversarial network have?",
+                    "answer": "Mock answer for demonstration.",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
