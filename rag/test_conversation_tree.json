@@ -1,0 +1,86 @@
+{
+    "id": 0,
+    "question": "Define the name of this network. Provide only the name. Example names for different papers could be 'GoogleLeNet','ResNet50', 'VGG16'. Only provide the name. If no names of that types are provided, respond with 'Neural Network'.",
+    "answer": {
+        "instance_names": [
+            "Convolutional neural networks"
+        ]
+    },
+    "children": [
+        {
+            "id": 1,
+            "question": "What are the names of the input layers?",
+            "answer": {
+                "InputLayer": "Fifth Convolutional Layer"
+            },
+            "children": [],
+            "parent_id": 0
+        },
+        {
+            "id": 2,
+            "question": "What layers are in the network 'Convolutional neural networks'? If there are multiple of the same type of layer, number them",
+            "answer": {
+                "Layer": "pooling layer (after convolutional layer 3, 4, or 5)"
+            },
+            "children": [],
+            "parent_id": 0
+        },
+        {
+            "id": 3,
+            "question": "What are the names of the objective functions?",
+            "answer": {
+                "ObjectiveFunction": "Mean Squared Error"
+            },
+            "children": [
+                {
+                    "id": 4,
+                    "question": "What are the names of the cost functions?",
+                    "answer": {
+                        "CostFunction": "softmax"
+                    },
+                    "children": [
+                        {
+                            "id": 5,
+                            "question": "What are the names of the loss functions?",
+                            "answer": {
+                                "LossFunction": "Softmax"
+                            },
+                            "children": [],
+                            "parent_id": 4
+                        },
+                        {
+                            "id": 6,
+                            "question": "What are the names of the regularizer functions?",
+                            "answer": {
+                                "RegularizerFunction": "Dropout"
+                            },
+                            "children": [],
+                            "parent_id": 4
+                        }
+                    ],
+                    "parent_id": 3
+                }
+            ],
+            "parent_id": 0
+        },
+        {
+            "id": 7,
+            "question": "What are the names of the output layers?",
+            "answer": {
+                "OutputLayer": "Output layer"
+            },
+            "children": [],
+            "parent_id": 0
+        },
+        {
+            "id": 8,
+            "question": "What are the names of the task characterizations?",
+            "answer": {
+                "TaskCharacterization": "locality of pixel dependencies"
+            },
+            "children": [],
+            "parent_id": 0
+        }
+    ],
+    "parent_id": null
+}
