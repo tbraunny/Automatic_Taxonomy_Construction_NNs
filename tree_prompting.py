@@ -5,6 +5,8 @@ from pydantic import BaseModel, ValidationError
 
 
 from utils.constants import Constants as C
+
+from utils.query_rag_llm import LLM
 from utils.pdf_loader import load_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
