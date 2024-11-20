@@ -6,12 +6,12 @@ from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
 
-from utils.query_rag_llm import LLM
+from utils.query_rag_llm import DocumentIndexer
 from utils.pdf_loader import load_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
 from utils.document_splitter import chunk_document
-from utils.query_rag import DocumentIndexer
+from utils.query_rag_llm import DocumentIndexer
 from utils.owl import *
 
 
@@ -429,8 +429,12 @@ def main():
     embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
     llm_model = LLMModel(model_name="llama3.1:8b").get_llm()
     indexer = DocumentIndexer(embed_model, llm_model, chunked_docs)
-    rag_query_engine = indexer.get_rag_query_engine()
+    rag_query_engine = indexer.get_rag_query_engine(remote=True, device_ip="100.80.192.78",port=11434)
 
+    print("querying...\n")
+    response = rag_query_engine.query("Hello llama!")
+    print(response)
+    return
     # Load ontology
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
 
