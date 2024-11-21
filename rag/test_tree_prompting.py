@@ -2,17 +2,20 @@ import json
 from owlready2 import *
 from typing import List
 from pydantic import BaseModel, ValidationError
-
-
 from utils.constants import Constants as C
-
-from utils.query_rag import LocalDocumentIndexer,RemoteDocumentIndexer
-from utils.pdf_loader import load_pdf
-from utils.llm_model import LLMModel
-from utils.embedding_model import EmbeddingModel
-from utils.document_splitter import chunk_document
+from utils.query_rag import RemoteDocumentIndexer
 from utils.owl import *
 
+import spacy
+
+
+
+'''
+scispacy nlp by size
+    en_core_sci_sm
+    en_core_sci_md
+    en_core_sci_lg 
+'''
 
 def load_ontology_questions(json_path: str) -> dict:
     """
@@ -39,7 +42,7 @@ class OntologyTreeQuestioner:
     integrates with a conversation tree, and recursively asks questions for object properties.
     """
 
-    def __init__(self, ontology, conversation_tree, rag_query_engine):
+    def __init__(self, ontology, conversation_tree, query_engine, nlp_model):
         """
         Initializes the OntologyTreeQuestioner.
 
@@ -51,7 +54,8 @@ class OntologyTreeQuestioner:
         # Set the base class from which to start questioning
         self.base_class = ontology.ANNConfiguration
         self.conversation_tree = conversation_tree
-        self.llm = rag_query_engine
+        self.llm = query_engine
+        self.nlp_model=nlp_model
 
     def ask_question(self, parent_id, question, retries=3):
         """
@@ -420,25 +424,11 @@ class LLMResponse(BaseModel):
     instance_names: List[str]  # A list of ontology class names expected from LLM
 
 def main():
-    pdf_path = "./data/papers/AlexNet.pdf"
-    documents = load_pdf(pdf_path)
-    documents = chunk_document(documents)
-    embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-    llm_model = LLMModel(model_name="llama3.2:1b").get_llm()
-    rag_query_engine = LocalDocumentIndexer(embed_model=embed_model, llm_model=llm_model, documents=documents).get_rag_query_engine()
+    query_engine = RemoteDocumentIndexer('100.105.5.55',5000).get_rag_query_engine()
 
-    response = rag_query_engine.query("What is this paper about!")
-    print(response)
+    # Load the spaCy model
+    nlp_model = spacy.load("en_core_sci_sm")
 
-    # device_ip="100.105.5.55"
-    # port=5000
-
-    # # indexer = DocumentIndexer(chunked_docs, remote=True, device_ip=device_ip, port=port, model_name="llama3.1:8b")
-    # query_engine = RemoteDocumentIndexer(device_ip,port).get_rag_query_engine()
-    # response = query_engine.query("What is this paper about")
-
-    # print(response)
-    return
     # Load ontology
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
 
@@ -449,7 +439,8 @@ def main():
     questioner = OntologyTreeQuestioner(
         ontology=onto,
         conversation_tree=tree,
-        rag_query_engine=rag_query_engine
+        query_engine=query_engine,
+        nlp_model=nlp_model
     )
 
     # Start the questioning process
@@ -457,11 +448,6 @@ def main():
 
     # Save the conversation tree to JSON
     tree.save_to_json("./rag/test_conversation_tree.json")
-
-
-
-
-
 
 
 

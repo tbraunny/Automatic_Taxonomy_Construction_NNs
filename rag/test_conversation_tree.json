@@ -3,7 +3,7 @@
     "question": "Define the name of this network. Provide only the name. Example names for different papers could be 'GoogleLeNet','ResNet50', 'VGG16'. Only provide the name. If no names of that types are provided, respond with 'Neural Network'.",
     "answer": {
         "instance_names": [
-            "Convolutional neural networks"
+            "Convolutional Neural Networks"
         ]
     },
     "children": [
@@ -18,9 +18,9 @@
         },
         {
             "id": 2,
-            "question": "What layers are in the network 'Convolutional neural networks'? If there are multiple of the same type of layer, number them",
+            "question": "What layers are in the network 'Convolutional Neural Networks'? If there are multiple of the same type of layer, number them",
             "answer": {
-                "Layer": "pooling layer (after convolutional layer 3, 4, or 5)"
+                "Layer": "Fifth convolutional layer"
             },
             "children": [],
             "parent_id": 0
@@ -67,7 +67,7 @@
             "id": 7,
             "question": "What are the names of the output layers?",
             "answer": {
-                "OutputLayer": "Output layer"
+                "OutputLayer": "Output Layer"
             },
             "children": [],
             "parent_id": 0

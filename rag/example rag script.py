@@ -24,5 +24,5 @@ def remote_query():
     response = query_engine.query("What is this document about? What is alexnet")
     print(response)
 
-# local_query()
+local_query()
 remote_query()
