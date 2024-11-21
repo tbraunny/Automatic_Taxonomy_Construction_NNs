@@ -1,0 +1,13 @@
+1. Download Tailscale vpn
+ - join link https://login.tailscale.com/admin/invite/79sRmCzExZb
+ - get the wpeb-436-21 ip connected to richie's devices
+
+2. import the query_rag utility
+ - from query_rag import RemoteDocumentIndexer
+
+3. example code looks like
+    device_ip="100.105.5.55"
+    port=5000
+
+    query_engine = RemoteDocumentIndexer(device_ip,port).get_rag_query_engine()
+    response = query_engine.query("What is this paper about")
