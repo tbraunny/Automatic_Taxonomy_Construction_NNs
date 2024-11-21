@@ -9,13 +9,11 @@ embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
 from langchain_huggingface import HuggingFaceEmbeddings
 from llama_index.embeddings.langchain import LangchainEmbedding
 
-MODEL_NAME = 'all-MiniLM-L6-v2'
-
 class EmbeddingModel:
     """
     A utility class for initializing and retrieving an embedding model.
     """
-    def __init__(self, model_name=MODEL_NAME):
+    def __init__(self, model_name='all-MiniLM-L6-v2'):
         """
         Constructor for embedding model.
         :param model_name: Name of the HuggingFace embedding model.

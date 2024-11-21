@@ -6,12 +6,11 @@ from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
 
-from utils.query_rag_llm import DocumentIndexer
+from utils.query_rag import LocalDocumentIndexer,RemoteDocumentIndexer
 from utils.pdf_loader import load_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
 from utils.document_splitter import chunk_document
-from utils.query_rag_llm import DocumentIndexer
 from utils.owl import *
 
 
@@ -420,20 +419,25 @@ def get_second_prompt(question: str,response: str) -> str:
 class LLMResponse(BaseModel):
     instance_names: List[str]  # A list of ontology class names expected from LLM
 
-
-
 def main():
     pdf_path = "./data/papers/AlexNet.pdf"
     documents = load_pdf(pdf_path)
-    chunked_docs = chunk_document(documents)
+    documents = chunk_document(documents)
     embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-    llm_model = LLMModel(model_name="llama3.1:8b").get_llm()
-    indexer = DocumentIndexer(embed_model, llm_model, chunked_docs)
-    rag_query_engine = indexer.get_rag_query_engine(remote=True, device_ip="100.80.192.78",port=11434)
+    llm_model = LLMModel(model_name="llama3.2:1b").get_llm()
+    rag_query_engine = LocalDocumentIndexer(embed_model=embed_model, llm_model=llm_model, documents=documents).get_rag_query_engine()
 
-    print("querying...\n")
-    response = rag_query_engine.query("Hello llama!")
+    response = rag_query_engine.query("What is this paper about!")
     print(response)
+
+    # device_ip="100.105.5.55"
+    # port=5000
+
+    # # indexer = DocumentIndexer(chunked_docs, remote=True, device_ip=device_ip, port=port, model_name="llama3.1:8b")
+    # query_engine = RemoteDocumentIndexer(device_ip,port).get_rag_query_engine()
+    # response = query_engine.query("What is this paper about")
+
+    # print(response)
     return
     # Load ontology
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()

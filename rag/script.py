@@ -2,7 +2,7 @@ from utils.pdf_loader import load_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
 from utils.document_splitter import DocumentSplitter
-from utils.query_rag_llm import DocumentIndexer
+from utils.query_rag import DocumentIndexer
 
 LLM_NAME = "llama3.2:1b"
 EMBED_NAME = "all-MiniLM-L6-v2"

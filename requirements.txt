@@ -1,4 +1,4 @@
--r "requirements/requirements-document_indexer.txt"
+-r "requirements/requirements-query_rag.txt"
 -r "requirements/requirements-document_splitter.txt"
 -r "requirements/requirements-embedding_model.txt"
 -r "requirements/requirements-llm_model.txt"
