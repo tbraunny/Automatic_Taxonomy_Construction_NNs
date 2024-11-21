@@ -1,1 +1,3 @@
+Note: Anytime you use util scripts, you need to update your python path to allow it
+
 export PYTHONPATH=$(pwd)

@@ -1,3 +1,8 @@
+
+0. Anytime you use util scripts, you need to update your python path to allow it, 
+ - Inside the main github dir, enter the command "export PYTHONPATH=$(pwd)" as noted in  "notes/change python path.txt"
+
+
 1. Download Tailscale vpn
  - join link https://login.tailscale.com/admin/invite/79sRmCzExZb
  - get the wpeb-436-21 ip connected to richie's devices
