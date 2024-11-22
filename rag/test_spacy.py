@@ -1,7 +1,4 @@
-import json
 from owlready2 import *
-from typing import List
-from pydantic import BaseModel, ValidationError
 from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
 from utils.owl import *
@@ -88,7 +85,7 @@ def main():
     # Simulate a response from the RAG query engine
     query_engine = RemoteDocumentIndexer(device_ip='100.105.5.55', port=5000).get_rag_query_engine()
     response = query_engine.query("Describe the neural network architecture used in AlexNet.")
-
+    print
     # Preprocess response text
     text = response.get('text', '')  # Adjust key as per the actual response structure
 
