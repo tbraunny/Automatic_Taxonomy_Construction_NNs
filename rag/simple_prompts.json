@@ -1,0 +1,19 @@
+{
+    "ObjectPrompts":{
+        "ANNConfiguration":"What is the name of this paper's architecture? Example names for different papers could be 'GoogleLeNet','ResNet50', 'VGG16'.",
+        "Network":"What networks are in {ANNConfiguration}? Example networks for different papers could be 'Convolutional','Generative', 'Discrimitive' ",
+        "InputLayer":"What is the input layer in {Network}",
+        "Layer":"What network layers are in {Network}? Example layers for other Networks could be 'Convolution Layer 1', 'Fully Connected Layer 3', 'Max Pool Layer 1', 'Batch Norm Layer 3'",
+        "ObjectiveFunction": "What is the objective function in {Network}? Objective functions determine the optimization goals, such as 'Cross-Entropy Loss', 'Mean Squared Error', or 'Hinge Loss'.",
+        "CostFunction": "What cost function is part of {ObjectiveFunction}? A cost function computes the error during optimization. Examples include 'Logarithmic Loss', 'Mean Absolute Error', or 'KL Divergence'.",
+        "LossFunction": "What loss function is used in {CostFunction}? Loss functions provide finer granularity for error metrics, such as 'Binary Cross-Entropy', 'Huber Loss', or 'Categorical Cross-Entropy'.",
+        "RegularizerFunction": "What regularizer function is applied in {CostFunction}? Regularizers prevent overfitting by penalizing large weights. Examples include 'L1 Regularization', 'L2 Regularization', or 'Dropout'.",
+        "OutputLayer": "What is the output layer in {Network}? Describe the final layer that produces results, such as 'Softmax Layer (10 classes)', 'Sigmoid Layer for Binary Classification', or 'Linear Output Layer for Regression'.",
+        "TaskCharacterization": "What task is characterized by {Network}? Tasks describe the purpose of the network, such as 'Image Classification', 'Object Detection', 'Text Generation', or 'Time Series Prediction'.",
+        "TrainingStrategy": "What is the training strategy in {ANNConfiguration}? Training strategies define the process of optimization, such as 'Supervised Learning', 'Reinforcement Learning', or 'Transfer Learning'.",
+        "TrainingSession": "What training sessions are included in {TrainingStrategy}? A training session represents a single run or phase of training, such as 'Initial Training Session', 'Fine-Tuning Session', or 'Validation Pass'.",
+        "TrainingStep": "What steps are included in {TrainingSession}? Training steps represent granular updates during optimization, such as 'Gradient Descent Step', 'Backpropagation Update', or 'Learning Rate Adjustment'.",
+        "TrainedModel": "What is the trained model resulting from {TrainingStrategy}? A trained model represents the optimized state of the network, such as 'Pretrained ResNet50', 'Custom GAN Model', or 'Fine-Tuned BERT'.",
+        "TrainedWeights": "What weights were learned in {TrainedModel}? Trained weights represent the optimized parameters of the model, such as 'Weight Matrix for Layer 1', 'Bias Vector for Layer 2', or 'Embedding Weights for Input Layer'."
+    }
+}

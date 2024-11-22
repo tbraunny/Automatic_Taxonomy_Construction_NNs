@@ -6,7 +6,6 @@ from utils.embedding_model import EmbeddingModel
 from utils.document_splitter import chunk_document
 from utils.query_rag import LocalDocumentIndexer
 
-clear
 
 app = Flask(__name__)
 

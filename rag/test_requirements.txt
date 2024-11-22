@@ -3,8 +3,9 @@ owlready2
 
 spacy 
 scispacy
+sentencetransformers
 
-https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.1/en_core_sci_sm-0.5.1.tar.gz
+https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.5.4/en_core_sci_lg-0.5.4.tar.gz
 
 
 #Llama index

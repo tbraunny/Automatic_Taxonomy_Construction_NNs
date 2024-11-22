@@ -7,8 +7,7 @@ from utils.query_rag import RemoteDocumentIndexer
 from utils.owl import *
 from utils.embedding_model import EmbeddingModel
 
-from sentence_transformers import util
-
+import numpy as np
 import spacy
 
 
@@ -27,8 +26,21 @@ def build_synonym_dictionary(ontology):
     return synonym_dict
 
 
-def map_entities_with_similarity(embed_model, entities, ontology):
+def compute_cosine_similarity(vec1, vec2):
     """
+    Compute cosine similarity between two vectors.
+
+    :param vec1: First vector.
+    :param vec2: Second vector.
+    :return: Cosine similarity score.
+    """
+    dot_product = np.dot(vec1, vec2)
+    norm_vec1 = np.linalg.norm(vec1)
+    norm_vec2 = np.linalg.norm(vec2)
+    return dot_product / (norm_vec1 * norm_vec2)
+
+def map_entities_with_similarity(embed_model, entities, ontology):
+    """ 
     Maps extracted entities to ontology classes using semantic similarity.
 
     :param embed_model: Embedding model for computing similarity.
@@ -37,14 +49,17 @@ def map_entities_with_similarity(embed_model, entities, ontology):
     :return: List of mappings from entities to ontology classes.
     """
     ontology_terms = [cls.name for cls in ontology.classes()]
-    ontology_embeddings = embed_model.encode(ontology_terms)
+    # Use embed_documents to get embeddings for multiple ontology terms
+    ontology_embeddings = embed_model.embed_documents(ontology_terms)
 
     mapped_entities = []
     for entity in entities:
         entity_text = entity['text']
-        entity_embedding = embed_model.encode(entity_text)
-        # Compute cosine similarity
-        similarities = util.cos_sim(entity_embedding, ontology_embeddings)[0]
+        # Use embed_query to get the embedding for a single entity
+        entity_embedding = embed_model.embed_query(entity_text)
+        # Compute cosine similarities manually
+        similarities = np.array([compute_cosine_similarity(entity_embedding, ont_embed)
+                                  for ont_embed in ontology_embeddings])
         # Find the best match
         best_match_idx = similarities.argmax()
         best_match_cls = ontology.classes()[best_match_idx]
@@ -75,7 +90,7 @@ def extract_entities(text, nlp_model):
 
 def main():
     # Load the spaCy model
-    nlp_model = spacy.load("en_core_sci_sm")
+    nlp_model = spacy.load("en_core_sci_lg")
     embed_model = EmbeddingModel().get_model()
 
     # Load ontology
