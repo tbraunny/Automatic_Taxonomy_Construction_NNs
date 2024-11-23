@@ -165,6 +165,22 @@ def get_instantiated_property_values(instance: Thing) -> dict:
 
 """Richie written"""
 
+def get_base_class(onto:Ontology):
+    return onto.ANNConfiguration
+
+def get_object_properties_for_class(cls: ThingClass, ontology: Ontology):
+    """
+    Retrieves all object properties where the given class is in the domain.
+
+    Args:
+        cls (ThingClass): The class for which to find object properties.
+        ontology (Ontology): The ontology containing the properties.
+
+    Returns:
+        Set[ObjectPropertyClass]: A set of object properties with the class in their domain.
+    """
+    return {prop for prop in ontology.object_properties() if cls in prop.domain}
+
 
 def print_instantiated_classes_and_properties(ontology: Ontology):
     """

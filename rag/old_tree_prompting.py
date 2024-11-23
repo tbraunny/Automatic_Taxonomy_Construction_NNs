@@ -1,13 +1,10 @@
 import json
 from owlready2 import *
-from typing import List
+from typing import List, Union
 from pydantic import BaseModel, ValidationError
 from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
 from utils.owl import *
-
-
-
 
 '''
 scispacy nlp by size
@@ -16,25 +13,6 @@ scispacy nlp by size
     en_core_sci_lg 
 '''
 
-def load_ontology_questions(json_path: str) -> dict:
-    """
-    Loads ontology questions from a JSON file.
-
-    :param json_path: Path to the JSON file containing ontology questions.
-    :return: Dictionary of ontology questions.
-    """
-    with open(json_path, 'r') as file:
-        questions = json.load(file)
-    return questions
-
-# Load questions from the ontology JSON file
-json_path = "rag/simple_prompts.json"
-questions_dict = load_ontology_questions(json_path)
-QUESTIONS_DICT = questions_dict
-
-if not QUESTIONS_DICT:
-    raise ValueError(f"Failed to load ontology questions from {json_path}.")
-    
 class OntologyTreeQuestioner:
     """
     Generates questions based on ontology classes and their properties,
@@ -51,7 +29,7 @@ class OntologyTreeQuestioner:
         """
         self.ontology = ontology
         # Set the base class from which to start questioning
-        self.base_class = ontology.ANNConfiguration
+        self.base_class = get_base_class(ontology)
         self.conversation_tree = conversation_tree
         self.llm = query_engine
 
@@ -70,7 +48,7 @@ class OntologyTreeQuestioner:
                 context_answers = self.get_context_answers(parent_id)
                 if not context_answers:
                     # No context; use initial prompt
-                    prompt = f"{get_initial_prompt()}\nQuestion:\n{question}"
+                    prompt = f"{get_json_prompt()}\nQuestion:\n{question}"
                 else:
                     # Display the ancestry history for debugging/logging
                     print("\nAncestry History:")
@@ -83,7 +61,7 @@ class OntologyTreeQuestioner:
                     context_str = "\n".join(
                         [f"Step {i + 1}: Question: {q}\nAnswer: {', '.join(a)}" for i, (q, a) in enumerate(context_answers)]
                     )
-                    prompt = f"{get_initial_prompt()}\nContext:\n{context_str}\nQuestion:\n{question}"
+                    prompt = f"{get_json_prompt()}\nContext:\n{context_str}\nQuestion:\n{question}"
 
                 # print(f"Prompt:\n{prompt}\n{'*' * 50}")
 
@@ -103,25 +81,7 @@ class OntologyTreeQuestioner:
 
         print("Max retries reached. Returning None.")
         return None
-
-    # def get_context_answers(self, node_id):
-    #     """
-    #     Collects ancestor answers up to the given node to provide context.
-
-    #     :param node_id: The ID of the current node.
-    #     :return: A list of tuples containing questions and their corresponding answers.
-    #     """
-    #     answers = []
-    #     current_id = node_id
-    #     while current_id is not None:
-    #         node = self.conversation_tree.nodes[current_id]
-    #         if node['answer']:
-    #             # Extract instance names from the answer
-    #             instance_names = node['answer'].get('instance_names', [])
-    #             if instance_names:
-    #                 answers.append((node['question'], instance_names))
-    #         current_id = node.get('parent_id')
-    #     return list(reversed(answers))
+    
     def get_context_answers(self, node_id):
         """
         Collects ancestor answers up to the given node to provide context.
@@ -219,17 +179,10 @@ class OntologyTreeQuestioner:
         """
         Starts the questioning process from the base class.
         """
-        # Define the root question
-        root_question = """
-        Define the name of the architecture based on the given paper.
-        Provide only the name.
-        Example names for different papers could be 'GoogleLeNet', 'ResNet50', 'VGG16'. Only provide the name.
-        If no names of that types are provided, respond with "ANNConfiguration".
-        """
 
         root_class = self.ontology.Network
 
-        root_question = get_ontology_question(root_class.name, QUESTIONS_DICT)
+        root_question = get_onto_prompt_with_examples(root_class.name, PROMPTS_JSON)
 
         # Ask the root question
         response_dict = self.ask_question(0, root_question)
@@ -284,27 +237,6 @@ class ConversationTree:
         self.current_node = self.tree
         self.nodes = {0: self.tree}
 
-    # def add_child(self, parent_id, question, answer=None):
-    #     """
-    #     Adds a child node to the conversation tree.
-
-    #     :param parent_id: ID of the parent node.
-    #     :param question: The question asked.
-    #     :param answer: The answer received (optional).
-    #     :return: The new node's ID.
-    #     """
-    #     self.node_id += 1
-    #     child_node = {
-    #         "id": self.node_id,
-    #         "question": question,
-    #         "answer": answer,
-    #         "children": [],
-    #         "parent_id": parent_id
-    #     }
-    #     self.nodes[parent_id]["children"].append(child_node)
-    #     self.nodes[self.node_id] = child_node
-    #     print(f"\nSaved question and answer in tree:\n{question}\n{answer}")
-    #     return self.node_id
     def add_child(self, parent_id, question, answer=None):
         """
         Adds a child node to the conversation tree.
@@ -358,27 +290,53 @@ class ConversationTree:
 
 
 
-def get_ontology_question(entity: str, questions: dict) -> str:
+class LLMResponse(BaseModel):
+    instance_names: List[str]  # A list of ontology class names expected from LLM
+
+# Global Vars
+PROMPTS_JSON = None
+
+def main():
+    query_engine = RemoteDocumentIndexer('100.105.5.55',5000).get_rag_query_engine()
+    onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
+    prompts_json = load_ontology_questions("rag/ontology_prompts.json")    
+    PROMPTS_JSON  = prompts_json
+
+    # prompt = get_onto_prompt_with_examples(entity_to_query, PROMPTS_JSON)
+
+    tree = ConversationTree()
+    questioner = OntologyTreeQuestioner(
+        ontology=onto,
+        conversation_tree=tree,
+        query_engine=query_engine
+    )
+    questioner.start()
+    tree.save_to_json("./rag/conversation_tree.json")
+
+
+
+
+""" Helper functions """
+
+def load_ontology_questions(json_path: str) -> dict:
     """
-    Retrieves a question for a given entity.
+    Loads ontology questions from a JSON file.
 
-    :param entity: The entity name (e.g., 'Dataset', 'batch_size').
-    :param questions: Dictionary of ontology questions.
-    :return: The associated question or a default message if not found.
+    :param json_path: Path to the JSON file containing ontology questions.
+    :return: Dictionary of ontology questions.
     """
-    entity_type = "ObjectPrompts"
-    return questions.get(entity_type, {}).get(entity, f"No question found for '{entity}' in '{entity_type}'.")
+    with open(json_path, 'r') as file:
+        questions = json.load(file)
+    return questions
 
-# def get_initial_prompt() -> str:
-#     initial_prompt = 
-# """
-#                     Work out your chain of thought.
-#                     If you do not know the answer to a question, respond with "N/A." and nothing else.
-#                     Question:
-#                     """
-#     return initial_prompt
 
-def get_initial_prompt():
+def get_chain_of_thought_prompt():
+    return"""
+Work out your chain of thought.
+If you do not know the answer to a question, respond with "N/A" and nothing else.
+"""
+
+def get_json_prompt():
     return """
 Please respond with a JSON object containing a single key, `instance_names`, 
 which is a list of ontology class names relevant to the question.
@@ -389,216 +347,53 @@ Example:
     """
 
 
-def get_second_prompt(question: str,response: str) -> str:
-    second_prompt = f"""
-                Given the question "{question}" and it's response "{response}", rephrase the response to follow these formatting rules:
-                Single-item answers: If the question requires only one answer, respond with just that single answer.
-                Single-value answers: If the question requires only one value, respond with just that single value.
-                Listed answers: If the question requires multiple answers without order of priority, provide them as a list, with each answer as a single, complete item.
-                Numbered list answers: If the question requires multiple answers in a specific sequence or hierarchy, provide them as a numbered list, with each number followed by a single, complete item.
-                Use atomic answers for clarity, meaning each response should contain only one idea or concept per point. Ensure the format aligns with the nature of the question being asked.
-                If multiple questions is asked, respond with a list in the order the questions were asked and nothing else. Do not label your answers.
-                If the response says "N/A" or suggests that it does not know, reply with "N/A" and nothing else.
-
-                Single-item answer example:
-                Question: What is the capital of France?
-                Answer: Paris
-
-                Single-vlaue answer example:
-                Question: How many states are in the United States?
-                Answer: 50
-
-                Listed answers example:
-                Question: What are the primary colors in the American Flag?
-                Answer: Red, White, Blue
-
-                Numbered list example:
-                Question: What are the steps in painting a wall?
-                Answer: collect tools, 1 coat wall, 2 coat wall, 3 coat wall, wait to dry
-                """
-    return second_prompt
-
-class LLMResponse(BaseModel):
-    instance_names: List[str]  # A list of ontology class names expected from LLM
-
-def main():
-    query_engine = RemoteDocumentIndexer('100.105.5.55',5000).get_rag_query_engine()
-
-    # Load ontology
-    onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-
-    # Initialize the conversation tree
-    tree = ConversationTree()
-
-    # Initialize the OntologyTreeQuestioner
-    questioner = OntologyTreeQuestioner(
-        ontology=onto,
-        conversation_tree=tree,
-        query_engine=query_engine
-    )
-
-    # Start the questioning process
-    questioner.start()
-
-    # Save the conversation tree to JSON
-    tree.save_to_json("./rag/test_conversation_tree.json")
-
-def print_class_hierarchy(cls, onto, depth=0, visited=None):
+def get_onto_prompt(entity: str, ontology_data: List[dict]) -> str:
     """
-    Recursively prints each class and its subclasses starting from the given class.
-    Prevents revisiting classes by tracking visited nodes.
+    Retrieves a question (prompt) for a given entity from ontology data, ignoring object properties.
 
-    :param cls: The base class to start printing from.
-    :param onto: The ontology object.
-    :param depth: The current depth in the class hierarchy (used for indentation).
-    :param visited: A set of visited classes to prevent infinite recursion.
+    :param entity: The entity name (e.g., 'Network', 'Layer').
+    :param ontology_data: A list of dictionaries representing the ontology JSON structure.
+    :return: The associated question (prompt) or a default message if not found.
     """
-    if visited is None:
-        visited = set()
-
-    # Ensure cls is not None before proceeding
-    if cls is None:
-        return
-
-    # Check if the class has already been visited
-    if cls in visited:
-        return
-
-    # Mark the current class as visited
-    visited.add(cls)
-
-    # Safely access the class name
-    class_name = getattr(cls, 'name', None) or "UnnamedClass"
-    print("  " * depth + f"Class: {class_name}")
-
-    # Get subclasses of the current class
-    sub_classes = get_sub_classes(cls, onto)
-
-    # Recursively print each subclass
-    for sub_class in sub_classes:
-        if sub_class is not None:  # Ensure subclass is valid
-            print_class_hierarchy(sub_class, onto, depth + 1, visited)
+    for entry in ontology_data:
+        # Ignore entries that contain 'object_property'
+        if "object_property" in entry:
+            continue
+        if entry.get("class") == entity:
+            return entry.get("prompt", f"No prompt found for '{entity}'.")
+    return f"No entry found for '{entity}' in the ontology."
 
 
-
-def print_ancestor_classes(cls, depth=0):
+def get_onto_prompt_with_examples(entity: str, ontology_data: List[dict]) -> str:
     """
-    Prints all ancestor classes of the given class.
+    Combines the prompt and its few-shot examples into a single formatted string.
 
-    :param cls: The class whose ancestors are to be printed.
-    :param depth: The current depth in the ancestor hierarchy (used for indentation).
+    :param entity: The entity name (e.g., 'Network', 'LossFunction').
+    :param ontology_data: A list of dictionaries representing the ontology JSON structure.
+    :return: A well-structured string combining the prompt and examples, or a message if not found.
     """
-    # Check if the class has a parent class
-    if not hasattr(cls, "is_a") or not cls.is_a:
-        return
+    for entry in ontology_data:
+        if entry.get("class") == entity:
+            # Get the prompt
+            prompt = entry.get("prompt", f"No prompt found for '{entity}'.")
+            # Get the few-shot examples
+            examples = entry.get("few_shot_examples", [])
+            
+            if not examples:
+                return f"Question: {prompt}\nAnswer:'."
 
-    # Recursively print each ancestor
-    for parent in cls.is_a:
-        # Print the parent class name with appropriate indentation
-        print("  " * depth + f"Ancestor: {parent.name}")
+            # Start the combined string
+            combined = f"Question: {prompt}\n\n"
 
-        # Recursively find and print the ancestors of the parent
-        print_ancestor_classes(parent, depth + 1)
+            # Format each example in a clear and consistent manner
+            for idx, example in enumerate(examples, 1):
+                combined += f"Example {idx}:\n"
+                combined += f"  Question: {example['input']}\n"
+                combined += f"  Answer: {example['output']}\n\n"
 
-
-
-def get_base_class(onto):
-    return onto.ANNConfiguration
-
-def get_sub_classes(cls,onto):
-    props = get_class_properties(onto, cls)
-
-    sub_classes = []
-
-    for prop in props:
-        sub_classes.extend(get_connected_classes(prop))
-    return sub_classes
-
-
-
-def get_connected_classes(prop):
-    """
-    Retrieves a list of connected class objects for a given property.
-
-    :param prop: The property object.
-    :return: List of class objects in the range of the property.
-    """
-    try:
-        # Return the class objects directly
-        return [cls for cls in prop.range if hasattr(cls, 'name')]
-    except AttributeError:
-        # Return an empty list in case of an error
-        return []
-
-
-
-
-def print_instantiated_classes_and_properties(ontology: Ontology):
-    """
-    Prints all instantiated classes and their properties in the given ontology.
-
-    Args:
-        ontology (Ontology): The ontology to inspect.
-
-    """
-    print("Instantiated Classes and Properties:")
-    for instance in ontology.individuals():
-        print(f"Instance: {instance.name}")
-        # Get the classes this instance belongs to
-        classes = instance.is_a
-        class_names = [cls.name for cls in classes if cls.name]
-        print(f"  Classes: {', '.join(class_names) if class_names else 'None'}")
-        
-        # Get instantiated properties and their values
-        properties = instance.get_properties()
-        for prop in properties:
-            values = instance.__getattr__(prop.name)
-            if values:  # Only print properties that have values
-                if isinstance(values, list):
-                    values_str = ", ".join(str(v) for v in values)
-                else:
-                    values_str = str(values)
-                print(f"  Property: {prop.name}, Values: {values_str}")
-        print("-" * 40)
-
-# Extra functions i wrote
-def list_owl_classes(onto: Ontology):
-    # List all classes
-    print("Classes in the ontology:")
-    for cls in onto.classes():
-        print(f"- {cls.name}")
-
-def list_owl_object_properties(onto: Ontology):
-    # List all object properties
-    print("\nObject Properties in the ontology:")
-    for prop in onto.object_properties():
-        print(f"- {prop.name}")
-
-def list_owl_data_properties(onto: Ontology):
-    # List all data properties
-    print("\nData Properties in the ontology:")
-    for prop in onto.data_properties():
-        print(f"- {prop.name}")
-
-def get_property_class_range(prop):
-    """
-    Retrieves the range (classes) of given property.
-
-    :param properties: Property.
-    :return: Dictionary mapping property names to lists of class names in their range.
-    """
-    connected_classes = {}
-    try:
-        connected_classes[prop.name] = [
-            cls.name for cls in prop.range if hasattr(cls, 'name')
-        ]
-    except AttributeError as e:
-        print(f"Error processing property {prop.name}: {e}")
-        connected_classes[prop.name] = []
-    return connected_classes
-
+            combined += f"Question:{prompt}\nAnswer:"
+            return combined.strip()
+    return f"No entry found for '{entity}' in the ontology."
 
 if __name__ == "__main__":
     main()
-
-

@@ -1,0 +1,52 @@
+- Class: ANNConfiguration
+  Object Properties:
+    - hasNetwork
+  - Class: Network
+    Object Properties:
+      - hasTaskType
+    - Class: TaskCharacterization
+      - hasObjective
+    - Class: ObjectiveFunction
+      Object Properties:
+        - hasCost
+      - Class: CostFunction
+        Object Properties:
+          - hasLoss
+        - Class: LossFunction
+          - hasRegularizer
+        - Class: RegularizerFunction
+      - hasLayer
+    - Class: Layer
+      Data Properties:
+        - layer_num_units
+      Object Properties:
+        - nextLayer
+        - previousLayer
+        - sameLayerAs
+      - hasOutputLayer
+    - Class: OutputLayer
+      - hasInputLayer
+    - Class: InputLayer
+    - hasTrainingStrategy
+  - Class: TrainingStrategy
+    Object Properties:
+      - hasTrainedModel
+    - Class: TrainedModel
+      Object Properties:
+        - hasWeights
+      - Class: TrainedWeights
+        Data Properties:
+          - trained_weights_array
+        Object Properties:
+          - trainedInLayer
+          - trainedOutLayer
+      - hasPrimaryTrainingSession
+    - Class: TrainingSession
+      Object Properties:
+        - hasPrimaryTrainingStep
+      - Class: TrainingStep
+        Object Properties:
+          - nextTrainingStep
+        - hasTrainingStep
+        - nextTrainingSession
+      - hasTrainingSession
