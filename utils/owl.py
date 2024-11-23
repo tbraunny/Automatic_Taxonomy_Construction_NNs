@@ -160,3 +160,72 @@ def get_instantiated_property_values(instance: Thing) -> dict:
 """ 3) Property Functions """
 
 # def get_property_restrictions()
+
+
+"""Richie written"""
+
+
+def print_instantiated_classes_and_properties(ontology: Ontology):
+    """
+    Prints all instantiated classes and their properties in the given ontology.
+
+    Args:
+        ontology (Ontology): The ontology to inspect.
+
+    """
+    print("Instantiated Classes and Properties:")
+    for instance in ontology.individuals():
+        print(f"Instance: {instance.name}")
+        # Get the classes this instance belongs to
+        classes = instance.is_a
+        class_names = [cls.name for cls in classes if cls.name]
+        print(f"  Classes: {', '.join(class_names) if class_names else 'None'}")
+        
+        # Get instantiated properties and their values
+        properties = instance.get_properties()
+        for prop in properties:
+            values = instance.__getattr__(prop.name)
+            if values:  # Only print properties that have values
+                if isinstance(values, list):
+                    values_str = ", ".join(str(v) for v in values)
+                else:
+                    values_str = str(values)
+                print(f"  Property: {prop.name}, Values: {values_str}")
+        print("-" * 40)
+
+# Extra functions i wrote
+def list_owl_classes(onto: Ontology):
+    # List all classes
+    print("Classes in the ontology:")
+    for cls in onto.classes():
+        print(f"- {cls.name}")
+
+def list_owl_object_properties(onto: Ontology):
+    # List all object properties
+    print("\nObject Properties in the ontology:")
+    for prop in onto.object_properties():
+        print(f"- {prop.name}")
+
+def list_owl_data_properties(onto: Ontology):
+    # List all data properties
+    print("\nData Properties in the ontology:")
+    for prop in onto.data_properties():
+        print(f"- {prop.name}")
+
+def get_property_class_range(properties):
+    """
+    Retrieves the range (classes) of given properties.
+
+    :param properties: List of properties whose ranges are to be found.
+    :return: Dictionary mapping property names to lists of class names in their range.
+    """
+    connected_classes = {}
+    for prop in properties:
+        try:
+            connected_classes[prop.name] = [
+                cls.name for cls in prop.range if hasattr(cls, 'name')
+            ]
+        except AttributeError as e:
+            print(f"Error processing property {prop.name}: {e}")
+            connected_classes[prop.name] = []
+    return connected_classes
