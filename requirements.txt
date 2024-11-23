@@ -4,6 +4,8 @@
 -r "requirements/requirements-llm_model.txt"
 -r "requirements/requirements-pdf_loader.txt"
 -r "requirements/requirements-owl.txt"
+-r "requirements/requirements-rag_sever.txt"
+
 
 # # *** HOW TO VENV ***
 

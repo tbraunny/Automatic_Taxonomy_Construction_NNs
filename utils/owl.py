@@ -18,6 +18,7 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
 
 
+
 def get_property_range_type(property: Property) -> str:
     """
     Determines if the range of a property is atomic or refers to another class.

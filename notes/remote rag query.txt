@@ -16,3 +16,40 @@
 
     query_engine = RemoteDocumentIndexer(device_ip,port).get_rag_query_engine()
     response = query_engine.query("What is this paper about")
+
+
+***Setup for Server***
+
+
+
+
+    ***Set up windows to wsl port forwarding***
+        <wsl-ip> from "ip addr show eth0" and looks like "inet 172.20.240.1"
+        netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=11434 connectaddress=<wsl-ip> connectport=11434
+
+                netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=5000 connectaddress=172.24.220.223 connectport=5000
+
+
+            can delete this rule later with "netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=11434"
+
+
+    ***Allow Traffic Through the Windows Firewall*** maybe need this
+        Open Windows Defender Firewall with Advanced Security:
+        Create a New Inbound Rule:
+        Click Inbound Rules > New Rule.
+        Select Port, then click Next.
+        Choose TCP and enter the port number you are forwarding (e.g., 8080).
+        Allow the connection, then click Next.
+        Select the appropriate profiles (Domain, Private, and/or Public), then click Next.
+        Name the rule (e.g., "WSL Port 8080") and click Finish.
+
+    ***Test connection***
+    can test hosting on port using "python3 -m http.server 11434 --bind 0.0.0.0" on host computer
+    can test connection using "curl http://<tailscale-ip>:11434"
+
+    ***Note***
+    wsl ip may change per reboot
+
+    export OLLAMA_HOST=http://0.0.0.0:11434
+    ollama serve
+    run the python script

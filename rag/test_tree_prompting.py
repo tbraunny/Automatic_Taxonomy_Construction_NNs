@@ -6,7 +6,6 @@ from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
 from utils.owl import *
 
-import spacy
 
 
 
@@ -29,7 +28,7 @@ def load_ontology_questions(json_path: str) -> dict:
     return questions
 
 # Load questions from the ontology JSON file
-json_path = "rag/ontology_prompts.json"
+json_path = "rag/simple_prompts.json"
 questions_dict = load_ontology_questions(json_path)
 QUESTIONS_DICT = questions_dict
 
@@ -42,7 +41,7 @@ class OntologyTreeQuestioner:
     integrates with a conversation tree, and recursively asks questions for object properties.
     """
 
-    def __init__(self, ontology, conversation_tree, query_engine, nlp_model):
+    def __init__(self, ontology, conversation_tree, query_engine):
         """
         Initializes the OntologyTreeQuestioner.
 
@@ -55,7 +54,6 @@ class OntologyTreeQuestioner:
         self.base_class = ontology.ANNConfiguration
         self.conversation_tree = conversation_tree
         self.llm = query_engine
-        self.nlp_model=nlp_model
 
     def ask_question(self, parent_id, question, retries=3):
         """
@@ -426,9 +424,6 @@ class LLMResponse(BaseModel):
 def main():
     query_engine = RemoteDocumentIndexer('100.105.5.55',5000).get_rag_query_engine()
 
-    # Load the spaCy model
-    nlp_model = spacy.load("en_core_sci_sm")
-
     # Load ontology
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
 
@@ -439,8 +434,7 @@ def main():
     questioner = OntologyTreeQuestioner(
         ontology=onto,
         conversation_tree=tree,
-        query_engine=query_engine,
-        nlp_model=nlp_model
+        query_engine=query_engine
     )
 
     # Start the questioning process
@@ -448,6 +442,94 @@ def main():
 
     # Save the conversation tree to JSON
     tree.save_to_json("./rag/test_conversation_tree.json")
+
+def print_class_hierarchy(cls, onto, depth=0, visited=None):
+    """
+    Recursively prints each class and its subclasses starting from the given class.
+    Prevents revisiting classes by tracking visited nodes.
+
+    :param cls: The base class to start printing from.
+    :param onto: The ontology object.
+    :param depth: The current depth in the class hierarchy (used for indentation).
+    :param visited: A set of visited classes to prevent infinite recursion.
+    """
+    if visited is None:
+        visited = set()
+
+    # Ensure cls is not None before proceeding
+    if cls is None:
+        return
+
+    # Check if the class has already been visited
+    if cls in visited:
+        return
+
+    # Mark the current class as visited
+    visited.add(cls)
+
+    # Safely access the class name
+    class_name = getattr(cls, 'name', None) or "UnnamedClass"
+    print("  " * depth + f"Class: {class_name}")
+
+    # Get subclasses of the current class
+    sub_classes = get_sub_classes(cls, onto)
+
+    # Recursively print each subclass
+    for sub_class in sub_classes:
+        if sub_class is not None:  # Ensure subclass is valid
+            print_class_hierarchy(sub_class, onto, depth + 1, visited)
+
+
+
+def print_ancestor_classes(cls, depth=0):
+    """
+    Prints all ancestor classes of the given class.
+
+    :param cls: The class whose ancestors are to be printed.
+    :param depth: The current depth in the ancestor hierarchy (used for indentation).
+    """
+    # Check if the class has a parent class
+    if not hasattr(cls, "is_a") or not cls.is_a:
+        return
+
+    # Recursively print each ancestor
+    for parent in cls.is_a:
+        # Print the parent class name with appropriate indentation
+        print("  " * depth + f"Ancestor: {parent.name}")
+
+        # Recursively find and print the ancestors of the parent
+        print_ancestor_classes(parent, depth + 1)
+
+
+
+def get_base_class(onto):
+    return onto.ANNConfiguration
+
+def get_sub_classes(cls,onto):
+    props = get_class_properties(onto, cls)
+
+    sub_classes = []
+
+    for prop in props:
+        sub_classes.extend(get_connected_classes(prop))
+    return sub_classes
+
+
+
+def get_connected_classes(prop):
+    """
+    Retrieves a list of connected class objects for a given property.
+
+    :param prop: The property object.
+    :return: List of class objects in the range of the property.
+    """
+    try:
+        # Return the class objects directly
+        return [cls for cls in prop.range if hasattr(cls, 'name')]
+    except AttributeError:
+        # Return an empty list in case of an error
+        return []
+
 
 
 
@@ -498,23 +580,23 @@ def list_owl_data_properties(onto: Ontology):
     for prop in onto.data_properties():
         print(f"- {prop.name}")
 
-def get_property_class_range(properties):
+def get_property_class_range(prop):
     """
-    Retrieves the range (classes) of given properties.
+    Retrieves the range (classes) of given property.
 
-    :param properties: List of properties whose ranges are to be found.
+    :param properties: Property.
     :return: Dictionary mapping property names to lists of class names in their range.
     """
     connected_classes = {}
-    for prop in properties:
-        try:
-            connected_classes[prop.name] = [
-                cls.name for cls in prop.range if hasattr(cls, 'name')
-            ]
-        except AttributeError as e:
-            print(f"Error processing property {prop.name}: {e}")
-            connected_classes[prop.name] = []
+    try:
+        connected_classes[prop.name] = [
+            cls.name for cls in prop.range if hasattr(cls, 'name')
+        ]
+    except AttributeError as e:
+        print(f"Error processing property {prop.name}: {e}")
+        connected_classes[prop.name] = []
     return connected_classes
+
 
 if __name__ == "__main__":
     main()
