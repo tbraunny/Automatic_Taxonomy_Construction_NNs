@@ -27,7 +27,7 @@
         <wsl-ip> from "ip addr show eth0" and looks like "inet 172.20.240.1"
         netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=11434 connectaddress=<wsl-ip> connectport=11434
 
-                netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=5000 connectaddress=172.24.220.223 connectport=5000
+                netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=5000 connectaddress=172.19.172.139 connectport=5000
 
 
             can delete this rule later with "netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=11434"

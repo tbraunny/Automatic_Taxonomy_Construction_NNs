@@ -26,14 +26,15 @@ def query():
     embed_model_name = data.get('embed_model_name', EMBED_MODEL_NAME)
     query_text = data.get('query', '')
 
-    if pdf_path is  None:
+
+    if pdf_path is None:
         pdf_path=PDF_PATH
     if llm_model_name is None:
         llm_model_name=LLM_MODEL_NAME
     if embed_model_name is None:
         embed_model_name=EMBED_MODEL_NAME
 
-
+    
 
     embed_model = EmbeddingModel(model_name=embed_model_name).get_model()
     llm_model = LLMModel(model_name=llm_model_name).get_llm()
@@ -41,7 +42,7 @@ def query():
     documents = load_pdf(pdf_path)
     chunked_docs = chunk_document(documents)
     
-    query_engine = LocalDocumentIndexer(embed_model, llm_model,chunked_docs).get_rag_query_engine()
+    query_engine = LocalDocumentIndexer(embed_model=embed_model, llm_model=llm_model,documents=chunked_docs).get_rag_query_engine()
 
     response = query_engine.query(query_text)
     return jsonify({'response': str(response)})
