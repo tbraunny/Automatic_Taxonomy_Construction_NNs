@@ -33,18 +33,18 @@ def query():
         llm_model_name=LLM_MODEL_NAME
     if embed_model_name is None:
         embed_model_name=EMBED_MODEL_NAME
+    
+    print(f"{pdf_path}\n{llm_model_name}\n{embed_model_name}\n{query_text}")
 
     
 
     embed_model = EmbeddingModel(model_name=embed_model_name).get_model()
     llm_model = LLMModel(model_name=llm_model_name).get_llm()
-
     documents = load_pdf(pdf_path)
     chunked_docs = chunk_document(documents)
-    
     query_engine = LocalDocumentIndexer(embed_model=embed_model, llm_model=llm_model,documents=chunked_docs).get_rag_query_engine()
-
     response = query_engine.query(query_text)
+    print(response)
     return jsonify({'response': str(response)})
 
 if __name__ == '__main__':
