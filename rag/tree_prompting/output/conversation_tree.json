@@ -1,0 +1,1087 @@
+{
+    "id": 0,
+    "question": null,
+    "answer": null,
+    "children": [
+        {
+            "id": 1,
+            "question": "Network",
+            "answer": {
+                "What Network does this architecture have defined?": [
+                    "Convolutional Neural Network"
+                ]
+            },
+            "children": [
+                {
+                    "id": 2,
+                    "question": "InputLayer",
+                    "answer": {
+                        "What InputLayer does this architecture have defined?": [
+                            "InputLayer"
+                        ]
+                    },
+                    "children": [],
+                    "parent_id": 1
+                },
+                {
+                    "id": 3,
+                    "question": "NetworkSpecific",
+                    "answer": null,
+                    "children": [
+                        {
+                            "id": 4,
+                            "question": "Layer",
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 5,
+                                    "question": "TrainedWeights",
+                                    "answer": null,
+                                    "children": [
+                                        {
+                                            "id": 6,
+                                            "question": "TrainedModel",
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 7,
+                                                    "question": "TrainingStrategy",
+                                                    "answer": {
+                                                        "What TrainingStrategy does this architecture have defined?": [
+                                                            "Max-Pooling",
+                                                            "Non-Saturating Neurons"
+                                                        ]
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "id": 8,
+                                                            "question": "TrainingSession",
+                                                            "answer": {
+                                                                "What TrainingSession does this architecture have defined?": [
+                                                                    "Convolutional Neural Network",
+                                                                    "ImageNet Classification"
+                                                                ]
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "id": 9,
+                                                                    "question": "TrainingStep",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 10,
+                                                                            "question": "TrainingLoop",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 11,
+                                                                                    "question": "StopCondition",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 12,
+                                                                                            "question": "IterateUntil",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 13,
+                                                                                                    "question": "ConditionalEvaluation",
+                                                                                                    "answer": {
+                                                                                                        "What ConditionalEvaluation does this architecture have defined?": [
+                                                                                                            "ImageNet",
+                                                                                                            "top-1 error rate",
+                                                                                                            "top-5 error rate"
+                                                                                                        ]
+                                                                                                    },
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 12
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 11
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 14,
+                                                                                            "question": "IterateFor",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 11
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 10
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 9
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 8
+                                                                }
+                                                            ],
+                                                            "parent_id": 7
+                                                        },
+                                                        {
+                                                            "id": 15,
+                                                            "question": "EvaluationResult",
+                                                            "answer": {
+                                                                "What EvaluationResult does this architecture have defined?": [
+                                                                    "ErrorRate",
+                                                                    "ClassificationModel"
+                                                                ]
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "id": 16,
+                                                                    "question": "ANNConfiguration",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 15
+                                                                }
+                                                            ],
+                                                            "parent_id": 7
+                                                        }
+                                                    ],
+                                                    "parent_id": 6
+                                                }
+                                            ],
+                                            "parent_id": 5
+                                        }
+                                    ],
+                                    "parent_id": 4
+                                },
+                                {
+                                    "id": 17,
+                                    "question": "InOutLayer",
+                                    "answer": {
+                                        "What InOutLayer does this architecture have defined?": [
+                                            "Softmax Output Layer"
+                                        ]
+                                    },
+                                    "children": [
+                                        {
+                                            "id": 18,
+                                            "question": "DatasetPipe",
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 19,
+                                                    "question": "NetworkEvaluation",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 20,
+                                                            "question": "Metric",
+                                                            "answer": {
+                                                                "What Metric does this architecture have defined?": [
+                                                                    "Top-5 Error Rate"
+                                                                ]
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "id": 21,
+                                                                    "question": "TrueOrFalseExamples",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 22,
+                                                                            "question": "FalseExamples",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 23,
+                                                                                    "question": "FalseNegatives",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 22
+                                                                                },
+                                                                                {
+                                                                                    "id": 24,
+                                                                                    "question": "FalsePositives",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 22
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 21
+                                                                        },
+                                                                        {
+                                                                            "id": 25,
+                                                                            "question": "TrueExamples",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 26,
+                                                                                    "question": "TrueNegatives",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 25
+                                                                                },
+                                                                                {
+                                                                                    "id": 27,
+                                                                                    "question": "TruePositives",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 25
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 21
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 20
+                                                                },
+                                                                {
+                                                                    "id": 28,
+                                                                    "question": "Accuracy",
+                                                                    "answer": {
+                                                                        "What Accuracy does this architecture have defined?": [
+                                                                            "Convolutional Neural Network",
+                                                                            "Softmax Output Layer"
+                                                                        ]
+                                                                    },
+                                                                    "children": [],
+                                                                    "parent_id": 20
+                                                                },
+                                                                {
+                                                                    "id": 29,
+                                                                    "question": "LogLikelihood",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 30,
+                                                                            "question": "ParzenWindow",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 29
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 20
+                                                                },
+                                                                {
+                                                                    "id": 31,
+                                                                    "question": "MeanSquaredError",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 20
+                                                                },
+                                                                {
+                                                                    "id": 32,
+                                                                    "question": "Precision",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 20
+                                                                },
+                                                                {
+                                                                    "id": 33,
+                                                                    "question": "Recall",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 20
+                                                                }
+                                                            ],
+                                                            "parent_id": 19
+                                                        }
+                                                    ],
+                                                    "parent_id": 18
+                                                },
+                                                {
+                                                    "id": 34,
+                                                    "question": "Dataset",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 35,
+                                                            "question": "Labelset",
+                                                            "answer": {
+                                                                "What Labelset does this architecture have defined?": [
+                                                                    "ImageNet",
+                                                                    "LSVRC-2010"
+                                                                ]
+                                                            },
+                                                            "children": [],
+                                                            "parent_id": 34
+                                                        },
+                                                        {
+                                                            "id": 36,
+                                                            "question": "DataType",
+                                                            "answer": {
+                                                                "What DataType does this architecture have defined?": [
+                                                                    "ImageNet",
+                                                                    "softmax"
+                                                                ]
+                                                            },
+                                                            "children": [
+                                                                {
+                                                                    "id": 37,
+                                                                    "question": "Image",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 36
+                                                                },
+                                                                {
+                                                                    "id": 38,
+                                                                    "question": "MultiDimensionalCube",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 36
+                                                                },
+                                                                {
+                                                                    "id": 39,
+                                                                    "question": "Text",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 40,
+                                                                            "question": "SemistructuredText",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 39
+                                                                        },
+                                                                        {
+                                                                            "id": 41,
+                                                                            "question": "UnstructuredText",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 39
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 36
+                                                                },
+                                                                {
+                                                                    "id": 42,
+                                                                    "question": "Video",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 36
+                                                                }
+                                                            ],
+                                                            "parent_id": 34
+                                                        },
+                                                        {
+                                                            "id": 43,
+                                                            "question": "RandomNoiseDataset",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 44,
+                                                                    "question": "ProbabilityDistributionFunction",
+                                                                    "answer": {
+                                                                        "What ProbabilityDistributionFunction does this architecture have defined?": [
+                                                                            "Softmax"
+                                                                        ]
+                                                                    },
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 45,
+                                                                            "question": "NoiseLayer",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        },
+                                                                        {
+                                                                            "id": 46,
+                                                                            "question": "Exponential",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        },
+                                                                        {
+                                                                            "id": 47,
+                                                                            "question": "Gaussian",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        },
+                                                                        {
+                                                                            "id": 48,
+                                                                            "question": "Categorical",
+                                                                            "answer": {
+                                                                                "What Categorical does this architecture have defined?": [
+                                                                                    "ImageNet",
+                                                                                    "softmax"
+                                                                                ]
+                                                                            },
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        },
+                                                                        {
+                                                                            "id": 49,
+                                                                            "question": "Normal",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        },
+                                                                        {
+                                                                            "id": 50,
+                                                                            "question": "Uniform",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 44
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 43
+                                                                }
+                                                            ],
+                                                            "parent_id": 34
+                                                        }
+                                                    ],
+                                                    "parent_id": 18
+                                                }
+                                            ],
+                                            "parent_id": 17
+                                        },
+                                        {
+                                            "id": 51,
+                                            "question": "OutputLayer",
+                                            "answer": {
+                                                "What OutputLayer does this architecture have defined?": [
+                                                    "Softmax Output Layer"
+                                                ]
+                                            },
+                                            "children": [],
+                                            "parent_id": 17
+                                        }
+                                    ],
+                                    "parent_id": 4
+                                },
+                                {
+                                    "id": 52,
+                                    "question": "HiddenLayer",
+                                    "answer": {
+                                        "What HiddenLayer does this architecture have defined?": [
+                                            "Convolutional Layer"
+                                        ]
+                                    },
+                                    "children": [
+                                        {
+                                            "id": 53,
+                                            "question": "ActivationLayer",
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 54,
+                                                    "question": "ActivationFunction",
+                                                    "answer": {
+                                                        "What ActivationFunction does this architecture have defined?": [
+                                                            "ReLU"
+                                                        ]
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "id": 55,
+                                                            "question": "NonDiff",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 56,
+                                                                    "question": "Elu",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 55
+                                                                },
+                                                                {
+                                                                    "id": 57,
+                                                                    "question": "Relu",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 55
+                                                                },
+                                                                {
+                                                                    "id": 58,
+                                                                    "question": "Relu6",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 55
+                                                                }
+                                                            ],
+                                                            "parent_id": 54
+                                                        },
+                                                        {
+                                                            "id": 59,
+                                                            "question": "Linear",
+                                                            "answer": {
+                                                                "What Linear does this architecture have defined?": [
+                                                                    "fully_connected_layers"
+                                                                ]
+                                                            },
+                                                            "children": [],
+                                                            "parent_id": 54
+                                                        },
+                                                        {
+                                                            "id": 60,
+                                                            "question": "Regularization",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 61,
+                                                                    "question": "RandomDropOut",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 60
+                                                                }
+                                                            ],
+                                                            "parent_id": 54
+                                                        },
+                                                        {
+                                                            "id": 62,
+                                                            "question": "Smooth",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 63,
+                                                                    "question": "Sigmoid",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 62
+                                                                },
+                                                                {
+                                                                    "id": 64,
+                                                                    "question": "SoftMax",
+                                                                    "answer": {
+                                                                        "What SoftMax does this architecture have defined?": [
+                                                                            "1000-way SoftMax"
+                                                                        ]
+                                                                    },
+                                                                    "children": [],
+                                                                    "parent_id": 62
+                                                                },
+                                                                {
+                                                                    "id": 65,
+                                                                    "question": "SoftPlus",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 62
+                                                                },
+                                                                {
+                                                                    "id": 66,
+                                                                    "question": "SoftSign",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 62
+                                                                },
+                                                                {
+                                                                    "id": 67,
+                                                                    "question": "Tanh",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 62
+                                                                }
+                                                            ],
+                                                            "parent_id": 54
+                                                        }
+                                                    ],
+                                                    "parent_id": 53
+                                                },
+                                                {
+                                                    "id": 68,
+                                                    "question": "RNNLayer",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 69,
+                                                            "question": "BidirectionalRNNLayer",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 68
+                                                        },
+                                                        {
+                                                            "id": 70,
+                                                            "question": "GRULayer",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 68
+                                                        },
+                                                        {
+                                                            "id": 71,
+                                                            "question": "LSTMLayer",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 68
+                                                        }
+                                                    ],
+                                                    "parent_id": 53
+                                                },
+                                                {
+                                                    "id": 72,
+                                                    "question": "ConvolutionLayer",
+                                                    "answer": {
+                                                        "What ConvolutionLayer does this architecture have defined?": [
+                                                            "Convolutional Neural Network",
+                                                            "ConvolutionLayer"
+                                                        ]
+                                                    },
+                                                    "children": [
+                                                        {
+                                                            "id": 73,
+                                                            "question": "SeparableConvolutionLayer",
+                                                            "answer": {
+                                                                "What SeparableConvolutionLayer does this architecture have defined?": [
+                                                                    "Convolutional Layer",
+                                                                    "Fully-Connected Layer"
+                                                                ]
+                                                            },
+                                                            "children": [],
+                                                            "parent_id": 72
+                                                        }
+                                                    ],
+                                                    "parent_id": 53
+                                                },
+                                                {
+                                                    "id": 74,
+                                                    "question": "DeconvolutionLayer",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 75,
+                                                            "question": "SeparableDeconvolutionLayer",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 74
+                                                        }
+                                                    ],
+                                                    "parent_id": 53
+                                                },
+                                                {
+                                                    "id": 76,
+                                                    "question": "FullyConnectedLayer",
+                                                    "answer": {
+                                                        "What FullyConnectedLayer does this architecture have defined?": [
+                                                            "FullyConnectedLayer"
+                                                        ]
+                                                    },
+                                                    "children": [],
+                                                    "parent_id": 53
+                                                }
+                                            ],
+                                            "parent_id": 52
+                                        },
+                                        {
+                                            "id": 77,
+                                            "question": "AggregationLayer",
+                                            "answer": {
+                                                "What AggregationLayer does this architecture have defined?": [
+                                                    "Max-Pooling Layer"
+                                                ]
+                                            },
+                                            "children": [
+                                                {
+                                                    "id": 78,
+                                                    "question": "ConcatLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 77
+                                                },
+                                                {
+                                                    "id": 79,
+                                                    "question": "MultiplyLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 77
+                                                },
+                                                {
+                                                    "id": 80,
+                                                    "question": "PoolingLayer",
+                                                    "answer": {
+                                                        "What PoolingLayer does this architecture have defined?": [
+                                                            "Max-Pooling Layer"
+                                                        ]
+                                                    },
+                                                    "children": [],
+                                                    "parent_id": 77
+                                                },
+                                                {
+                                                    "id": 81,
+                                                    "question": "SumLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 77
+                                                },
+                                                {
+                                                    "id": 82,
+                                                    "question": "UpscaleLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 77
+                                                }
+                                            ],
+                                            "parent_id": 52
+                                        },
+                                        {
+                                            "id": 83,
+                                            "question": "ModificationLayer",
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 84,
+                                                    "question": "DropoutLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 83
+                                                },
+                                                {
+                                                    "id": 85,
+                                                    "question": "BatchNormLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 83
+                                                },
+                                                {
+                                                    "id": 86,
+                                                    "question": "FlattenLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 83
+                                                }
+                                            ],
+                                            "parent_id": 52
+                                        },
+                                        {
+                                            "id": 87,
+                                            "question": "SeparationLayer",
+                                            "answer": {
+                                                "What SeparationLayer does this architecture have defined?": [
+                                                    "Max-Pooling Layer"
+                                                ]
+                                            },
+                                            "children": [
+                                                {
+                                                    "id": 88,
+                                                    "question": "CloneLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 87
+                                                },
+                                                {
+                                                    "id": 89,
+                                                    "question": "SplitLayer",
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 87
+                                                }
+                                            ],
+                                            "parent_id": 52
+                                        }
+                                    ],
+                                    "parent_id": 4
+                                }
+                            ],
+                            "parent_id": 3
+                        },
+                        {
+                            "id": 90,
+                            "question": "TrainingOptimizer",
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 91,
+                                    "question": "AdaDelta",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 92,
+                                    "question": "AdaGrad",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 93,
+                                    "question": "AdaGradDA",
+                                    "answer": {
+                                        "What AdaGradDA does this architecture have defined?": [
+                                            "Convolutional Neural Network"
+                                        ]
+                                    },
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 94,
+                                    "question": "Adam",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 95,
+                                    "question": "Ftrl",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 96,
+                                    "question": "GradientDescent",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 97,
+                                    "question": "Momentum",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 98,
+                                    "question": "ProximalAdaGrad",
+                                    "answer": {
+                                        "What ProximalAdaGrad does this architecture have defined?": [
+                                            "Convolutional Neural Network",
+                                            "Fully-connected layer",
+                                            "Softmax"
+                                        ]
+                                    },
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 99,
+                                    "question": "ProximalGradientDescent",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                },
+                                {
+                                    "id": 100,
+                                    "question": "RMSProp",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 90
+                                }
+                            ],
+                            "parent_id": 3
+                        },
+                        {
+                            "id": 101,
+                            "question": "TrainingSingle",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 3
+                        },
+                        {
+                            "id": 102,
+                            "question": "TrainingSingleForwardOnly",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 3
+                        }
+                    ],
+                    "parent_id": 1
+                },
+                {
+                    "id": 103,
+                    "question": "ObjectiveFunction",
+                    "answer": null,
+                    "children": [
+                        {
+                            "id": 104,
+                            "question": "CostFunction",
+                            "answer": {
+                                "What CostFunction does this architecture have defined?": [
+                                    "Cross-Entropy Loss"
+                                ]
+                            },
+                            "children": [
+                                {
+                                    "id": 105,
+                                    "question": "LossFunction",
+                                    "answer": {
+                                        "What LossFunction does this architecture have defined?": [
+                                            "Cross-Entropy Loss"
+                                        ]
+                                    },
+                                    "children": [
+                                        {
+                                            "id": 106,
+                                            "question": "BinaryCrossEntropy",
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 105
+                                        },
+                                        {
+                                            "id": 107,
+                                            "question": "CategoricalCrossEntropy",
+                                            "answer": {
+                                                "What CategoricalCrossEntropy does this architecture have defined?": [
+                                                    "Cross-Entropy Loss",
+                                                    "CategoricalCrossEntropy"
+                                                ]
+                                            },
+                                            "children": [],
+                                            "parent_id": 105
+                                        },
+                                        {
+                                            "id": 108,
+                                            "question": "MSE",
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 105
+                                        }
+                                    ],
+                                    "parent_id": 104
+                                },
+                                {
+                                    "id": 109,
+                                    "question": "RegularizerFunction",
+                                    "answer": {
+                                        "What RegularizerFunction does this architecture have defined?": [
+                                            "L1_Regularization",
+                                            "L2_Regularization"
+                                        ]
+                                    },
+                                    "children": [
+                                        {
+                                            "id": 110,
+                                            "question": "L1L2RegularizerFunction",
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 109
+                                        },
+                                        {
+                                            "id": 111,
+                                            "question": "L1RegularizerFunction",
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 109
+                                        },
+                                        {
+                                            "id": 112,
+                                            "question": "L2RegularizerFunction",
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 109
+                                        }
+                                    ],
+                                    "parent_id": 104
+                                }
+                            ],
+                            "parent_id": 103
+                        },
+                        {
+                            "id": 113,
+                            "question": "MaxObjectiveFunction",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 103
+                        },
+                        {
+                            "id": 114,
+                            "question": "MinObjectiveFunction",
+                            "answer": {
+                                "What MinObjectiveFunction does this architecture have defined?": [
+                                    "Cross-Entropy Loss"
+                                ]
+                            },
+                            "children": [],
+                            "parent_id": 103
+                        }
+                    ],
+                    "parent_id": 1
+                },
+                {
+                    "id": 115,
+                    "question": "TaskCharacterization",
+                    "answer": {
+                        "What TaskCharacterization does this architecture have defined?": [
+                            "Image Classification"
+                        ]
+                    },
+                    "children": [
+                        {
+                            "id": 116,
+                            "question": "Adversarial",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 117,
+                            "question": "Classification",
+                            "answer": {
+                                "What Classification does this architecture have defined?": [
+                                    "Convolutional Neural Network",
+                                    "ImageNet Classi\ufb01cation",
+                                    "multi-class image classification"
+                                ]
+                            },
+                            "children": [
+                                {
+                                    "id": 118,
+                                    "question": "SemiSupervisedClassification",
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 117
+                                },
+                                {
+                                    "id": 119,
+                                    "question": "SupervisedClassification",
+                                    "answer": {
+                                        "What SupervisedClassification does this architecture have defined?": [
+                                            "Multi-class Image Classification"
+                                        ]
+                                    },
+                                    "children": [],
+                                    "parent_id": 117
+                                }
+                            ],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 120,
+                            "question": "Clustering",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 121,
+                            "question": "Discrimination",
+                            "answer": {
+                                "What Discrimination does this architecture have defined?": [
+                                    "Convolutional Neural Network (CNN)",
+                                    "ImageNet"
+                                ]
+                            },
+                            "children": [],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 122,
+                            "question": "Generation",
+                            "answer": {
+                                "What Generation does this architecture have defined?": [
+                                    "Later Generation",
+                                    "AlexNet"
+                                ]
+                            },
+                            "children": [],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 123,
+                            "question": "Reconstruction",
+                            "answer": {
+                                "What Reconstruction does this architecture have defined?": [
+                                    "Feature Extraction"
+                                ]
+                            },
+                            "children": [],
+                            "parent_id": 115
+                        },
+                        {
+                            "id": 124,
+                            "question": "Regression",
+                            "answer": null,
+                            "children": [],
+                            "parent_id": 115
+                        }
+                    ],
+                    "parent_id": 1
+                }
+            ],
+            "parent_id": 0
+        }
+    ],
+    "parent_id": null
+}
