@@ -1,4 +1,4 @@
-from owlready2 import Ontology, ThingClass, Property, Restriction, Thing, DataPropertyClass, ObjectPropertyClass, AnnotationPropertyClass, destroy_entity, sync_reasoner
+from owlready2 import *
 from typing import List, Dict, Union, Optional
 import types
 import warnings

@@ -1,6 +1,6 @@
 import json
 from owlready2 import *
-from typing import List, Union
+from typing import List
 from pydantic import BaseModel, ValidationError
 from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
@@ -32,31 +32,47 @@ class OntologyTreeQuestioner:
         self.llm = query_engine
 
     def ask_question(self, parent_id, question, retries=3):
-        """
-        Asks a question to the LLM, incorporating context from ancestor nodes, and handles retries.
-
-        :param parent_id: ID of the parent node in the conversation tree.
-        :param question: The question to ask the LLM.
-        :param retries: Number of times to retry in case of failure. Default is 3.
-        :return: The validated response from the LLM, or None if max retries reached.
-        """
         for attempt in range(retries):
             try:
-                # Retrieve context
-                context_answers = self.get_context(parent_id)
-                if not context_answers:
-                    # No context; use initial prompt
-                    prompt = f"{get_json_prompt()}\nQuestion:\n{question}"
-                else:
-                    # Format context into a string
-                    context_str = self.get_context(parent_id)
-                    # Combine context and the main question
-                    prompt = f"{get_json_prompt()}\nContext:\n{context_str}\nQuestion:\n{question}"
+                # Retrieve ancestor context
+                ancestor_context = self.get_ancestor_context(parent_id)
 
-                # Query the LLM
-                response = self.llm.query(prompt)
-                response = str(response)
-                validated_response = LLMResponse.parse_raw(response)
+                # Get the chain-of-thought prompt
+                chain_of_thought_prompt = get_chain_of_thought_prompt()
+
+                # Get few-shot examples if available
+                few_shot_examples = self.get_few_shot_examples(question)
+
+                # Build the prompt
+                prompt = build_prompt(
+                    chain_of_thought_prompt=chain_of_thought_prompt,
+                    context=ancestor_context,
+                    question=question,
+                    few_shot_examples=few_shot_examples
+                )
+
+                # Debugging: Print the prompt
+                print("Prompt to LLM:")
+                print(prompt,"\n","*"*50)
+
+                # Query the LLM with the structured prompt
+                cot_response = self.llm.query(prompt)
+
+                # Build the JSON extraction prompt
+                json_prompt = f"{get_json_prompt()}\n\nQuestion:\n{question}\n\nResponse:\n{cot_response}\n\nYour JSON response:"
+
+                # Debugging: Print the JSON extraction prompt
+                print("JSON Extraction Prompt:")
+                print(json_prompt)
+
+                # Query the LLM for the final JSON response
+                response = self.llm.query(json_prompt)
+
+                if response.strip() == 'N/A':
+                    return None
+
+                validated_response = LLMResponse.parse_raw(response.strip())
+
                 return validated_response
 
             except (ValueError, ValidationError) as e:
@@ -67,8 +83,9 @@ class OntologyTreeQuestioner:
         print("Max retries reached. Returning None.")
         return None
 
+
     
-    def get_context(self, node_id):
+    def get_ancestor_context(self, node_id):
         """
         Collects ancestor answers up to the given node and formats them as a string to provide context.
 
@@ -78,16 +95,21 @@ class OntologyTreeQuestioner:
         answers = []
         current_id = node_id
         while current_id is not None:
-            print(f"Retrieving context for node ID: {current_id}")  # Debugging log
             node = self.conversation_tree.nodes.get(current_id)
             if not node:
                 print(f"Node with ID {current_id} not found. Stopping traversal.")
                 break
 
             if node['answer']:
-                instance_names = node['answer'].get('instance_names', [])
-                if instance_names:
-                    answers.append((node['question'], instance_names))
+                # node['answer'] is a dict with class names as keys and instance names as values
+                for class_name, instance_names in node['answer'].items():
+                    if instance_names:
+                        # Ensure instance_names is a list
+                        if isinstance(instance_names, list):
+                            answers.append((node['question'], instance_names))
+                        else:
+                            # If instance_names is not a list, wrap it in a list
+                            answers.append((node['question'], [instance_names]))
 
             current_id = node.get('parent_id')  # Move to parent node
 
@@ -100,7 +122,9 @@ class OntologyTreeQuestioner:
             [f"Step {i + 1}: Question: {q}\nAnswer: {', '.join(a)}"
             for i, (q, a) in enumerate(reversed(answers))]
         )
-
+        print(context_str)
+        while(True):
+            continue
         return context_str
 
 
@@ -120,13 +144,8 @@ class OntologyTreeQuestioner:
             return
         visited_classes.add(cls)
 
-        # Fetch context dynamically based on the parent node
-        context_str = self.get_context(parent_id)
-
         # Build the question
         question = get_onto_prompt_with_examples(cls.name, PROMPTS_JSON)
-        if context_str:
-            question = f"Context:\n{context_str}\n{question}"
 
         # Ask the question
         response_dict = self.ask_question(parent_id, question)
@@ -147,7 +166,7 @@ class OntologyTreeQuestioner:
         # Recursively ask for each directly connected class
         for prop, classes in connected_classes.items():
             for cls_name in classes:
-                sub_cls = self.ontology.get(cls_name)
+                sub_cls = self.ontology[cls_name]
                 if sub_cls is None:
                     continue
                 self.ask_for_class(new_node_id, sub_cls, visited_classes)
@@ -157,30 +176,24 @@ class OntologyTreeQuestioner:
         """
         Starts the questioning process from the base class.
         """
-
+        # Root class to iterate from
         root_class = self.ontology.Network
-
-        print(root_class, root_class.name)
-
         root_question = get_onto_prompt_with_examples(root_class.name, PROMPTS_JSON)
 
-
-        print(root_question)
         # Ask the root question
         response_dict = self.ask_question(0, root_question)
 
         if not response_dict or not response_dict.instance_names:
             return
 
+        new_node_id = self.conversation_tree.add_child(0, root_question, response_dict)
+
         # Populate the root node with the question and answer
         self.conversation_tree.nodes[0]['question'] = root_question
-        self.conversation_tree.nodes[0]['answer'] = {'instance_names': response_dict.instance_names}
-
-        # Update the context with the root class and its instances
-        new_context = {root_class.name: response_dict.instance_names[0]}
+        self.conversation_tree.nodes[0]['answer'] = {root_class.name: response_dict.instance_names}
 
         # Get properties and connected classes
-        direct_properties = get_object_properties_for_class(root_class, self.ontology)
+        direct_properties = get_object_properties_for_class(self.ontology, root_class)
         connected_classes = get_property_class_range(direct_properties)
 
         # Recursively ask for each directly connected class
@@ -189,7 +202,7 @@ class OntologyTreeQuestioner:
                 sub_cls = self.ontology[cls_name]
                 if sub_cls is None:
                     continue
-                self.ask_for_class(0, sub_cls, new_context)
+                self.ask_for_class(0, sub_cls)
 
 class ConversationTree:
     """
@@ -239,7 +252,7 @@ class ConversationTree:
             return [self.to_serializable(item) for item in obj]
         elif hasattr(obj, '__dict__'):
             return self.to_serializable(vars(obj))
-        elif isinstance(obj, Response):  # Handle the `Response` object?????
+        elif isinstance(obj, Response):
             return {"response_text": str(obj)}
         else:
             return obj
@@ -262,9 +275,6 @@ class LLMResponse(BaseModel):
 
 def main():
     query_engine = RemoteDocumentIndexer('100.105.5.55',5000).get_rag_query_engine()
-    question = query_engine.query("hellow llama")
-    print(question)
-    return
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
     prompts_json = load_ontology_questions("rag/ontology_prompts.json")    
     global PROMPTS_JSON
@@ -284,7 +294,6 @@ def main():
 
 
 
-
 """ Helper functions """
 
 def load_ontology_questions(json_path: str) -> dict:
@@ -298,22 +307,73 @@ def load_ontology_questions(json_path: str) -> dict:
         questions = json.load(file)
     return questions
 
+def build_prompt(instructions, question, context=None, few_shot_examples=None):
+    """
+    Builds a structured prompt for the LLM.
+
+    :param chain_of_thought_prompt: Instructions for the LLM to follow.
+    :param context: Ancestor context to provide background information.
+    :param question: The question to be answered.
+    :param few_shot_examples: Optional few-shot examples for guidance.
+    :return: A well-formatted prompt string.
+    """
+
+    prompt_parts = [instructions.strip()]
+
+    if context:
+        prompt_parts.append(f"Context:\n{context.strip()}")
+
+    if few_shot_examples:
+        prompt_parts.append(f"Few-Shot Examples:\n{few_shot_examples.strip()}")
+
+    prompt_parts.append(f"Question:\n{question.strip()}")
+
+    prompt = "\n\n".join(prompt_parts)
+    return prompt
+
+
 
 def get_chain_of_thought_prompt():
-    return"""
+    return '''
+You are a highly capable and thoughtful language model. Your task is to provide detailed, logical reasoning while answering a question. If a question requires complex thought, break it down step-by-step to reach a clear conclusion. 
+If you do not know the answer or cannot confidently determine it, explicitly state that you do not know and avoid providing incorrect or speculative answers. 
+When responding, consider the following:
+- Analyze the question logically and methodically.
+- Avoid skipping steps in reasoning.
+- If unsure, acknowledge your uncertainty honestly and suggest next steps for finding the answer.
+Respond with clarity, providing step-by-step reasoning or acknowledging uncertainty when needed.
+'''
+
+"""
 Work out your chain of thought.
 If you do not know the answer to a question, respond with "N/A" and nothing else.
 """
 
 def get_json_prompt():
     return """
+You are tasked with analyzing a response generated by an LLM in response to a question. Your role is to extract the necessary parts of the response and return them as a list of relevant ontology class names in JSON format. 
+
+Specifically:
+- Review the original question and the provided response.
+- Identify terms or concepts in the response that correspond to ontology class names relevant to the question.
+- Exclude unrelated text or extraneous details.
+- Return your output as a JSON object with a single key: `instance_names`, which contains a list of relevant ontology class names.
+Expected output format:
+{
+    "instance_names": ["ResNet", "VGG16"]
+}
+Ensure the list is accurate and succinct, focusing only on directly relevant ontology class names.
+"""
+
+"""
+You have been given a question and its correct response. 
 Please respond with a JSON object containing a single key, `instance_names`, 
 which is a list of ontology class names relevant to the question.
 Example:
 {
     "instance_names": ["ResNet", "VGG16"]
-}
-    """
+}"""
+
 
 
 def get_onto_prompt(entity: str, ontology_data: List[dict]) -> str:

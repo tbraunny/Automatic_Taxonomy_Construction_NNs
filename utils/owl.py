@@ -1,5 +1,5 @@
-from owlready2 import Ontology, ThingClass, Property, Restriction, Thing
-from typing import List
+from owlready2 import *
+from typing import List, Set
 import warnings
 
 """ 1) Class Functions """
@@ -168,7 +168,7 @@ def get_instantiated_property_values(instance: Thing) -> dict:
 def get_base_class(onto:Ontology):
     return onto.ANNConfiguration
 
-def get_object_properties_for_class(cls: ThingClass, ontology: Ontology):
+def get_object_properties_for_class(ontology: Ontology,cls: ThingClass):
     """
     Retrieves all object properties where the given class is in the domain.
 
@@ -180,6 +180,8 @@ def get_object_properties_for_class(cls: ThingClass, ontology: Ontology):
         Set[ObjectPropertyClass]: A set of object properties with the class in their domain.
     """
     return {prop for prop in ontology.object_properties() if cls in prop.domain}
+    # return {prop for prop in ontology.properties() if cls in prop.domain}
+
 
 
 def print_instantiated_classes_and_properties(ontology: Ontology):
@@ -246,3 +248,44 @@ def get_property_class_range(properties):
             print(f"Error processing property {prop.name}: {e}")
             connected_classes[prop.name] = []
     return connected_classes
+
+
+def iterate_subclasses(cls: ThingClass, level: int=0, visited_classes: Set[ThingClass]=None, onto: Ontology=None):
+    """
+    Recursively iterates through subclasses and traverses object property ranges.
+    
+    Args:
+        cls (ThingClass): The class to start the traversal.
+        level (int): The current recursion level.
+        visited_classes (Set[ThingClass]): Tracks visited classes to avoid infinite loops.
+        file: A file object (unused in the current function).
+        ontology (Ontology): The ontology being traversed.
+    
+    Yields:
+        ThingClass: Each class in the traversal.
+
+    Usage: 
+        for cls in iterate_subclasses(root_class,onto=self.ontology):
+            print(f"Class: {cls.name}") # Example call
+    """
+    if cls is None:
+        raise ValueError("Parameter 'cls' must be provided and cannot be None.")
+    if not isinstance(onto, Ontology):
+        raise ValueError("Parameter 'ontology' must be an instance of 'Ontology'.")
+
+
+    if visited_classes is None:
+        visited_classes = set()
+    if cls in visited_classes:
+        return
+    visited_classes.add(cls)
+
+    # Get data properties and object properties
+    obj_props = get_object_properties_for_class(onto,cls)
+    yield cls
+    # Write object properties to file and recursively traverse range classes
+    if obj_props:
+        for prop in obj_props:
+            for range_cls in prop.range:
+                if isinstance(range_cls, ThingClass):
+                    yield from iterate_subclasses(range_cls, level + 1, visited_classes, onto)

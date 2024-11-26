@@ -6,11 +6,8 @@ onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
 # from typing import List, Dict, Union, Optional
 # import types
 
-from owlready2 import Ontology, ThingClass, DataPropertyClass, ObjectPropertyClass, Thing
 from typing import Set
 
-from owlready2 import Ontology, ThingClass, DataPropertyClass, ObjectPropertyClass
-from typing import Set
 
 def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
     """
