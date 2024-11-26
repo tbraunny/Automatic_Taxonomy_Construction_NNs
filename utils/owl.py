@@ -16,8 +16,7 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
         List[Property]: A list of properties that have the specified class as their domain.
     """
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
-
-def get_property_range_type(property: Property) -> str:
+def get_property_range_type(property) -> str:
     """
     Determines if the range of a property is atomic or refers to another class.
 
@@ -27,10 +26,19 @@ def get_property_range_type(property: Property) -> str:
     Returns:
         str: "atomic" if the range is a primitive datatype, otherwise "class".
     """
-    # Assume range of primitive data types (e.g., string, int) is "atomic"
+    
+    if not property.range:
+        return "atomic"
+
     for range_type in property.range:
-        if issubclass(range_type, ThingClass):
+        # Check if the range refers to a class (ThingClass)
+        if isinstance(range_type, ThingClass):
             return "class"
+        # Check if the range is a known atomic data type
+        if range_type in [str, int, float, bool]:
+            return "atomic"
+
+    # default to atomic
     return "atomic"
 
 def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
