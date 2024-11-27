@@ -2,12 +2,12 @@ import json
 from owlready2 import *
 from typing import List
 from pydantic import BaseModel, ValidationError
+
 from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
 from utils.conversational_tree import ConversationTree
 from utils.parse_annetto_structure import *
 from utils.owl import *
-
 
 
 
@@ -113,6 +113,7 @@ class OntologyTreeQuestioner:
         # Create a node for the current class
         new_node_id = self.conversation_tree.add_child(parent_id, cls.name, answer=None)
 
+        # Instantiate cls if it has or subclasses or if it requires_instance(no data or object properties)
         if requires_instance or not get_subclasses(cls): # Need logic for instantiating data properties ****************
             question = f'What {cls.name} does this architecture have defined?'
 
@@ -179,7 +180,7 @@ class OntologyTreeQuestioner:
         """
         Starts the questioning process from the base class.
         """
-        root_class = self.ontology.Network 
+        root_class = self.ontology.Network # Starting at Network for simplicity and testing
 
         if root_class is None:
             print(f"Class '{root_class.name}' does not exist in the ontology.")
@@ -198,7 +199,7 @@ def main():
     # print(response)
     # return
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-    onto_prompts_json = load_ontology_questions("rag/tree_prompting/ontology_prompts.json")   
+    onto_prompts_json = load_ontology_questions("rag/tree_prompting/test_ontology_prompts.json")   
 
 
     tree = ConversationTree()
