@@ -4,7 +4,7 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 from utils.constants import Constants as C
 from utils.query_rag import RemoteDocumentIndexer
-from utils.conversation_tree import ConversationTree
+from utils.conversational_tree import ConversationTree
 from utils.parse_annetto_structure import *
 from utils.owl import *
 
@@ -34,7 +34,7 @@ class OntologyTreeQuestioner:
         self.base_class = get_base_class(ontology)
         self.conversation_tree = conversation_tree
         self.llm = query_engine
-        self.onto_prompts=onto_prompts
+        self.onto_prompts=onto_prompts # Unused and need to be rewritten
 
     def ask_question(self, parent_id, question, cls, retries=3):
         for attempt in range(retries):
@@ -43,15 +43,15 @@ class OntologyTreeQuestioner:
                 ancestor_context = self.get_ancestor_context(parent_id)
 
                 if ancestor_context:
-                    print(f"Ancestor context:\n{ancestor_context}\n")
+                    print(f"Ancestor context:\n{ancestor_context}\n") # For debugging ***************
 
                 # Get the chain-of-thought prompt
                 chain_of_thought_prompt = get_chain_of_thought_prompt()
 
                 # Get few-shot examples if available
-                few_shot_examples = get_few_shot_examples(cls, self.onto_prompts)
+                few_shot_examples = get_few_shot_examples(cls, self.onto_prompts) # Needs to be reimplemented along with new prompts ***********
 
-                # Build the prompt
+                # Build the CoT prompt
                 prompt = build_prompt(
                     instructions=chain_of_thought_prompt,
                     context=ancestor_context,
@@ -59,19 +59,20 @@ class OntologyTreeQuestioner:
                     few_shot_examples=few_shot_examples
                 )
 
+                # Query the LLM to get a more thouhgt out and correct answer
                 cot_response = self.llm.query(prompt)
 
                 # Build the JSON extraction prompt
                 json_prompt = f"{get_json_prompt()}\n\nQuestion:\n{question}\n\nResponse:\n{cot_response}\n\nYour JSON response:"
 
-
                 # Query the LLM for the final JSON response
                 response = self.llm.query(json_prompt)
                 
-                if response.strip() == 'N/A':
+                if response.strip() == 'N/A': # Need better logic for filtering 'i don't know' answers ***************
                     return None
 
-                validated_response = LLMResponse.parse_raw(response.strip())
+                # Pydantic library validates JSON format
+                validated_response = LLMResponse.parse_raw(response.strip()) # parse_raw() is depricated and needs to be updated *********
 
                 return validated_response
 
@@ -80,6 +81,7 @@ class OntologyTreeQuestioner:
             except Exception as e:
                 print(f"Unexpected error on attempt {attempt + 1}: {e}")
 
+        # Return None if Llama fails to response in valididated JSON
         return None
     
     
@@ -100,18 +102,18 @@ class OntologyTreeQuestioner:
         # Check if the class has already been visited
         if cls in visited_classes:
             return
-        if cls is self.ontology.DataCharacterization: # Junk class
+        if cls is self.ontology.DataCharacterization: # Junk class for the time being *********
             return
         # Add the current class to the visited set
         visited_classes.add(cls)
 
-        # Check if cls requires final instantiation
+        # Check if cls requires final instantiation (Has no object or data properies)
         requires_instance = requires_final_instantiation(cls,self.ontology)
 
         # Create a node for the current class
         new_node_id = self.conversation_tree.add_child(parent_id, cls.name, answer=None)
 
-        if requires_instance or not get_subclasses(cls):
+        if requires_instance or not get_subclasses(cls): # Need logic for instantiating data properties ****************
             question = f'What {cls.name} does this architecture have defined?'
 
             # Ask the question
@@ -177,7 +179,7 @@ class OntologyTreeQuestioner:
         """
         Starts the questioning process from the base class.
         """
-        root_class = self.ontology.Network
+        root_class = self.ontology.Network 
 
         if root_class is None:
             print(f"Class '{root_class.name}' does not exist in the ontology.")
