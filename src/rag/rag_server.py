@@ -70,7 +70,6 @@ def query_pdf():
         chunked_docs = chunk_document(documents)
         global query_engine
         query_engine = LocalDocumentIndexer(
-            print("hi")
             embed_model=embed_model,
             llm_model=llm_model,
             documents=chunked_docs
