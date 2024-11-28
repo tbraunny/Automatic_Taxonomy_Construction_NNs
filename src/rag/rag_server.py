@@ -15,7 +15,7 @@ UPLOAD_FOLDER = "data/papers"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 PDF_PATH = "data/papers/AlexNet.pdf"
-LLM_MODEL_NAME = "llama3.2:1b"
+LLM_MODEL_NAME = "llama3.1:8b"
 EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
 
 embed_model = EmbeddingModel(model_name=EMBED_MODEL_NAME).get_model()
