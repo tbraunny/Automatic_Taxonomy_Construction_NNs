@@ -1,0 +1,15 @@
+How to upload a pdf to the desktop
+
+curl -X POST http://{dektop_ip}:5000/api/upload \
+     -F "pdf=@{/path/to/pdf.pdf}"
+
+- Replace {desktop_ip} with the ip address of the desktop
+- Replace {path/to/pdf.pdf} with your pdf to upload
+
+this will upload it to the 'data/papers' directory on the desktop for querying
+
+
+example: 
+
+curl -X POST http://{localhost}:5000/api/upload \
+     -F "pdf=@/Users/richiewhite/Desktop/VGG16.pdf"

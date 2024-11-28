@@ -17,12 +17,14 @@ def local_query():
     print(response)
 
 def remote_query():
-    pdf_path = './data/papers/AlexNet.pdf'
+    pdf_path = 'data/papers/VGG16.pdf'
+    pdf_path = 'data/papers/AlexNet.pdf'
+
     ip_addr = '100.105.5.55'
+    ip_addr = 'localhost'
     port = 5000
     query_engine = RemoteDocumentIndexer(pdf_path=pdf_path, device_ip=ip_addr, port=port).get_rag_query_engine()
-    response = query_engine.query("What is this document about? What is alexnet")
+    response = query_engine.query("Who is the author of this paper")
     print(response)
 
-local_query()
 remote_query()

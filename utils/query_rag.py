@@ -88,23 +88,6 @@ class RemoteDocumentIndexer:
         self.embed_model_name = embed_model_name
         self.pdf_path = pdf_path
 
-    # Not set up yet!!!!!
-    def index_documents(self, documents):
-        """
-        Sends documents to the remote server for indexing.
-        """
-        url = f"http://{self.device_ip}:{self.port}/api/index_documents"
-        payload = {
-            "model": self.llm_model_name,
-            "documents": [doc.text for doc in documents]
-        }
-        try:
-            response = requests.post(url, json=payload)
-            response.raise_for_status()
-            print("Documents indexed successfully on the remote server.")
-        except requests.exceptions.RequestException as e:
-            print(f"Error indexing documents on remote server: {e}")
-
     def query(self, user_query):
         """
         Sends a query to the remote instance and retrieves the response.
