@@ -11,7 +11,7 @@ from utils.query_rag import LocalDocumentIndexer
 app = Flask(__name__)
 
 # Configuration
-UPLOAD_FOLDER = "data/papers"
+UPLOAD_FOLDER = "data/raw"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 PDF_PATH = "data/papers/AlexNet.pdf"

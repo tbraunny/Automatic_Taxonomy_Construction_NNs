@@ -1,0 +1,11 @@
+getting started:
+https://github.com/meta-llama/llama-stack/blob/main/docs/getting_started.md
+
+commands:
+https://github.com/meta-llama/llama-stack/blob/main/docs/cli_reference.md
+
+configurations:
+To be explained at later time when finalized
+
+Run command:
+llama stack run 3.1-8B-Instruct-GPU --port 5000

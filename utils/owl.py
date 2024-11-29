@@ -4,6 +4,32 @@ import warnings
 
 """ 1) Class Functions """
 
+def get_connected_classes(cls, ontology):
+    """
+    Retrieves classes connected to the given class via object properties.
+
+    :param cls: The class for which to retrieve connected classes.
+    :param ontology: The ontology object.
+    :return: A list of connected classes.
+    """
+    connected_classes = set()
+
+    for prop in ontology.object_properties():
+        # Check if the domain of the property includes the class
+        if cls in prop.domain:
+            # Add the range classes to the connected classes
+            for range_cls in prop.range:
+                connected_classes.add(range_cls)
+        # Also check if the class is in the range to get inverse properties
+        if cls in prop.range:
+            for domain_cls in prop.domain:
+                connected_classes.add(domain_cls)
+
+    return list(connected_classes)
+
+def get_subclasses(cls):
+    return list(cls.subclasses())
+
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
     """
     Retrieves all properties in the given ontology that have the specified class as their domain.
