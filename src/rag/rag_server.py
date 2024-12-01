@@ -2,11 +2,7 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 
-from utils.pdf_loader import load_pdf
-from utils.llm_model import LLMModel
-from utils.embedding_model import EmbeddingModel
-from utils.document_splitter import chunk_document
-from utils.query_rag import LocalDocumentIndexer
+from utils.rag_engine import LocalRagEngine
 
 app = Flask(__name__)
 
@@ -14,21 +10,11 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "data/raw"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-PDF_PATH = "data/papers/AlexNet.pdf"
+PDF_PATH = "data/raw/AlexNet.pdf"
 LLM_MODEL_NAME = "llama3.1:8b"
-EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
-
-embed_model = EmbeddingModel(model_name=EMBED_MODEL_NAME).get_model()
-llm_model = LLMModel(model_name=LLM_MODEL_NAME).get_llm()
 
 # Pre-load default PDF and create query engine
-documents = load_pdf(PDF_PATH)
-chunked_docs = chunk_document(documents)
-query_engine = LocalDocumentIndexer(
-    embed_model=embed_model,
-    llm_model=llm_model,
-    documents=chunked_docs
-).get_rag_query_engine()
+query_engine = LocalRagEngine(pdf_path=PDF_PATH).get_rag_engine()
 
 
 
@@ -52,7 +38,6 @@ def upload_pdf():
 def query_pdf():
     """Handles querying a specific PDF."""
 
-    global PDF_PATH
 
     data = request.get_json()
     pdf_path = data.get('pdf_path')
@@ -64,16 +49,12 @@ def query_pdf():
     if not query_text:
         return jsonify({'error': 'No query provided'}), 400
 
+    global PDF_PATH
     if pdf_path != PDF_PATH:
         PDF_PATH = pdf_path
-        documents = load_pdf(PDF_PATH)
-        chunked_docs = chunk_document(documents)
         global query_engine
-        query_engine = LocalDocumentIndexer(
-            embed_model=embed_model,
-            llm_model=llm_model,
-            documents=chunked_docs
-        ).get_rag_query_engine()
+        query_engine = LocalRagEngine(pdf_path=PDF_PATH).get_rag_query_engine()
+        
 
     # Query the engine
     response = query_engine.query(query_text)

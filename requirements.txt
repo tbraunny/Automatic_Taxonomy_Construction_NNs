@@ -1,10 +1,10 @@
--r "requirements/requirements-query_rag.txt"
+-r "requirements/requirements-rag_engine.txt"
 -r "requirements/requirements-document_splitter.txt"
 -r "requirements/requirements-embedding_model.txt"
 -r "requirements/requirements-llm_model.txt"
 -r "requirements/requirements-pdf_loader.txt"
 -r "requirements/requirements-owl.txt"
--r "requirements/requirements-rag_sever.txt"
+-r "requirements/requirements-rag_server.txt"
 
 
 # # *** HOW TO VENV ***

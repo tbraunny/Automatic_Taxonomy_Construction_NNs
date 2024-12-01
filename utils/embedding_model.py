@@ -19,11 +19,9 @@ class EmbeddingModel:
         :param model_name: Name of the HuggingFace embedding model.
         :type model_name: string
         """
-        print("Initializing the embedding model...")
         self.embed_model = LangchainEmbedding(
             HuggingFaceEmbeddings(model_name=model_name)
         )
-        print("Embedding model initialized.")
 
     def get_model(self):
         """

@@ -4,7 +4,7 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
-from utils.query_rag import RemoteDocumentIndexer
+from utils.rag_engine import RemoteDocumentIndexer
 from utils.conversational_tree import ConversationTree
 # from utils.parse_annetto_structure import *
 from utils.owl import *

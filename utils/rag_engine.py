@@ -1,38 +1,43 @@
 import requests
 from llama_index.core import Document, VectorStoreIndex, Settings
 
+from utils.pdf_loader import load_pdf
+from utils.llm_model import LLMModel
+from utils.embedding_model import EmbeddingModel
+from utils.document_splitter import chunk_document
+
+
 '''
 Example usage:
 
+from utils.rag_engine import LocalRagEngine
 
-from utils.query_rag import LocalDocumentIndexer
+pdf_path = "data/raw/AlexNet.pdf"
 
-pdf_path = "./data/papers/AlexNet.pdf"
-
-documents = load_pdf(pdf_path)
-documents = chunk_document(documents)
-embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-llm_model = LLMModel(model_name="llama3.2:1b").get_llm()
-rag_query_engine = LocalDocumentIndexer(embed_model=embed_model, llm_model=llm_model, documents=documents).get_rag_query_engine()
-
-response = rag_query_engine.query("What is this paper about!")
-
+query_engine = LocalRagEngine(pdf_path=pdf_path).get_rag_query_engine()
+response = query_engine.query("What is this paper about?")
 '''
 
-class LocalDocumentIndexer:
+class LocalRagEngine:
     """
     A utility class for creating and managing a document index locally.
     """
-    def __init__(self, documents=None, embed_model=None, llm_model=None):
-        if embed_model is None or llm_model is None or documents is None:
-            raise ValueError("embed_model llm_model, documents must be provided.")
+    def __init__(self, pdf_path=None,llm_model='llama3.1:8b'):
+        if pdf_path is None:
+            raise ValueError("PDF path must be provided.")
         
-        self.embed_model = embed_model
-        self.llm_model = llm_model
+        # Load PDF and chunk it
+        documents = load_pdf(pdf_path)
+        documents = chunk_document(documents)
+        # Initialize models
+        self.embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
+        self.llm_model = LLMModel(model_name=llm_model).get_llm()
+        
         self.vector_index = None
 
+        # Required settings for making the index locally run and not defaulted to openai
         Settings.embed_model = self.embed_model
-        Settings.llm = llm_model
+        Settings.llm = self.llm_model
 
         self.create_index(documents)
 
@@ -48,7 +53,7 @@ class LocalDocumentIndexer:
             llm_predictor=self.llm_model
         )
 
-    def get_rag_query_engine(self):
+    def get_rag_engine(self):
         """
         Returns a query engine for the local index.
 
@@ -61,31 +66,30 @@ class LocalDocumentIndexer:
 '''
 Example Usage:
 
-from utils.remote_rag import RemoteDocumentIndexer
+from utils.rag_engine import RemoteRagEngine
 
 device_ip="100.105.5.55"
 port=5000
-query_engine = RemoteDocumentIndexer(device_ip,port).get_rag_query_engine()
+pdf_path='data/raw/AlexNet.pdf'
+query_engine = RemoteRagEngine(device_ip=device_ip,port=port,pdf_path=pdf_path).get_rag_query_engine()
 response = query_engine.query("What is this paper about")
 
 By default:
-Pdf points to AlexNet in ./data/papers/AlexNet.pdf
+Pdf points to AlexNet in ./data/raw/AlexNet.pdf
 LLM model is llama3.1:8b
 Embed Model is all-MiniLM-L6-v2
 '''
 
-class RemoteDocumentIndexer:
+class RemoteRagEngine:
     """
     A utility class for querying a remote document index.
     """
-    def __init__(self, device_ip, port, llm_model_name=None, embed_model_name =None, pdf_path = None):
-        if not device_ip or not port:
-            raise ValueError("device_ip and port must be provided.")
+    def __init__(self, device_ip=None, port=None, pdf_path = None):
+        if not device_ip or not port or not pdf_path:
+            raise ValueError("device_ip, port, and pdf path must be provided.")
         
         self.device_ip = device_ip
         self.port = port
-        self.llm_model_name = llm_model_name
-        self.embed_model_name = embed_model_name
         self.pdf_path = pdf_path
 
     def query(self, user_query):
@@ -94,8 +98,6 @@ class RemoteDocumentIndexer:
         """
         url = f"http://{self.device_ip}:{self.port}/api/query"
         payload = {
-            "llm_model_name": self.llm_model_name,
-            "embed_model_name": self.embed_model_name,
             "pdf_path": self.pdf_path,
             "query": user_query,
             "stream": False
@@ -113,7 +115,7 @@ class RemoteDocumentIndexer:
                 'response': 'Error querying remote model'
             }
 
-    def get_rag_query_engine(self):
+    def get_rag_engine(self):
         """
         Returns the query engine interface for remote usage.
         """

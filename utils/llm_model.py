@@ -26,7 +26,6 @@ class LLMModel:
         :param top_k: Top-k sampling parameter for generation.
         :type top_k: int
         """
-        print("Initializing the LLM...")
         self.llm_predictor = LangChainLLM(
             llm=OllamaLLM(
                 model=model_name,
