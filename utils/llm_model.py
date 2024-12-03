@@ -3,7 +3,7 @@
 '''
 Example Usage:
 from utils.llm_model import LLMModel
-llm_predictor = LLMModel(model_name="llama3.2:1b").get_llm()
+llm_model = LLMModel().get_llm()
 '''
 
 from langchain_ollama import OllamaLLM
@@ -14,7 +14,7 @@ class LLMModel:
     """
     A utility class for initializing and retrieving a large language model (LLM).
     """
-    def __init__(self, model_name: str='llama3.2:1b', top_p:float=0.9, temperature:float=0.1, top_k:int=3, max_tokens:int=10):
+    def __init__(self, model_name: str='llama3.1:8b', top_p:float=0.9, temperature:float=0.1, top_k:int=3, max_tokens:int=10):
         """
         Constructor for LLM model.
         :param model_name: Name of the LLM model.
@@ -32,7 +32,8 @@ class LLMModel:
                 top_p=top_p,
                 top_k=top_k,
                 temperature=temperature,
-                max_tokens=max_tokens
+                # max_tokens=max_tokens,
+                num_ctx=128000
                 )
             )
 

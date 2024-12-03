@@ -2,9 +2,10 @@ import requests
 from llama_index.core import Document, VectorStoreIndex, Settings
 
 from utils.pdf_loader import load_pdf
+from utils.preprocess_pdf import preprocess_pdf
 from utils.llm_model import LLMModel
 from utils.embedding_model import EmbeddingModel
-from utils.document_splitter import chunk_document
+from utils.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
 
 
 '''
@@ -26,9 +27,8 @@ class LocalRagEngine:
         if pdf_path is None:
             raise ValueError("PDF path must be provided.")
         
-        # Load PDF and chunk it
-        documents = load_pdf(pdf_path)
-        documents = chunk_document(documents)
+        documents = self.load_and_preprocess_pdf(pdf_path)
+
         # Initialize models
         self.embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
@@ -40,6 +40,52 @@ class LocalRagEngine:
         Settings.llm = self.llm_model
 
         self.create_index(documents)
+
+    @staticmethod
+    def load_and_preprocess_pdf(pdf_path):
+        """
+        Loads and preprocesses the PDF content.
+
+        Args:
+            pdf_path: Path to the PDF file.
+
+        Returns:
+            List of processed and chunked documents.
+        """
+        # New PDF loader that separates reading and preprocessing
+        docs = preprocess_pdf(pdf_path)
+        chunked_documents = chunk_document_for_nlm_LayoutPDFReader(docs)
+
+        
+        # docs = load_pdf(pdf_path)
+        # chunked_documents = chunk_document(docs)
+
+        return chunked_documents
+
+    def get_relevant_chunks(self, prompt):
+        """
+        Retrieve raw relevant chunks for a given prompt without LLM processing.
+
+        Args:
+            prompt: The query string to retrieve relevant chunks.
+
+        Returns:
+            list: A list of strings, each representing a retrieved chunk of text.
+        """
+        if not self.vector_index:
+            raise ValueError("Vector index has not been created.")
+        
+        retriever = self.vector_index.as_retriever()
+
+        # Use the retriever to fetch relevant nodes
+        retrieved_nodes = retriever.retrieve(prompt)
+
+        # Extract text content from the retrieved nodes
+        retrieved_texts = [node.get_content() for node in retrieved_nodes]
+        combined_text = " ".join(retrieved_texts)
+
+        return combined_text
+
 
     def create_index(self, documents):
         """

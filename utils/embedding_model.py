@@ -2,6 +2,7 @@
 
 '''
 Example usage:
+
 from utils.embedding_model import EmbeddingModel
 embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
 '''
