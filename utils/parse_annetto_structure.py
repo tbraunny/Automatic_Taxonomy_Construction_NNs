@@ -19,24 +19,24 @@ def requires_final_instantiation(cls, ontology):
     has_object_properties = any(cls in prop.domain for prop in ontology.object_properties())
     return not has_data_properties and not has_object_properties
 
-# def get_connected_classes(cls, ontology):
-#     """
-#     Retrieves classes connected to the given class via object properties.
+def get_connected_classes(cls, ontology):
+    """
+    Retrieves classes connected to the given class via object properties.
 
-#     Args:
-#         cls (ThingClass): the class to explore.
-#         ontology (Ontology): the ontology to which the class belongs.
+    Args:
+        cls (ThingClass): the class to explore.
+        ontology (Ontology): the ontology to which the class belongs.
 
-#     Returns:
-#         set: A set of connected ThingClasses.
-#     """
-#     connected_classes = set()
-#     obj_props = [prop for prop in ontology.object_properties() if cls in prop.domain]
-#     for prop in obj_props:
-#         for range_cls in prop.range:
-#             if isinstance(range_cls, ThingClass):
-#                 connected_classes.add(range_cls)
-#     return connected_classes
+    Returns:
+        set: A set of connected ThingClasses.
+    """
+    connected_classes = set()
+    obj_props = [prop for prop in ontology.object_properties() if cls in prop.domain]
+    for prop in obj_props:
+        for range_cls in prop.range:
+            if isinstance(range_cls, ThingClass):
+                connected_classes.add(range_cls)
+    return connected_classes
 
 
 def process_class(cls, ontology, visited_classes):

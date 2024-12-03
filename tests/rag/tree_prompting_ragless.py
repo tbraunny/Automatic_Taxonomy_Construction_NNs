@@ -4,8 +4,7 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
-from utils.rag_engine import LocalRagEngine
-from utils.llm_model import ollama_query
+from utils.llm_model import OllamaLLMModel
 from utils.conversational_tree import ConversationTree
 
 from utils.parse_annetto_structure import *
@@ -16,183 +15,93 @@ from utils.owl import *
 class LLMResponse(BaseModel):
     instance_names: List[str]  # A list of ontology class names expected from LLM
 
-
-
 class OntologyTreeQuestioner:
     """
     Generates questions based on ontology classes and their properties,
     integrates with a conversation tree, and recursively asks questions for object properties.
     """
 
-    def __init__(self, ontology, conversation_tree, onto_prompts=None, query_engine=None):
-        """
-        Initializes the OntologyTreeQuestioner.
-
-        :param ontology: Loaded ontology object.
-        :param conversation_tree: Instance of the ConversationTree class.
-        :param rag_query_engine: The LLM query engine for querying the language model.
-        """
+    def __init__(self, ontology=None, conversation_tree=None, llm=None, paper_content=None):
         self.ontology = ontology
-        self.base_class = get_base_class(ontology)
         self.conversation_tree = conversation_tree
-        self.llm = query_engine
-        self.onto_prompts=onto_prompts # Unused and need to be rewritten
+        self.llm = llm
+        self.paper_content=paper_content
 
-    def ask_question(self, parent_id, question, cls, retries=3):
+    def ask_question(self, parent_id, cls, retries=3):
         for attempt in range(retries):
             try:
-                # Retrieve ancestor context
-                ancestor_context = self.get_ancestor_context(parent_id)
+                # Retrieve ancestor classes
+                ancestor_classes = self.get_ancestor_classes(parent_id)
 
-                if ancestor_context:
-                    print(f"Ancestor context:\n{ancestor_context}\n") # For debugging ***************
+                # Generate the prompt
+                prompt = generate_prompt(cls.name, ancestor_classes,self.paper_content)
 
-                # Get the chain-of-thought prompt
-                chain_of_thought_prompt = get_CoT_prompt()
-
-                # Get few-shot examples if available
-                few_shot_examples = get_few_shot_examples(cls, self.onto_prompts) # Needs to be reimplemented along with new prompts ***********
-
-                # Build the CoT prompt
-                prompt = build_prompt(
-                    instructions=chain_of_thought_prompt,
-                    context=ancestor_context,
-                    question=question,
-                    few_shot_examples=few_shot_examples
-                )
-
-                # Query the LLM to get a more thouhgt out and correct answer
-                cot_response = self.llm.query(prompt)
-
-                # Build the JSON extraction prompt
-                json_prompt = f"{get_JSON_prompt()}\n\nQuestion:\n{question}\n\nResponse:\n{cot_response}\n\nYour JSON response:"
-
-                # Query the LLM for the final JSON response
-                response = self.llm.query(json_prompt)
-                
-                if response.strip() == 'N/A': # Need better logic for filtering 'i don't know' answers ***************
-                    return None
-
-                # Pydantic library validates JSON format
-                validated_response = LLMResponse.parse_raw(response.strip()) # parse_raw() is depricated and needs to be updated *********
-
+                # Query the LLM
+                response = self.llm.query(prompt)
+                # Validate and process the response
+                validated_response = self.validate_response(response)
                 return validated_response
 
             except (ValueError, ValidationError) as e:
-                print(f"Error: {e}")
+                print(f"Validation error on attempt {attempt + 1}: {e}")
             except Exception as e:
                 print(f"Unexpected error on attempt {attempt + 1}: {e}")
 
-        # Return None if Llama fails to response in valididated JSON
+        # Return None if LLM fails to respond with valid JSON
         return None
-    
-    
 
     def handle_class(self, cls, parent_id, visited_classes=None):
-        """
-        Handles a class by possibly instantiating it and processing its connected classes.
-
-        :param cls: The class to handle.
-        :param parent_id: ID of the parent node in the conversation tree.
-        :param visited_classes: Set of classes that have already been visited.
-        """
-
-        # Initialize visited_classes if it's None
         if visited_classes is None:
             visited_classes = set()
 
-        # Check if the class has already been visited
         if cls in visited_classes:
             return
-        if cls is self.ontology.DataCharacterization: # Junk class for the time being *********
+        if cls is self.ontology.DataCharacterization:
             return
-        # Add the current class to the visited set
+
         visited_classes.add(cls)
 
-        # Check if cls requires final instantiation (Has no object or data properies)
-        requires_instance = requires_final_instantiation(cls,self.ontology)
-
-        # Create a node for the current class
+        requires_instance = requires_final_instantiation(cls, self.ontology)
         new_node_id = self.conversation_tree.add_child(parent_id, cls.name, answer=None)
 
-        # Instantiate cls if it has or subclasses or if it requires_instance(no data or object properties)
-        if requires_instance or not get_subclasses(cls): # Need logic for instantiating data properties ****************
-            question = f'What {cls.name} does this architecture have defined?'
-
-            # Ask the question
-            response = self.ask_question(parent_id=new_node_id, question=question, cls=cls)
-
-            if response: # Debug print
-                print(f"Question:\n{question}\nResponse:\n{response.instance_names}")
-
+        if requires_instance or not get_subclasses(cls):
+            # Ask the question without hardcoding
+            response = self.ask_question(parent_id=new_node_id, cls=cls)
             if response and response.instance_names:
-                # Transform instance_names into a dictionary with the class name as the key
-                response_dict = {question: response.instance_names}
-
-                # Update the node's answer
+                response_dict = {'instance_names': response.instance_names}
                 self.conversation_tree.nodes[new_node_id]['answer'] = response_dict
 
-        # Process related classes by object properties
         for related_cls in get_connected_classes(cls, self.ontology):
-            self.handle_class(related_cls,new_node_id,visited_classes)
+            self.handle_class(related_cls, new_node_id, visited_classes)
 
-        # Process subclasses of cls
         for subcls in get_subclasses(cls):
-            self.handle_class(subcls,new_node_id,visited_classes)
+            self.handle_class(subcls, new_node_id, visited_classes)
 
-    def get_ancestor_context(self, node_id):
-        """
-        Collects ancestor answers up to the given node and formats them as a string to provide context.
-
-        :param node_id: The ID of the current node.
-        :return: A formatted string of questions and their corresponding answers, or an empty string if no context exists.
-        """
-        answers = []
+    # Updated methods
+    def get_ancestor_classes(self, node_id):
+        ancestor_classes = []
         current_id = node_id
         while current_id is not None:
             node = self.conversation_tree.nodes.get(current_id)
             if not node:
                 break
+            ancestor_classes.append(node['name'])
+            current_id = node.get('parent_id')
+        return ancestor_classes[::-1]
 
-            if node['answer']:
-                # node['answer'] is a dict with questions as keys and instance names as values
-                for question_text, instance_names in node['answer'].items():
-                    if instance_names:
-                        # Ensure instance_names is a list
-                        if not isinstance(instance_names, list):
-                            instance_names = [instance_names]
-                        answers.append((question_text, instance_names))
-
-            current_id = node.get('parent_id')  # Move to parent node
-
-        if not answers:
-            # If no context, return empty string
-            return ""
-
-        # Format the context as a string
-        context_str = "\n".join(
-            [f"Step {i + 1}: Question: {q}\nAnswer: {', '.join(a)}"
-            for i, (q, a) in enumerate(reversed(answers))]
-        )
-        return context_str
-
-
+    def validate_response(self, response):
+        response_json = json.loads(response.strip())
+        validated_response = LLMResponse.model_validate(response_json)
+        return validated_response
 
     def start(self):
-        """
-        Starts the questioning process from the base class.
-        """
-        root_class = self.ontology.ANNConfiguration # Starting at Network for simplicity and testing
-
+        root_class = self.ontology.ANNConfiguration
         if root_class is None:
-            print(f"Class '{root_class.name}' does not exist in the ontology.")
+            print(f"Class 'ANNConfiguration' does not exist in the ontology.")
             return
 
         visited_classes = set()
-
-        # Start processing from the root class
         self.handle_class(root_class, parent_id=0, visited_classes=visited_classes)
-
 
 
 def main():
@@ -202,16 +111,24 @@ def main():
     # print(response)
     # return
 
+    from utils.pdf_loader import load_pdf
+    file_path = "data/hand_processed/AlexNet.pdf"  # Replace with your actual file path
+    documents = load_pdf(file_path)
+    # Combine all the page contents into a single string
+    paper_content = "\n".join([doc.page_content for doc in documents])
+    llm = OllamaLLMModel()
+
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-    onto_prompts_json = load_ontology_questions("rag/tree_prompting/test_ontology_prompts.json")   
+    # onto_prompts_json = load_ontology_questions("rag/tree_prompting/test_ontology_prompts.json")   
 
 
     tree = ConversationTree()
     questioner = OntologyTreeQuestioner(
         ontology=onto,
         conversation_tree=tree,
-        query_engine=None,
-        onto_prompts=onto_prompts_json
+        # onto_prompts=onto_prompts_json,
+        llm=llm,
+        paper_content=paper_content
     )
     questioner.start()
     tree.save_to_json("output/conversation_tree.json")
@@ -339,17 +256,18 @@ def get_few_shot_examples(entity: str, ontology_data: List[dict]) -> str:
 
     return None
 
-def get_ollama_prompt():
+def get_ollama_prompt() -> str:
     return """
+You are provided with the following things:
+1 - A question to answer delimited by triple backticks `.
+2 - Previously, a paper as context written about a neural network architecture.
 Your task is to perform the following actions: 
-1 - Summarize the following text delimited by <> considering only details from the provided research paper.
-2 - Break down the question step-by-step to reach a clear conculsion.
-3 - List each name in the French summary.
-4 - Output a json object that contains the following keys: instance_names.
+1 - Summarize the following question with details from the provided paper.
+2 - Break down the question step-by-step to reach a clear conculsion ot the question.
+3 - List each relevant ontology entity names the question asks for.
+4 - Output a json object of ontology entity names that contains the following key: instance_names.
 
-If you do not know the answer or cannot confidently determine it, explicitly state that you do not know and avoid providing incorrect or speculative answers.
-
-Previous history to this conversation and problem is delimited by triple backticks.
+If you do not know the answer or cannot confidently determine it, explicitly state 'I don't know.' and avoid providing incorrect or speculative answers.
 
 Use the following format:
 Text: <text to summarize>
@@ -361,6 +279,29 @@ Output JSON: <json with summary and num_names>
 ```{query}```
 """
 
+def get_class_context(class_obj):
+    class_name = class_obj.name
+    ancestor_classes = class_obj.get_ancestors()
+    return class_name, ancestor_classes
+
+def generate_prompt(class_name, ancestor_classes, paper_content):
+    prompt = f"""
+You are an expert in ontology population. Based on the following information:
+
+- **Class**: {class_name}
+- **Ancestor Classes**: {', '.join(ancestor_classes) if ancestor_classes else 'None'}
+
+Below is a research paper that provides detailed information about the class and its context:
+
+\"\"\"
+{paper_content}
+\"\"\"
+
+Please perform the following tasks:
+1. Generate a question to instantiate a name for the class.
+2. Relate the class to its ancestor classes where applicable.
+"""
+    return prompt
 
 if __name__ == "__main__":
     main()

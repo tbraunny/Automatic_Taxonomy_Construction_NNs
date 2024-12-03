@@ -83,7 +83,3 @@ def write_to_text_file(file_path: str, content: str):
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(content)
     print(f"Cleaned text written to {output_path}")
-
-
-file_path = "data/raw/AlexNet.pdf"
-doc = load_pdf(file_path,to_file=True)
