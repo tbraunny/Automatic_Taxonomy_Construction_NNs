@@ -1,0 +1,920 @@
+{
+    "id": 0,
+    "question": null,
+    "answer": null,
+    "children": [
+        {
+            "id": 1,
+            "question": "ANNConfiguration",
+            "answer": null,
+            "children": [
+                {
+                    "id": 2,
+                    "question": "EvaluationResult",
+                    "answer": null,
+                    "children": [
+                        {
+                            "id": 3,
+                            "question": "TrainingStrategy",
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 4,
+                                    "question": "TrainingSession",
+                                    "answer": null,
+                                    "children": [
+                                        {
+                                            "id": 5,
+                                            "question": "TrainingStep",
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 6,
+                                                    "question": "TrainingLoop",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 7,
+                                                            "question": "StopCondition",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 8,
+                                                                    "question": "IterateUntil",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 9,
+                                                                            "question": "ConditionalEvaluation",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 8
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 7
+                                                                },
+                                                                {
+                                                                    "id": 10,
+                                                                    "question": "IterateFor",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 7
+                                                                }
+                                                            ],
+                                                            "parent_id": 6
+                                                        }
+                                                    ],
+                                                    "parent_id": 5
+                                                },
+                                                {
+                                                    "id": 11,
+                                                    "question": "NetworkSpecific",
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 12,
+                                                            "question": "DatasetPipe",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 13,
+                                                                    "question": "NetworkEvaluation",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 14,
+                                                                            "question": "Metric",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 15,
+                                                                                    "question": "TrueOrFalseExamples",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 16,
+                                                                                            "question": "FalseExamples",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 17,
+                                                                                                    "question": "FalseNegatives",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 16
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 18,
+                                                                                                    "question": "FalsePositives",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 16
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 15
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 19,
+                                                                                            "question": "TrueExamples",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 20,
+                                                                                                    "question": "TrueNegatives",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 19
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 21,
+                                                                                                    "question": "TruePositives",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 19
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 15
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 14
+                                                                                },
+                                                                                {
+                                                                                    "id": 22,
+                                                                                    "question": "Accuracy",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 14
+                                                                                },
+                                                                                {
+                                                                                    "id": 23,
+                                                                                    "question": "LogLikelihood",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 24,
+                                                                                            "question": "ParzenWindow",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 23
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 14
+                                                                                },
+                                                                                {
+                                                                                    "id": 25,
+                                                                                    "question": "MeanSquaredError",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 14
+                                                                                },
+                                                                                {
+                                                                                    "id": 26,
+                                                                                    "question": "Precision",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 14
+                                                                                },
+                                                                                {
+                                                                                    "id": 27,
+                                                                                    "question": "Recall",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 14
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 13
+                                                                        },
+                                                                        {
+                                                                            "id": 28,
+                                                                            "question": "Network",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 29,
+                                                                                    "question": "OutputLayer",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 28
+                                                                                },
+                                                                                {
+                                                                                    "id": 30,
+                                                                                    "question": "Layer",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 31,
+                                                                                            "question": "TrainedWeights",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 32,
+                                                                                                    "question": "TrainedModel",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 31
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 30
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 33,
+                                                                                            "question": "InOutLayer",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 34,
+                                                                                                    "question": "InputLayer",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 33
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 30
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 35,
+                                                                                            "question": "HiddenLayer",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 36,
+                                                                                                    "question": "ActivationLayer",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 37,
+                                                                                                            "question": "ActivationFunction",
+                                                                                                            "answer": null,
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "id": 38,
+                                                                                                                    "question": "NonDiff",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "id": 39,
+                                                                                                                            "question": "Elu",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 38
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 40,
+                                                                                                                            "question": "Relu",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 38
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 41,
+                                                                                                                            "question": "Relu6",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 38
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                                    "parent_id": 37
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "id": 42,
+                                                                                                                    "question": "Linear",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 37
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "id": 43,
+                                                                                                                    "question": "Regularization",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "id": 44,
+                                                                                                                            "question": "RandomDropOut",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 43
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                                    "parent_id": 37
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "id": 45,
+                                                                                                                    "question": "Smooth",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "id": 46,
+                                                                                                                            "question": "Sigmoid",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 45
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 47,
+                                                                                                                            "question": "SoftMax",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 45
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 48,
+                                                                                                                            "question": "SoftPlus",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 45
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 49,
+                                                                                                                            "question": "SoftSign",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 45
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 50,
+                                                                                                                            "question": "Tanh",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 45
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                                    "parent_id": 37
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "parent_id": 36
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 51,
+                                                                                                            "question": "RNNLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "id": 52,
+                                                                                                                    "question": "BidirectionalRNNLayer",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 51
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "id": 53,
+                                                                                                                    "question": "GRULayer",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 51
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "id": 54,
+                                                                                                                    "question": "LSTMLayer",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 51
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "parent_id": 36
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 55,
+                                                                                                            "question": "ConvolutionLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "id": 56,
+                                                                                                                    "question": "SeparableConvolutionLayer",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 55
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "parent_id": 36
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 57,
+                                                                                                            "question": "DeconvolutionLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "id": 58,
+                                                                                                                    "question": "SeparableDeconvolutionLayer",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [],
+                                                                                                                    "parent_id": 57
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "parent_id": 36
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 59,
+                                                                                                            "question": "FullyConnectedLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 36
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 35
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 60,
+                                                                                                    "question": "AggregationLayer",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 61,
+                                                                                                            "question": "ConcatLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 60
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 62,
+                                                                                                            "question": "MultiplyLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 60
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 63,
+                                                                                                            "question": "PoolingLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 60
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 64,
+                                                                                                            "question": "SumLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 60
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 65,
+                                                                                                            "question": "UpscaleLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 60
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 35
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 66,
+                                                                                                    "question": "ModificationLayer",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 67,
+                                                                                                            "question": "NoiseLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [
+                                                                                                                {
+                                                                                                                    "id": 68,
+                                                                                                                    "question": "ProbabilityDistributionFunction",
+                                                                                                                    "answer": null,
+                                                                                                                    "children": [
+                                                                                                                        {
+                                                                                                                            "id": 69,
+                                                                                                                            "question": "RandomNoiseDataset",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 70,
+                                                                                                                            "question": "Exponential",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 71,
+                                                                                                                            "question": "Gaussian",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 72,
+                                                                                                                            "question": "Categorical",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 73,
+                                                                                                                            "question": "Normal",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        },
+                                                                                                                        {
+                                                                                                                            "id": 74,
+                                                                                                                            "question": "Uniform",
+                                                                                                                            "answer": null,
+                                                                                                                            "children": [],
+                                                                                                                            "parent_id": 68
+                                                                                                                        }
+                                                                                                                    ],
+                                                                                                                    "parent_id": 67
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "parent_id": 66
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 75,
+                                                                                                            "question": "DropoutLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 66
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 76,
+                                                                                                            "question": "BatchNormLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 66
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 77,
+                                                                                                            "question": "FlattenLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 66
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 35
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 78,
+                                                                                                    "question": "SeparationLayer",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 79,
+                                                                                                            "question": "CloneLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 78
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 80,
+                                                                                                            "question": "SplitLayer",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 78
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 35
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 30
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 28
+                                                                                },
+                                                                                {
+                                                                                    "id": 81,
+                                                                                    "question": "ObjectiveFunction",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 82,
+                                                                                            "question": "CostFunction",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 83,
+                                                                                                    "question": "RegularizerFunction",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 84,
+                                                                                                            "question": "L1L2RegularizerFunction",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 83
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 85,
+                                                                                                            "question": "L1RegularizerFunction",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 83
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 86,
+                                                                                                            "question": "L2RegularizerFunction",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 83
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 82
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 87,
+                                                                                                    "question": "LossFunction",
+                                                                                                    "answer": null,
+                                                                                                    "children": [
+                                                                                                        {
+                                                                                                            "id": 88,
+                                                                                                            "question": "BinaryCrossEntropy",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 87
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 89,
+                                                                                                            "question": "CategoricalCrossEntropy",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 87
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "id": 90,
+                                                                                                            "question": "MSE",
+                                                                                                            "answer": null,
+                                                                                                            "children": [],
+                                                                                                            "parent_id": 87
+                                                                                                        }
+                                                                                                    ],
+                                                                                                    "parent_id": 82
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 81
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 91,
+                                                                                            "question": "MaxObjectiveFunction",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 81
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 92,
+                                                                                            "question": "MinObjectiveFunction",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 81
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 28
+                                                                                },
+                                                                                {
+                                                                                    "id": 93,
+                                                                                    "question": "TaskCharacterization",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 94,
+                                                                                            "question": "Adversarial",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 95,
+                                                                                            "question": "Classification",
+                                                                                            "answer": null,
+                                                                                            "children": [
+                                                                                                {
+                                                                                                    "id": 96,
+                                                                                                    "question": "SemiSupervisedClassification",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 95
+                                                                                                },
+                                                                                                {
+                                                                                                    "id": 97,
+                                                                                                    "question": "SupervisedClassification",
+                                                                                                    "answer": null,
+                                                                                                    "children": [],
+                                                                                                    "parent_id": 95
+                                                                                                }
+                                                                                            ],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 98,
+                                                                                            "question": "Clustering",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 99,
+                                                                                            "question": "Discrimination",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 100,
+                                                                                            "question": "Generation",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 101,
+                                                                                            "question": "Reconstruction",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 102,
+                                                                                            "question": "Regression",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 93
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 28
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 13
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 12
+                                                                },
+                                                                {
+                                                                    "id": 103,
+                                                                    "question": "Dataset",
+                                                                    "answer": null,
+                                                                    "children": [
+                                                                        {
+                                                                            "id": 104,
+                                                                            "question": "Labelset",
+                                                                            "answer": null,
+                                                                            "children": [],
+                                                                            "parent_id": 103
+                                                                        },
+                                                                        {
+                                                                            "id": 105,
+                                                                            "question": "DataType",
+                                                                            "answer": null,
+                                                                            "children": [
+                                                                                {
+                                                                                    "id": 106,
+                                                                                    "question": "Image",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 105
+                                                                                },
+                                                                                {
+                                                                                    "id": 107,
+                                                                                    "question": "MultiDimensionalCube",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 105
+                                                                                },
+                                                                                {
+                                                                                    "id": 108,
+                                                                                    "question": "Text",
+                                                                                    "answer": null,
+                                                                                    "children": [
+                                                                                        {
+                                                                                            "id": 109,
+                                                                                            "question": "SemistructuredText",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 108
+                                                                                        },
+                                                                                        {
+                                                                                            "id": 110,
+                                                                                            "question": "UnstructuredText",
+                                                                                            "answer": null,
+                                                                                            "children": [],
+                                                                                            "parent_id": 108
+                                                                                        }
+                                                                                    ],
+                                                                                    "parent_id": 105
+                                                                                },
+                                                                                {
+                                                                                    "id": 111,
+                                                                                    "question": "Video",
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 105
+                                                                                }
+                                                                            ],
+                                                                            "parent_id": 103
+                                                                        }
+                                                                    ],
+                                                                    "parent_id": 12
+                                                                }
+                                                            ],
+                                                            "parent_id": 11
+                                                        },
+                                                        {
+                                                            "id": 112,
+                                                            "question": "TrainingOptimizer",
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 113,
+                                                                    "question": "AdaDelta",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 114,
+                                                                    "question": "AdaGrad",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 115,
+                                                                    "question": "AdaGradDA",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 116,
+                                                                    "question": "Adam",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 117,
+                                                                    "question": "Ftrl",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 118,
+                                                                    "question": "GradientDescent",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 119,
+                                                                    "question": "Momentum",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 120,
+                                                                    "question": "ProximalAdaGrad",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 121,
+                                                                    "question": "ProximalGradientDescent",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                },
+                                                                {
+                                                                    "id": 122,
+                                                                    "question": "RMSProp",
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 112
+                                                                }
+                                                            ],
+                                                            "parent_id": 11
+                                                        },
+                                                        {
+                                                            "id": 123,
+                                                            "question": "TrainingSingle",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 11
+                                                        },
+                                                        {
+                                                            "id": 124,
+                                                            "question": "TrainingSingleForwardOnly",
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 11
+                                                        }
+                                                    ],
+                                                    "parent_id": 5
+                                                }
+                                            ],
+                                            "parent_id": 4
+                                        }
+                                    ],
+                                    "parent_id": 3
+                                }
+                            ],
+                            "parent_id": 2
+                        }
+                    ],
+                    "parent_id": 1
+                }
+            ],
+            "parent_id": 0
+        }
+    ],
+    "parent_id": null
+}
