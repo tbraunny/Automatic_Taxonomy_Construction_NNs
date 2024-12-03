@@ -1,0 +1,2 @@
+llama-index-embeddings-langchain
+langchain-huggingface
