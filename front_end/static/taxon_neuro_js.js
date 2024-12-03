@@ -162,6 +162,7 @@ function checkEnter(event) {
 //Function to handle the user's input
 function handlePromptInput(userInput) {
     //alert('DONT TOUCH THAT');
+    //
 
     const chat_response = document.getElementById("chat-responses");
     chat_response.style.display = 'none';
