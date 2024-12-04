@@ -6,33 +6,43 @@ class ConversationTree:
     """
 
     def __init__(self):
-        self.tree = {"id": 0, "question": None, "answer": None, "children": [], "parent_id": None}
+        # Updated: Replace 'qa_dict' with 'question' and 'answer'
+        self.tree = {
+            "id": 0,
+            "cls_name": None,
+            "question": None,
+            "answer": None,
+            "children": [],
+            "parent_id": None
+        }
         self.node_id = 0
         self.current_node = self.tree
         self.nodes = {0: self.tree}
 
-    def add_child(self, parent_id, question, answer=None):
+    def add_child(self, parent_id, cls_name, question=None, answer=None):
         """
         Adds a child node to the conversation tree.
 
         :param parent_id: ID of the parent node.
-        :param question: The question asked.
+        :param cls_name: The class name.
+        :param question: The question asked (optional).
         :param answer: The answer received (optional).
         :return: The new node's ID.
         """
+
         self.node_id += 1
 
         child_node = {
             "id": self.node_id,
-            "question": question,
-            "answer": answer,
+            "cls_name": cls_name,
+            "question": question, 
+            "answer": answer,     
             "children": [],
-            "parent_id": parent_id  # Link this node to its parent
+            "parent_id": parent_id  
         }
         self.nodes[parent_id]["children"].append(child_node)  # Add child to parent's list
         self.nodes[self.node_id] = child_node  # Store the new node in the tree
         return self.node_id
-
 
     def to_serializable(self, obj):
         """
@@ -52,8 +62,6 @@ class ConversationTree:
             return {"response_text": str(obj)}
         else:
             return obj
-        
-
 
     def save_to_json(self, file_name):
         """

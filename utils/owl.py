@@ -2,6 +2,10 @@ from owlready2 import *
 from typing import List, Set
 import warnings
 
+def load_ontology(ontology_path):
+    return get_ontology(ontology_path).load()
+
+
 """ 1) Class Functions """
 
 def get_connected_classes(cls, ontology):
@@ -27,8 +31,21 @@ def get_connected_classes(cls, ontology):
 
     return list(connected_classes)
 
+
+
 def get_subclasses(cls):
+    """
+    Retrieves all subclasses of a given class.
+
+    Args:
+        cls (ThingClass): The class for which to find it's subclasses.
+
+    Returns:
+        List[ThingClass]: A list of subclasses to the given class.
+    """
     return list(cls.subclasses())
+
+
 
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
     """
@@ -42,6 +59,36 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
         List[Property]: A list of properties that have the specified class as their domain.
     """
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
+
+
+
+def get_class_data_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+    """
+    Retrieves all data properties in the given ontology that have the specified class as their domain.
+
+    Args:
+        ontology (Ontology): The ontology containing the properties.
+        onto_class (ThingClass): The class for which to find properties with this domain.
+
+    Returns:
+        List[Property]: A list of data properties that have the specified class as their domain.
+    """
+    return [prop for prop in ontology.data_properties() if onto_class in prop.domain]
+
+
+
+def get_class_object_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+    """
+    Retrieves all object properties in the given ontology that have the specified class as their domain.
+
+    Args:
+        ontology (Ontology): The ontology containing the properties.
+        onto_class (ThingClass): The class for which to find properties with this domain.
+
+    Returns:
+        List[Property]: A list of object properties that have the specified class as their domain.
+    """
+    return [prop for prop in ontology.object_properties() if onto_class in prop.domain]
 
 
 
@@ -70,6 +117,8 @@ def get_property_range_type(property: Property) -> str:
     # default to atomic
     return "atomic"
 
+
+
 def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     Retrieves all restrictions (including cardinality restrictions) applied to a specified class.
@@ -82,17 +131,7 @@ def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     return [restriction for restriction in onto_class.is_a if isinstance(restriction, Restriction)]
 
-# def get_all_subclasses(onto_class: ThingClass) -> List[ThingClass]:
-#     """
-#     Retrieves all direct and indirect subclasses of a specified class.
 
-#     Args:
-#         onto_class (ThingClass): The class for which to find subclasses.
-
-#     Returns:
-#         List[ThingClass]: A list of all subclasses of the specified class.
-#     """
-#     return list(onto_class.subclasses())
 
 def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = None) -> ThingClass:
     """

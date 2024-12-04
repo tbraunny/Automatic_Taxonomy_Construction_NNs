@@ -48,7 +48,7 @@
                                 - ModificationLayer [Final Instantiation Required]
                                       Possible Subclasses:
                                         - NoiseLayer
-                                        - DropoutLayer
+                                        - DropoutLayer (alexnet_dropoutlayer)
                                         - BatchNormLayer [Final Instantiation Required]
                                         - FlattenLayer [Final Instantiation Required]
                                 - SeparationLayer [Final Instantiation Required]

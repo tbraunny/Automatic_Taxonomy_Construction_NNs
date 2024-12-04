@@ -14,33 +14,36 @@ from utils.owl import *
 
 class LLMResponse(BaseModel):
     instance_names: List[str]  # A list of ontology class names expected from LLM
-
+    
 class OntologyTreeQuestioner:
     """
     Generates questions based on ontology classes and their properties,
     integrates with a conversation tree, and recursively asks questions for object properties.
     """
 
-    def __init__(self, ontology=None, conversation_tree=None, llm=None, paper_content=None):
+    def __init__(self, ontology=None, conversation_tree=None, llm=None, paper_content:str=None):
         self.ontology = ontology
         self.conversation_tree = conversation_tree
         self.llm = llm
-        self.paper_content=paper_content
+        self.paper_content = paper_content
+        self.root_class = self.ontology.ANNConfiguration
 
     def ask_question(self, parent_id, cls, retries=3):
         for attempt in range(retries):
             try:
                 # Retrieve ancestor classes
                 ancestor_classes = self.get_ancestor_classes(parent_id)
+                print("Ancestor classes:", ancestor_classes)
 
-                # Generate the prompt
-                prompt = generate_prompt(cls.name, ancestor_classes,self.paper_content)
+                # Generate the prompt and question
+                class_prompt = generate_class_prompt(cls.name, ancestor_classes, self.paper_content)
 
                 # Query the LLM
-                response = self.llm.query(prompt)
+                response = OllamaLLMModel().query_ollama(class_prompt,get_ollama_prompt())
+
                 # Validate and process the response
                 validated_response = self.validate_response(response)
-                return validated_response
+                return class_prompt, validated_response
 
             except (ValueError, ValidationError) as e:
                 print(f"Validation error on attempt {attempt + 1}: {e}")
@@ -48,7 +51,7 @@ class OntologyTreeQuestioner:
                 print(f"Unexpected error on attempt {attempt + 1}: {e}")
 
         # Return None if LLM fails to respond with valid JSON
-        return None
+        return None, None
 
     def handle_class(self, cls, parent_id, visited_classes=None):
         if visited_classes is None:
@@ -61,15 +64,22 @@ class OntologyTreeQuestioner:
 
         visited_classes.add(cls)
 
-        requires_instance = requires_final_instantiation(cls, self.ontology)
-        new_node_id = self.conversation_tree.add_child(parent_id, cls.name, answer=None)
+        # instantiate data property here?
 
-        if requires_instance or not get_subclasses(cls):
-            # Ask the question without hardcoding
-            response = self.ask_question(parent_id=new_node_id, cls=cls)
-            if response and response.instance_names:
-                response_dict = {'instance_names': response.instance_names}
-                self.conversation_tree.nodes[new_node_id]['answer'] = response_dict
+        requires_instance = requires_final_instantiation(cls, self.ontology)
+
+        question = None
+        answer = None
+
+        if requires_instance:
+            # Ask the question and get the answer
+            question, answer = self.ask_question(parent_id=parent_id, cls=cls)
+
+        # Add the node to the conversation tree with question and answer
+        new_node_id = self.conversation_tree.add_child(
+            parent_id, cls.name, question=question, answer=answer
+        )
+
 
         for related_cls in get_connected_classes(cls, self.ontology):
             self.handle_class(related_cls, new_node_id, visited_classes)
@@ -77,15 +87,15 @@ class OntologyTreeQuestioner:
         for subcls in get_subclasses(cls):
             self.handle_class(subcls, new_node_id, visited_classes)
 
-    # Updated methods
     def get_ancestor_classes(self, node_id):
         ancestor_classes = []
         current_id = node_id
-        while current_id is not None:
+        while current_id != 0:
+            print("hi")
             node = self.conversation_tree.nodes.get(current_id)
             if not node:
                 break
-            ancestor_classes.append(node['name'])
+            ancestor_classes.append(node['cls_name'])
             current_id = node.get('parent_id')
         return ancestor_classes[::-1]
 
@@ -95,40 +105,28 @@ class OntologyTreeQuestioner:
         return validated_response
 
     def start(self):
-        root_class = self.ontology.ANNConfiguration
-        if root_class is None:
-            print(f"Class 'ANNConfiguration' does not exist in the ontology.")
-            return
+        if self.root_class is None:
+            print(f"Class '{self.root_class.name}' does not exist in the ontology.")
+            return        
 
         visited_classes = set()
-        self.handle_class(root_class, parent_id=0, visited_classes=visited_classes)
+        self.handle_class(self.root_class, parent_id=0, visited_classes=visited_classes)
 
 
 def main():
-
-    # query_engine = LocalRagEngine().get_rag_query_engine()
-    # response = query_engine.query("hello llama")
-    # print(response)
-    # return
-
     from utils.pdf_loader import load_pdf
     file_path = "data/hand_processed/AlexNet.pdf"  # Replace with your actual file path
-    documents = load_pdf(file_path)
-    # Combine all the page contents into a single string
-    paper_content = "\n".join([doc.page_content for doc in documents])
+    doc_str = load_pdf(file_path,as_str=True)
+    
     llm = OllamaLLMModel()
-
-    onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-    # onto_prompts_json = load_ontology_questions("rag/tree_prompting/test_ontology_prompts.json")   
-
+    onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
 
     tree = ConversationTree()
     questioner = OntologyTreeQuestioner(
         ontology=onto,
         conversation_tree=tree,
-        # onto_prompts=onto_prompts_json,
         llm=llm,
-        paper_content=paper_content
+        paper_content=doc_str
     )
     questioner.start()
     tree.save_to_json("output/conversation_tree.json")
@@ -215,57 +213,15 @@ Example:
 }
 """
 
-
-def get_onto_prompt(entity: str, ontology_data: List[dict]) -> str:
-    """
-    Retrieves a question (prompt) for a given entity from ontology data, ignoring object properties.
-
-    :param entity: The entity name (e.g., 'Network', 'Layer').
-    :param ontology_data: A list of dictionaries representing the ontology JSON structure.
-    :return: The associated question (prompt) or a default message if not found.
-    """
-    for entry in ontology_data:
-        # Ignore entries that contain 'object_property'
-        if "object_property" in entry:
-            continue
-        if entry.get("class") == entity:
-            return entry.get("prompt", f"No prompt found for '{entity}'.")
-    return f"No entry found for '{entity}' in the ontology."
-
-
-def get_few_shot_examples(entity: str, ontology_data: List[dict]) -> str:
-    """
-    Retrieves few-shot examples based on the current question.
-
-    :param question: The current question being asked.
-    :return: Formatted few-shot examples or None if not available.
-    """
-    for entry in ontology_data:
-        if entry.get("class") == entity:
-            # Get the few-shot examples
-            examples = entry.get("few_shot_examples", [])
-            
-            if not examples:
-                return None
-            # Format the examples
-            formatted_examples = "\n".join([
-                f"Example {idx + 1}:\n  Question: {ex['input']}\n  Answer: {ex['output']}"
-                for idx, ex in enumerate(examples)
-            ])
-            return formatted_examples.strip()
-
-    return None
-
 def get_ollama_prompt() -> str:
     return """
 You are provided with the following things:
 1 - A question to answer delimited by triple backticks `.
-2 - Previously, a paper as context written about a neural network architecture.
 Your task is to perform the following actions: 
 1 - Summarize the following question with details from the provided paper.
 2 - Break down the question step-by-step to reach a clear conculsion ot the question.
 3 - List each relevant ontology entity names the question asks for.
-4 - Output a json object of ontology entity names that contains the following key: instance_names.
+4 - Output a the list of 
 
 If you do not know the answer or cannot confidently determine it, explicitly state 'I don't know.' and avoid providing incorrect or speculative answers.
 
@@ -284,24 +240,37 @@ def get_class_context(class_obj):
     ancestor_classes = class_obj.get_ancestors()
     return class_name, ancestor_classes
 
-def generate_prompt(class_name, ancestor_classes, paper_content):
+def generate_class_prompt(class_name, ancestor_classes, paper_content):
     prompt = f"""
-You are an expert in ontology population. Based on the following information:
+As an expert in neural networks architectures, create a question that
 
-- **Class**: {class_name}
-- **Ancestor Classes**: {', '.join(ancestor_classes) if ancestor_classes else 'None'}
+"""
+    
+    
+    
+    
+"""
+You are a machine that generates questions. Based on the following information:
+
+- **Class in Ontology**: '{class_name}'
+- **Instantiated Ancestor Classes**: '{', '.join(ancestor_classes) if ancestor_classes else 'None'}'
 
 Below is a research paper that provides detailed information about the class and its context:
-
 \"\"\"
 {paper_content}
 \"\"\"
 
 Please perform the following tasks:
-1. Generate a question to instantiate a name for the class.
-2. Relate the class to its ancestor classes where applicable.
+1. Generate a question that will be used in an llm prompt to instantiate a name for the class.
+2. In the question, relate the class to its ancestor classes where applicable.
 """
-    return prompt
+
+    generated_prompt = OllamaLLMModel().query_ollama('',prompt)
+
+    print(generated_prompt)
+
+
+    return generated_prompt
 
 if __name__ == "__main__":
     main()

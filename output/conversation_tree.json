@@ -1,51 +1,61 @@
 {
     "id": 0,
+    "cls_name": null,
     "question": null,
     "answer": null,
     "children": [
         {
             "id": 1,
-            "question": "ANNConfiguration",
+            "cls_name": "ANNConfiguration",
+            "question": null,
             "answer": null,
             "children": [
                 {
                     "id": 2,
-                    "question": "EvaluationResult",
+                    "cls_name": "EvaluationResult",
+                    "question": null,
                     "answer": null,
                     "children": [
                         {
                             "id": 3,
-                            "question": "TrainingStrategy",
+                            "cls_name": "TrainingStrategy",
+                            "question": null,
                             "answer": null,
                             "children": [
                                 {
                                     "id": 4,
-                                    "question": "TrainingSession",
+                                    "cls_name": "TrainingSession",
+                                    "question": null,
                                     "answer": null,
                                     "children": [
                                         {
                                             "id": 5,
-                                            "question": "TrainingStep",
+                                            "cls_name": "TrainingStep",
+                                            "question": null,
                                             "answer": null,
                                             "children": [
                                                 {
                                                     "id": 6,
-                                                    "question": "TrainingLoop",
+                                                    "cls_name": "TrainingLoop",
+                                                    "question": null,
                                                     "answer": null,
                                                     "children": [
                                                         {
                                                             "id": 7,
-                                                            "question": "StopCondition",
+                                                            "cls_name": "StopCondition",
+                                                            "question": null,
                                                             "answer": null,
                                                             "children": [
                                                                 {
                                                                     "id": 8,
-                                                                    "question": "IterateUntil",
+                                                                    "cls_name": "IterateUntil",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [
                                                                         {
                                                                             "id": 9,
-                                                                            "question": "ConditionalEvaluation",
+                                                                            "cls_name": "ConditionalEvaluation",
+                                                                            "question": null,
                                                                             "answer": null,
                                                                             "children": [],
                                                                             "parent_id": 8
@@ -55,7 +65,8 @@
                                                                 },
                                                                 {
                                                                     "id": 10,
-                                                                    "question": "IterateFor",
+                                                                    "cls_name": "IterateFor",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 7
@@ -68,44 +79,52 @@
                                                 },
                                                 {
                                                     "id": 11,
-                                                    "question": "NetworkSpecific",
+                                                    "cls_name": "NetworkSpecific",
+                                                    "question": null,
                                                     "answer": null,
                                                     "children": [
                                                         {
                                                             "id": 12,
-                                                            "question": "DatasetPipe",
+                                                            "cls_name": "DatasetPipe",
+                                                            "question": null,
                                                             "answer": null,
                                                             "children": [
                                                                 {
                                                                     "id": 13,
-                                                                    "question": "NetworkEvaluation",
+                                                                    "cls_name": "NetworkEvaluation",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [
                                                                         {
                                                                             "id": 14,
-                                                                            "question": "Metric",
+                                                                            "cls_name": "Metric",
+                                                                            "question": null,
                                                                             "answer": null,
                                                                             "children": [
                                                                                 {
                                                                                     "id": 15,
-                                                                                    "question": "TrueOrFalseExamples",
+                                                                                    "cls_name": "TrueOrFalseExamples",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
                                                                                             "id": 16,
-                                                                                            "question": "FalseExamples",
+                                                                                            "cls_name": "FalseExamples",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 17,
-                                                                                                    "question": "FalseNegatives",
+                                                                                                    "cls_name": "FalseNegatives",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 16
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 18,
-                                                                                                    "question": "FalsePositives",
+                                                                                                    "cls_name": "FalsePositives",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 16
@@ -115,19 +134,22 @@
                                                                                         },
                                                                                         {
                                                                                             "id": 19,
-                                                                                            "question": "TrueExamples",
+                                                                                            "cls_name": "TrueExamples",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 20,
-                                                                                                    "question": "TrueNegatives",
+                                                                                                    "cls_name": "TrueNegatives",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 19
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 21,
-                                                                                                    "question": "TruePositives",
+                                                                                                    "cls_name": "TruePositives",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 19
@@ -140,19 +162,22 @@
                                                                                 },
                                                                                 {
                                                                                     "id": 22,
-                                                                                    "question": "Accuracy",
+                                                                                    "cls_name": "Accuracy",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
                                                                                     "parent_id": 14
                                                                                 },
                                                                                 {
                                                                                     "id": 23,
-                                                                                    "question": "LogLikelihood",
+                                                                                    "cls_name": "LogLikelihood",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
                                                                                             "id": 24,
-                                                                                            "question": "ParzenWindow",
+                                                                                            "cls_name": "ParzenWindow",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 23
@@ -162,21 +187,24 @@
                                                                                 },
                                                                                 {
                                                                                     "id": 25,
-                                                                                    "question": "MeanSquaredError",
+                                                                                    "cls_name": "MeanSquaredError",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
                                                                                     "parent_id": 14
                                                                                 },
                                                                                 {
                                                                                     "id": 26,
-                                                                                    "question": "Precision",
+                                                                                    "cls_name": "Precision",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
                                                                                     "parent_id": 14
                                                                                 },
                                                                                 {
                                                                                     "id": 27,
-                                                                                    "question": "Recall",
+                                                                                    "cls_name": "Recall",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
                                                                                     "parent_id": 14
@@ -186,29 +214,34 @@
                                                                         },
                                                                         {
                                                                             "id": 28,
-                                                                            "question": "Network",
+                                                                            "cls_name": "Network",
+                                                                            "question": null,
                                                                             "answer": null,
                                                                             "children": [
                                                                                 {
                                                                                     "id": 29,
-                                                                                    "question": "OutputLayer",
+                                                                                    "cls_name": "OutputLayer",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
                                                                                     "parent_id": 28
                                                                                 },
                                                                                 {
                                                                                     "id": 30,
-                                                                                    "question": "Layer",
+                                                                                    "cls_name": "Layer",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
                                                                                             "id": 31,
-                                                                                            "question": "TrainedWeights",
+                                                                                            "cls_name": "TrainedWeights",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 32,
-                                                                                                    "question": "TrainedModel",
+                                                                                                    "cls_name": "TrainedModel",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 31
@@ -218,12 +251,14 @@
                                                                                         },
                                                                                         {
                                                                                             "id": 33,
-                                                                                            "question": "InOutLayer",
+                                                                                            "cls_name": "InOutLayer",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 34,
-                                                                                                    "question": "InputLayer",
+                                                                                                    "cls_name": "InputLayer",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 33
@@ -233,41 +268,48 @@
                                                                                         },
                                                                                         {
                                                                                             "id": 35,
-                                                                                            "question": "HiddenLayer",
+                                                                                            "cls_name": "HiddenLayer",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 36,
-                                                                                                    "question": "ActivationLayer",
+                                                                                                    "cls_name": "ActivationLayer",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 37,
-                                                                                                            "question": "ActivationFunction",
+                                                                                                            "cls_name": "ActivationFunction",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [
                                                                                                                 {
                                                                                                                     "id": 38,
-                                                                                                                    "question": "NonDiff",
+                                                                                                                    "cls_name": "NonDiff",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [
                                                                                                                         {
                                                                                                                             "id": 39,
-                                                                                                                            "question": "Elu",
+                                                                                                                            "cls_name": "Elu",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 38
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 40,
-                                                                                                                            "question": "Relu",
+                                                                                                                            "cls_name": "Relu",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 38
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 41,
-                                                                                                                            "question": "Relu6",
+                                                                                                                            "cls_name": "Relu6",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 38
@@ -277,19 +319,22 @@
                                                                                                                 },
                                                                                                                 {
                                                                                                                     "id": 42,
-                                                                                                                    "question": "Linear",
+                                                                                                                    "cls_name": "Linear",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 37
                                                                                                                 },
                                                                                                                 {
                                                                                                                     "id": 43,
-                                                                                                                    "question": "Regularization",
+                                                                                                                    "cls_name": "Regularization",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [
                                                                                                                         {
                                                                                                                             "id": 44,
-                                                                                                                            "question": "RandomDropOut",
+                                                                                                                            "cls_name": "RandomDropOut",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 43
@@ -299,40 +344,46 @@
                                                                                                                 },
                                                                                                                 {
                                                                                                                     "id": 45,
-                                                                                                                    "question": "Smooth",
+                                                                                                                    "cls_name": "Smooth",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [
                                                                                                                         {
                                                                                                                             "id": 46,
-                                                                                                                            "question": "Sigmoid",
+                                                                                                                            "cls_name": "Sigmoid",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 45
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 47,
-                                                                                                                            "question": "SoftMax",
+                                                                                                                            "cls_name": "SoftMax",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 45
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 48,
-                                                                                                                            "question": "SoftPlus",
+                                                                                                                            "cls_name": "SoftPlus",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 45
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 49,
-                                                                                                                            "question": "SoftSign",
+                                                                                                                            "cls_name": "SoftSign",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 45
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 50,
-                                                                                                                            "question": "Tanh",
+                                                                                                                            "cls_name": "Tanh",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 45
@@ -345,26 +396,30 @@
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 51,
-                                                                                                            "question": "RNNLayer",
+                                                                                                            "cls_name": "RNNLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [
                                                                                                                 {
                                                                                                                     "id": 52,
-                                                                                                                    "question": "BidirectionalRNNLayer",
+                                                                                                                    "cls_name": "BidirectionalRNNLayer",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 51
                                                                                                                 },
                                                                                                                 {
                                                                                                                     "id": 53,
-                                                                                                                    "question": "GRULayer",
+                                                                                                                    "cls_name": "GRULayer",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 51
                                                                                                                 },
                                                                                                                 {
                                                                                                                     "id": 54,
-                                                                                                                    "question": "LSTMLayer",
+                                                                                                                    "cls_name": "LSTMLayer",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 51
@@ -374,12 +429,14 @@
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 55,
-                                                                                                            "question": "ConvolutionLayer",
+                                                                                                            "cls_name": "ConvolutionLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [
                                                                                                                 {
                                                                                                                     "id": 56,
-                                                                                                                    "question": "SeparableConvolutionLayer",
+                                                                                                                    "cls_name": "SeparableConvolutionLayer",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 55
@@ -389,12 +446,14 @@
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 57,
-                                                                                                            "question": "DeconvolutionLayer",
+                                                                                                            "cls_name": "DeconvolutionLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [
                                                                                                                 {
                                                                                                                     "id": 58,
-                                                                                                                    "question": "SeparableDeconvolutionLayer",
+                                                                                                                    "cls_name": "SeparableDeconvolutionLayer",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [],
                                                                                                                     "parent_id": 57
@@ -404,7 +463,8 @@
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 59,
-                                                                                                            "question": "FullyConnectedLayer",
+                                                                                                            "cls_name": "FullyConnectedLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 36
@@ -414,40 +474,46 @@
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 60,
-                                                                                                    "question": "AggregationLayer",
+                                                                                                    "cls_name": "AggregationLayer",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 61,
-                                                                                                            "question": "ConcatLayer",
+                                                                                                            "cls_name": "ConcatLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 60
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 62,
-                                                                                                            "question": "MultiplyLayer",
+                                                                                                            "cls_name": "MultiplyLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 60
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 63,
-                                                                                                            "question": "PoolingLayer",
+                                                                                                            "cls_name": "PoolingLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 60
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 64,
-                                                                                                            "question": "SumLayer",
+                                                                                                            "cls_name": "SumLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 60
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 65,
-                                                                                                            "question": "UpscaleLayer",
+                                                                                                            "cls_name": "UpscaleLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 60
@@ -457,57 +523,66 @@
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 66,
-                                                                                                    "question": "ModificationLayer",
+                                                                                                    "cls_name": "ModificationLayer",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 67,
-                                                                                                            "question": "NoiseLayer",
+                                                                                                            "cls_name": "NoiseLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [
                                                                                                                 {
                                                                                                                     "id": 68,
-                                                                                                                    "question": "ProbabilityDistributionFunction",
+                                                                                                                    "cls_name": "ProbabilityDistributionFunction",
+                                                                                                                    "question": null,
                                                                                                                     "answer": null,
                                                                                                                     "children": [
                                                                                                                         {
                                                                                                                             "id": 69,
-                                                                                                                            "question": "RandomNoiseDataset",
+                                                                                                                            "cls_name": "RandomNoiseDataset",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 70,
-                                                                                                                            "question": "Exponential",
+                                                                                                                            "cls_name": "Exponential",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 71,
-                                                                                                                            "question": "Gaussian",
+                                                                                                                            "cls_name": "Gaussian",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 72,
-                                                                                                                            "question": "Categorical",
+                                                                                                                            "cls_name": "Categorical",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 73,
-                                                                                                                            "question": "Normal",
+                                                                                                                            "cls_name": "Normal",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
                                                                                                                         },
                                                                                                                         {
                                                                                                                             "id": 74,
-                                                                                                                            "question": "Uniform",
+                                                                                                                            "cls_name": "Uniform",
+                                                                                                                            "question": null,
                                                                                                                             "answer": null,
                                                                                                                             "children": [],
                                                                                                                             "parent_id": 68
@@ -520,21 +595,24 @@
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 75,
-                                                                                                            "question": "DropoutLayer",
+                                                                                                            "cls_name": "DropoutLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 66
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 76,
-                                                                                                            "question": "BatchNormLayer",
+                                                                                                            "cls_name": "BatchNormLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 66
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 77,
-                                                                                                            "question": "FlattenLayer",
+                                                                                                            "cls_name": "FlattenLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 66
@@ -544,19 +622,22 @@
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 78,
-                                                                                                    "question": "SeparationLayer",
+                                                                                                    "cls_name": "SeparationLayer",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 79,
-                                                                                                            "question": "CloneLayer",
+                                                                                                            "cls_name": "CloneLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 78
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 80,
-                                                                                                            "question": "SplitLayer",
+                                                                                                            "cls_name": "SplitLayer",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 78
@@ -572,36 +653,42 @@
                                                                                 },
                                                                                 {
                                                                                     "id": 81,
-                                                                                    "question": "ObjectiveFunction",
+                                                                                    "cls_name": "ObjectiveFunction",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
                                                                                             "id": 82,
-                                                                                            "question": "CostFunction",
+                                                                                            "cls_name": "CostFunction",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 83,
-                                                                                                    "question": "RegularizerFunction",
+                                                                                                    "cls_name": "RegularizerFunction",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 84,
-                                                                                                            "question": "L1L2RegularizerFunction",
+                                                                                                            "cls_name": "L1L2RegularizerFunction",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 83
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 85,
-                                                                                                            "question": "L1RegularizerFunction",
+                                                                                                            "cls_name": "L1RegularizerFunction",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 83
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 86,
-                                                                                                            "question": "L2RegularizerFunction",
+                                                                                                            "cls_name": "L2RegularizerFunction",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 83
@@ -611,26 +698,30 @@
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 87,
-                                                                                                    "question": "LossFunction",
+                                                                                                    "cls_name": "LossFunction",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [
                                                                                                         {
                                                                                                             "id": 88,
-                                                                                                            "question": "BinaryCrossEntropy",
+                                                                                                            "cls_name": "BinaryCrossEntropy",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 87
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 89,
-                                                                                                            "question": "CategoricalCrossEntropy",
+                                                                                                            "cls_name": "CategoricalCrossEntropy",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 87
                                                                                                         },
                                                                                                         {
                                                                                                             "id": 90,
-                                                                                                            "question": "MSE",
+                                                                                                            "cls_name": "MSE",
+                                                                                                            "question": null,
                                                                                                             "answer": null,
                                                                                                             "children": [],
                                                                                                             "parent_id": 87
@@ -643,14 +734,16 @@
                                                                                         },
                                                                                         {
                                                                                             "id": 91,
-                                                                                            "question": "MaxObjectiveFunction",
+                                                                                            "cls_name": "MaxObjectiveFunction",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 81
                                                                                         },
                                                                                         {
                                                                                             "id": 92,
-                                                                                            "question": "MinObjectiveFunction",
+                                                                                            "cls_name": "MinObjectiveFunction",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 81
@@ -660,31 +753,36 @@
                                                                                 },
                                                                                 {
                                                                                     "id": 93,
-                                                                                    "question": "TaskCharacterization",
+                                                                                    "cls_name": "TaskCharacterization",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
                                                                                             "id": 94,
-                                                                                            "question": "Adversarial",
+                                                                                            "cls_name": "Adversarial",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
                                                                                         },
                                                                                         {
                                                                                             "id": 95,
-                                                                                            "question": "Classification",
+                                                                                            "cls_name": "Classification",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [
                                                                                                 {
                                                                                                     "id": 96,
-                                                                                                    "question": "SemiSupervisedClassification",
+                                                                                                    "cls_name": "SemiSupervisedClassification",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 95
                                                                                                 },
                                                                                                 {
                                                                                                     "id": 97,
-                                                                                                    "question": "SupervisedClassification",
+                                                                                                    "cls_name": "SupervisedClassification",
+                                                                                                    "question": null,
                                                                                                     "answer": null,
                                                                                                     "children": [],
                                                                                                     "parent_id": 95
@@ -694,35 +792,40 @@
                                                                                         },
                                                                                         {
                                                                                             "id": 98,
-                                                                                            "question": "Clustering",
+                                                                                            "cls_name": "Clustering",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
                                                                                         },
                                                                                         {
                                                                                             "id": 99,
-                                                                                            "question": "Discrimination",
+                                                                                            "cls_name": "Discrimination",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
                                                                                         },
                                                                                         {
                                                                                             "id": 100,
-                                                                                            "question": "Generation",
+                                                                                            "cls_name": "Generation",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
                                                                                         },
                                                                                         {
                                                                                             "id": 101,
-                                                                                            "question": "Reconstruction",
+                                                                                            "cls_name": "Reconstruction",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
                                                                                         },
                                                                                         {
                                                                                             "id": 102,
-                                                                                            "question": "Regression",
+                                                                                            "cls_name": "Regression",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
                                                                                             "parent_id": 93
@@ -738,65 +841,74 @@
                                                                 },
                                                                 {
                                                                     "id": 103,
-                                                                    "question": "Dataset",
+                                                                    "cls_name": "Dataset",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [
                                                                         {
                                                                             "id": 104,
-                                                                            "question": "Labelset",
-                                                                            "answer": null,
-                                                                            "children": [],
-                                                                            "parent_id": 103
-                                                                        },
-                                                                        {
-                                                                            "id": 105,
-                                                                            "question": "DataType",
+                                                                            "cls_name": "DataType",
+                                                                            "question": null,
                                                                             "answer": null,
                                                                             "children": [
                                                                                 {
-                                                                                    "id": 106,
-                                                                                    "question": "Image",
+                                                                                    "id": 105,
+                                                                                    "cls_name": "Image",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
-                                                                                    "parent_id": 105
+                                                                                    "parent_id": 104
+                                                                                },
+                                                                                {
+                                                                                    "id": 106,
+                                                                                    "cls_name": "MultiDimensionalCube",
+                                                                                    "question": null,
+                                                                                    "answer": null,
+                                                                                    "children": [],
+                                                                                    "parent_id": 104
                                                                                 },
                                                                                 {
                                                                                     "id": 107,
-                                                                                    "question": "MultiDimensionalCube",
-                                                                                    "answer": null,
-                                                                                    "children": [],
-                                                                                    "parent_id": 105
-                                                                                },
-                                                                                {
-                                                                                    "id": 108,
-                                                                                    "question": "Text",
+                                                                                    "cls_name": "Text",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [
                                                                                         {
-                                                                                            "id": 109,
-                                                                                            "question": "SemistructuredText",
+                                                                                            "id": 108,
+                                                                                            "cls_name": "SemistructuredText",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
-                                                                                            "parent_id": 108
+                                                                                            "parent_id": 107
                                                                                         },
                                                                                         {
-                                                                                            "id": 110,
-                                                                                            "question": "UnstructuredText",
+                                                                                            "id": 109,
+                                                                                            "cls_name": "UnstructuredText",
+                                                                                            "question": null,
                                                                                             "answer": null,
                                                                                             "children": [],
-                                                                                            "parent_id": 108
+                                                                                            "parent_id": 107
                                                                                         }
                                                                                     ],
-                                                                                    "parent_id": 105
+                                                                                    "parent_id": 104
                                                                                 },
                                                                                 {
-                                                                                    "id": 111,
-                                                                                    "question": "Video",
+                                                                                    "id": 110,
+                                                                                    "cls_name": "Video",
+                                                                                    "question": null,
                                                                                     "answer": null,
                                                                                     "children": [],
-                                                                                    "parent_id": 105
+                                                                                    "parent_id": 104
                                                                                 }
                                                                             ],
+                                                                            "parent_id": 103
+                                                                        },
+                                                                        {
+                                                                            "id": 111,
+                                                                            "cls_name": "Labelset",
+                                                                            "question": null,
+                                                                            "answer": null,
+                                                                            "children": [],
                                                                             "parent_id": 103
                                                                         }
                                                                     ],
@@ -807,75 +919,86 @@
                                                         },
                                                         {
                                                             "id": 112,
-                                                            "question": "TrainingOptimizer",
+                                                            "cls_name": "TrainingOptimizer",
+                                                            "question": null,
                                                             "answer": null,
                                                             "children": [
                                                                 {
                                                                     "id": 113,
-                                                                    "question": "AdaDelta",
+                                                                    "cls_name": "AdaDelta",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 114,
-                                                                    "question": "AdaGrad",
+                                                                    "cls_name": "AdaGrad",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 115,
-                                                                    "question": "AdaGradDA",
+                                                                    "cls_name": "AdaGradDA",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 116,
-                                                                    "question": "Adam",
+                                                                    "cls_name": "Adam",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 117,
-                                                                    "question": "Ftrl",
+                                                                    "cls_name": "Ftrl",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 118,
-                                                                    "question": "GradientDescent",
+                                                                    "cls_name": "GradientDescent",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 119,
-                                                                    "question": "Momentum",
+                                                                    "cls_name": "Momentum",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 120,
-                                                                    "question": "ProximalAdaGrad",
+                                                                    "cls_name": "ProximalAdaGrad",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 121,
-                                                                    "question": "ProximalGradientDescent",
+                                                                    "cls_name": "ProximalGradientDescent",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
                                                                 },
                                                                 {
                                                                     "id": 122,
-                                                                    "question": "RMSProp",
+                                                                    "cls_name": "RMSProp",
+                                                                    "question": null,
                                                                     "answer": null,
                                                                     "children": [],
                                                                     "parent_id": 112
@@ -885,14 +1008,16 @@
                                                         },
                                                         {
                                                             "id": 123,
-                                                            "question": "TrainingSingle",
+                                                            "cls_name": "TrainingSingle",
+                                                            "question": null,
                                                             "answer": null,
                                                             "children": [],
                                                             "parent_id": 11
                                                         },
                                                         {
                                                             "id": 124,
-                                                            "question": "TrainingSingleForwardOnly",
+                                                            "cls_name": "TrainingSingleForwardOnly",
+                                                            "question": null,
                                                             "answer": null,
                                                             "children": [],
                                                             "parent_id": 11
