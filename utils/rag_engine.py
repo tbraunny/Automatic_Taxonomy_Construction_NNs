@@ -109,11 +109,7 @@ class LocalRagEngine:
             raise ValueError("Local vector index has not been created.")
         return self.vector_index.as_query_engine()
     
-pdf_path = "data/hand_processed/AlexNet.pdf"
 
-prompt = LocalRagEngine(pdf_path=pdf_path).get_relevant_chunks("How does this paper deal with overfitting")
-# prompt = ", ".join(list_prompt)
-print(prompt)
 '''
 Example Usage:
 
