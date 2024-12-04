@@ -6,6 +6,9 @@
     <title>Generate Ontology</title>
     <link rel="stylesheet" href="static/taxon_neuro_style.css">
     <link rel="shortcut icon" href="static/favicon.ico">
+    <!--<script src="https://unpkg.com/neo4j-graph-viz@0.1.1/dist/neo4j-graph-viz.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/neovis.js/dist/neovis.js"></script>
+    <script src="https://rawgit.com/neo4j-contrib/neovis.js/master/dist/neovis.js"></script>-->  
 </head>
 <body>
     <div class="left-border">
@@ -15,13 +18,15 @@
         <div id="gen_ont">
             <h1>Generate Ontology</h1>
             <p>Ontology generated from general project manifold</p>
-
+            <div id="graph"></div>
             <button onclick="fetchOntology()" class="generate-btn">Generate Ontology</button>
-
-            <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
+            <img id="ontology-image" src="/static/graph.png" alt="Generated Ontology Image" />
         </div>
     </div>
 
+    <script src="static/neovis.js"></script>
+
     <script src="static/taxon_neuro_js.js"></script>
+    
 </body>
 </html>

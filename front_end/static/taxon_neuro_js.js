@@ -247,15 +247,64 @@ function query_prompt() {
     alert('DONT TOUCH THAT'); // Placeholder
 }
 
+// function displayGraph() {
+//     const config = {
+//       containerId: 'graph',
+//       driverUri: 'bolt://localhost:7687',
+//       username: 'neo4j',
+//       password: 'taxonomies'
+//     };
+
+//     const viz = neo4jGraphViz(config);
+
+//     viz.render({
+//       //many more queries to come!
+//       query: 'MATCH (n)-[r]-(m) RETURN n,r,m'
+//     })
+// }
+function initializeGraph() {
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("wtf");
+        displayGraph();
+    });
+}
+
+
 function displayGraph() {
-    const viz = neo4jGraphViz({
-      containerId: 'graph',
-      driverUri: 'bolt://localhost:7687',
-      username: 'neo4j',
-      password: 'taxonomies'
-    })
-    viz.render({
-      //many more queries to come!
-      query: 'MATCH (n)-[r]-(m) RETURN n,r,m'
-    })
-  }
+    const config = {
+        container_id: "graph",
+        neo4j: {
+            initialQuery:`MATCH (n)-[r]->(m) WHERE n.pagerank <> '' RETURN n, r, m;`,
+            server_url: "bolt://localhost:7687",
+            server_user: "neo4j",
+            server_password: "taxonomies",
+        },
+        labels: {
+            "Node": { "caption": "name" }
+        },
+        relationships: {
+            "RELATED": { "caption": false }
+        },
+    };
+
+    console.log(config.neo4j.initialQuery); // Log the query before passing to NeoVis
+
+
+
+    const viz = new NeoVis.default(config);
+    viz.render();
+}
+
+// function displayGraph() {
+//     var config = {
+//         container_id: "graph",
+//         server_url: "bolt://localhost:7687",
+//         server_user: "front-end",
+//         server_password: "taxonomy",
+//         initial_cypher: "MATCH (n) WHERE n.pagerank IS NOT NULL RETURN n"
+//     }
+
+
+//     var viz = new NeoVis.default(config);
+//     viz.render();
+// }

@@ -23,17 +23,13 @@ class Item(BaseModel):
     price: float
     is_offer: Union[bool, None] = None
 
-<<<<<<< HEAD
 templates = Jinja2Templates(directory=template_path)
 
-=======
-@app.route("src\rag\tree_prompting.py")
->>>>>>> 709892dcc3e68e0c331249502ea06edae89ebd07
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
     #base_path = os.path.dirname(__file__)  # Directory of the current script
-    #file_path = os.path.join(base_path, "taxon_neuro.html")
+    #file_path = os.path.join(base_path, "taxon_neuro.html")    
     #with open(file_path, encoding="utf-8") as f:
        # return f.read()
     return templates.TemplateResponse(

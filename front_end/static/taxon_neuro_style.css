@@ -305,8 +305,9 @@ label {
     display: none;
 }
 
-#graph {
+graph {
     margin-top: 10px;
     display: block;
     width: auto;
+    height: auto;
 }
