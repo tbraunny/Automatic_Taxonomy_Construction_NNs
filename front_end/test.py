@@ -14,6 +14,8 @@ class Item(BaseModel):
     price: float
     is_offer: Union[bool, None] = None
 
+@app.route("src\rag\tree_prompting.py")
+
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     with open("taxon_neuro.html", encoding="utf-8") as f:

@@ -193,6 +193,7 @@ form.addEventListener('submit', uploadFile);
 /** @param {Event} event */
 function uploadFile(event) {
     //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+    //use util functions for pdf
     const form = event.currentTarget;
     const url = new URL(form.action);
     const formData = new FormData(form)
