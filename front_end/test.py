@@ -23,8 +23,12 @@ class Item(BaseModel):
     price: float
     is_offer: Union[bool, None] = None
 
+<<<<<<< HEAD
 templates = Jinja2Templates(directory=template_path)
 
+=======
+@app.route("src\rag\tree_prompting.py")
+>>>>>>> 709892dcc3e68e0c331249502ea06edae89ebd07
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):

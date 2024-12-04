@@ -1,5 +1,10 @@
 typing
+<<<<<<< HEAD
 typing_extensions
 fastapi[standard]
 pydantic
 neo4j
+=======
+fastapi
+pydantic
+>>>>>>> 709892dcc3e68e0c331249502ea06edae89ebd07
