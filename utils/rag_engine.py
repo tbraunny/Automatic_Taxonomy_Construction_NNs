@@ -53,12 +53,12 @@ class LocalRagEngine:
             List of processed and chunked documents.
         """
         # New PDF loader that separates reading and preprocessing
-        docs = preprocess_pdf(pdf_path)
-        chunked_documents = chunk_document_for_nlm_LayoutPDFReader(docs)
+        # docs = preprocess_pdf(pdf_path)
+        # chunked_documents = chunk_document_for_nlm_LayoutPDFReader(docs)
 
         
-        # docs = load_pdf(pdf_path)
-        # chunked_documents = chunk_document(docs)
+        docs = load_pdf(pdf_path)
+        chunked_documents = chunk_document(docs)
 
         return chunked_documents
 
@@ -109,6 +109,7 @@ class LocalRagEngine:
             raise ValueError("Local vector index has not been created.")
         return self.vector_index.as_query_engine()
     
+
 '''
 Example Usage:
 

@@ -2,7 +2,21 @@ from owlready2 import *
 from typing import List, Set
 import warnings
 
+
+
+def load_ontology(ontology_path):
+    return get_ontology(ontology_path).load()
+
+# Used for script writing and debugging
+from utils.constants import Constants as C
+onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
+
+
 """ 1) Class Functions """
+
+def get_base_class(onto:Ontology):
+    return onto.ANNConfiguration
+
 
 def get_connected_classes(cls, ontology):
     """
@@ -27,8 +41,21 @@ def get_connected_classes(cls, ontology):
 
     return list(connected_classes)
 
+
+
 def get_subclasses(cls):
+    """
+    Retrieves all subclasses of a given class.
+
+    Args:
+        cls (ThingClass): The class for which to find it's subclasses.
+
+    Returns:
+        List[ThingClass]: A list of subclasses to the given class.
+    """
     return list(cls.subclasses())
+
+
 
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
     """
@@ -42,6 +69,36 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
         List[Property]: A list of properties that have the specified class as their domain.
     """
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
+
+
+
+def get_class_data_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+    """
+    Retrieves all data properties in the given ontology that have the specified class as their domain.
+
+    Args:
+        ontology (Ontology): The ontology containing the properties.
+        onto_class (ThingClass): The class for which to find properties with this domain.
+
+    Returns:
+        List[Property]: A list of data properties that have the specified class as their domain.
+    """
+    return [prop for prop in ontology.data_properties() if onto_class in prop.domain]
+
+
+
+def get_class_object_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+    """
+    Retrieves all object properties in the given ontology that have the specified class as their domain.
+
+    Args:
+        ontology (Ontology): The ontology containing the properties.
+        onto_class (ThingClass): The class for which to find properties with this domain.
+
+    Returns:
+        List[Property]: A list of object properties that have the specified class as their domain.
+    """
+    return [prop for prop in ontology.object_properties() if onto_class in prop.domain]
 
 
 
@@ -70,6 +127,8 @@ def get_property_range_type(property: Property) -> str:
     # default to atomic
     return "atomic"
 
+
+
 def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     Retrieves all restrictions (including cardinality restrictions) applied to a specified class.
@@ -82,17 +141,7 @@ def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     return [restriction for restriction in onto_class.is_a if isinstance(restriction, Restriction)]
 
-# def get_all_subclasses(onto_class: ThingClass) -> List[ThingClass]:
-#     """
-#     Retrieves all direct and indirect subclasses of a specified class.
 
-#     Args:
-#         onto_class (ThingClass): The class for which to find subclasses.
-
-#     Returns:
-#         List[ThingClass]: A list of all subclasses of the specified class.
-#     """
-#     return list(onto_class.subclasses())
 
 def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = None) -> ThingClass:
     """
@@ -142,6 +191,61 @@ def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass)
     return create_class(ontology=ontology, class_name=class_name, base_class=base_class)
 
 """ 2) Instance Functions """
+
+def get_class_instances(cls: ThingClass) -> list:
+    """
+    Retrieves all instances of the provided class.
+
+    Args:
+        cls (ThingClass): The class for which to retrieve its instances.
+
+    Returns:
+        List[Thing]: A list of instances (instances) of the specified class.
+    """
+    return cls.instances()
+
+def explore_instance(instance=onto.GAN, depth=0, visited=None):
+    """
+    Recursively explores an OWL instance and its relationships, printing its properties and values.
+
+    Args:
+        instance (Thing): The starting instance to explore. Defaults to `onto.GAN`.
+        depth (int): The current depth of recursion, used for indentation. Defaults to 0.
+        visited (set): A set of visited instances to prevent infinite loops during recursion. Defaults to None.
+
+    Returns:
+        None: The function prints the exploration results and does not return any value.
+    """
+    
+    # Initialize the visited set if this is the first call
+    if visited is None:
+        visited = set()
+    
+    # Prevent infinite loops by skipping already visited instances
+    if instance in visited:
+        return
+    visited.add(instance)
+
+    # Print the instance's name with indentation based on depth
+    indent = "  " * depth
+    print(f"{indent}instance: {instance.name}")
+
+    # Loop through all properties of the instance
+    for prop in instance.get_properties():
+        print(f"{indent}  Property: {prop.name}")
+        
+        # Iterate through the values of the property
+        for value in prop[instance]:
+            try:
+                # If the value is another instance, recursively explore it
+                if isinstance(value, Thing):
+                    explore_instance(value, depth + 1, visited)
+                else:  # Otherwise, print the literal value
+                    print(f"{indent}    Value: {value}")
+            except Exception as e:
+                # Handle errors gracefully and log them
+                print(f"{indent}    Error reading value: {e}")
+
 
 def get_instance_class_properties(ontology: Ontology, instance: Thing) -> List[Property]:
     """
@@ -193,15 +297,11 @@ def get_instantiated_property_values(instance: Thing) -> dict:
         property_values[prop.name] = instance.__getattr__(prop.name)
     return property_values
 
-""" 3) Property Functions """
-
-# def get_property_restrictions()
 
 
-"""Richie written"""
 
-def get_base_class(onto:Ontology):
-    return onto.ANNConfiguration
+
+
 
 def get_object_properties_for_class(ontology: Ontology,cls: ThingClass):
     """
@@ -228,7 +328,7 @@ def print_instantiated_classes_and_properties(ontology: Ontology):
 
     """
     print("Instantiated Classes and Properties:")
-    for instance in ontology.individuals():
+    for instance in ontology.instances():
         print(f"Instance: {instance.name}")
         # Get the classes this instance belongs to
         classes = instance.is_a

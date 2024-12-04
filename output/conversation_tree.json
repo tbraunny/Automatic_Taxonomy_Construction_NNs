@@ -1,16 +1,18 @@
 {
     "id": 0,
+    "cls_name": null,
     "question": null,
     "answer": null,
     "children": [
         {
             "id": 1,
-            "question": "ANNConfiguration",
+            "cls_name": "ANNConfiguration",
+            "question": null,
             "answer": null,
             "children": [
                 {
                     "id": 2,
-                    "question": "EvaluationResult",
+                    "question": "TrainingStrategy",
                     "answer": null,
                     "children": [
                         {

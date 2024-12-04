@@ -6,7 +6,7 @@ Will later be used for dynamic ANNConfig subclass definitions
 
 from owlready2 import *
 from typing import List, Dict
-from utils.annett_o import create_subclass
+from utils.owl import create_subclass
 from utils import constants as C
 
 # Load ontology
