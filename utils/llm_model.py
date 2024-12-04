@@ -11,7 +11,7 @@ class LLMModel:
     """
     A utility class for initializing and retrieving a large language model (LLM).
     """
-    def __init__(self, model_name: str='llama3.1:8b', top_p:float=0.9, temperature:float=0.1, top_k:int=3):
+    def __init__(self, model_name: str='llama3.1:8b', top_p:float=0.9, temperature:float=0.5, top_k:int=3):
         """
         Constructor for LLM model.
         :param model_name: Name of the LLM model.
