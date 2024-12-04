@@ -8,7 +8,7 @@ doc = load_pdf(file_path)
 
 """
 
-def load_pdf(file_path: str, to_file: bool = False) -> list:
+def load_pdf(file_path: str, to_file: bool = False, as_str:bool=False):
     """
     Loads the PDF into document objects and cleans the extracted text.
     Optionally writes the cleaned text to a file.
@@ -31,6 +31,10 @@ def load_pdf(file_path: str, to_file: bool = False) -> list:
         # Combine the cleaned content into a single string
         cleaned_content = "\n\n".join(doc.page_content for doc in documents)
         write_to_text_file(file_path, cleaned_content)
+    
+    if as_str:
+        paper_content = "\n".join([doc.page_content for doc in documents])
+        return paper_content
 
     return documents
 

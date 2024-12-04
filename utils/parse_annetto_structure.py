@@ -1,12 +1,16 @@
 from owlready2 import *
+from utils.owl import *
+from utils.constants import Constants as C
+
 
 def requires_final_instantiation(cls, ontology):
     """
     Determines if a class requires final instantiation as a standalone object.
 
     A class requires final instantiation if it:
-    - Has no data properties.
-    - Has no object properties.
+        - Has no data properties and has no object properties.
+        or
+        - Has no subclasses
 
     Args:
         cls (ThingClass): the class to check.
@@ -17,27 +21,11 @@ def requires_final_instantiation(cls, ontology):
     """
     has_data_properties = any(cls in prop.domain for prop in ontology.data_properties())
     has_object_properties = any(cls in prop.domain for prop in ontology.object_properties())
-    return not has_data_properties and not has_object_properties
+    return (not has_data_properties and not has_object_properties) or not get_subclasses(cls)
 
-def get_connected_classes(cls, ontology):
-    """
-    Retrieves classes connected to the given class via object properties.
 
-    Args:
-        cls (ThingClass): the class to explore.
-        ontology (Ontology): the ontology to which the class belongs.
 
-    Returns:
-        set: A set of connected ThingClasses.
-    """
-    connected_classes = set()
-    obj_props = [prop for prop in ontology.object_properties() if cls in prop.domain]
-    for prop in obj_props:
-        for range_cls in prop.range:
-            if isinstance(range_cls, ThingClass):
-                connected_classes.add(range_cls)
-    return connected_classes
-
+""" Not sure if any of these below are working """
 
 def process_class(cls, ontology, visited_classes):
     """
@@ -60,16 +48,24 @@ def process_class(cls, ontology, visited_classes):
     # Determine if the class requires final instantiation
     if requires_final_instantiation(cls, ontology):
         yield cls
-    else:
-        # Process data properties (if needed)
-        data_props = [prop for prop in ontology.data_properties() if cls in prop.domain]
 
-        # Process object properties and their range classes
-        connected_classes = get_connected_classes(cls, ontology)
+    # Process data properties (if needed)
+    data_props = [prop for prop in ontology.data_properties() if cls in prop.domain]
 
-        for connected_cls in connected_classes:
-            if connected_cls not in visited_classes:
-                yield from process_class(connected_cls, ontology, visited_classes)
+    """ Not sure how to do this yet, will revisit"""
+    # Yield data properties for instantiation
+    # if data_props:
+    #     for prop in data_props:
+    #         yield prop
+
+    # Process object properties and their range classes
+    connected_classes = get_connected_classes(cls, ontology)
+
+    for connected_cls in connected_classes:
+        if connected_cls not in visited_classes:
+            yield from process_class(connected_cls, ontology, visited_classes)
+
+
 
 def process_subclasses(cls, ontology, visited_classes):
     """
@@ -107,20 +103,19 @@ def process_subclasses(cls, ontology, visited_classes):
 
 
 
-def traverse_ontology(ontology, start_class_name):
+def traverse_ontology(ontology, start_cls):
     """
     Traverses the ontology starting from the given class name.
 
     Args:
         ontology (Ontology): the ontology to traverse.
-        start_class_name (str): the name of the starting class.
+        cls (ThingClass): the starting class.
 
     Yields:
         ThingClass: classes that require instantiation.
     """
-    start_class = ontology[start_class_name]
-    if start_class is None:
-        raise ValueError(f"Class '{start_class_name}' does not exist in the ontology.")
+    if start_cls is None:
+        raise ValueError(f"Class '{start_cls.name}' does not exist in the ontology.")
 
     visited_classes = set()
-    yield from process_class(start_class, ontology, visited_classes)
+    yield from process_class(start_cls, ontology, visited_classes)
