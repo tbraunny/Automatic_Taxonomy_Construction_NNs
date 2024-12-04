@@ -21,6 +21,21 @@ body {
     margin-bottom: 20px;
 }
 
+.sidebar a {
+    padding: 10px;
+    margin: 5px 0;
+    color: white;
+    border-radius: 5px;
+    background-color: #C81B1B;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #9E1010;
+}
+
 .sidebar button {
     padding: 10px;
     margin: 5px 0;
@@ -29,6 +44,7 @@ body {
     background-color: #C81B1B;
     border: none;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .sidebar button:hover {
@@ -191,7 +207,7 @@ label {
     bottom: 20px;
     right: 20px;
     padding: 15px;
-    background-color: #007bff;
+    background-color: #C81B1B;
     color: white;
     border: none;
     border-radius: 50%;
@@ -205,7 +221,7 @@ label {
 }
 
 .upload-button:hover {
-    background-color: #0056b3;
+    background-color: #9E1010;
 }
 
 /* Dropdown styling */
@@ -287,4 +303,10 @@ label {
     width: auto;
     background-color: #E0E0E0;
     display: none;
+}
+
+#graph {
+    margin-top: 10px;
+    display: block;
+    width: auto;
 }

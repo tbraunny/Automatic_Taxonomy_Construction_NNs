@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="static/taxon_neuro_style.css">
     <link rel="shortcut icon" href="static/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
+    <script src="https://unpkg.com/neo4j-graph-viz@0.1.1/dist/neo4j-graph-viz.js"></script>
 </head>
 <body>
     <div id="app"></div>
@@ -19,9 +20,10 @@
 
         <div class="sidebar">
             <h1>Menu</h1>
-            <button onclick="location.href='/gen_ont.html'">Generate Ontology</button>
-            <button onclick="location.href='/gen_tax.html'">Generate Taxonomy</button>
-            <button onclick="location.href='/about.html'">About / Open Source</button>
+            <a href="{{url_for('read_gen_ont')}}">Generate Ontology</a>
+            <a href="{{url_for('read_gen_tax')}}">Generate Taxonomy</a>
+            <a href="{{url_for('read_about')}}">About / Open Source</a>
+
 
             <div class="dropdown">
                 Definitions
@@ -47,6 +49,7 @@
                 <h3 id="definition-title">Layer Definitions</h3>
                 <p id="layerInfo">Click on a layer type to see its definition.</p>
             </div>
+            <div id="graph"></div>
         </div>
 
         <div class="main-content">
@@ -74,7 +77,7 @@
 
     </div>
     
-    <script src="static/taxon_neuro_js.js"></script>
+    <script src="/static/taxon_neuro_js.js"></script>
 
 </body>
 </html>

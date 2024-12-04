@@ -6,6 +6,7 @@
 -r "requirements/requirements-owl.txt"
 -r "requirements/requirements-rag_server.txt"
 -r "requirements/requirements-preprocess_pdf.txt"
+-r "requirements/requirements-front_end.txt"
 
 
 

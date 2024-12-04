@@ -152,7 +152,9 @@ function checkEnter(event) {
         const userInput = document.getElementById("prompt-input").value;
 
         //Call the function to handle the input, passing in the user's text
-        handlePromptInput(userInput);
+        //handlePromptInput(userInput);
+        handleUserInput(userInput);
+        displayGraph();
 
         //Clear the input field after submission
         document.getElementById("prompt-input").value = '';
@@ -167,8 +169,8 @@ function handlePromptInput(userInput) {
     const chat_response = document.getElementById("chat-responses");
     chat_response.style.display = 'none';
 
-    chat_response.innerHTML = "<h3>You said: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
-    chat_response.style.display = 'block';
+    //chat_response.innerHTML = "<h3>You said bruh: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
+    //chat_response.style.display = 'block';
 
     fetch ('/api/chat' , {
         method: 'POST' , 
@@ -179,7 +181,7 @@ function handlePromptInput(userInput) {
     })
     .then(response => response.json())
     .then(data => {
-        chat_response.innerHTML = `<h3>You said: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
+        chat_response.innerHTML = `<h3>You said bruh: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
     })
     .catch(error => {
         console.error('Error: ' , error);
@@ -187,12 +189,32 @@ function handlePromptInput(userInput) {
     });
 }
 
+function handleUserInput(userInput) {
+    // Send user input to FastAPI backend
+    fetch("/process_input", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ input_text: userInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Output from Python script:", data.output);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+
 const form = document.querySelector('form');
 form.addEventListener('submit', uploadFile);
 
 /** @param {Event} event */
 function uploadFile(event) {
     //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
+    //use util functions for pdf
     const form = event.currentTarget;
     const url = new URL(form.action);
     const formData = new FormData(form)
@@ -224,3 +246,16 @@ function uploadFile(event) {
 function query_prompt() {
     alert('DONT TOUCH THAT'); // Placeholder
 }
+
+function displayGraph() {
+    const viz = neo4jGraphViz({
+      containerId: 'graph',
+      driverUri: 'bolt://localhost:7687',
+      username: 'neo4j',
+      password: 'taxonomies'
+    })
+    viz.render({
+      //many more queries to come!
+      query: 'MATCH (n)-[r]-(m) RETURN n,r,m'
+    })
+  }
