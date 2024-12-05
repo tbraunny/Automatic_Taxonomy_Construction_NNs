@@ -89,10 +89,16 @@ async def create_upload_file(file: UploadFile):
 
 # process user input for chats with Llama
 @app.post("/process_input/")
-async def process_input(user_input: str):
+async def process_input(request: Request):
     try:
-        #result = 
-        result = tree_prompting.process_input(user_input)
-        return {"result": result}
+        data = await request.json()
+        user_input = data.get("prompt")
+        if not user_input:
+            return JSONResponse(content={"error": "No prompt provided"}, status_code=400)
+        
+        # Call the function from tree_prompting.py to process the input
+        response = tree_prompting.main()  # Replace with actual function from tree_prompting.py
+        return JSONResponse(content={"response": response})
+    
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse(content={"error": str(e)}, status_code=500)

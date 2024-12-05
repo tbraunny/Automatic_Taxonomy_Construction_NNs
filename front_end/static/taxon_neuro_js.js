@@ -105,18 +105,6 @@ function fetchTaxonomy() {
     }
 }
 
-function clearChat() {
-    alert("DONT TOUCH THAT");
-}
-
-function copyChatText() {
-    alert("I SAID DONT TOUCH THAT")
-}
-
-function regenerateChat() {
-    alert("STOP IT")
-}
-
 // function display_about() {
 //     const aboutSection = document.getElementById('about-section');
 
@@ -158,7 +146,7 @@ function checkEnter(event) {
         //displayGraph();
 
         //Clear the input field after submission
-        //document.getElementById("prompt-input").value = '';
+        document.getElementById("prompt-input").value = '';
     }
 }
 
@@ -170,10 +158,10 @@ function handlePromptInput(userInput) {
     const chat_response = document.getElementById("chat-responses");
     chat_response.style.display = 'none';
 
-    //chat_response.innerHTML = "<h3>You said bruh: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
-    //chat_response.style.display = 'block';
+    chat_response.innerHTML = "<h3>You said bruh: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
+    chat_response.style.display = 'block';
 
-    fetch ('/src/rag/decision_tree.py' , {
+    fetch ('/process_input/' , {
         method: 'POST' , 
         headers: {
             'Content-Type' : 'application/json' , 
@@ -311,18 +299,25 @@ function displayGraph() {
 //     viz.render();
 // }
 
-function clearChat() {
-    var chat = document.getElementById("chat-responses");
-    chat.clearChat();
+function clearChat() {    
+    const chat_response = document.getElementById("chat-responses");
+    chat_response.innerHTML = "";
+    chat_response.style.display = 'none';
 }
 
 function copyChatText() {
     var copied_text = document.getElementById("chat-responses");
 
-    copied_text.select();
+    // Ensure that the text is selectable
+    var text = copied_text.innerText || copied_text.textContent;
 
-    navigator.clipboard.writeText(copied_text.value);
-    alert("Copy that!");
+    // Copy the text using the Clipboard API
+    navigator.clipboard.writeText(text).then(function() {
+        alert("Copy that!");
+    }).catch(function(error) {
+        console.error("Error copying text: ", error);
+        alert("Failed to copy text to clipboard.");
+    });
 }
 
 function regenerateChat() {
