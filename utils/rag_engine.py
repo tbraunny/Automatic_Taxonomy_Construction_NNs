@@ -23,13 +23,14 @@ class LocalRagEngine:
     """
     A utility class for creating and managing a document index locally.
     """
-    def __init__(self, pdf_path=None,llm_model='llama3.1:8b'):
+    def __init__(self, pdf_path=None,llm_model='llama3.1:8b-instruct-fp16'):
         if pdf_path is None:
             raise ValueError("PDF path must be provided.")
         
         documents = self.load_and_preprocess_pdf(pdf_path)
 
         # Initialize models
+        print(llm_model)
         self.embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
         

@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
 from src.rag import tree_prompting  # Import your tree_prompting module
+from utils.rag_engine import LocalRagEngine
 from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
@@ -26,13 +27,13 @@ class Item(BaseModel):
 
 templates = Jinja2Templates(directory=template_path)
 
-@app.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
-    upload_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
-    file_path = upload_path / file.filename
-    with file_path.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"filename": file.filename, "message": "File uploaded successfully!"}
+# @app.post("/upload")
+# async def upload_file(file: UploadFile = File(...)):
+#     upload_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+#     file_path = upload_path / file.filename
+#     with file_path.open("wb") as buffer:
+#         shutil.copyfileobj(file.file, buffer)
+#     return {"filename": file.filename, "message": "File uploaded successfully!"}
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -97,8 +98,15 @@ async def process_input(request: Request):
             return JSONResponse(content={"error": "No prompt provided"}, status_code=400)
         
         # Call the function from tree_prompting.py to process the input
-        response = tree_prompting.main()  # Replace with actual function from tree_prompting.py
-        return JSONResponse(content={"response": response})
+        query_engine = LocalRagEngine(pdf_path="data/raw/AlexNet.pdf",llm_model='llama3.2:3b-instruct-fp16').get_rag_engine()
+        response = query_engine.query(user_input)
+        print("response type " , type(response))
+        print("response" , response)
+        print(response)
+
+        response_text = str(response)
+
+        return JSONResponse(content={"response": response_text})
     
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)

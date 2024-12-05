@@ -17,13 +17,13 @@ def ollama_query(query, instructions):
 
 def local_rag_query():    
     pdf_path = "data/raw/AlexNet.pdf"
-    llm_model='llama3.1:8b'
+    llm_model='llama3.2:3b-instruct-fp16'
     model = LocalRagEngine(pdf_path=pdf_path,llm_model=llm_model)
 
     prompt = """What is this paper about? Tell me about how it reduces overfitting"""
 
-    rag_chunks = model.get_relevant_chunks(prompt)
-    print(rag_chunks)
+    # rag_chunks = model.get_relevant_chunks(prompt)
+    # print(rag_chunks)
 
     print("\n\n\n")
 

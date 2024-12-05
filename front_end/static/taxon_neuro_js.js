@@ -158,7 +158,7 @@ function handlePromptInput(userInput) {
     const chat_response = document.getElementById("chat-responses");
     chat_response.style.display = 'none';
 
-    chat_response.innerHTML = "<h3>You said bruh: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
+    chat_response.innerHTML = "<h3>You said: </h3>" + userInput + "<br><h3>Llama says: </h3><p><i>Thinking...</i></p>";
     chat_response.style.display = 'block';
 
     fetch ('/process_input/' , {
@@ -170,7 +170,8 @@ function handlePromptInput(userInput) {
     })
     .then(response => response.json())
     .then(data => {
-        chat_response.innerHTML = `<h3>You said bruh: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
+        console.log(data);
+        chat_response.innerHTML = `<h3>You said: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
     })
     .catch(error => {
         console.error('Error: ' , error);
