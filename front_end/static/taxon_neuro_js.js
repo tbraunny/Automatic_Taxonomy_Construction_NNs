@@ -153,11 +153,12 @@ function checkEnter(event) {
 
         //Call the function to handle the input, passing in the user's text
         //handlePromptInput(userInput);
-        handleUserInput(userInput);
-        displayGraph();
+        console.log(userInput)
+        handlePromptInput(userInput);
+        //displayGraph();
 
         //Clear the input field after submission
-        document.getElementById("prompt-input").value = '';
+        //document.getElementById("prompt-input").value = '';
     }
 }
 
@@ -172,7 +173,7 @@ function handlePromptInput(userInput) {
     //chat_response.innerHTML = "<h3>You said bruh: </h3><br>" + userInput + "<br><h3>Llama says: </h3><br><p>My developers are still working on me<br>I will be answering all of your questions soon!</p>";
     //chat_response.style.display = 'block';
 
-    fetch ('/api/chat' , {
+    fetch ('/src/rag/decision_tree.py' , {
         method: 'POST' , 
         headers: {
             'Content-Type' : 'application/json' , 
@@ -191,7 +192,7 @@ function handlePromptInput(userInput) {
 
 function handleUserInput(userInput) {
     // Send user input to FastAPI backend
-    fetch("/process_input", {
+    fetch("/process_input", { //specify function within tree_processing to call
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -200,7 +201,7 @@ function handleUserInput(userInput) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Output from Python script:", data.output);
+        console.log("Output from Python script: ", data.output);
     })
     .catch(error => {
         console.error("Error:", error);
@@ -213,32 +214,33 @@ form.addEventListener('submit', uploadFile);
 
 /** @param {Event} event */
 function uploadFile(event) {
-    //alert('DONT TOUCH THAT'); // Placeholder action for file upload button
-    //use util functions for pdf
+    event.preventDefault();  // Prevent form submission
     const form = event.currentTarget;
-    const url = new URL(form.action);
-    const formData = new FormData(form)
-    const searchParams = new URLSearchParams(formData);
-
-    /** @type {Parameters<fetch>[1]} */
+    const formData = new FormData(form);  // Automatically picks up file input
+    
+    // Fetch options with formData for file upload
     const fetchOptions = {
-        method: form.method,
+        method: 'POST',
+        body: formData,
     };
 
-    if (form.method.toLowerCase() === 'post') {
-        if (form.enctype === 'multipart/form-data') {
-            fetchOptions.body = formData;
-        }
-        else {
-            fetchOptions.body = searchParams;
-        }
-    }
-    else {
-        url.search = searchParams;
-    }            
+    // Replace 'form.action' with your backend upload endpoint
+    fetch(form.action, fetchOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to upload the file.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('File uploaded successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error uploading file.');
+        });
     
-    fetch(url , fetchOptions);
-    event.preventDefault();
+    console.log("fucking done");
 }
 
 
@@ -308,3 +310,22 @@ function displayGraph() {
 //     var viz = new NeoVis.default(config);
 //     viz.render();
 // }
+
+function clearChat() {
+    var chat = document.getElementById("chat-responses");
+    chat.clearChat();
+}
+
+function copyChatText() {
+    var copied_text = document.getElementById("chat-responses");
+
+    copied_text.select();
+
+    navigator.clipboard.writeText(copied_text.value);
+    alert("Copy that!");
+}
+
+function regenerateChat() {
+    const userInput = document.getElementById("prompt-input").value;
+    handleUserInput(userInput);
+}

@@ -13,6 +13,7 @@ app = FastAPI()
 # Mount the static directory to serve images and other static files
 static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/static"))
 template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/templates"))
+upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/raw"))
 
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 print(static_path)
@@ -24,6 +25,14 @@ class Item(BaseModel):
     is_offer: Union[bool, None] = None
 
 templates = Jinja2Templates(directory=template_path)
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    upload_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+    file_path = upload_path / file.filename
+    with file_path.open("wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    return {"filename": file.filename, "message": "File uploaded successfully!"}
 
 
 @app.get("/", response_class=HTMLResponse)
