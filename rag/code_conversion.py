@@ -3,6 +3,7 @@
 #    - look for specific functions in CNN (ex. 'Module' , '__init__' , 'forward')
 
 import ast
+import os
 
 # so basically this is useless
 
@@ -57,7 +58,6 @@ class CNN_parser(ast.NodeVisitor):
         embeddings = 0
         return embeddings
 
-
 class CodeLoader:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -71,19 +71,31 @@ class CodeLoader:
 
         return self.code
 
+def py_to_txt(py_file):
+    txt_file = f"{python_file_name}.txt"
+
+    try:
+        with open(py_file, "r") as py_file, open(txt_file, "w") as txt_file:
+            txt_file.write(py_file.read())
+    finally:
+        await py_file.close()
+        await txt_file.close()
+
+    
 
 if __name__ == '__main__':
-    code_loader = CodeLoader("test.py")
-    code = code_loader.load()
+    py_text = py_to_txt(file="test.py")
+    # code_loader = CodeLoader("test.py")
+    # code = code_loader.load()
 
-    parser = CNN_parser()
-    parser.parse_code(code)
+    # parser = CNN_parser()
+    # parser.parse_code(code)
 
-    print("Architecture: ")
-    print("\tLayers: " , parser.layers)
-    print("\tForward Pass: " , parser.forward_pass)
+    # print("Architecture: ")
+    # print("\tLayers: " , parser.layers)
+    # print("\tForward Pass: " , parser.forward_pass)
 
-    embeddings = parser.embed_outputs(parser.layers , parser.forward_pass)
+    # embeddings = parser.embed_outputs(parser.layers , parser.forward_pass)
 
     # successful outputs, need to parse these outputs
     # comes in the form of the following:
