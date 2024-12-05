@@ -11,7 +11,7 @@ class LLMModel:
     """
     A utility class for initializing and retrieving a large language model (LLM).
     """
-    def __init__(self, model_name: str='llama3.1:8b', top_p:float=0.9, temperature:float=0.5, top_k:int=3):
+    def __init__(self, model_name: str='llama3.1:8b-instruct-fp16', top_p:float=0.9, temperature:float=0.1, top_k:int=3):
         """
         Constructor for LLM model.
         :param model_name: Name of the LLM model.
@@ -29,8 +29,8 @@ class LLMModel:
                 top_p=top_p,
                 top_k=top_k,
                 temperature=temperature,
-                max_tokens=128000,
-                num_ctx=128000
+                # max_tokens=max_tokens,
+                num_ctx=15000
                 )
             )
 
@@ -69,7 +69,7 @@ class OllamaLLMModel:
     """
     A utility class for initializing and retrieving a large language model (LLM).
     """
-    def __init__(self, model_name: str='llama3.1:8b', top_p:float=0.9, temperature:float=0.1, top_k:int=3):
+    def __init__(self, model_name: str='llama3.1:8b-instruct-fp16', top_p:float=0.9, temperature:float=0.1, top_k:int=3):
         """
         Constructor for LLM model.
         :param model_name: Name of the LLM model.
@@ -86,8 +86,8 @@ class OllamaLLMModel:
             top_p=top_p,
             top_k=top_k,
             temperature=temperature,
-            max_tokens=128000,
-            num_ctx=128000
+            # max_tokens=15000,
+            num_ctx=15000
             )
 
     def query_ollama(self, query:str, instructions:str) -> str:
@@ -97,3 +97,11 @@ class OllamaLLMModel:
         chain = prompt | self.llm_model
 
         return chain.invoke({"query": query})
+    def count_tokens(self, text: str) -> int:
+        """
+        Count the number of tokens in the provided text using the LLM's tokenizer.
+        :param text: The text to tokenize.
+        :return: The number of tokens in the text.
+        """
+        return self.llm_model.get_num_tokens(text)
+

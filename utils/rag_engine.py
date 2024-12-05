@@ -30,8 +30,7 @@ class LocalRagEngine:
         documents = self.load_and_preprocess_pdf(pdf_path)
 
         # Initialize models
-        print(llm_model)
-        self.embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
+        self.embed_model = EmbeddingModel().get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
         
         self.vector_index = None

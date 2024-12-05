@@ -1,26 +1,39 @@
 from utils.rag_engine import LocalRagEngine, RemoteRagEngine
+from utils.llm_model import OllamaLLMModel
 
 
 
-def ollama_query(query, instructions):
-    from langchain_core.prompts import ChatPromptTemplate
-    from langchain_ollama.llms import OllamaLLM
+def local_ollama():
 
-    prompt = ChatPromptTemplate.from_template(instructions)
 
-    model = OllamaLLM(model='llama3.1:8b', num_ctx=128000, max_tokens=128000)
+    from utils.pdf_loader import load_pdf
+    file_path = "data/hand_processed/AlexNet.pdf"  # Replace with your actual file path
+    documents = load_pdf(file_path)
+    # Combine all the page contents into a single string
+    paper_content = "\n".join([doc.page_content for doc in documents])
+    model_name = 'llama3.2:3b-instruct-fp16'
+    llm = OllamaLLMModel(temperature=0.5,top_k=7,model_name=model_name)
 
-    chain = prompt | model
+    instructions = f"""Consider the following document delimited by triple backticks as context to the question ```{paper_content}``` Question: """
+    instructions += """{query}"""
+    query = """How does this nueral network architecture account for overfitting"""
 
-    return chain.invoke({"query": query})
+    num_tokens_instruct = llm.count_tokens(instructions)
+    num_tokens_query = llm.count_tokens(query)
+    print(f"Number of tokens = {num_tokens_instruct + num_tokens_query}")
+
+    # response = llm.query_ollama(query,instructions)
+    # print(response)
+
+
 
 
 def local_rag_query():    
     pdf_path = "data/raw/AlexNet.pdf"
-    llm_model='llama3.2:3b-instruct-fp16'
-    model = LocalRagEngine(pdf_path=pdf_path,llm_model=llm_model)
+    model_name = 'llama3.2:3b-instruct-fp16'
+    model = LocalRagEngine(pdf_path=pdf_path)#,llm_model=model_name)
 
-    prompt = """What is this paper about? Tell me about how it reduces overfitting"""
+    prompt = """How does this nueral network architecture account for overfitting"""
 
     # rag_chunks = model.get_relevant_chunks(prompt)
     # print(rag_chunks)
@@ -30,8 +43,6 @@ def local_rag_query():
     rag_engine = model.get_rag_engine()
     response = rag_engine.query(prompt)
     print(response)
-
-local_rag_query()
 
 
 def remote_rag_query():
