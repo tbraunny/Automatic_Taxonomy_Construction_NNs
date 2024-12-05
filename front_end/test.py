@@ -15,7 +15,7 @@ app = FastAPI()
 # Mount the static directory to serve images and other static files
 static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/static"))
 template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/templates"))
-upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/raw"))
+upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/user_temp"))
 cw_paper = 0
 
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -95,6 +95,10 @@ def unique_file_name(path , file_name):
 
     return new_file_name
 
+# getter for fastAPI functions to obtain current working paper
+def get_cw_paper():
+    return cw_paper
+
 # process user input for chats with Llama
 @app.post("/process_input/")
 async def process_input(request: Request):
@@ -104,14 +108,15 @@ async def process_input(request: Request):
         if not user_input:
             return JSONResponse(content={"error": "No prompt provided"}, status_code=400)
         
+        cw_paper = get_cw_paper()
+        if (cw_paper == 0): # check if user has inputted a paper, if not default to AlexNet
+            cw_paper = os.path.join(upload_path , "AlexNet.pdf")
+        
         # Call the function from tree_prompting.py to process the input
         query_engine = LocalRagEngine(pdf_path=cw_paper , llm_model='llama3.2:3b-instruct-fp16').get_rag_engine()
         response = query_engine.query(user_input)
-        print("response type " , type(response))
-        print("response" , response)
-        print(response)
 
-        response_text = str(response)
+        response_text = str(response)\
 
         return JSONResponse(content={"response": response_text})
     
