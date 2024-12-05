@@ -90,7 +90,7 @@ def unique_file_name(path , file_name):
     file_suffix = 1
 
     while (os.path.exists(os.path.join(path , new_file_name))):
-        new_file_name = f"{base_name}_{file_suffix}{ext}"
+        new_file_name = f"{base_name}_({file_suffix}){ext}"
         file_suffix += 1
 
     return new_file_name
