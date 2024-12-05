@@ -1,0 +1,4 @@
+pyviz
+holoviews
+panel
+bokeh
