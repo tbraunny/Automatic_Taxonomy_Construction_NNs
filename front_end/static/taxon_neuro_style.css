@@ -311,3 +311,12 @@ graph {
     width: auto;
     height: auto;
 }
+
+#file_name {
+    display: none;
+    position: fixed;
+    left: 450px;
+    font-size: medium;
+    font-style: italic;
+    font-family: sans-serif;
+}

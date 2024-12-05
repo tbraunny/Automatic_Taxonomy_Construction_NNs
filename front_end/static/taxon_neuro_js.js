@@ -105,31 +105,6 @@ function fetchTaxonomy() {
     }
 }
 
-// function display_about() {
-//     const aboutSection = document.getElementById('about-section');
-
-//     const layerDefinitionsBox = document.getElementById('responses');
-//     layerDefinitionsBox.style.display = 'none';
-
-//     aboutSection.innerHTML = `<h3>About / Open Source</h3>
-//         <p>This project aims to provide automatic taxonomy construction for neural networks.<br>
-//         It categorizes layers, architectures, and loss functions based on input given from the user.<br>
-//         We are a 4-person team from the University of Nevada, Reno.<br>
-//         Team Consists of:<br>
-//         -Thomas Braun<br>
-//         -Lukas Lac <br>
-//         -Josue Ochoa <br>
-//         -Richard White <br> 
-
-//         All content is open-source and welcomes contributions.</p>`;
-
-//         if (aboutSection.style.display === 'block') {
-//             aboutSection.style.display = 'none';  // Hide the image if it's currently visible
-//         } else {
-//             aboutSection.style.display = 'block'; // Show the image if it's currently hidden
-//         }
-// }
-
 function checkEnter(event) {
     //Check if the pressed key is "Enter"
     if (event.key === "Enter") {
@@ -198,23 +173,19 @@ function handleUserInput(userInput) {
 }
 
 
-const form = document.querySelector('form');
-form.addEventListener('submit', uploadFile);
-
-/** @param {Event} event */
-function uploadFile(event) {
+//on 'open' of user uploaded pdf store file in /data/raw
+document.getElementById("uploadForm").addEventListener("change", function(event) {
     event.preventDefault();  // Prevent form submission
     const form = event.currentTarget;
     const formData = new FormData(form);  // Automatically picks up file input
-    
+
     // Fetch options with formData for file upload
     const fetchOptions = {
         method: 'POST',
         body: formData,
     };
 
-    // Replace 'form.action' with your backend upload endpoint
-    fetch(form.action, fetchOptions)
+    fetch("/uploadfile/", fetchOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to upload the file.');
@@ -222,15 +193,18 @@ function uploadFile(event) {
             return response.json();
         })
         .then(data => {
+            console.log(data)
+            const file_name = document.getElementById("file_name");
+            file_name.innerText = `Uploaded File: ${data.filename}`;
+            file_name.style.display = 'block';
             alert('File uploaded successfully!');
         })
         .catch(error => {
             console.error('Error:', error);
             alert('Error uploading file.');
         });
-    
-    console.log("fucking done");
-}
+    console.log("File uploaded successfully")
+});
 
 
 

@@ -8,6 +8,7 @@ import os
 from src.rag import tree_prompting  # Import your tree_prompting module
 from utils.rag_engine import LocalRagEngine
 from fastapi.templating import Jinja2Templates
+import shutil
 
 app = FastAPI()
 
@@ -15,6 +16,7 @@ app = FastAPI()
 static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/static"))
 template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/templates"))
 upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/raw"))
+cw_paper = 0
 
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 print(static_path)
@@ -26,15 +28,6 @@ class Item(BaseModel):
     is_offer: Union[bool, None] = None
 
 templates = Jinja2Templates(directory=template_path)
-
-# @app.post("/upload")
-# async def upload_file(file: UploadFile = File(...)):
-#     upload_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
-#     file_path = upload_path / file.filename
-#     with file_path.open("wb") as buffer:
-#         shutil.copyfileobj(file.file, buffer)
-#     return {"filename": file.filename, "message": "File uploaded successfully!"}
-
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
@@ -72,21 +65,35 @@ def read_gen_tax(request: Request):
         request=request, name='gen_tax.html'
     )
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
-
-@app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {"item_name": item.name, "item_price": item.price, "item_id": item_id}
-
 @app.post("/files/")
 async def create_file(file: Annotated[bytes, File()]):
     return {"file_size": len(file)}
 
 @app.post("/uploadfile/")
 async def create_upload_file(file: UploadFile):
-    return {"filename": file.filename}
+    #cw_paper = os.path.join(upload_path , file.filename)
+    unique_file = unique_file_name(upload_path , file.filename)
+    cw_paper = os.path.join(upload_path , unique_file)
+
+    try:
+        with open(cw_paper , "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+    finally: # prevent semaphore warnings
+        await file.close()
+    
+    return {"filename": unique_file, "message": "File uploaded successfully!"}
+
+# check for unique file name, ensure new files do not overwrite old files
+def unique_file_name(path , file_name):
+    base_name , ext = os.path.splitext(file_name)
+    new_file_name = file_name
+    file_suffix = 1
+
+    while (os.path.exists(os.path.join(path , new_file_name))):
+        new_file_name = f"{base_name}_{file_suffix}{ext}"
+        file_suffix += 1
+
+    return new_file_name
 
 # process user input for chats with Llama
 @app.post("/process_input/")
@@ -98,7 +105,7 @@ async def process_input(request: Request):
             return JSONResponse(content={"error": "No prompt provided"}, status_code=400)
         
         # Call the function from tree_prompting.py to process the input
-        query_engine = LocalRagEngine(pdf_path="data/raw/AlexNet.pdf",llm_model='llama3.2:3b-instruct-fp16').get_rag_engine()
+        query_engine = LocalRagEngine(pdf_path=cw_paper , llm_model='llama3.2:3b-instruct-fp16').get_rag_engine()
         response = query_engine.query(user_input)
         print("response type " , type(response))
         print("response" , response)

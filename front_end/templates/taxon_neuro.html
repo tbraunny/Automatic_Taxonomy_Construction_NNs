@@ -7,15 +7,14 @@
     <link rel="stylesheet" href="static/taxon_neuro_style.css">
     <link rel="shortcut icon" href="static/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
-    <script src="https://unpkg.com/neo4j-graph-viz@0.1.1/dist/neo4j-graph-viz.js"></script>
 </head>
 <body>
     <div id="app"></div>
 
         <div class="chat-options">
-            <button onclick="clearChat()" class="chat-button">Clear Chat</button>
-            <button onclick="copyChatText()" class="chat-button">Copy Text</button>
-            <button onclick="regenerateChat()" class="chat-button">Regenerate</button>
+            <button onclick="clearChat()" class="chat-button" title="Clear chat">Clear Chat</button>
+            <button onclick="copyChatText()" class="chat-button" title="Copy Response">Copy Text</button>
+            <button onclick="regenerateChat()" class="chat-button" title="Regenerate Response">Regenerate</button>
         </div>
 
         <div class="sidebar">
@@ -53,6 +52,7 @@
 
         <div class="main-content">
             <h2>Responses</h2>
+            <div id="file_name"></div>
 
             <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
             <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
@@ -69,9 +69,9 @@
             <input id="prompt-input" class="prompt-input"  type="text" onkeypress="checkEnter(event)" placeholder="Type your prompt here...">
         </div>
 
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <label for="file" class="upload-button">+</label>
-            <input id="file" name="file" type="file" accept="pdf" style="display: none;" />
+        <form id="uploadForm" action="/uploadfile/" method="POST" enctype="multipart/form-data">
+            <label for="file" class="upload-button" title="Upload a PDF">+</label>
+            <input id="file" name="file" type="file" accept=".pdf" style="display: none;" />
         </form>
 
     </div>
