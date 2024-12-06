@@ -85,14 +85,39 @@ function layer_type(layer) {
     layerInfo.innerText = layerDefinitions[layer];
 }
 
-function fetchOntology() {
-    const image = document.getElementById('ontology-image')
+// function fetchOntology() {
+//     const image = document.getElementById('ontology-image')
 
-    if (image.style.display === 'block') {
-        image.style.display = 'none';  // Hide the image if it's currently visible
-    } else {
-        image.style.display = 'block'; // Show the image if it's currently hidden
-    }
+//     if (image.style.display === 'block') {
+//         image.style.display = 'none';  // Hide the image if it's currently visible
+//     } else {
+//         image.style.display = 'block'; // Show the image if it's currently hidden
+//     }
+// }
+
+
+function gen_ont() {
+    const generateButton = document.getElementById('generate-button');
+    const ontologyImage = document.getElementById('ontology-image');
+    // Disable the button while generating
+    generateButton.disabled = true;
+    generateButton.textContent = "Generating...";
+
+    fetch('/ont_vis/', { 
+        method: 'POST' })
+    .then(data => {
+        console.log(data);
+        ontologyImage.src = ontologyImage.src + '?' + new Date().getTime(); // Force reload by appending timestamp
+        ontologyImage.style.display = 'block';
+        //alert("IS THIS UNDEFINED");
+    })
+    .catch(error => {
+        console.error(error);
+    })
+    .finally(() => {
+        generateButton.disabled = false;
+        generateButton.textContent = "Generate Ontology";
+    });
 }
 
 function fetchTaxonomy() {
