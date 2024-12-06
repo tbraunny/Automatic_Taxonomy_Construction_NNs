@@ -9,8 +9,9 @@
             "cls_name": "ANNConfiguration",
             "question": "What are the ANNConfiguration(s) in the given context?",
             "answer": [
-                "ANNConfiguration_instance_1",
-                "ANNConfiguration_instance_2"
+                "ReLU",
+                "CNN",
+                "ILSVRC"
             ],
             "children": [
                 {
@@ -18,8 +19,7 @@
                     "cls_name": "Network",
                     "question": "What are the Network(s) in the given context?",
                     "answer": [
-                        "Network_instance_1",
-                        "Network_instance_2"
+                        "Convolutional Neural Network"
                     ],
                     "children": [
                         {
@@ -30,19 +30,10 @@
                             "children": [
                                 {
                                     "id": 14,
-                                    "cls_name": "TrainingOptimizer",
-                                    "question": null,
-                                    "answer": null,
-                                    "children": [],
-                                    "parent_id": 5
-                                },
-                                {
-                                    "id": 15,
                                     "cls_name": "DatasetPipe",
                                     "question": "What are the DatasetPipe(s) in the given context?",
                                     "answer": [
-                                        "DatasetPipe_instance_1",
-                                        "DatasetPipe_instance_2"
+                                        "ImageNet"
                                     ],
                                     "children": [
                                         {
@@ -50,11 +41,18 @@
                                             "cls_name": "InOutLayer",
                                             "question": "What are the InOutLayer(s) in the given context?",
                                             "answer": [
-                                                "InOutLayer_instance_1",
-                                                "InOutLayer_instance_2"
+                                                "Input Layer",
+                                                "Convolutional Layer 1",
+                                                "Convolutional Layer 2",
+                                                "Convolutional Layer 3",
+                                                "Convolutional Layer 4",
+                                                "Convolutional Layer 5",
+                                                "Fully-Connected Layer 1",
+                                                "Fully-Connected Layer 2",
+                                                "Fully-Connected Layer 3"
                                             ],
                                             "children": [],
-                                            "parent_id": 15
+                                            "parent_id": 14
                                         },
                                         {
                                             "id": 21,
@@ -67,8 +65,8 @@
                                                     "cls_name": "DataType",
                                                     "question": "What are the DataType(s) in the given context?",
                                                     "answer": [
-                                                        "DataType_instance_1",
-                                                        "DataType_instance_2"
+                                                        "RGB",
+                                                        "PCA"
                                                     ],
                                                     "children": [],
                                                     "parent_id": 21
@@ -78,16 +76,24 @@
                                                     "cls_name": "Labelset",
                                                     "question": "What are the Labelset(s) in the given context?",
                                                     "answer": [
-                                                        "Labelset_instance_1",
-                                                        "Labelset_instance_2"
+                                                        "ImageNet",
+                                                        "ILSVRC"
                                                     ],
                                                     "children": [],
                                                     "parent_id": 21
                                                 }
                                             ],
-                                            "parent_id": 15
+                                            "parent_id": 14
                                         }
                                     ],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 15,
+                                    "cls_name": "TrainingOptimizer",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [],
                                     "parent_id": 5
                                 }
                             ],
@@ -95,39 +101,6 @@
                         },
                         {
                             "id": 6,
-                            "cls_name": "OutputLayer",
-                            "question": "What are the OutputLayer(s) in the given context?",
-                            "answer": [
-                                "OutputLayer_instance_1",
-                                "OutputLayer_instance_2"
-                            ],
-                            "children": [],
-                            "parent_id": 2
-                        },
-                        {
-                            "id": 7,
-                            "cls_name": "InputLayer",
-                            "question": "What are the InputLayer(s) in the given context?",
-                            "answer": [
-                                "InputLayer_instance_1",
-                                "InputLayer_instance_2"
-                            ],
-                            "children": [],
-                            "parent_id": 2
-                        },
-                        {
-                            "id": 8,
-                            "cls_name": "TaskCharacterization",
-                            "question": "What are the TaskCharacterization(s) in the given context?",
-                            "answer": [
-                                "TaskCharacterization_instance_1",
-                                "TaskCharacterization_instance_2"
-                            ],
-                            "children": [],
-                            "parent_id": 2
-                        },
-                        {
-                            "id": 9,
                             "cls_name": "ObjectiveFunction",
                             "question": null,
                             "answer": null,
@@ -137,8 +110,8 @@
                                     "cls_name": "CostFunction",
                                     "question": "What are the CostFunction(s) in the given context?",
                                     "answer": [
-                                        "CostFunction_instance_1",
-                                        "CostFunction_instance_2"
+                                        "Convolutional Neural Networks",
+                                        "Rectified Linear Units"
                                     ],
                                     "children": [
                                         {
@@ -146,8 +119,8 @@
                                             "cls_name": "RegularizerFunction",
                                             "question": "What are the RegularizerFunction(s) in the given context?",
                                             "answer": [
-                                                "RegularizerFunction_instance_1",
-                                                "RegularizerFunction_instance_2"
+                                                "Dropout",
+                                                "Data Augmentation"
                                             ],
                                             "children": [],
                                             "parent_id": 16
@@ -157,20 +130,19 @@
                                             "cls_name": "LossFunction",
                                             "question": "What are the LossFunction(s) in the given context?",
                                             "answer": [
-                                                "LossFunction_instance_1",
-                                                "LossFunction_instance_2"
+                                                "Multinomial Logistic Regression"
                                             ],
                                             "children": [],
                                             "parent_id": 16
                                         }
                                     ],
-                                    "parent_id": 9
+                                    "parent_id": 6
                                 }
                             ],
                             "parent_id": 2
                         },
                         {
-                            "id": 10,
+                            "id": 7,
                             "cls_name": "Layer",
                             "question": null,
                             "answer": null,
@@ -180,13 +152,58 @@
                                     "cls_name": "TrainedWeights",
                                     "question": "What are the TrainedWeights(s) in the given context?",
                                     "answer": [
-                                        "TrainedWeights_instance_1",
-                                        "TrainedWeights_instance_2"
+                                        "Convolutional Neural Network",
+                                        "ImageNet",
+                                        "ILSVRC",
+                                        "Data Augmentation",
+                                        "Dropout",
+                                        "Weight Decay"
                                     ],
                                     "children": [],
-                                    "parent_id": 10
+                                    "parent_id": 7
                                 }
                             ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 8,
+                            "cls_name": "OutputLayer",
+                            "question": "What are the OutputLayer(s) in the given context?",
+                            "answer": [
+                                "Convolutional Layer 1",
+                                "Convolutional Layer 2",
+                                "Convolutional Layer 3",
+                                "Convolutional Layer 4",
+                                "Convolutional Layer 5",
+                                "Fully-Connected Layer 1",
+                                "Fully-Connected Layer 2",
+                                "Fully-Connected Layer 3"
+                            ],
+                            "children": [],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 9,
+                            "cls_name": "InputLayer",
+                            "question": "What are the InputLayer(s) in the given context?",
+                            "answer": [
+                                "InputLayer 1",
+                                "InputLayer 2"
+                            ],
+                            "children": [],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 10,
+                            "cls_name": "TaskCharacterization",
+                            "question": "What are the TaskCharacterization(s) in the given context?",
+                            "answer": [
+                                "ImageNet",
+                                "convolutional neural network (CNN)",
+                                "object recognition",
+                                "image classification"
+                            ],
+                            "children": [],
                             "parent_id": 2
                         },
                         {
@@ -200,8 +217,9 @@
                                     "cls_name": "Metric",
                                     "question": "What are the Metric(s) in the given context?",
                                     "answer": [
-                                        "Metric_instance_1",
-                                        "Metric_instance_2"
+                                        "Top-1 Error Rate",
+                                        "Top-5 Error Rate",
+                                        "Validation Error Rate"
                                     ],
                                     "children": [],
                                     "parent_id": 11
@@ -217,8 +235,8 @@
                     "cls_name": "EvaluationResult",
                     "question": "What are the EvaluationResult(s) in the given context?",
                     "answer": [
-                        "EvaluationResult_instance_1",
-                        "EvaluationResult_instance_2"
+                        "Top-1 Error Rate",
+                        "Top-5 Error Rate"
                     ],
                     "children": [],
                     "parent_id": 1
@@ -228,8 +246,10 @@
                     "cls_name": "TrainingStrategy",
                     "question": "What are the TrainingStrategy(s) in the given context?",
                     "answer": [
-                        "TrainingStrategy_instance_1",
-                        "TrainingStrategy_instance_2"
+                        "Data augmentation",
+                        "Dropout",
+                        "Local response normalization",
+                        "Overlapping pooling"
                     ],
                     "children": [
                         {
@@ -237,8 +257,12 @@
                             "cls_name": "TrainedModel",
                             "question": "What are the TrainedModel(s) in the given context?",
                             "answer": [
-                                "TrainedModel_instance_1",
-                                "TrainedModel_instance_2"
+                                "Convolutional Neural Network",
+                                "Rectified Linear Unit",
+                                "Local Response Normalization",
+                                "Overlapping Pooling",
+                                "Data Augmentation",
+                                "Dropout"
                             ],
                             "children": [],
                             "parent_id": 4
@@ -246,11 +270,8 @@
                         {
                             "id": 13,
                             "cls_name": "TrainingSession",
-                            "question": "What are the TrainingSession(s) in the given context?",
-                            "answer": [
-                                "TrainingSession_instance_1",
-                                "TrainingSession_instance_2"
-                            ],
+                            "question": null,
+                            "answer": null,
                             "children": [
                                 {
                                     "id": 19,
@@ -263,18 +284,22 @@
                                             "cls_name": "TrainingLoop",
                                             "question": "What are the TrainingLoop(s) in the given context?",
                                             "answer": [
-                                                "TrainingLoop_instance_1",
-                                                "TrainingLoop_instance_2"
+                                                "ImageNet",
+                                                "ILSVRC-2010",
+                                                "ILSVRC-2012",
+                                                "CIFAR-10",
+                                                "ReLU",
+                                                "GPU",
+                                                "Alex Krizhevsky",
+                                                "Ilya Sutskever",
+                                                "Geoffrey E. Hinton"
                                             ],
                                             "children": [
                                                 {
                                                     "id": 27,
                                                     "cls_name": "StopCondition",
-                                                    "question": "What are the StopCondition(s) in the given context?",
-                                                    "answer": [
-                                                        "StopCondition_instance_1",
-                                                        "StopCondition_instance_2"
-                                                    ],
+                                                    "question": null,
+                                                    "answer": null,
                                                     "children": [],
                                                     "parent_id": 24
                                                 }
