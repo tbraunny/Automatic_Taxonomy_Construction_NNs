@@ -11,6 +11,8 @@ from utils.parse_annetto_structure import *
 from utils.owl import *
 
 
+LLM_MODEL_NAME = 'llama3.2:1b'
+
 
 class LLMResponse(BaseModel):
     instance_names: List[str]  # A list of ontology class names expected from LLM
@@ -39,7 +41,7 @@ class OntologyTreeQuestioner:
                 class_prompt = generate_class_prompt(cls.name, ancestor_classes, self.paper_content)
 
                 # Query the LLM
-                response = OllamaLLMModel().query_ollama(class_prompt,get_ollama_prompt())
+                response = self.llm.query_ollama(class_prompt,get_ollama_prompt())
 
                 # Validate and process the response
                 validated_response = self.validate_response(response)
@@ -111,27 +113,6 @@ class OntologyTreeQuestioner:
 
         visited_classes = set()
         self.handle_class(self.root_class, parent_id=0, visited_classes=visited_classes)
-
-
-def main():
-    from utils.pdf_loader import load_pdf
-    file_path = "data/hand_processed/AlexNet.pdf"  # Replace with your actual file path
-    doc_str = load_pdf(file_path,as_str=True)
-    
-    llm = OllamaLLMModel()
-    onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
-
-    tree = ConversationTree()
-    questioner = OntologyTreeQuestioner(
-        ontology=onto,
-        conversation_tree=tree,
-        llm=llm,
-        paper_content=doc_str
-    )
-    questioner.start()
-    tree.save_to_json("output/conversation_tree.json")
-
-
 
 """ Helper functions """
 
@@ -242,35 +223,60 @@ def get_class_context(class_obj):
 
 def generate_class_prompt(class_name, ancestor_classes, paper_content):
     prompt = f"""
-As an expert in neural networks architectures, create a question that
+    As an expert in neural networks architectures, create a question that
 
-"""
-    
-    
-    
-    
-"""
-You are a machine that generates questions. Based on the following information:
+    """
+        
+        
+        
+        
+    """
+    You are a machine that generates questions. Based on the following information:
 
-- **Class in Ontology**: '{class_name}'
-- **Instantiated Ancestor Classes**: '{', '.join(ancestor_classes) if ancestor_classes else 'None'}'
+    - **Class in Ontology**: '{class_name}'
+    - **Instantiated Ancestor Classes**: '{', '.join(ancestor_classes) if ancestor_classes else 'None'}'
 
-Below is a research paper that provides detailed information about the class and its context:
-\"\"\"
-{paper_content}
-\"\"\"
+    Below is a research paper that provides detailed information about the class and its context:
+    \"\"\"
+    {paper_content}
+    \"\"\"
 
-Please perform the following tasks:
-1. Generate a question that will be used in an llm prompt to instantiate a name for the class.
-2. In the question, relate the class to its ancestor classes where applicable.
-"""
+    Please perform the following tasks:
+    1. Generate a question that will be used in an llm prompt to instantiate a name for the class.
+    2. In the question, relate the class to its ancestor classes where applicable.
+    """
 
-    generated_prompt = OllamaLLMModel().query_ollama('',prompt)
+    generated_prompt = OllamaLLMModel(model_name=LLM_MODEL_NAME).query_ollama('',prompt)
 
     print(generated_prompt)
 
 
     return generated_prompt
+
+"""
+main function
+"""
+
+
+def main():
+    from utils.pdf_loader import load_pdf
+
+    file_path = "data/hand_processed/AlexNet.pdf"  # Replace with your actual file path
+    doc_str = load_pdf(file_path, as_str=True)
+    
+    llm = OllamaLLMModel(model_name=LLM_MODEL_NAME)
+    
+    onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
+
+    tree = ConversationTree()
+    questioner = OntologyTreeQuestioner(
+        ontology=onto,
+        conversation_tree=tree,
+        llm=llm,
+        paper_content=doc_str
+    )
+    questioner.start()
+    tree.save_to_json("output/conversation_tree.json")
 
 if __name__ == "__main__":
     main()
