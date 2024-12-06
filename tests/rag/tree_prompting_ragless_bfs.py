@@ -58,9 +58,11 @@ class OntologyTreeQuestioner:
                 # Prepare the class question
                 class_question = f"What are the {cls.name}(s) in the given context?"
 
+                
+
                 # return class_question, [f"{cls.name}_instance_1",f"{cls.name}_instance_2"]
 
-                class_question_ctx = class_question + f" Context paper: {self.paper_content}"
+                class_question_ctx = class_question + f"Paper context: '''{self.paper_content}'''"
 
                 instructions = get_ollama_instructions()
 
@@ -107,14 +109,6 @@ class OntologyTreeQuestioner:
             visited_classes.add(cls)
             new_node_id = self.conversation_tree.add_child(parent_id, cls.name, answer=None)
 
-            # Check if cls is a subclass of its direct parent node's class
-
-            parent_cls_name = self.conversation_tree.get_parent_cls_name(new_node_id)
-            parent_cls = get_class_by_name(self.ontology, parent_cls_name)
-            is_subcls = is_subclass(cls, parent_cls)
-
-            print(is_subcls)
-
             if requires_final_instantiation(cls, self.ontology):
                 result = self.ask_question(cls=cls)
                 if result:
@@ -145,7 +139,7 @@ class OntologyTreeQuestioner:
         """
         Starts processing the ontology by handling the root class.
         """
-        root_class = self.ontology.Network
+        root_class = self.ontology.ANNConfiguration
         if root_class is None:
             print("Class 'Network' does not exist in the ontology.")
             return
@@ -187,6 +181,7 @@ def extract_JSON(response: str) -> dict:
     except json.JSONDecodeError as e:
         raise ValueError(f"Error decoding JSON: {e}\nResponse: {response}")
 
+
 def use_ollama_model():
     """
     Loads the LLM model and paper content for ontology processing.
@@ -218,7 +213,6 @@ If you do not know the answer or cannot confidently determine it, explicitly sta
 Use the following format:
 Text: <text to summarize>
 Summary: <summary>
-Translation: <summary translation>
 Names: <list of names in summary>
 Output JSON: <json with ontology entity names>
 

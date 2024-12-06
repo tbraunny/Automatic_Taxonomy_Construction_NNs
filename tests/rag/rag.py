@@ -30,20 +30,19 @@ def local_ollama():
 
 def local_rag_query():    
     pdf_path = "data/raw/AlexNet.pdf"
-    model_name = 'llama3.2:3b-instruct-fp16'
-    model = LocalRagEngine(pdf_path=pdf_path)#,llm_model=model_name)
+    model = LocalRagEngine(pdf_path=pdf_path)
 
     prompt = """How does this nueral network architecture account for overfitting"""
 
-    rag_chunks = model.get_relevant_chunks(prompt)
-    print(rag_chunks)
+    # rag_chunks = model.get_relevant_chunks(prompt)
+    # print(rag_chunks)
 
-    print("\n\n\n")
+    # print("\n\n\n")
 
     rag_engine = model.get_rag_engine()
     response = rag_engine.query(prompt)
     print(response)
-
+local_rag_query()
 
 def remote_rag_query():
     pdf_path = 'data/raw/VGG16.pdf'
