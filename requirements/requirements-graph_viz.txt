@@ -2,3 +2,4 @@ pyviz
 holoviews
 panel
 bokeh
+seaborn

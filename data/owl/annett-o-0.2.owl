@@ -1441,7 +1441,7 @@
   <rdfs:subClassOf rdf:resource="Constant"/>
 </owl:Class>
 
-<owl:Class rdf:about="CNN">
+<owl:Class rdf:about="AlexNet">
   <rdfs:subClassOf rdf:resource="ANNConfiguration"/>
 </owl:Class>
 
