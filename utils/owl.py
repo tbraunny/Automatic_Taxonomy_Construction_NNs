@@ -14,6 +14,39 @@ onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
 
 """ 1) Class Functions """
 
+def get_class_by_name(onto, class_name):
+    """
+    Retrieves a class object from an ontology by its name.
+
+    Args:
+        onto: The ontology object.
+        class_name (str): The name of the class to retrieve.
+
+    Returns:
+        The class object if found, or None if not found.
+    """
+    cls = getattr(onto, class_name, None)
+    if cls:
+        return cls
+    else:
+        print(f"Class '{class_name}' not found in the ontology.")
+        return None
+
+
+def is_subclass(self, cls, parent_cls):
+    """
+    Determines whether a given class is a subclass of another class.
+
+    Args:
+        cls: The class to check.
+        parent_cls: The parent class to compare against.
+
+    Returns:
+        bool: True if cls is a subclass of parent_cls, False otherwise.
+    """
+    return parent_cls in cls.ancestors() and cls is not parent_cls
+
+
 def get_base_class(onto:Ontology):
     return onto.ANNConfiguration
 
