@@ -130,25 +130,26 @@ function fetchTaxonomy() {
     }
 }
 
-function checkEnter(event) {
-    //Check if the pressed key is "Enter"
+//check for enter and backslash events
+document.addEventListener("keydown", function(event) {
+    if (event.key == "/") {
+        event.preventDefault();
+        document.getElementById("prompt-input").focus();
+    }
     if (event.key === "Enter") {
-        //Prevent the default form submission if inside a form
         event.preventDefault();
 
-        // Get the user's input from the prompt bar
         const userInput = document.getElementById("prompt-input").value;
 
-        //Call the function to handle the input, passing in the user's text
         //handlePromptInput(userInput);
         console.log(userInput)
         handlePromptInput(userInput);
         //displayGraph();
 
-        //Clear the input field after submission
+        //clear prompt bar after submitting input
         document.getElementById("prompt-input").value = '';
     }
-}
+});
 
 //Function to handle the user's input
 function handlePromptInput(userInput) {
@@ -175,7 +176,14 @@ function handlePromptInput(userInput) {
     .then(data => {
         console.log(data);
         last_chat = chat_response.lastChild;
-        last_chat.innerHTML = `<h3>You said: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
+        console.log(data.response);
+        if (data.response === undefined) {
+            alert("Llama is sleeping...shhh")
+            clearChat();
+        }
+        else {
+            last_chat.innerHTML = `<h3>You said: </h3><br>${userInput}<br><h3>Llama says: </h3><br><p>${data.response}</p>`;
+        }
     })
     .catch(error => {
         console.error('Error: ' , error);
