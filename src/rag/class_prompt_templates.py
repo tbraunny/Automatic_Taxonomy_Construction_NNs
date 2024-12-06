@@ -67,7 +67,6 @@ def get_class_prompt(
         else ""
     )
 
-    # Generate the question
     question = (
         f"Identify all {cls_name}s based on the paper and{parent_context}. "
         f"For each identified {cls_name}, assign a unique name in the format '<configuration_name>_{cls_name}X'."
@@ -79,14 +78,12 @@ def get_class_prompt(
         "question": question
     }
 
-
-# Example Usage
+# example usage
 if __name__ == "__main__":
     # Load ontology using owlready2
     onto = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
 
     with onto:
-        # Example classes defined within the ontology context
         class Network(Thing):
             pass
 
@@ -105,7 +102,6 @@ if __name__ == "__main__":
         class Dataset(Thing):
             pass
 
-    # Generate and print questions
     print(get_class_prompt(Network, consider_subclasses=True, parent_instance="ANNConfig1"))
     print('\n')
     print(get_class_prompt(Layer, consider_subclasses=True, parent_instance="Network1"))
