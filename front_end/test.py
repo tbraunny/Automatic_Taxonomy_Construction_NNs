@@ -20,7 +20,6 @@ upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/
 cw_paper = 0
 
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-print(static_path)
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 class Item(BaseModel):
