@@ -71,20 +71,28 @@ class CodeLoader:
 
         return self.code
 
-def py_to_txt(py_file):
-    txt_file = f"{python_file_name}.txt"
+def py_to_txt(path , py_file):
+    py_file_name , _ = os.path.splitext(py_file)
+    txt_file = f"{py_file_name}.txt"
 
     try:
         with open(py_file, "r") as py_file, open(txt_file, "w") as txt_file:
             txt_file.write(py_file.read())
     finally:
-        await py_file.close()
-        await txt_file.close()
+        py_file.close()
+        txt_file.close()
 
-    
+    return txt_file
+
+def py_to_pdf(txt_file):
+    pass
 
 if __name__ == '__main__':
-    py_text = py_to_txt(file="test.py")
+    path = "rag/"
+    file = os.path.join(path , "code_parse_test.py")
+    upload_path = "data/user_temp/"
+
+    py_text = py_to_txt(upload_path , file)
     # code_loader = CodeLoader("test.py")
     # code = code_loader.load()
 
