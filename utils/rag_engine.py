@@ -30,7 +30,7 @@ class LocalRagEngine:
         documents = self.load_and_preprocess_pdf(pdf_path)
 
         # Initialize models
-        self.embed_model = HuggingFaceEmbeddingModel().get_model()
+        self.embed_model = OllamaEmbeddingModel().get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
         
         self.vector_index = None

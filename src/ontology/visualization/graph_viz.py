@@ -152,8 +152,9 @@ def visualize_with_pyvis(graph, output_filename="graph.html"):
 
 
 # Main function to test recursive instance graph
-def main():
+def process_ontology():
     # Load the ontology
+    print("called")
     ontology_file = os.path.join(ROOT_DIR, "data/owl", C.ONTOLOGY.FILENAME)
     ontology = load_ontology(ontology_file)
 
@@ -179,9 +180,9 @@ def main():
     graph = build_graph_from_relations(relations_dict)
 
     # Visualize the graph
-    output_path = os.path.join(ROOT_DIR, "output", "instance_graph.html")
+    output_path = os.path.join(ROOT_DIR, "front_end/static", "instance_graph.html")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     visualize_with_pyvis(graph, output_path)
 
 if __name__ == "__main__":
-    main()
+    process_ontology()

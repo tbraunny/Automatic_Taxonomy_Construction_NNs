@@ -17,10 +17,12 @@
     <div class="main-content">
         <div id="gen_ont">
             <h1>Generate Ontology</h1>
-            <p>Ontology generated from general project manifold</p>
-            <div id="graph"></div>
-            <button onclick="fetchOntology()" class="generate-btn">Generate Ontology</button>
-            <img id="ontology-image" src="/static/graph.png" alt="Generated Ontology Image" />
+            <!--<div id="graph"></div>-->
+            <button onclick="gen_ont()" id="generate-button" >Generate Ontology</button>
+            <!--<img id="ontology-image" src="/static/graph.png" alt="Generated Ontology Image" />-->
+            <div class="content">
+                <iframe id="ontology-image" action="/ont_vis/" type="text/html" src="static/instance_graph.html" height="100%" width="100%"></iframe>
+            </div>
         </div>
     </div>
     <script src="static/taxon_neuro_js.js"></script>

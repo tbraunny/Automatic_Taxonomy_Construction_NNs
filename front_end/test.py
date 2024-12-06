@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import os
 from src.rag import tree_prompting  # Import your tree_prompting module
 from utils.rag_engine import LocalRagEngine
+from src.ontology.visualization.graph_viz import process_ontology
 from fastapi.templating import Jinja2Templates
 import shutil
 
@@ -82,6 +83,14 @@ async def create_upload_file(file: UploadFile):
         await file.close()
     
     return {"filename": unique_file, "message": "File uploaded successfully!"}
+
+@app.post("/ont_vis/")
+async def create_ont_vis():
+    try:
+        result = process_ontology()
+        return result
+    except Excpetion as e:
+        print("Unable to visualize the ontology, error: " , e)
 
 # check for unique file name, ensure new files do not overwrite old files
 def unique_file_name(path , file_name):
