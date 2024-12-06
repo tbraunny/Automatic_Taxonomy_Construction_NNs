@@ -71,3 +71,38 @@ class ConversationTree:
         """
         with open(file_name, "w") as f:
             json.dump(self.to_serializable(self.tree), f, indent=4)
+    
+    """ Helpers """
+
+    def get_parent_cls_name(self, node_id):
+        """
+        Retrieves the 'cls_name' value of the parent node for a given node.
+
+        Args:
+            node_id (int): The ID of the node whose parent's 'cls_name' is to be retrieved.
+
+        Returns:
+            The 'cls_name' of the parent node if it exists, or None if the node has no parent or the parent doesn't have a 'cls_name'.
+        """
+        # Get the current node
+        current_node = self.nodes.get(node_id)
+        if not current_node:
+            print(f"Node with ID {node_id} does not exist.")
+            return None
+
+        # Get the parent ID
+        parent_id = current_node.get("parent_id")
+        if parent_id is None:
+            print(f"Node with ID {node_id} has no parent.")
+            return None
+
+        # Get the parent node
+        parent_node = self.nodes.get(parent_id)
+        if not parent_node:
+            print(f"Parent node with ID {parent_id} does not exist.")
+            return None
+
+        # Return the parent's 'cls_name'
+        return parent_node.get("cls_name")
+
+

@@ -3,9 +3,14 @@ from owlready2 import *
 from typing import List
 from pydantic import BaseModel, ValidationError
 
+import sys
+import os
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'utils')))
+#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
+
 from utils.constants import Constants as C
 from utils.rag_engine import LocalRagEngine
-from utils.llm_model import ollama_query
+from utils.llm_model import OllamaLLMModel
 from utils.conversational_tree import ConversationTree
 
 from utils.parse_annetto_structure import *

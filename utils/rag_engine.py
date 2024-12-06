@@ -4,7 +4,7 @@ from llama_index.core import Document, VectorStoreIndex, Settings
 from utils.pdf_loader import load_pdf
 from utils.preprocess_pdf import preprocess_pdf
 from utils.llm_model import LLMModel
-from utils.embedding_model import EmbeddingModel
+from utils.embedding_model import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
 from utils.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
 
 
@@ -23,14 +23,14 @@ class LocalRagEngine:
     """
     A utility class for creating and managing a document index locally.
     """
-    def __init__(self, pdf_path=None,llm_model='llama3.1:8b'):
+    def __init__(self, pdf_path=None,llm_model='llama3.1:8b-instruct-fp16'):
         if pdf_path is None:
             raise ValueError("PDF path must be provided.")
         
         documents = self.load_and_preprocess_pdf(pdf_path)
 
         # Initialize models
-        self.embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
+        self.embed_model = HuggingFaceEmbeddingModel().get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
         
         self.vector_index = None
