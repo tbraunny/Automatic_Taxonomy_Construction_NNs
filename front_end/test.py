@@ -113,10 +113,19 @@ async def process_input(request: Request):
             cw_paper = os.path.join(upload_path , "AlexNet.pdf")
         
         # Call the function from tree_prompting.py to process the input
+        # if code conversion invoked llama_model = qwen
+        code_str ="all the code"
+        instructions = f"""The text within the triple delimiters is a user-prompted query, asnwer the question like a good kitten. \
+                           The following is the code, only refreence the following code, if query cannot be answered within the scope \
+                           of the code then respond with I don't know. {code_str}"""
+        instructions += '```{query}```'
+        query = user_input
+
+        #   response = OllamaModel(qwen).query_ollama(code , instructions)
         query_engine = LocalRagEngine(pdf_path=cw_paper , llm_model='llama3.2:3b-instruct-fp16').get_rag_engine()
         response = query_engine.query(user_input)
 
-        response_text = str(response)\
+        response_text = str(response)
 
         return JSONResponse(content={"response": response_text})
     
