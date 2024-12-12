@@ -89,7 +89,7 @@ async def create_ont_vis():
     try:
         result = process_ontology()
         return result
-    except Excpetion as e:
+    except Exception as e:
         print("Unable to visualize the ontology, error: " , e)
 
 # check for unique file name, ensure new files do not overwrite old files

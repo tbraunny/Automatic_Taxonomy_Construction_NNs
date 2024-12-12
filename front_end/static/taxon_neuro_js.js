@@ -334,5 +334,5 @@ function copyChatText() {
 
 function regenerateChat() {
     const userInput = document.getElementById("prompt-input").value;
-    handleUserInput(userInput);
+    handlePromptInput(userInput);
 }
