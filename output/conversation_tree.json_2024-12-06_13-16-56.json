@@ -1,0 +1,1359 @@
+{
+    "id": 0,
+    "cls_name": null,
+    "question": null,
+    "answer": null,
+    "children": [
+        {
+            "id": 1,
+            "cls_name": "ANNConfiguration",
+            "question": "What are the ANNConfiguration(s) in the given context?",
+            "answer": [
+                "Convolutional Neural Network",
+                "Rectified Linear Units",
+                "Local Response Normalization",
+                "Overlapping Pooling",
+                "Dropout"
+            ],
+            "children": [
+                {
+                    "id": 2,
+                    "cls_name": "Network",
+                    "question": "What are the Network(s) in the given context?",
+                    "answer": [
+                        "Convolutional Neural Network"
+                    ],
+                    "children": [
+                        {
+                            "id": 5,
+                            "cls_name": "TaskCharacterization",
+                            "question": "What are the TaskCharacterization(s) in the given context?",
+                            "answer": [
+                                "Convolutional Neural Network",
+                                "ImageNet"
+                            ],
+                            "children": [
+                                {
+                                    "id": 14,
+                                    "cls_name": "Adversarial",
+                                    "question": "What are the Adversarial(s) in the given context?",
+                                    "answer": [
+                                        "Data Augmentation",
+                                        "Image Translations",
+                                        "Horizontal Reflections",
+                                        "Altering Intensities of RGB Channels"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 15,
+                                    "cls_name": "Classification",
+                                    "question": "What are the Classification(s) in the given context?",
+                                    "answer": [
+                                        "ImageNet",
+                                        "ILSVRC",
+                                        "Convolutional Neural Network (CNN)",
+                                        "Rectified Linear Unit (ReLU)"
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": 34,
+                                            "cls_name": "SemiSupervisedClassification",
+                                            "question": "What are the SemiSupervisedClassification(s) in the given context?",
+                                            "answer": [
+                                                "SemiSupervisedClassification"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 15
+                                        },
+                                        {
+                                            "id": 35,
+                                            "cls_name": "SupervisedClassification",
+                                            "question": "What are the SupervisedClassification(s) in the given context?",
+                                            "answer": [
+                                                "Convolutional Neural Network",
+                                                "Rectified Linear Unit",
+                                                "Local Response Normalization",
+                                                "Overlapping Pooling",
+                                                "Dropout"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 15
+                                        }
+                                    ],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 16,
+                                    "cls_name": "Clustering",
+                                    "question": "What are the Clustering(s) in the given context?",
+                                    "answer": [
+                                        "Dropout"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 17,
+                                    "cls_name": "Discrimination",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 18,
+                                    "cls_name": "Generation",
+                                    "question": "What are the Generation(s) in the given context?",
+                                    "answer": [
+                                        "Rectified Linear Units",
+                                        "Convolutional Neural Networks",
+                                        "ImageNet",
+                                        "ILSVRC-2010",
+                                        "ILSVRC-2012"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 19,
+                                    "cls_name": "Reconstruction",
+                                    "question": "What are the Reconstruction(s) in the given context?",
+                                    "answer": [
+                                        "Convolutional Neural Network (CNN)",
+                                        "ImageNet",
+                                        "ILSVRC-2010",
+                                        "ILSVRC-2012"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 5
+                                },
+                                {
+                                    "id": 20,
+                                    "cls_name": "Regression",
+                                    "question": "What are the Regression(s) in the given context?",
+                                    "answer": [
+                                        "Convolutional Neural Network",
+                                        "ImageNet"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 5
+                                }
+                            ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 6,
+                            "cls_name": "ObjectiveFunction",
+                            "question": null,
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 21,
+                                    "cls_name": "CostFunction",
+                                    "question": "What are the CostFunction(s) in the given context?",
+                                    "answer": [
+                                        "Mean Squared Error",
+                                        "Cross-Entropy Loss"
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": 36,
+                                            "cls_name": "RegularizerFunction",
+                                            "question": "What are the RegularizerFunction(s) in the given context?",
+                                            "answer": [
+                                                "Data Augmentation",
+                                                "Dropout"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 61,
+                                                    "cls_name": "L1L2RegularizerFunction",
+                                                    "question": "What are the L1L2RegularizerFunction(s) in the given context?",
+                                                    "answer": [
+                                                        "Data Augmentation",
+                                                        "Dropout"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 36
+                                                },
+                                                {
+                                                    "id": 62,
+                                                    "cls_name": "L1RegularizerFunction",
+                                                    "question": "What are the L1RegularizerFunction(s) in the given context?",
+                                                    "answer": [
+                                                        "Data Augmentation",
+                                                        "Dropout"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 36
+                                                },
+                                                {
+                                                    "id": 63,
+                                                    "cls_name": "L2RegularizerFunction",
+                                                    "question": "What are the L2RegularizerFunction(s) in the given context?",
+                                                    "answer": [
+                                                        "Dropout"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 36
+                                                }
+                                            ],
+                                            "parent_id": 21
+                                        },
+                                        {
+                                            "id": 37,
+                                            "cls_name": "LossFunction",
+                                            "question": "What are the LossFunction(s) in the given context?",
+                                            "answer": [
+                                                "Multinomial Logistic Regression"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 64,
+                                                    "cls_name": "BinaryCrossEntropy",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 37
+                                                },
+                                                {
+                                                    "id": 65,
+                                                    "cls_name": "CategoricalCrossEntropy",
+                                                    "question": "What are the CategoricalCrossEntropy(s) in the given context?",
+                                                    "answer": [
+                                                        "CategoricalCrossEntropy"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 37
+                                                },
+                                                {
+                                                    "id": 66,
+                                                    "cls_name": "MSE",
+                                                    "question": "What are the MSE(s) in the given context?",
+                                                    "answer": [
+                                                        "Mean Squared Error"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 37
+                                                }
+                                            ],
+                                            "parent_id": 21
+                                        }
+                                    ],
+                                    "parent_id": 6
+                                },
+                                {
+                                    "id": 22,
+                                    "cls_name": "MaxObjectiveFunction",
+                                    "question": "What are the MaxObjectiveFunction(s) in the given context?",
+                                    "answer": [
+                                        "Stochastic Gradient Descent",
+                                        "Momentum",
+                                        "Weight Decay"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 6
+                                },
+                                {
+                                    "id": 23,
+                                    "cls_name": "MinObjectiveFunction",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [],
+                                    "parent_id": 6
+                                }
+                            ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 7,
+                            "cls_name": "Layer",
+                            "question": null,
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 24,
+                                    "cls_name": "TrainedWeights",
+                                    "question": "What are the TrainedWeights(s) in the given context?",
+                                    "answer": [
+                                        "TrainedWeights"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 7
+                                },
+                                {
+                                    "id": 25,
+                                    "cls_name": "InOutLayer",
+                                    "question": "What are the InOutLayer(s) in the given context?",
+                                    "answer": [
+                                        "Convolutional Layer",
+                                        "Fully-connected Layer"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 7
+                                },
+                                {
+                                    "id": 26,
+                                    "cls_name": "HiddenLayer",
+                                    "question": "What are the HiddenLayer(s) in the given context?",
+                                    "answer": [
+                                        "Convolutional Layer 1",
+                                        "Convolutional Layer 2",
+                                        "Convolutional Layer 3",
+                                        "Convolutional Layer 4",
+                                        "Convolutional Layer 5"
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": 38,
+                                            "cls_name": "ActivationLayer",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 67,
+                                                    "cls_name": "ActivationFunction",
+                                                    "question": "What are the ActivationFunction(s) in the given context?",
+                                                    "answer": [
+                                                        "Rectified Linear Unit (ReLU)"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 91,
+                                                            "cls_name": "NonDiff",
+                                                            "question": "What are the NonDiff(s) in the given context?",
+                                                            "answer": [
+                                                                "Convolutional Neural Network",
+                                                                "Data Augmentation",
+                                                                "Dropout",
+                                                                "Rectified Linear Unit"
+                                                            ],
+                                                            "children": [
+                                                                {
+                                                                    "id": 109,
+                                                                    "cls_name": "Elu",
+                                                                    "question": "What are the Elu(s) in the given context?",
+                                                                    "answer": [
+                                                                        "Rectified Linear Units (ReLU)",
+                                                                        "tanh units"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 91
+                                                                },
+                                                                {
+                                                                    "id": 110,
+                                                                    "cls_name": "Relu",
+                                                                    "question": "What are the Relu(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 91
+                                                                },
+                                                                {
+                                                                    "id": 111,
+                                                                    "cls_name": "Relu6",
+                                                                    "question": "What are the Relu6(s) in the given context?",
+                                                                    "answer": [
+                                                                        "Rectified Linear Unit"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 91
+                                                                }
+                                                            ],
+                                                            "parent_id": 67
+                                                        },
+                                                        {
+                                                            "id": 92,
+                                                            "cls_name": "Linear",
+                                                            "question": "What are the Linear(s) in the given context?",
+                                                            "answer": [
+                                                                "Convolutional Neural Network",
+                                                                "Rectified Linear Unit",
+                                                                "Local Response Normalization",
+                                                                "Overlapping Pooling",
+                                                                "Dropout"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 67
+                                                        },
+                                                        {
+                                                            "id": 93,
+                                                            "cls_name": "Regularization",
+                                                            "question": "What are the Regularization(s) in the given context?",
+                                                            "answer": [
+                                                                "Data Augmentation",
+                                                                "Dropout",
+                                                                "Local Response Normalization (LRN)",
+                                                                "Overlapping Pooling"
+                                                            ],
+                                                            "children": [
+                                                                {
+                                                                    "id": 112,
+                                                                    "cls_name": "RandomDropOut",
+                                                                    "question": "What are the RandomDropOut(s) in the given context?",
+                                                                    "answer": [
+                                                                        "Dropout"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 93
+                                                                }
+                                                            ],
+                                                            "parent_id": 67
+                                                        },
+                                                        {
+                                                            "id": 94,
+                                                            "cls_name": "Smooth",
+                                                            "question": "What are the Smooth(s) in the given context?",
+                                                            "answer": [
+                                                                "ReLU",
+                                                                "CNN"
+                                                            ],
+                                                            "children": [
+                                                                {
+                                                                    "id": 113,
+                                                                    "cls_name": "Sigmoid",
+                                                                    "question": "What are the Sigmoid(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU",
+                                                                        "tanh"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 94
+                                                                },
+                                                                {
+                                                                    "id": 114,
+                                                                    "cls_name": "SoftMax",
+                                                                    "question": "What are the SoftMax(s) in the given context?",
+                                                                    "answer": [
+                                                                        "SoftMax"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 94
+                                                                },
+                                                                {
+                                                                    "id": 115,
+                                                                    "cls_name": "SoftPlus",
+                                                                    "question": "What are the SoftPlus(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU",
+                                                                        "Local Response Normalization"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 94
+                                                                },
+                                                                {
+                                                                    "id": 116,
+                                                                    "cls_name": "SoftSign",
+                                                                    "question": "What are the SoftSign(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU",
+                                                                        "tanh"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 94
+                                                                },
+                                                                {
+                                                                    "id": 117,
+                                                                    "cls_name": "Tanh",
+                                                                    "question": "What are the Tanh(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU",
+                                                                        "Tanh"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 94
+                                                                }
+                                                            ],
+                                                            "parent_id": 67
+                                                        }
+                                                    ],
+                                                    "parent_id": 38
+                                                },
+                                                {
+                                                    "id": 68,
+                                                    "cls_name": "RNNLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 95,
+                                                            "cls_name": "GRULayer",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 68
+                                                        },
+                                                        {
+                                                            "id": 96,
+                                                            "cls_name": "LSTMLayer",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 68
+                                                        }
+                                                    ],
+                                                    "parent_id": 38
+                                                },
+                                                {
+                                                    "id": 69,
+                                                    "cls_name": "ConvolutionLayer",
+                                                    "question": "What are the ConvolutionLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "ConvolutionLayer 1",
+                                                        "ConvolutionLayer 2",
+                                                        "ConvolutionLayer 3",
+                                                        "ConvolutionLayer 4",
+                                                        "ConvolutionLayer 5"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 97,
+                                                            "cls_name": "SeparableConvolutionLayer",
+                                                            "question": "What are the SeparableConvolutionLayer(s) in the given context?",
+                                                            "answer": [
+                                                                "SeparableConvolutionLayer"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 69
+                                                        }
+                                                    ],
+                                                    "parent_id": 38
+                                                },
+                                                {
+                                                    "id": 70,
+                                                    "cls_name": "DeconvolutionLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 98,
+                                                            "cls_name": "SeparableDeconvolutionLayer",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 70
+                                                        }
+                                                    ],
+                                                    "parent_id": 38
+                                                },
+                                                {
+                                                    "id": 71,
+                                                    "cls_name": "FullyConnectedLayer",
+                                                    "question": "What are the FullyConnectedLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "FullyConnectedLayer1",
+                                                        "FullyConnectedLayer2",
+                                                        "FullyConnectedLayer3"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 38
+                                                }
+                                            ],
+                                            "parent_id": 26
+                                        },
+                                        {
+                                            "id": 39,
+                                            "cls_name": "AggregationLayer",
+                                            "question": "What are the AggregationLayer(s) in the given context?",
+                                            "answer": [
+                                                "Convolutional Layer 1",
+                                                "Convolutional Layer 2"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 72,
+                                                    "cls_name": "BidirectionalRNNLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                },
+                                                {
+                                                    "id": 73,
+                                                    "cls_name": "ConcatLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                },
+                                                {
+                                                    "id": 74,
+                                                    "cls_name": "MultiplyLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                },
+                                                {
+                                                    "id": 75,
+                                                    "cls_name": "PoolingLayer",
+                                                    "question": "What are the PoolingLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "PoolingLayer",
+                                                        "Convolutional Layer",
+                                                        "Fully-Connected Layer"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                },
+                                                {
+                                                    "id": 76,
+                                                    "cls_name": "SumLayer",
+                                                    "question": "What are the SumLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "Layer",
+                                                        "Convolutional Layer",
+                                                        "Fully-Connected Layer"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                },
+                                                {
+                                                    "id": 77,
+                                                    "cls_name": "UpscaleLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 39
+                                                }
+                                            ],
+                                            "parent_id": 26
+                                        },
+                                        {
+                                            "id": 40,
+                                            "cls_name": "ModificationLayer",
+                                            "question": "What are the ModificationLayer(s) in the given context?",
+                                            "answer": [
+                                                "Convolutional Layer",
+                                                "Fully-Connected Layer"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 78,
+                                                    "cls_name": "NoiseLayer",
+                                                    "question": "What are the NoiseLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "Dropout",
+                                                        "ReLU"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 99,
+                                                            "cls_name": "ProbabilityDistributionFunction",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [
+                                                                {
+                                                                    "id": 118,
+                                                                    "cls_name": "Exponential",
+                                                                    "question": null,
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 99
+                                                                },
+                                                                {
+                                                                    "id": 119,
+                                                                    "cls_name": "Gaussian",
+                                                                    "question": "What are the Gaussian(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 99
+                                                                },
+                                                                {
+                                                                    "id": 120,
+                                                                    "cls_name": "Categorical",
+                                                                    "question": "What are the Categorical(s) in the given context?",
+                                                                    "answer": [
+                                                                        "Convolutional Neural Network",
+                                                                        "ImageNet",
+                                                                        "ILSVRC-2010",
+                                                                        "Rectified Linear Unit",
+                                                                        "Local Response Normalization",
+                                                                        "Overlapping Pooling",
+                                                                        "Dropout"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 99
+                                                                },
+                                                                {
+                                                                    "id": 121,
+                                                                    "cls_name": "Normal",
+                                                                    "question": "What are the Normal(s) in the given context?",
+                                                                    "answer": [
+                                                                        "ReLU Nonlinearity",
+                                                                        "Local Response Normalization",
+                                                                        "Overlapping Pooling"
+                                                                    ],
+                                                                    "children": [],
+                                                                    "parent_id": 99
+                                                                },
+                                                                {
+                                                                    "id": 122,
+                                                                    "cls_name": "Uniform",
+                                                                    "question": null,
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 99
+                                                                }
+                                                            ],
+                                                            "parent_id": 78
+                                                        }
+                                                    ],
+                                                    "parent_id": 40
+                                                },
+                                                {
+                                                    "id": 79,
+                                                    "cls_name": "DropoutLayer",
+                                                    "question": "What are the DropoutLayer(s) in the given context?",
+                                                    "answer": [
+                                                        "DropoutLayer"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 40
+                                                },
+                                                {
+                                                    "id": 80,
+                                                    "cls_name": "BatchNormLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 40
+                                                },
+                                                {
+                                                    "id": 81,
+                                                    "cls_name": "FlattenLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 40
+                                                }
+                                            ],
+                                            "parent_id": 26
+                                        },
+                                        {
+                                            "id": 41,
+                                            "cls_name": "SeparationLayer",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 82,
+                                                    "cls_name": "CloneLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 41
+                                                },
+                                                {
+                                                    "id": 83,
+                                                    "cls_name": "SplitLayer",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 41
+                                                }
+                                            ],
+                                            "parent_id": 26
+                                        }
+                                    ],
+                                    "parent_id": 7
+                                }
+                            ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 8,
+                            "cls_name": "NetworkEvaluation",
+                            "question": null,
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 27,
+                                    "cls_name": "Metric",
+                                    "question": "What are the Metric(s) in the given context?",
+                                    "answer": [
+                                        "ImageNet",
+                                        "Convolutional Neural Network (CNN)",
+                                        "Rectified Linear Unit (ReLU)",
+                                        "Local Response Normalization",
+                                        "Overlapping Pooling",
+                                        "Dropout"
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": 42,
+                                            "cls_name": "TrueOrFalseExamples",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 84,
+                                                    "cls_name": "FalseExamples",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [
+                                                        {
+                                                            "id": 100,
+                                                            "cls_name": "FalseNegatives",
+                                                            "question": "What are the FalseNegatives(s) in the given context?",
+                                                            "answer": [
+                                                                "FalseNegatives"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 84
+                                                        },
+                                                        {
+                                                            "id": 101,
+                                                            "cls_name": "FalsePositives",
+                                                            "question": "What are the FalsePositives(s) in the given context?",
+                                                            "answer": [
+                                                                "ImageNet",
+                                                                "LSVRC-2010 contest",
+                                                                "Convolutional Neural Network (CNN)",
+                                                                "Alex Krizhevsky",
+                                                                "Ilya Sutskever",
+                                                                "Geoffrey E. Hinton"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 84
+                                                        }
+                                                    ],
+                                                    "parent_id": 42
+                                                },
+                                                {
+                                                    "id": 85,
+                                                    "cls_name": "TrueExamples",
+                                                    "question": "What are the TrueExamples(s) in the given context?",
+                                                    "answer": [
+                                                        "Deep Convolutional Neural Network",
+                                                        "Rectified Linear Unit",
+                                                        "Local Response Normalization",
+                                                        "Overlapping Pooling",
+                                                        "Dropout"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 102,
+                                                            "cls_name": "TrueNegatives",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 85
+                                                        },
+                                                        {
+                                                            "id": 103,
+                                                            "cls_name": "TruePositives",
+                                                            "question": "What are the TruePositives(s) in the given context?",
+                                                            "answer": [
+                                                                "True Positives"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 85
+                                                        }
+                                                    ],
+                                                    "parent_id": 42
+                                                }
+                                            ],
+                                            "parent_id": 27
+                                        },
+                                        {
+                                            "id": 43,
+                                            "cls_name": "Accuracy",
+                                            "question": "What are the Accuracy(s) in the given context?",
+                                            "answer": [
+                                                "Top-1 Error Rate",
+                                                "Top-5 Error Rate"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 27
+                                        },
+                                        {
+                                            "id": 44,
+                                            "cls_name": "LogLikelihood",
+                                            "question": "What are the LogLikelihood(s) in the given context?",
+                                            "answer": [
+                                                "LogLikelihood",
+                                                "ReLU",
+                                                "ImageNet",
+                                                "ILSVRC-2010",
+                                                "ILSVRC-2012",
+                                                "CIFAR-10",
+                                                "Caltech-101/256",
+                                                "NORB",
+                                                "MNIST",
+                                                "LabelMe",
+                                                "Pascal Visual Object Challenge"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 86,
+                                                    "cls_name": "ParzenWindow",
+                                                    "question": "What are the ParzenWindow(s) in the given context?",
+                                                    "answer": [
+                                                        "ReLU",
+                                                        "Local Response Normalization",
+                                                        "Overlapping Pooling"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 44
+                                                }
+                                            ],
+                                            "parent_id": 27
+                                        },
+                                        {
+                                            "id": 45,
+                                            "cls_name": "MeanSquaredError",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 27
+                                        },
+                                        {
+                                            "id": 46,
+                                            "cls_name": "Precision",
+                                            "question": "What are the Precision(s) in the given context?",
+                                            "answer": [
+                                                "Precision",
+                                                "ImageNet",
+                                                "Convolutional Neural Network",
+                                                "Deep Neural Network",
+                                                "Rectified Linear Unit"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 27
+                                        },
+                                        {
+                                            "id": 47,
+                                            "cls_name": "Recall",
+                                            "question": "What are the Recall(s) in the given context?",
+                                            "answer": [
+                                                "ImageNet",
+                                                "ILSVRC"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 27
+                                        }
+                                    ],
+                                    "parent_id": 8
+                                },
+                                {
+                                    "id": 28,
+                                    "cls_name": "DatasetPipe",
+                                    "question": "What are the DatasetPipe(s) in the given context?",
+                                    "answer": [
+                                        "ImageNet",
+                                        "ILSVRC"
+                                    ],
+                                    "children": [
+                                        {
+                                            "id": 48,
+                                            "cls_name": "Dataset",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [
+                                                {
+                                                    "id": 87,
+                                                    "cls_name": "DataType",
+                                                    "question": "What are the DataType(s) in the given context?",
+                                                    "answer": [
+                                                        "Convolutional Neural Network",
+                                                        "ImageNet",
+                                                        "Data Augmentation",
+                                                        "Dropout",
+                                                        "Local Response Normalization"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 104,
+                                                            "cls_name": "Image",
+                                                            "question": "What are the Image(s) in the given context?",
+                                                            "answer": [
+                                                                "ImageNet",
+                                                                "ILSVRC-2010"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 87
+                                                        },
+                                                        {
+                                                            "id": 105,
+                                                            "cls_name": "MultiDimensionalCube",
+                                                            "question": null,
+                                                            "answer": null,
+                                                            "children": [],
+                                                            "parent_id": 87
+                                                        },
+                                                        {
+                                                            "id": 106,
+                                                            "cls_name": "Text",
+                                                            "question": "What are the Text(s) in the given context?",
+                                                            "answer": [
+                                                                "ImageNet",
+                                                                "ILSVRC-2010",
+                                                                "CNN",
+                                                                "ReLU",
+                                                                "GPU",
+                                                                "Alex Krizhevsky",
+                                                                "Ilya Sutskever",
+                                                                "Geoffrey E. Hinton"
+                                                            ],
+                                                            "children": [
+                                                                {
+                                                                    "id": 123,
+                                                                    "cls_name": "SemistructuredText",
+                                                                    "question": null,
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 106
+                                                                },
+                                                                {
+                                                                    "id": 124,
+                                                                    "cls_name": "UnstructuredText",
+                                                                    "question": null,
+                                                                    "answer": null,
+                                                                    "children": [],
+                                                                    "parent_id": 106
+                                                                }
+                                                            ],
+                                                            "parent_id": 87
+                                                        },
+                                                        {
+                                                            "id": 107,
+                                                            "cls_name": "Video",
+                                                            "question": "What are the Video(s) in the given context?",
+                                                            "answer": [
+                                                                "ImageNet",
+                                                                "ILSVRC-2010",
+                                                                "ILSVRC-2012"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 87
+                                                        }
+                                                    ],
+                                                    "parent_id": 48
+                                                },
+                                                {
+                                                    "id": 88,
+                                                    "cls_name": "Labelset",
+                                                    "question": "What are the Labelset(s) in the given context?",
+                                                    "answer": [
+                                                        "Labelset",
+                                                        "ImageNet"
+                                                    ],
+                                                    "children": [],
+                                                    "parent_id": 48
+                                                },
+                                                {
+                                                    "id": 89,
+                                                    "cls_name": "RandomNoiseDataset",
+                                                    "question": null,
+                                                    "answer": null,
+                                                    "children": [],
+                                                    "parent_id": 48
+                                                }
+                                            ],
+                                            "parent_id": 28
+                                        }
+                                    ],
+                                    "parent_id": 8
+                                },
+                                {
+                                    "id": 29,
+                                    "cls_name": "ConditionalEvaluation",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [
+                                        {
+                                            "id": 49,
+                                            "cls_name": "IterateUntil",
+                                            "question": "What are the IterateUntil(s) in the given context?",
+                                            "answer": [
+                                                "Convolutional Neural Network",
+                                                "Data Augmentation",
+                                                "Dropout",
+                                                "Local Response Normalization",
+                                                "Overlapping Pooling",
+                                                "ReLU Nonlinearity"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 29
+                                        }
+                                    ],
+                                    "parent_id": 8
+                                }
+                            ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 9,
+                            "cls_name": "NetworkSpecific",
+                            "question": null,
+                            "answer": null,
+                            "children": [
+                                {
+                                    "id": 30,
+                                    "cls_name": "TrainingOptimizer",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [
+                                        {
+                                            "id": 50,
+                                            "cls_name": "AdaDelta",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 51,
+                                            "cls_name": "AdaGrad",
+                                            "question": "What are the AdaGrad(s) in the given context?",
+                                            "answer": [
+                                                "Stochastic Gradient Descent",
+                                                "Momentum",
+                                                "Weight Decay"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 52,
+                                            "cls_name": "AdaGradDA",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 53,
+                                            "cls_name": "Adam",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 54,
+                                            "cls_name": "Ftrl",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 55,
+                                            "cls_name": "GradientDescent",
+                                            "question": "What are the GradientDescent(s) in the given context?",
+                                            "answer": [
+                                                "StochasticGradientDescent",
+                                                "Momentum",
+                                                "WeightDecay"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 56,
+                                            "cls_name": "Momentum",
+                                            "question": "What are the Momentum(s) in the given context?",
+                                            "answer": [
+                                                "Momentum"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 57,
+                                            "cls_name": "ProximalAdaGrad",
+                                            "question": "What are the ProximalAdaGrad(s) in the given context?",
+                                            "answer": [
+                                                "ImageNet",
+                                                "Convolutional Neural Network (CNN)",
+                                                "ReLU Nonlinearity",
+                                                "Local Response Normalization",
+                                                "Overlapping Pooling",
+                                                "Dropout",
+                                                "GPU"
+                                            ],
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 58,
+                                            "cls_name": "ProximalGradientDescent",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        },
+                                        {
+                                            "id": 59,
+                                            "cls_name": "RMSProp",
+                                            "question": null,
+                                            "answer": null,
+                                            "children": [],
+                                            "parent_id": 30
+                                        }
+                                    ],
+                                    "parent_id": 9
+                                },
+                                {
+                                    "id": 31,
+                                    "cls_name": "TrainingSingle",
+                                    "question": "What are the TrainingSingle(s) in the given context?",
+                                    "answer": [
+                                        "Convolutional Neural Network",
+                                        "ImageNet",
+                                        "Dropout"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 9
+                                },
+                                {
+                                    "id": 32,
+                                    "cls_name": "TrainingSingleForwardOnly",
+                                    "question": "What are the TrainingSingleForwardOnly(s) in the given context?",
+                                    "answer": [
+                                        "TrainingSingleForwardOnly"
+                                    ],
+                                    "children": [],
+                                    "parent_id": 9
+                                }
+                            ],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 10,
+                            "cls_name": "OutputLayer",
+                            "question": "What are the OutputLayer(s) in the given context?",
+                            "answer": [
+                                "softmax"
+                            ],
+                            "children": [],
+                            "parent_id": 2
+                        },
+                        {
+                            "id": 11,
+                            "cls_name": "InputLayer",
+                            "question": "What are the InputLayer(s) in the given context?",
+                            "answer": [
+                                "InputLayer"
+                            ],
+                            "children": [],
+                            "parent_id": 2
+                        }
+                    ],
+                    "parent_id": 1
+                },
+                {
+                    "id": 3,
+                    "cls_name": "TrainingStrategy",
+                    "question": "What are the TrainingStrategy(s) in the given context?",
+                    "answer": [
+                        "Non-saturating neurons",
+                        "Rectified Linear Units (ReLUs)",
+                        "Training on multiple GPUs",
+                        "Local Response Normalization",
+                        "Overlapping Pooling",
+                        "Dropout"
+                    ],
+                    "children": [
+                        {
+                            "id": 12,
+                            "cls_name": "TrainedModel",
+                            "question": "What are the TrainedModel(s) in the given context?",
+                            "answer": [
+                                "Convolutional Neural Network",
+                                "ImageNet",
+                                "ILSVRC-2010",
+                                "ILSVRC-2012"
+                            ],
+                            "children": [],
+                            "parent_id": 3
+                        },
+                        {
+                            "id": 13,
+                            "cls_name": "TrainingSession",
+                            "question": "What are the TrainingSession(s) in the given context?",
+                            "answer": [
+                                "Stochastic Gradient Descent",
+                                "Momentum",
+                                "ImageNet Dataset",
+                                "NVIDIA GTX 580 3GB GPUs"
+                            ],
+                            "children": [
+                                {
+                                    "id": 33,
+                                    "cls_name": "TrainingStep",
+                                    "question": null,
+                                    "answer": null,
+                                    "children": [
+                                        {
+                                            "id": 60,
+                                            "cls_name": "TrainingLoop",
+                                            "question": "What are the TrainingLoop(s) in the given context?",
+                                            "answer": [
+                                                "Stochastic Gradient Descent",
+                                                "Momentum",
+                                                "Weight Decay",
+                                                "Data Augmentation"
+                                            ],
+                                            "children": [
+                                                {
+                                                    "id": 90,
+                                                    "cls_name": "StopCondition",
+                                                    "question": "What are the StopCondition(s) in the given context?",
+                                                    "answer": [
+                                                        "Data Augmentation",
+                                                        "Dropout"
+                                                    ],
+                                                    "children": [
+                                                        {
+                                                            "id": 108,
+                                                            "cls_name": "IterateFor",
+                                                            "question": "What are the IterateFor(s) in the given context?",
+                                                            "answer": [
+                                                                "ReLU Nonlinearity",
+                                                                "Training on Multiple GPUs",
+                                                                "Local Response Normalization",
+                                                                "Overlapping Pooling"
+                                                            ],
+                                                            "children": [],
+                                                            "parent_id": 90
+                                                        }
+                                                    ],
+                                                    "parent_id": 60
+                                                }
+                                            ],
+                                            "parent_id": 33
+                                        }
+                                    ],
+                                    "parent_id": 13
+                                }
+                            ],
+                            "parent_id": 3
+                        }
+                    ],
+                    "parent_id": 1
+                },
+                {
+                    "id": 4,
+                    "cls_name": "EvaluationResult",
+                    "question": "What are the EvaluationResult(s) in the given context?",
+                    "answer": [
+                        "37.5%",
+                        "17.0%"
+                    ],
+                    "children": [],
+                    "parent_id": 1
+                }
+            ],
+            "parent_id": 0
+        }
+    ],
+    "parent_id": null
+}

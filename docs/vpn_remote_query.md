@@ -20,6 +20,7 @@
 
 2. Add the following port forwarding rules
     netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=11434 connectaddress=<wsl-ip> connectport=11434
+    netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=22 connectaddress=172.24.220.223 connectport=22
 
 3. Test Connection (optional)
     Test hosting on a port using:
