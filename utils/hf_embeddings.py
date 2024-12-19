@@ -1,41 +1,9 @@
-
-
-'''
-Example usage:
-
-from utils.embedding_model import EmbeddingModel
-embed_model = EmbeddingModel(model_name="all-MiniLM-L6-v2").get_model()
-'''
-
-from langchain_ollama import OllamaEmbeddings
-
-class OllamaEmbeddingModel:
-    """
-    A utility class for initializing and retrieving an embedding model.
-    """
-    def __init__(self, model_name='nomic-embed-text'):
-        """
-        Constructor for embedding model.
-        :param model_name: Name of the Ollama embedding model.
-        :type model_name: string
-        """
-        self.embed_model = OllamaEmbeddings(model=model_name)
-
-    def get_model(self):
-        """
-        Retrieves the embedding model.
-        :return: The embedding model object.
-        :rtype: OllamaEmbeddings
-        """
-        return self.embed_model
-
-
 from transformers import AutoModel, AutoTokenizer
 import torch
 from llama_index.core.base.embeddings.base import BaseEmbedding
 
 
-class HuggingFaceEmbeddingModel(BaseEmbedding):
+class HFEmbedding(BaseEmbedding):
     """
     A utility class for initializing and retrieving embeddings using Hugging Face models.
     """
