@@ -1,0 +1,381 @@
+deep residual learning for image recognition kaiming he xiangyu zhang shaoqing ren jian sun microsoft research {kahe, v-xiangz, v-shren, jiansun}@microsoft.com abstract deeper neural networks are more difficult to train
+we present a residual learning framework to ease the training of networks that are substantially deeper than those used previously
+we explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions
+we provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth
+on the imagenet dataset we evaluate residual nets with a depth of up to 152 layers—8× deeper than vgg nets but still having lower complexity
+an ensemble of these residual nets achieves 3.57% error on the imagenet test set
+this result won the 1st place on the ilsvrc 2015 classification task
+we also present analysis on cifar-10 with 100 and 1000 layers
+the depth of representations is of central importance for many visual recognition tasks
+solely due to our extremely deep representations, we obtain a 28% relative improvement on the coco object detection dataset
+deep residual nets are foundations of our submissions to ilsvrc & coco 2015 competitions1, where we also won the 1st places on the tasks of imagenet detection, imagenet localization, coco detection, and coco segmentation
+1
+introduction deep convolutional neural networks have led to a series of breakthroughs for image classification
+deep networks naturally integrate low/mid/highlevel features and classifiers in an end-to-end multilayer fashion, and the "levels" of features can be enriched by the number of stacked layers (depth)
+recent evidence reveals that network depth is of crucial importance, and the leading results on the challenging imagenet dataset all exploit "very deep" models, with a depth of sixteen to thirty
+many other nontrivial visual recognition tasks have also iter
+(1e4) training error (%) iter
+(1e4) test error (%) 56-layer 20-layer 56-layer 20-layer figure 1
+training error (left) and test error (right) on cifar-10 with 20-layer and 56-layer "plain" networks
+the deeper network has higher training error, and thus test error
+similar phenomena on imagenet is presented in fig
+4
+greatly benefited from very deep models
+driven by the significance of depth, a question arises: is learning better networks as easy as stacking more layers? an obstacle to answering this question was the notorious problem of vanishing/exploding gradients , which hamper convergence from the beginning
+this problem, however, has been largely addressed by normalized initialization and intermediate normalization layers , which enable networks with tens of layers to start converging for stochastic gradient descent (sgd) with backpropagation
+when deeper networks are able to start converging, a degradation problem has been exposed: with the network depth increasing, accuracy gets saturated (which might be unsurprising) and then degrades rapidly
+unexpectedly, such degradation is not caused by overfitting, and adding more layers to a suitably deep model leads to higher training error, as reported in and thoroughly verified by our experiments
+fig
+1 shows a typical example
+the degradation (of training accuracy) indicates that not all systems are similarly easy to optimize
+let us consider a shallower architecture and its deeper counterpart that adds more layers onto it
+there exists a solution by construction to the deeper model: the added layers are identity mapping, and the other layers are copied from the learned shallower model
+the existence of this constructed solution indicates that a deeper model should produce no higher training error than its shallower counterpart
+but experiments show that our current solvers on hand are unable to find solutions that 1063-6919/16 $31.00 © 2016 ieee doi 10.1109/cvpr.2016.90 identity weight layer weight layer relu relu f(x)+x x f(x) x figure 2
+residual learning: a building block
+are comparably good or better than the constructed solution (or unable to do so in feasible time)
+in this paper, we address the degradation problem by introducing a deep residual learning framework
+instead of hoping each few stacked layers directly fit a desired underlying mapping, we explicitly let these layers fit a residual mapping
+formally, denoting the desired underlying mapping as h(x), we let the stacked nonlinear layers fit another mapping of f(x) := h(x)−x
+the original mapping is recast into f(x)+x
+we hypothesize that it is easier to optimize the residual mapping than to optimize the original, unreferenced mapping
+to the extreme, if an identity mapping were optimal, it would be easier to push the residual to zero than to fit an identity mapping by a stack of nonlinear layers
+the formulation of f(x)+x can be realized by feedforward neural networks with "shortcut connections" (fig
+2)
+shortcut connections are those skipping one or more layers
+in our case, the shortcut connections simply perform identity mapping, and their outputs are added to the outputs of the stacked layers (fig
+2)
+identity shortcut connections add neither extra parameter nor computational complexity
+the entire network can still be trained end-to-end by sgd with backpropagation, and can be easily implemented using common libraries (e.g., caffe ) without modifying the solvers
+we present comprehensive experiments on imagenet to show the degradation problem and evaluate our method
+we show that: 1) our extremely deep residual nets are easy to optimize, but the counterpart "plain" nets (that simply stack layers) exhibit higher training error when the depth increases; 2) our deep residual nets can easily enjoy accuracy gains from greatly increased depth, producing results substantially better than previous networks
+similar phenomena are also shown on the cifar-10 set , suggesting that the optimization difficulties and the effects of our method are not just akin to a particular dataset
+we present successfully trained models on this dataset with over 100 layers, and explore models with over 1000 layers
+on the imagenet classification dataset , we obtain excellent results by extremely deep residual nets
+our 152layer residual net is the deepest network ever presented on imagenet, while still having lower complexity than vgg nets
+our ensemble has 3.57% top-5 error on the imagenet test set, and won the 1st place in the ilsvrc resentations also have excellent generalization performance on other recognition tasks, and lead us to further win the 1st places on: imagenet detection, imagenet localization, coco detection, and coco segmentation in ilsvrc & coco 2015 competitions
+this strong evidence shows that the residual learning principle is generic, and we expect that it is applicable in other vision and non-vision problems
+2
+related work residual representations
+in image recognition, vlad is a representation that encodes by the residual vectors with respect to a dictionary, and fisher vector can be formulated as a probabilistic version of vlad
+both of them are powerful shallow representations for image retrieval and classification
+for vector quantization, encoding residual vectors is shown to be more effective than encoding original vectors
+in low-level vision and computer graphics, for solving partial differential equations (pdes), the widely used multigrid method reformulates the system as subproblems at multiple scales, where each subproblem is responsible for the residual solution between a coarser and a finer scale
+an alternative to multigrid is hierarchical basis preconditioning , which relies on variables that represent residual vectors between two scales
+it has been shown that these solvers converge much faster than standard solvers that are unaware of the residual nature of the solutions
+these methods suggest that a good reformulation or preconditioning can simplify the optimization
+shortcut connections
+practices and theories that lead to shortcut connections have been studied for a long time
+an early practice of training multi-layer perceptrons (mlps) is to add a linear layer connected from the network input to the output
+in , a few intermediate layers are directly connected to auxiliary classifiers for addressing vanishing/exploding gradients
+the papers of propose methods for centering layer responses, gradients, and propagated errors, implemented by shortcut connections
+in , an "inception" layer is composed of a shortcut branch and a few deeper branches
+concurrent with our work, "highway networks" present shortcut connections with gating functions
+these gates are data-dependent and have parameters, in contrast to our identity shortcuts that are parameter-free
+when a gated shortcut is "closed" (approaching zero), the layers in highway networks represent non-residual functions
+on the contrary, our formulation always learns residual functions; our identity shortcuts are never closed, and all information is always passed through, with additional residual functions to be learned
+in addition, highway networks have not demonstrated accuracy gains with extremely increased depth (e.g., over 100 layers)
+3
+deep residual learning 3.1
+residual learning let us consider h(x) as an underlying mapping to be fit by a few stacked layers (not necessarily the entire net), with x denoting the inputs to the first of these layers
+if one hypothesizes that multiple nonlinear layers can asymptotically approximate complicated functions2, then it is equivalent to hypothesize that they can asymptotically approximate the residual functions, i.e., h(x) −x (assuming that the input and output are of the same dimensions)
+so rather than expect stacked layers to approximate h(x), we explicitly let these layers approximate a residual function f(x) := h(x) −x
+the original function thus becomes f(x)+x
+although both forms should be able to asymptotically approximate the desired functions (as hypothesized), the ease of learning might be different
+this reformulation is motivated by the counterintuitive phenomena about the degradation problem (fig
+1, left)
+as we discussed in the introduction, if the added layers can be constructed as identity mappings, a deeper model should have training error no greater than its shallower counterpart
+the degradation problem suggests that the solvers might have difficulties in approximating identity mappings by multiple nonlinear layers
+with the residual learning reformulation, if identity mappings are optimal, the solvers may simply drive the weights of the multiple nonlinear layers toward zero to approach identity mappings
+in real cases, it is unlikely that identity mappings are optimal, but our reformulation may help to precondition the problem
+if the optimal function is closer to an identity mapping than to a zero mapping, it should be easier for the solver to find the perturbations with reference to an identity mapping, than to learn the function as a new one
+we show by experiments (fig
+7) that the learned residual functions in general have small responses, suggesting that identity mappings provide reasonable preconditioning
+3.2
+identity mapping by shortcuts we adopt residual learning to every few stacked layers
+a building block is shown in fig
+2
+formally, in this paper we consider a building block defined as: (x, {wi}) + x
+(1) here x and y are the input and output vectors of the layers considered
+the function f(x, {wi}) represents the residual mapping to be learned
+for the example in fig
+2 that has two layers, σ(w1x) in which σ denotes 2this hypothesis, however, is still an open question
+see
+relu and the biases are omitted for simplifying notations
+the operation f + x is performed by a shortcut connection and element-wise addition
+we adopt the second nonlinearity after the addition (i.e., σ(y), see fig
+2)
+the shortcut connections in eqn.(1) introduce neither extra parameter nor computation complexity
+this is not only attractive in practice but also important in our comparisons between plain and residual networks
+we can fairly compare plain/residual networks that simultaneously have the same number of parameters, depth, width, and computational cost (except for the negligible element-wise addition)
+the dimensions of x and f must be equal in eqn.(1)
+if this is not the case (e.g., when changing the input/output channels), we can perform a linear projection ws by the shortcut connections to match the dimensions: (x, {wi}) + wsx
+(2) we can also use a square matrix ws in eqn.(1)
+but we will show by experiments that the identity mapping is sufficient for addressing the degradation problem and is economical, and thus ws is only used when matching dimensions
+the form of the residual function f is flexible
+experiments in this paper involve a function f that has two or three layers (fig
+5), while more layers are possible
+but if f has only a single layer, eqn.(1) is similar to a linear layer: + x, for which we have not observed advantages
+we also note that although the above notations are about fully-connected layers for simplicity, they are applicable to convolutional layers
+the function f(x, {wi}) can represent multiple convolutional layers
+the element-wise addition is performed on two feature maps, channel by channel
+3.3
+network architectures we have tested various plain/residual nets, and have observed consistent phenomena
+to provide instances for discussion, we describe two models for imagenet as follows
+plain network
+our plain baselines (fig
+3, middle) are mainly inspired by the philosophy of vgg nets (fig
+3, left)
+the convolutional layers mostly have 3×3 filters and follow two simple design rules: (i) for the same output feature map size, the layers have the same number of filters; and (ii) if the feature map size is halved, the number of filters is doubled so as to preserve the time complexity per layer
+we perform downsampling directly by convolutional layers that have a stride of 2
+the network ends with a global average pooling layer and a 1000-way fully-connected layer with softmax
+the total number of weighted layers is 34 in fig
+3 (middle)
+it is worth noticing that our model has fewer filters and lower complexity than vgg nets (fig
+3, left)
+our 34layer baseline has 3.6 billion flops (multiply-adds), which is only 18% of vgg-19 (19.6 billion flops)
+7x7 conv, 64, /2 pool, /2 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 128, /2 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 256, /2 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 512, /2 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 avg pool fc 1000 image 3x3 conv, 512 3x3 conv, 64 3x3 conv, 64 pool, /2 3x3 conv, 128 3x3 conv, 128 pool, /2 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 pool, /2 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 pool, /2 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 pool, /2 fc 4096 fc 4096 fc 1000 image output size: 112 output size: 224 output size: 56 output size: 28 output size: 14 output size: 7 output size: 1 vgg-19 34-layer plain 7x7 conv, 64, /2 pool, /2 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 64 3x3 conv, 128, /2 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 128 3x3 conv, 256, /2 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 256 3x3 conv, 512, /2 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 3x3 conv, 512 avg pool fc 1000 image 34-layer residual figure 3
+example network architectures for imagenet
+left: the vgg-19 model (19.6 billion flops) as a reference
+middle: a plain network with 34 parameter layers (3.6 billion flops)
+right: a residual network with 34 parameter layers (3.6 billion flops)
+the dotted shortcuts increase dimensions
+table 1 shows more details and other variants
+residual network
+based on the above plain network, we insert shortcut connections (fig
+3, right) which turn the network into its counterpart residual version
+the identity shortcuts (eqn.(1)) can be directly used when the input and output are of the same dimensions (solid line shortcuts in fig
+3)
+when the dimensions increase (dotted line shortcuts in fig
+3), we consider two options: (a) the shortcut still performs identity mapping, with extra zero entries padded for increasing dimensions
+this option introduces no extra parameter; (b) the projection shortcut in eqn.(2) is used to match dimensions (done by 1×1 convolutions)
+for both options, when the shortcuts go across feature maps of two sizes, they are performed with a stride of 2
+3.4
+implementation our implementation for imagenet follows the practice in
+the image is resized with its shorter side randomly sampled in for scale augmentation
+a 224×224 crop is randomly sampled from an image or its horizontal flip, with the per-pixel mean subtracted
+the standard color augmentation in is used
+we adopt batch normalization (bn) right after each convolution and before activation, following
+we initialize the weights as in and train all plain/residual nets from scratch
+we use sgd with a mini-batch size of 256
+the learning rate starts from 0.1 and is divided by 10 when the error plateaus, and the models are trained for up to 60 × 104 iterations
+we use a weight decay of 0.0001 and a momentum of 0.9
+we do not use dropout , following the practice in
+in testing, for comparison studies we adopt the standard 10-crop testing
+for best results, we adopt the fullyconvolutional form as in , and average the scores at multiple scales (images are resized such that the shorter side is in {224, 256, 384, 480, 640})
+4
+experiments 4.1
+imagenet classification we evaluate our method on the imagenet 2012 classification dataset that consists of 1000 classes
+the models are trained on the 1.28 million training images, and evaluated on the 50k validation images
+we also obtain a final result on the 100k test images, reported by the test server
+we evaluate both top-1 and top-5 error rates
+plain networks
+we first evaluate 18-layer and 34-layer plain nets
+the 34-layer plain net is in fig
+3 (middle)
+the 18-layer plain net is of a similar form
+see table 1 for detailed architectures
+the results in table 2 show that the deeper 34-layer plain net has higher validation error than the shallower 18-layer plain net
+to reveal the reasons, in fig
+4 (left) we compare their training/validation errors during the training procedure
+we have observed the degradation problem - the layer name output size 18-layer 34-layer 50-layer 101-layer 152-layer conv1 112×112 7×7, 64, stride 2 conv2 x 56×56 3×3 max pool, stride 2  3×3, 64 3×3, 64  ×2  3×3, 64 3×3, 64  ×3 ⎡ ⎣ 1×1, 64 3×3, 64 1×1, 256 ⎤ ⎦×3 ⎡ ⎣ 1×1, 64 3×3, 64 1×1, 256 ⎤ ⎦×3 ⎡ ⎣ 1×1, 64 3×3, 64 1×1, 256 ⎤ ⎦×3 conv3 x 28×28  3×3, 128 3×3, 128  ×2  3×3, 128 3×3, 128  ×4 ⎡ ⎣ 1×1, 128 3×3, 128 1×1, 512 ⎤ ⎦×4 ⎡ ⎣ 1×1, 128 3×3, 128 1×1, 512 ⎤ ⎦×4 ⎡ ⎣ 1×1, 128 3×3, 128 1×1, 512 ⎤ ⎦×8 conv4 x 14×14  3×3, 256 3×3, 256  ×2  3×3, 256 3×3, 256  ×6 ⎡ ⎣ 1×1, 256 3×3, 256 1×1, 1024 ⎤ ⎦×6 ⎡ ⎣ 1×1, 256 3×3, 256 1×1, 1024 ⎤ ⎦×23 ⎡ ⎣ 1×1, 256 3×3, 256 1×1, 1024 ⎤ ⎦×36 conv5 x 7×7  3×3, 512 3×3, 512  ×2  3×3, 512 3×3, 512  ×3 ⎡ ⎣ 1×1, 512 3×3, 512 1×1, 2048 ⎤ ⎦×3 ⎡ ⎣ 1×1, 512 3×3, 512 1×1, 2048 ⎤ ⎦×3 ⎡ ⎣ 1×1, 512 3×3, 512 1×1, 2048 ⎤ ⎦×3 1×1 average pool, 1000-d fc, softmax flops 1.8×109 3.6×109 3.8×109 7.6×109 11.3×109 table 1
+architectures for imagenet
+building blocks are shown in brackets (see also fig
+5), with the numbers of blocks stacked
+downsampling is performed by conv3 1, conv4 1, and conv5 1 with a stride of 2
+error (%) plain-18 plain-34 error (%) resnet-18 resnet-34 18-layer 34-layer 18-layer 34-layer figure 4
+training on imagenet
+thin curves denote training error, and bold curves denote validation error of the center crops
+left: plain networks of 18 and 34 layers
+right: resnets of 18 and 34 layers
+in this plot, the residual networks have no extra parameter compared to their plain counterparts
+plain resnet table 2
+top-1 error (%, 10-crop testing) on imagenet validation
+here the resnets have no extra parameter compared to their plain counterparts
+fig
+4 shows the training procedures
+34-layer plain net has higher training error throughout the whole training procedure, even though the solution space of the 18-layer plain network is a subspace of that of the 34-layer one
+we argue that this optimization difficulty is unlikely to be caused by vanishing gradients
+these plain networks are trained with bn , which ensures forward propagated signals to have non-zero variances
+we also verify that the backward propagated gradients exhibit healthy norms with bn
+so neither forward nor backward signals vanish
+in fact, the 34-layer plain net is still able to achieve competitive accuracy (table 3), suggesting that the solver works to some extent
+we conjecture that the deep plain nets may have exponentially low convergence rates, which impact the reducing of the training error3
+the reason for such optimization difficulties will be studied in the future
+residual networks
+next we evaluate 18-layer and 34layer residual nets (resnets)
+the baseline architectures are the same as the above plain nets, expect that a shortcut connection is added to each pair of 3×3 filters as in fig
+3 (right)
+in the first comparison (table 2 and fig
+4 right), we use identity mapping for all shortcuts and zero-padding for increasing dimensions (option a)
+so they have no extra parameter compared to the plain counterparts
+we have three major observations from table 2 and fig
+4
+first, the situation is reversed with residual learning – the 34-layer resnet is better than the 18-layer resnet (by 2.8%)
+more importantly, the 34-layer resnet exhibits considerably lower training error and is generalizable to the validation data
+this indicates that the degradation problem is well addressed in this setting and we manage to obtain accuracy gains from increased depth
+second, compared to its plain counterpart, the 34-layer 3we have experimented with more training iterations (3×) and still observed the degradation problem, suggesting that this problem cannot be feasibly addressed by simply using more iterations
+model top-1 err
+top-5 err
+vgg-16 googlenet - plain-34 resnet-34 a resnet-34 b resnet-34 c resnet-50 resnet-101 resnet-152 table 3
+error rates (%, 10-crop testing) on imagenet validation
+vgg-16 is based on our test
+resnet-50/101/152 are of option b that only uses projections for increasing dimensions
+method top-1 err
+top-5 err
+vgg (ilsvrc'14) - 8.43† googlenet (ilsvrc'14) - prelu-net bn-inception resnet-34 b resnet-34 c resnet-50 resnet-101 resnet-152 table 4
+error rates (%) of single-model results on the imagenet validation set (except † reported on the test set)
+method top-5 err
+(test) vgg (ilsvrc'14) test set of imagenet and reported by the test server
+resnet reduces the top-1 error by 3.5% (table 2), resulting from the successfully reduced training error (fig
+4 right vs
+left)
+this comparison verifies the effectiveness of residual learning on extremely deep systems
+last, we also note that the 18-layer plain/residual nets are comparably accurate (table 2), but the 18-layer resnet converges faster (fig
+4 right vs
+left)
+when the net is "not overly deep" (18 layers here), the current sgd solver is still able to find good solutions to the plain net
+in this case, the resnet eases the optimization by providing faster convergence at the early stage
+identity vs
+projection shortcuts
+we have shown that 3x3, 64 1x1, 64 relu 1x1, 256 relu relu 3x3, 64 3x3, 64 relu relu 64-d 256-d figure 5
+a deeper residual function f for imagenet
+left: a building block (on 56×56 feature maps) as in fig
+3 for resnet34
+right: a "bottleneck" building block for resnet-50/101/152
+parameter-free, identity shortcuts help with training
+next we investigate projection shortcuts (eqn.(2))
+in table 3 we compare three options: (a) zero-padding shortcuts are used for increasing dimensions, and all shortcuts are parameterfree (the same as table 2 and fig
+4 right); (b) projection shortcuts are used for increasing dimensions, and other shortcuts are identity; and (c) all shortcuts are projections
+table 3 shows that all three options are considerably better than the plain counterpart
+b is slightly better than a
+we argue that this is because the zero-padded dimensions in a indeed have no residual learning
+c is marginally better than b, and we attribute this to the extra parameters introduced by many (thirteen) projection shortcuts
+but the small differences among a/b/c indicate that projection shortcuts are not essential for addressing the degradation problem
+so we do not use option c in the rest of this paper, to reduce memory/time complexity and model sizes
+identity shortcuts are particularly important for not increasing the complexity of the bottleneck architectures that are introduced below
+deeper bottleneck architectures
+next we describe our deeper nets for imagenet
+because of concerns on the training time that we can afford, we modify the building block as a bottleneck design4
+for each residual function f, we use a stack of 3 layers instead of 2 (fig
+5)
+the three layers are 1×1, 3×3, and 1×1 convolutions, where the 1×1 layers are responsible for reducing and then increasing (restoring) dimensions, leaving the 3×3 layer a bottleneck with smaller input/output dimensions
+fig
+5 shows an example, where both designs have similar time complexity
+the parameter-free identity shortcuts are particularly important for the bottleneck architectures
+if the identity shortcut in fig
+5 (right) is replaced with projection, one can show that the time complexity and model size are doubled, as the shortcut is connected to the two high-dimensional ends
+so identity shortcuts lead to more efficient models for the bottleneck designs
+50-layer resnet: we replace each 2-layer block in the 4deeper non-bottleneck resnets (e.g., fig
+5 left) also gain accuracy from increased depth (as shown on cifar-10), but are not as economical as the bottleneck resnets
+so the usage of bottleneck designs is mainly due to practical considerations
+we further note that the degradation problem of plain nets is also witnessed for the bottleneck designs
+34-layer net with this 3-layer bottleneck block, resulting in a 50-layer resnet (table 1)
+we use option b for increasing dimensions
+this model has 3.8 billion flops
+101-layer and 152-layer resnets: we construct 101layer and 152-layer resnets by using more 3-layer blocks (table 1)
+remarkably, although the depth is significantly increased, the 152-layer resnet (11.3 billion flops) still has lower complexity than vgg-16/19 nets (15.3/19.6 billion flops)
+the 50/101/152-layer resnets are more accurate than the 34-layer ones by considerable margins (table 3 and 4)
+we do not observe the degradation problem and thus enjoy significant accuracy gains from considerably increased depth
+the benefits of depth are witnessed for all evaluation metrics (table 3 and 4)
+comparisons with state-of-the-art methods
+in table 4 we compare with the previous best single-model results
+our baseline 34-layer resnets have achieved very competitive accuracy
+our 152-layer resnet has a single-model top-5 validation error of 4.49%
+this single-model result outperforms all previous ensemble results (table 5)
+we combine six models of different depth to form an ensemble (only with two 152-layer ones at the time of submitting)
+this leads to 3.57% top-5 error on the test set (table 5)
+this entry won the 1st place in ilsvrc 2015
+4.2
+cifar-10 and analysis we conducted more studies on the cifar-10 dataset , which consists of 50k training images and 10k testing images in 10 classes
+we present experiments trained on the training set and evaluated on the test set
+our focus is on the behaviors of extremely deep networks, but not on pushing the state-of-the-art results, so we intentionally use simple architectures as follows
+the plain/residual architectures follow the form in fig
+3 (middle/right)
+the network inputs are 32×32 images, with the per-pixel mean subtracted
+the first layer is 3×3 convolutions
+then we use a stack of 6n layers with 3×3 convolutions on the feature maps of sizes {32, 16, 8} respectively, with 2n layers for each feature map size
+the numbers of filters are {16, 32, 64} respectively
+the subsampling is performed by convolutions with a stride of 2
+the network ends with a global average pooling, a 10-way fully-connected layer, and softmax
+there are totally 6n+2 stacked weighted layers
+the following table summarizes the architecture: output map size 32×32 16×16 8×8 # layers 1+2n 2n 2n # filters to the pairs of 3×3 layers (totally 3n shortcuts)
+on this dataset we use identity shortcuts in all cases (i.e., option a), method error (%) maxout # params fitnet highway resnet ods are with data augmentation
+for resnet-110, we run it 5 times and show "best (mean±std)" as in
+so our residual models have exactly the same depth, width, and number of parameters as the plain counterparts
+we use a weight decay of 0.0001 and momentum of 0.9, and adopt the weight initialization in and bn but with no dropout
+these models are trained with a minibatch size of 128 on two gpus
+we start with a learning rate of 0.1, divide it by 10 at 32k and 48k iterations, and terminate training at 64k iterations, which is determined on a 45k/5k train/val split
+we follow the simple data augmentation in for training: 4 pixels are padded on each side, and a 32×32 crop is randomly sampled from the padded image or its horizontal flip
+for testing, we only evaluate the single view of the original 32×32 image
+we compare n = {3, 5, 7, 9}, leading to 20, 32, 44, and 56-layer networks
+fig
+6 (left) shows the behaviors of the plain nets
+the deep plain nets suffer from increased depth, and exhibit higher training error when going deeper
+this phenomenon is similar to that on imagenet (fig
+4, left) and on mnist (see ), suggesting that such an optimization difficulty is a fundamental problem
+fig
+6 (middle) shows the behaviors of resnets
+also similar to the imagenet cases (fig
+4, right), our resnets manage to overcome the optimization difficulty and demonstrate accuracy gains when the depth increases
+we further explore that leads to a 110-layer resnet
+in this case, we find that the initial learning rate of 0.1 is slightly too large to start converging5
+so we use 80% (about 400 iterations), and then go back to 0.1 and continue training
+the rest of the learning schedule is as done previously
+this 110-layer network converges well (fig
+6, middle)
+it has fewer parameters than other deep and thin 5with an initial learning rate of 0.1, it starts converging (<90% error) after several epochs, but still reaches similar accuracy
+error (%) plain-20 plain-32 plain-44 plain-56 error (%) resnet-20 resnet-32 resnet-44 resnet-56 resnet-110 56-layer 20-layer 110-layer 20-layer iter
+(1e4) error (%) residual-110 residual-1202 figure 6
+training on cifar-10
+dashed lines denote training error, and bold lines denote testing error
+left: plain networks
+the error of plain-110 is higher than 60% and not displayed
+middle: resnets
+right: resnets with 110 and 1202 layers
+std plain-20 plain-56 resnet-20 resnet-56 resnet-110 std plain-20 plain-56 resnet-20 resnet-56 resnet-110 figure 7
+standard deviations (std) of layer responses on cifar10
+the responses are the outputs of each 3×3 layer, after bn and before nonlinearity
+top: the layers are shown in their original order
+bottom: the responses are ranked in descending order
+networks such as fitnet and highway (table 6), yet is among the state-of-the-art results (6.43%, table 6)
+analysis of layer responses
+fig
+7 shows the standard deviations (std) of the layer responses
+the responses are the outputs of each 3×3 layer, after bn and before other nonlinearity (relu/addition)
+for resnets, this analysis reveals the response strength of the residual functions
+fig
+7 shows that resnets have generally smaller responses than their plain counterparts
+these results support our basic motivation (sec.3.1) that the residual functions might be generally closer to zero than the non-residual functions
+we also notice that the deeper resnet has smaller magnitudes of responses, as evidenced by the comparisons among resnet-20, 56, and 110 in fig
+7
+when there are more layers, an individual layer of resnets tends to modify the signal less
+exploring over 1000 layers
+we explore an aggressively deep model of over 1000 layers
+we set that leads to a 1202-layer network, which is trained as described above
+our method shows no optimization difficulty, and this 103-layer network is able to achieve training error <0.1% (fig
+6, right)
+its test error is still fairly good (7.93%, table 6)
+but there are still open problems on such aggressively deep models
+the testing result of this 1202-layer network is worse than that of our 110-layer network, although both training data 07+12 07++12 test data voc 07 test voc 12 test vgg-16 resnet-101 table 7
+object detection map (%) on the pascal voc 2007/2012 test sets using baseline faster r-cnn
+see also appendix for better results
+metric map@.5 map@[.5, .95] vgg-16 resnet-101 table 8
+object detection map (%) on the coco validation set using baseline faster r-cnn
+see also appendix for better results
+have similar training error
+we argue that this is because of overfitting
+the 1202-layer network may be unnecessarily large (19.4m) for this small dataset
+strong regularization such as maxout or dropout is applied to obtain the best results () on this dataset
+in this paper, we use no maxout/dropout and just simply impose regularization via deep and thin architectures by design, without distracting from the focus on the difficulties of optimization
+but combining with stronger regularization may improve results, which we will study in the future
+4.3
+object detection on pascal and ms coco our method has good generalization performance on other recognition tasks
+table 7 and 8 show the object detection baseline results on pascal voc 2007 and 2012 and coco
+we adopt faster r-cnn as the detection method
+here we are interested in the improvements of replacing vgg-16 with resnet-101
+the detection implementation (see appendix) of using both models is the same, so the gains can only be attributed to better networks
+most remarkably, on the challenging coco dataset we obtain a 6.0% increase in coco's standard metric (map@[.5, .95]), which is a 28% relative improvement
+this gain is solely due to the learned representations
+based on deep residual nets, we won the 1st places in several tracks in ilsvrc & coco 2015 competitions: imagenet detection, imagenet localization, coco detection, and coco segmentation
+the details are in the appendix.
