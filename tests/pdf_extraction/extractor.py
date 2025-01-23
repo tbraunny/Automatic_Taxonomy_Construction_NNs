@@ -1,7 +1,27 @@
 import os
 from utils.file_utils import read_file, write_json_file
 from utils.txt_utils import parse_text_to_header_content, remove_excluded_sections
-from docling_pdf_loader import DoclingPDFLoader
+from utils.docling_pdf_loader import DoclingPDFLoader
+
+"""
+Point of entry code to extract headers associated sections into json format
+as well as remove unneeded sections such as references and related works
+
+To use:
+1. Ensure that a pdf format of a paper is in data/raw/
+2. Define the 'ann_name' variable in main to the file name of pdf
+3. Run code
+
+Output: 
+Extracted pdf outputed to data/extracted_markdown/
+Parsed header and sections saved to data/parsed_json/
+"""
+
+
+## Addresses TORCH_CUDA_ARCH_LIST warning (not necessary; for optimization)
+# export TORCH_CUDA_ARCH_LIST="8.6" ## For 3090 or 4070
+# Currently added to ~/.bashrc for persitance
+
 
 EXCLUDED_SECTIONS = [
     "References", "Citations", "Related Works", "Authors", "Background"
@@ -12,10 +32,10 @@ def extract_pdf_to_markdown(pdf_path, md_output_path):
     loader = DoclingPDFLoader(file_path=pdf_path)
 
 
-    # Load and split documents
+    # Load  documents
     docs = loader.load()
 
-    # Save split text to Markdown
+    # Save doc text to markdown
     with open(md_output_path, "w") as f:
         for doc in docs:
             f.write(doc.page_content)
@@ -33,9 +53,12 @@ def process_markdown_to_json(md_path, json_output_path):
 
 
 if __name__ == "__main__":
-    PDF_PATH = "/home/richw/richie/ATCNN/data/raw/AlexNet.pdf"
-    MD_PATH = "/home/richw/richie/ATCNN/data/extracted_markdown/alexnet.md"
-    JSON_PATH = "/home/richw/richie/ATCNN/data/parsed_json/parsed_alexnet.json"
+
+    # Must change this name to the paper pdf name
+    ann_name = 'resnet'
+    PDF_PATH = f"/home/richw/richie/ATCNN/data/{ann_name}/{ann_name}.pdf"
+    MD_PATH = f"data/{ann_name}/markdown_{ann_name}.md"
+    JSON_PATH = f"data/{ann_name}/parsed_{ann_name}.json"
 
     os.makedirs(os.path.dirname(MD_PATH), exist_ok=True)
     os.makedirs(os.path.dirname(JSON_PATH), exist_ok=True)

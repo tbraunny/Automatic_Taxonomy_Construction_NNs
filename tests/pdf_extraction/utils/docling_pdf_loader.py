@@ -16,3 +16,6 @@ class DoclingPDFLoader(BaseLoader):
             dl_doc = self._converter.convert(source).document
             text = dl_doc.export_to_markdown()
             yield LCDocument(page_content=text)
+
+## Citation 
+# https://github.com/shivanshkaushikk/llm-research/blob/main/README.md

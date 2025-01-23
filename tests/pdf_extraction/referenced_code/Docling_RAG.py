@@ -106,3 +106,5 @@ with open("/home/richw/richie/ATCNN/tests/pdf_extraction/output/extracted_conten
         f.write(doc.page_content)
         f.write("\n---\n")
 
+# Citation 
+# https://github.com/shivanshkaushikk/llm-research/blob/main/README.md
