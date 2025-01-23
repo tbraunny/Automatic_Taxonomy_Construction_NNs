@@ -19,7 +19,7 @@ class DoclingPDFLoader(BaseLoader):
             text = dl_doc.export_to_markdown()
             yield LCDocument(page_content=text)
 
-FILE_PATH =  "/home/richw/Automatic_Taxonomy_Construction_NNs/data/raw/ResNet.pdf"
+FILE_PATH =  "/home/richw/richie/ATCNN/data/raw/AlexNet.pdf"
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -101,7 +101,7 @@ rag_chain = (
 
 rag_chain.invoke("What methods does this architecture use to combat overfitting?")
 
-with open("extracted_content.md", "w") as f:
+with open("/home/richw/richie/ATCNN/tests/pdf_extraction/output/extracted_content.md", "w") as f:
     for doc in docs:
         f.write(doc.page_content)
         f.write("\n---\n")

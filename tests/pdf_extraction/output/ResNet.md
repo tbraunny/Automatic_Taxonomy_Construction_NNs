@@ -205,7 +205,7 @@ Table 4. Error rates (%) of single-model results on the ImageNet validation set 
 | ResNet-34 C                | 21.53        | 5.60         |
 | ResNet-50                  | 20.74        | 5.25         |
 | ResNet-101                 | 19.87        | 4.60         |
-| ResNet-152                 | 19.38        | 4.49         |
+| ResNet-152                 | 19.38        | 4.49         |–
 
 Table 3 shows that all three options are considerably better than the plain counterpart. B is slightly better than A. We argue that this is because the zero-padded dimensions in A indeed have no residual learning. C is marginally better than B, and we attribute this to the extra parameters introduced by many (thirteen) projection shortcuts. But the small differences among A/B/C indicate that projection shortcuts are not essential for addressing the degradation problem. So we do not use option C in the rest of this paper, to reduce memory/time complexity and model sizes. Identity shortcuts are particularly important for not increasing the complexity of the bottleneck architectures that are introduced below.
 
