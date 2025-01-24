@@ -71,13 +71,3 @@ def chunk_document_for_nlm_LayoutPDFReader(document, chunk_size=1000, chunk_over
             chunked_docs.extend(chunks)
 
     return chunked_docs
-
-
-
-
-
-
-
-
-
-

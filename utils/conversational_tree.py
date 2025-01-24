@@ -63,14 +63,26 @@ class ConversationTree:
         else:
             return obj
 
+  
+
     def save_to_json(self, file_name):
+        from datetime import datetime
+        import json
         """
         Saves the conversation tree to a JSON file.
 
-        :param file_name: Path to the file where the tree will be saved.
+        :param file_name: Base name for the file where the tree will be saved.
         """
-        with open(file_name, "w") as f:
+        # Get the current date and time
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        # Append the timestamp to the file name
+        file_name_with_timestamp = f"{file_name}_{timestamp}.json"
+
+        # Save the JSON file
+        with open(file_name_with_timestamp, "w") as f:
             json.dump(self.to_serializable(self.tree), f, indent=4)
+        print(f"Saved file as {file_name_with_timestamp}")
+
     
     """ Helpers """
 

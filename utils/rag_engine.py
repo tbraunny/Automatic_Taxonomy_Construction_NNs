@@ -4,7 +4,7 @@ from llama_index.core import Document, VectorStoreIndex, Settings
 from utils.pdf_loader import load_pdf
 from utils.preprocess_pdf import preprocess_pdf
 from utils.llm_model import LLMModel
-from utils.embedding_model import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
+from utils.hf_embeddings import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
 from utils.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
 
 
@@ -30,7 +30,7 @@ class LocalRagEngine:
         documents = self.load_and_preprocess_pdf(pdf_path)
 
         # Initialize models
-        self.embed_model = HuggingFaceEmbeddingModel().get_model()
+        self.embed_model = OllamaEmbeddingModel().get_model()
         self.llm_model = LLMModel(model_name=llm_model).get_llm()
         
         self.vector_index = None
