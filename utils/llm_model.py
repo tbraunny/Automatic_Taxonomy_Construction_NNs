@@ -87,9 +87,9 @@ class OllamaLLMModel:
             model=model_name,
             top_p=top_p,
             top_k=top_k,
-            temperature=temperature,
+            # num_ctx=self.num_ctx,
             # max_tokens=max_output_tokens,
-            num_ctx=self.num_ctx
+            temperature=temperature
             )
 
     def query_ollama(self, query:str, instructions:str, check_tokens:bool=False) -> str:

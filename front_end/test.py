@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
-from src.rag import tree_prompting  # Import your tree_prompting module
+from tests.rag import tree_prompting  # Import your tree_prompting module
 from utils.rag_engine import LocalRagEngine
 from src.ontology.visualization.graph_viz import process_ontology
 from fastapi.templating import Jinja2Templates
@@ -17,6 +17,8 @@ app = FastAPI()
 static_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/static"))
 template_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../front_end/templates"))
 upload_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/user_temp"))
+default_path = os.path.abspath(os.path.join(os.path.dirname(__file__) , "../data/raw"))
+
 cw_paper = 0
 
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -88,7 +90,7 @@ async def create_ont_vis():
     try:
         result = process_ontology()
         return result
-    except Excpetion as e:
+    except Exception as e:
         print("Unable to visualize the ontology, error: " , e)
 
 # check for unique file name, ensure new files do not overwrite old files
@@ -118,7 +120,7 @@ async def process_input(request: Request):
         
         cw_paper = get_cw_paper()
         if (cw_paper == 0): # check if user has inputted a paper, if not default to AlexNet
-            cw_paper = os.path.join(upload_path , "AlexNet.pdf")
+            cw_paper = os.path.join(default_path , "AlexNet.pdf")
         
         # Call the function from tree_prompting.py to process the input
         # if code conversion invoked llama_model = qwen
