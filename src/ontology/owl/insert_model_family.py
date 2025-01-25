@@ -6,7 +6,7 @@ Will later be used for dynamic ANNConfig subclass definitions
 
 from owlready2 import *
 from typing import List, Dict
-from utils.owl import *
+from utils.owl.owl import *
 from utils.constants import Constants as C
 
 # Load ontology

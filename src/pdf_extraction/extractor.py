@@ -1,7 +1,7 @@
 import os
-from utils.file_utils import read_file, write_json_file
-from utils.txt_utils import parse_text_to_header_content, remove_excluded_sections
-from utils.docling_pdf_loader import DoclingPDFLoader
+from utils.pdf_extraction.file_utils import read_file, write_json_file
+from utils.pdf_extraction.txt_utils import parse_text_to_header_content, remove_excluded_sections
+from utils.pdf_extraction.docling_pdf_loader import DoclingPDFLoader
 
 """
 Point of entry code to extract headers associated sections into json format
@@ -18,9 +18,9 @@ Parsed header and sections saved to data/parsed_json/
 """
 
 
-## Addresses TORCH_CUDA_ARCH_LIST warning (not necessary; for optimization)
-# export TORCH_CUDA_ARCH_LIST="8.6" ## For 3090 or 4070
-# Currently added to ~/.bashrc for persitance
+## Addresses the 'TORCH_CUDA_ARCH_LIST' warning and not necessary
+# Persistantly solved by adding to ~/.bashrc
+# export TORCH_CUDA_ARCH_LIST="8.6" ## For 3090
 
 
 EXCLUDED_SECTIONS = [

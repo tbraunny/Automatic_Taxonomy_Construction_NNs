@@ -1,5 +1,5 @@
 from rdflib import Graph, Namespace
-from utils.sparql import parse_SPARQLResult, parse_SPARQLRow
+from utils.owl.sparql import parse_SPARQLResult, parse_SPARQLRow
 from utils.constants import Constants as C
 from typing import List
 

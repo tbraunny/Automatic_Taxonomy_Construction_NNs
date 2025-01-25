@@ -1,0 +1,24 @@
+getting started:
+https://github.com/meta-llama/llama-stack/blob/main/docs/getting_started.md
+
+commands:
+https://github.com/meta-llama/llama-stack/blob/main/docs/cli_reference.md
+
+Utilized this docker image for ollama inference:
+https://hub.docker.com/r/llamastack/distribution-ollama
+
+Running Conda Environment:
+conda activate stack
+
+Run command:
+use the provided compose file by 
+docker compose up
+
+will run the run.yaml file as well
+
+--- possibly needed in the future, the current setup isnt configured to have chromadb.
+chromadb run:
+chroma run --path ~/chromadb
+
+mem allocation:
+watch -n 1 free -h
