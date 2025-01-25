@@ -5,7 +5,7 @@ from utils.pdf_loader import load_pdf
 from utils.preprocess_pdf import preprocess_pdf
 from utils.rag_papers.llm_model import LLMModel
 from utils.rag_papers.hf_embeddings import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
-from utils.rag_papers.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
+from utils.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
 
 
 '''
