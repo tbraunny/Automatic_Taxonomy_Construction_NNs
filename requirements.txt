@@ -7,6 +7,8 @@
 -r "requirements/requirements-rag_server.txt"
 -r "requirements/requirements-preprocess_pdf.txt"
 -r "requirements/requirements-front_end.txt"
+-r "requirements/requirements-pdf_extraction.txt"
+
 
 
 

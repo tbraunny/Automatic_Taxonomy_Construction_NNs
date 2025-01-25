@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
 from tests.rag import tree_prompting  # Import your tree_prompting module
-from utils.rag_engine import LocalRagEngine
+from utils.rag_papers.rag_engine import LocalRagEngine
 from src.ontology.visualization.graph_viz import process_ontology
 from fastapi.templating import Jinja2Templates
 import shutil

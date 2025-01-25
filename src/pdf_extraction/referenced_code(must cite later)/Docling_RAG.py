@@ -23,6 +23,7 @@ FILE_PATH =  "/home/richw/richie/ATCNN/data/raw/AlexNet.pdf"
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
+
 loader = DoclingPDFLoader(file_path=FILE_PATH)
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size=1000,

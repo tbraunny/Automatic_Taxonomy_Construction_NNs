@@ -5,10 +5,10 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
-from utils.llm_model import OllamaLLMModel
-from utils.conversational_tree import ConversationTree
-from utils.parse_annetto_structure import *
-from utils.owl import *
+from utils.rag_papers.llm_model import OllamaLLMModel
+from deprecated.conversational_tree import ConversationTree
+from utils.owl.parse_annetto_structure import *
+from utils.owl.owl import *
 
 
 class LLMResponse(BaseModel):

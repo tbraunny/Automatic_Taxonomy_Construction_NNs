@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
 import os
 
-from utils.rag_engine import LocalRagEngine
+from utils.rag_papers.rag_engine import LocalRagEngine
 
 app = Flask(__name__)
 

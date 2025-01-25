@@ -1,5 +1,5 @@
-from rag.clean_response import clean_response
-from utils.owl import create_class, get_class_properties, get_property_range_type, get_instance_class_properties
+from papers_rag.clean_response import clean_response
+from utils.owl.owl import create_class, get_class_properties, get_property_range_type, get_instance_class_properties
 from owlready2 import Thing
 
 def is_atomic(prop_type):

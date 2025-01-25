@@ -1,6 +1,6 @@
 from owlready2 import Ontology, ThingClass, get_ontology
 from utils.constants import Constants as C
-from utils.owl import get_property_range_type
+from utils.owl.owl import get_property_range_type
 
 
 def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
