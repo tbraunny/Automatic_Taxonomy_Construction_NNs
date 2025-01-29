@@ -144,25 +144,24 @@ def generate_optimized_response(prompt, context):
         print(f"Error generating response: {e}")
         return "Error in response generation."
 
-# Example Usage
 
 # Path to JSON file containing parsed headers and content
 json_file_path = "data/alexnet/parsed_alexnet.json"
 
-# Step 1: Read and preprocess the JSON data
+# Read and preprocess the JSON data
 parsed_data = read_json_files(json_file_path)
 documents = combine_header_and_paragraphs(parsed_data)
 
-# Step 2: Embed and store documents
+# Embed and store documents
 embed_and_store_chunks(documents, collection)
 
-# Step 3: Retrieve relevant chunks for a prompt
+# Retrieve relevant chunks for a prompt
 prompt = "Describe the methodology used in the research to reduce overfitting, including any data augmentation techniques or regularization strategies. Wrap your answers in triple back ticks ``` ```"
 max_chunks = 10
 token_budget = 1024
 relevant_chunks = retrieve_relevant_chunks(prompt, collection, max_chunks=max_chunks, token_budget=token_budget)
 
-# Step 4: Format and generate the final response
+# Format and generate the final response
 if relevant_chunks:
     formatted_response = format_response(relevant_chunks)
     final_response = generate_optimized_response(prompt, relevant_chunks)
