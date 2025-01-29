@@ -1,0 +1,209 @@
+{
+   "imports": [
+      "os",
+      "torch",
+      "torch.nn",
+      "torch.optim",
+      "torch.nn.functional",
+      "torch.utils.data",
+      "torchvision.datasets",
+      "torchvision.transforms",
+      "tensorboardX.SummaryWriter"
+   ],
+   "classes": [
+      {
+         "name": "AlexNet",
+         "methods": {
+            "__init__": {
+               "parameters": [
+                  "self",
+                  "num_classes"
+               ]
+            },
+            "init_bias": {
+               "parameters": [
+                  "self"
+               ]
+            },
+            "forward": {
+               "parameters": [
+                  "self",
+                  "x"
+               ]
+            }
+         },
+         "init_function_calls": [
+            {
+               "function": "__init__",
+               "arguments": []
+            },
+            {
+               "function": "Sequential",
+               "arguments": [
+                  "nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, stride=4)",
+                  "nn.ReLU()",
+                  "nn.LocalResponseNorm(size=5, alpha=0.0001, beta=0.75, k=2)",
+                  "nn.MaxPool2d(kernel_size=3, stride=2)",
+                  "nn.Conv2d(96, 256, 5, padding=2)",
+                  "nn.ReLU()",
+                  "nn.LocalResponseNorm(size=5, alpha=0.0001, beta=0.75, k=2)",
+                  "nn.MaxPool2d(kernel_size=3, stride=2)",
+                  "nn.Conv2d(256, 384, 3, padding=1)",
+                  "nn.ReLU()",
+                  "nn.Conv2d(384, 384, 3, padding=1)",
+                  "nn.ReLU()",
+                  "nn.Conv2d(384, 256, 3, padding=1)",
+                  "nn.ReLU()",
+                  "nn.MaxPool2d(kernel_size=3, stride=2)"
+               ]
+            },
+            {
+               "function": "Sequential",
+               "arguments": [
+                  "nn.Dropout(p=0.5, inplace=True)",
+                  "nn.Linear(in_features=256 * 6 * 6, out_features=4096)",
+                  "nn.ReLU()",
+                  "nn.Dropout(p=0.5, inplace=True)",
+                  "nn.Linear(in_features=4096, out_features=4096)",
+                  "nn.ReLU()",
+                  "nn.Linear(in_features=4096, out_features=num_classes)"
+               ]
+            },
+            {
+               "function": "init_bias",
+               "arguments": []
+            },
+            {
+               "function": "Conv2d",
+               "arguments": []
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "LocalResponseNorm",
+               "arguments": []
+            },
+            {
+               "function": "MaxPool2d",
+               "arguments": []
+            },
+            {
+               "function": "Conv2d",
+               "arguments": [
+                  "96",
+                  "256",
+                  "5"
+               ]
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "LocalResponseNorm",
+               "arguments": []
+            },
+            {
+               "function": "MaxPool2d",
+               "arguments": []
+            },
+            {
+               "function": "Conv2d",
+               "arguments": [
+                  "256",
+                  "384",
+                  "3"
+               ]
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "Conv2d",
+               "arguments": [
+                  "384",
+                  "384",
+                  "3"
+               ]
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "Conv2d",
+               "arguments": [
+                  "384",
+                  "256",
+                  "3"
+               ]
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "MaxPool2d",
+               "arguments": []
+            },
+            {
+               "function": "Dropout",
+               "arguments": []
+            },
+            {
+               "function": "Linear",
+               "arguments": []
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "Dropout",
+               "arguments": []
+            },
+            {
+               "function": "Linear",
+               "arguments": []
+            },
+            {
+               "function": "ReLU",
+               "arguments": []
+            },
+            {
+               "function": "Linear",
+               "arguments": []
+            },
+            {
+               "function": "super",
+               "arguments": []
+            }
+         ]
+      }
+   ],
+   "functions": [
+      {
+         "name": "__init__",
+         "parameters": [
+            "self",
+            "num_classes"
+         ]
+      },
+      {
+         "name": "init_bias",
+         "parameters": [
+            "self"
+         ]
+      },
+      {
+         "name": "forward",
+         "parameters": [
+            "self",
+            "x"
+         ]
+      }
+   ]
+}
