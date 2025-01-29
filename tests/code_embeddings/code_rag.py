@@ -14,15 +14,19 @@ Use the JSON files created from code_extractor as context within RAG
 """
 
 def load_json(path):
-    json_files = [f for f in os.listdir(path)]
-
     model_data = []
+    try: 
+        if (isinstance(path , list)):
+            for f in path:
+                with open(f , 'r') as file:
+                    model_data.append(json.load(file))
+        else:
+            with open(f , 'r') as file:
+                model_data.append(json.load(file))
 
-    for f in json_files:
-        with open(os.path.join(path , f) , 'r') as file:
-            model_data.append(json.load(file))
-
-    return model_data
+        return model_data
+    except json.JSONDecodeError as e:
+        print(f"Error decoding json list: {e}")
 
 
 def chunk_code(model_json , chunk_size=512, chunk_overlap=100):
@@ -30,9 +34,30 @@ def chunk_code(model_json , chunk_size=512, chunk_overlap=100):
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         separators=["\n\n", "def ", "class " , "__init__"]
-    )
-    
-    return code_splitter.split_text(model_json)
+    )  
+
+
+
+    for code in model_json:
+        metadata_content = code.metadata.copy()
+        scope_marker = metadata_content.get("function" , "no_name")
+
+        split_code = code_splitter.split_text(json.dumps(code))
+
+        for chunk in split_code:
+            chunked_code = (
+                metadata = {"function" : scope_marker} ,
+                code_content = chunk
+            )
+
+    # split_code = []
+    # for code in model_json:
+    #     metadata = json.dumps(code.get('metadata' , []))
+    #     code_data = json.dumps(code.get('code' , []))
+    #     split_code.extend(code_splitter.split_text(metadata))
+    #     split_code.extend(code_splitter.split_text(code_data))
+
+    return split_code
 
 
 def embed_store(collection , code):
@@ -42,13 +67,11 @@ def embed_store(collection , code):
 
     for idx , snippet in enumerate(code):
         try:
-            metadata = {"filename" : snippet[0].get("filename" , "unknown")} # retrieve filename for added context
-            
             for i , chunk in enumerate(snippet):
                 collection.add( # add to chromadb, embeddings handled by add function
-                    id = [f"{idx} : {i}"] , 
+                    ids = [f"{idx} : {i}"] , 
                     documents = chunk , 
-                    metadatas=[metadata]
+                    #metadatas=[snippet.metadata]
                 )
         except Exception as e:
             print(f"Error embeddings chunk {idx}: {e}")
@@ -148,7 +171,7 @@ def main():
     chroma_client = chromadb.Client()
     chroma_collection = chroma_client.create_collection(
         name = "code_snippets",
-        embedding_function = embedding_functions.OllamaEmbeddingFunction(model_name="mxbai-embed-large")
+        embedding_function = embedding_functions.OllamaEmbeddingFunction(model_name="mxbai-embed-large" , url="http://127.0.0.1:11434")
     )
 
     embed_store(chroma_collection , split_code)
