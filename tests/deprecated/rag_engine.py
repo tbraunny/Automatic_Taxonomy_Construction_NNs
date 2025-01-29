@@ -3,8 +3,8 @@ from llama_index.core import Document, VectorStoreIndex, Settings
 
 from utils.pdf_loader import load_pdf
 from utils.preprocess_pdf import preprocess_pdf
-from utils.rag_papers.llm_model import LLMModel
-from utils.rag_papers.hf_embeddings import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
+from tests.deprecated.llm_model import LLMModel
+from tests.deprecated.hf_embeddings import OllamaEmbeddingModel, HuggingFaceEmbeddingModel
 from utils.doc_chunker import chunk_document, chunk_document_for_nlm_LayoutPDFReader
 
 

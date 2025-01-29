@@ -42,9 +42,14 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         
         for subclass in subclasses:
             if subclass in visited_classes:
-                file.write(f"{indent}    - {subclass.name} [Already Visited]\n")
+                # file.write(f"{indent}    - {subclass.name} [Already Visited]\n")
+                continue
             else:
                 subclass_marker = " [Final Instantiation Required]" if requires_final_instantiation(subclass) else ""
+
+                if requires_final_instantiation(subclass):
+                    print(subclass.name)
+
                 file.write(f"{indent}    - {subclass.name}{subclass_marker}\n")
                 visited_classes.add(subclass)
                 process_subclasses(subclass, level + 2, visited_classes)
@@ -60,11 +65,15 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         indent = '    ' * level
 
         if cls in visited_classes:
-            file.write(f"{indent}- Class: {cls.name} [Already Visited]\n")
+            # file.write(f"{indent}- Class: {cls.name} [Already Visited]\n")
             return
         
         visited_classes.add(cls)
         final_marker = " [Final Instantiation Required]" if requires_final_instantiation(cls) else ""
+        
+        if requires_final_instantiation(cls):
+            print(cls.name)
+
         file.write(f"{indent}- Class: {cls.name}{final_marker}\n")
 
         # Process Data Properties
