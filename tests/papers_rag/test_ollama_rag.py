@@ -28,13 +28,6 @@ def combine_header_and_paragraphs(data, max_chunk_size=1000, overlap=200):
             documents.append(Document(page_content=chunk, metadata={"header": header}))
     return documents
 
-def read_json_files(json_file_path):
-    """
-    Read a JSON file containing parsed sections with headers and content.
-    """
-    import json
-    with open(json_file_path, 'r', encoding='utf-8') as file:
-        return json.load(file)
 
 def embed_and_store_chunks(documents, collection):
     """

@@ -1,24 +1,19 @@
 """
-This script extracts text from a PDF, filters out specific sections, and saves the processed content as a pickle (.pkl) file.
+This script extracts text from a PDF, filters out specific sections, and saves the processed content as a json file.
 
 ## Purpose:
 1. **PDF to Document Conversion**: The script loads a PDF and converts it into a structured `Document` object.
 2. **Filtering Unwanted Sections**: It removes sections based on a predefined list (e.g., References, Citations, Related Works) using fuzzy matching.
-3. **Saving as Pickle**: The filtered `Document` objects are stored in a `.pkl` file for persistence and efficient retrieval.
+3. **Saving as Json**: The filtered `Document` objects are stored in a `.json` file including metadata.
 
 ## Why Use Document Objects Instead of Plain Text?
 - **Metadata Retention**: Unlike plain text, `Document` objects keep metadata (e.g., page numbers, authors, etc.), making it easier to track information.
 - **Structured Processing**: They enable advanced processing (e.g., chunking, indexing, and NLP applications) in downstream tasks.
 
-## Why Use Pickling Instead of a Text File?
-- **Preserves Object Structure**: Unlike `.txt`, which only stores raw text, pickle saves the `Document` objects as they are.
-- **Faster Loading**: Pickle allows direct loading of structured data without additional parsing.
-- **Future Processing**: Storing the extracted text as objects makes it easier to use in machine learning, search indexing, or further NLP analysis.
-
 ## Example Usage:
-```python
-from src.pdf_extraction.extract_filter_pdf_to_pkl import extract_filter_pdf_to_pkl
-extract_filter_pdf_to_pkl("data/resnet/resnet.pdf", "data/resnet/filtered_resnet.pkl")
+```python 
+from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
+extract_filter_pdf_to_json("data/resnet/resnet.pdf", "data/resnet/filtered_resnet.json")
 """
 
 # Required dependencies: python-Levenshtein, fuzzywuzzy, langchain_core
@@ -27,7 +22,7 @@ import re
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
 from src.pdf_extraction.docling_pdf_loader import DoclingPDFLoader
-from utils.pickle_utils import save_to_pickle
+from utils.doc_obj_json_utils import save_documents_to_json, load_documents_from_json
 
 EXCLUDED_SECTIONS = [
     "References", "Citations", "Related Works", "Authors", "Background"
@@ -66,20 +61,29 @@ def filter_sections_from_documents(documents: list, excluded_sections: list) -> 
 
         filtered_content = content
 
+
         for match in matches:
             header, section = match.groups()
+
+            section = header + section
             
             # Normalize header by removing leading numbers and special characters
             header_text = re.sub(r'^[^a-zA-Z]+', '', header.strip("# \n")) # Match everything that is NOT a letter (numbers, periods, spaces, etc.) until the first letter appears
             
             if is_excluded_section(header_text, excluded_sections):
-                filtered_content = filtered_content.replace(match.group(), '')
+                continue
 
-        # Clean up excess blank lines
-        filtered_content = re.sub(r'\n{2,}', '\n', filtered_content).strip()
-        
-        # Store the cleaned content as a new Document object
-        filtered_docs.append(Document(page_content=filtered_content, metadata=doc.metadata))
+            # Clean up excess blank lines
+            filtered_content = re.sub(r'\n{2,}', '\n', filtered_content).strip()
+
+            # Enrich metadata
+            new_metadata = {
+                **doc.metadata,  # Preserve existing metadata
+                "section_header": header_text
+            }
+            
+            # Store the cleaned content as a new Document object
+            filtered_docs.append(Document(page_content=section, metadata=new_metadata))
     
     return filtered_docs
 
@@ -87,10 +91,21 @@ def filter_sections_from_documents(documents: list, excluded_sections: list) -> 
 def write_list_to_txt(list, output_path):
     with open(output_path, "w") as f:
         for i, item in enumerate(list):
-            print(f"Processing section {i + 1}")
             f.write(item.page_content + "\n---\n")
 
-def extract_filter_pdf_to_pkl(pdf_path: str, output_path: str):
+def print_document_metadata(document: Document):
+    """
+    Prints all metadata from a Document object in a readable format.
+
+    :param document: A Document object from LangChain.
+    """
+    print("\n=== Document Metadata ===")
+    for key, value in document.metadata.items():
+        print(f"{key}: {value}")
+    print("=========================\n")
+
+
+def extract_filter_pdf_to_json(pdf_path: str, output_path: str):
     """
     Extracts text from a PDF, filters out unwanted sections, and writes the result to a file.
     
@@ -102,11 +117,22 @@ def extract_filter_pdf_to_pkl(pdf_path: str, output_path: str):
     
     filtered_docs = filter_sections_from_documents(docs, EXCLUDED_SECTIONS)
 
-    # write_list_to_txt(filtered_docs, output_path)
+    # Save document to json for later use
+    save_documents_to_json(filtered_docs, output_path)
+
+
+    # write_list_to_txt(filtered_docs, "wow.txt")
     
-    save_to_pickle(filtered_docs, output_path)
+    # Example that doc -> json -> doc doesn't lose information
+
+    # docs_from_json = load_documents_from_json("data/alexnet/doc_alexnet.json")
+
+    # write_list_to_txt(docs_from_json, "wowza.md")
+
+    # for doc in docs_from_json:
+    #     print_document_metadata(doc)
     
     print(f"Filtered PDF content processed and written to file: {output_path}")
 
-model_name = 'alexnet'
-extract_filter_pdf_to_pkl(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/doc_{model_name}.pkl")
+model_name = 'vgg16'
+extract_filter_pdf_to_json(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/doc_{model_name}.json")
