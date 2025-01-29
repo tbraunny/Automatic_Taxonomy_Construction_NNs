@@ -1,4 +1,3 @@
-import os
 import ollama
 import chromadb
 from langchain.schema import Document
@@ -133,11 +132,12 @@ def generate_optimized_response(prompt, context):
         # Generate the response
         response = ollama.generate(
             # model="llama3.1:8b-instruct-fp16",
-            model="deepseek-r1:14b",
+            model="deepseek-r1:32b",
             prompt=(
                 f"Using this context:\n{full_context}\n\n"
                 f"Answer the following question concisely and accurately:\n{prompt}"
-            )
+            ),
+            
         )
         return response.get('response', "No response generated.")
     except Exception as e:
@@ -157,7 +157,7 @@ documents = combine_header_and_paragraphs(parsed_data)
 embed_and_store_chunks(documents, collection)
 
 # Step 3: Retrieve relevant chunks for a prompt
-prompt = "Describe the methodology used in the research to reduce overfitting, including any data augmentation techniques or regularization strategies."
+prompt = "Describe the methodology used in the research to reduce overfitting, including any data augmentation techniques or regularization strategies. Wrap your answers in triple back ticks ``` ```"
 max_chunks = 10
 token_budget = 1024
 relevant_chunks = retrieve_relevant_chunks(prompt, collection, max_chunks=max_chunks, token_budget=token_budget)
