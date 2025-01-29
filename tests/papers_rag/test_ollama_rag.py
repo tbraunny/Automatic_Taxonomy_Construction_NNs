@@ -1,37 +1,47 @@
 import ollama
 import chromadb
-from langchain.schema import Document
+
+from langchain_core.documents.base import Document
+from utils.document_json_utils import load_documents_from_json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Initialize ChromaDB client and create a collection
-client = chromadb.Client()
-collection = client.create_collection(name="file_docs")
-
-def combine_header_and_paragraphs(data, max_chunk_size=1000, overlap=200):
+def chunk_document_preserving_header(documents, chunk_size=1000, chunk_overlap=200) -> list:
     """
-    Combine headers and their associated paragraphs into meaningful chunks,
-    ensuring the header applies to all paragraphs in the section.
+    Splits a list of documents into smaller chunks while preserving metadata headers.
+
+    :param documents: A list of Document objects to be split.
+    :param chunk_size: The size of each chunk. Defaults to 1000.
+    :param chunk_overlap: The overlap between consecutive chunks. Defaults to 200.
+    :return: A list of chunked Document objects with metadata headers.
     """
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=max_chunk_size,
-        chunk_overlap=overlap
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
     )
 
-    documents = []
-    for section in data:
-        header = section["header"]
-        content = "\n".join(section["content"]).strip()  # Combine all paragraphs
-        # Split content into chunks
-        chunks = text_splitter.split_text(content)
-        for chunk in chunks:
-            # Store each chunk with its associated header as metadata
-            documents.append(Document(page_content=chunk, metadata={"header": header}))
-    return documents
+    chunked_docs = []
+    
+    for doc in documents:
+        original_metadata = doc.metadata.copy()  # Ensure we retain metadata
+        header = original_metadata.get("section_header", "No Header")  # Default if no header
 
+        split_chunks = text_splitter.split_text(doc.page_content)
+
+        for chunk_text in split_chunks:
+            chunked_doc = Document(
+                page_content=chunk_text,
+                metadata={"section_header": header}  # Attach the original header
+            )
+            chunked_docs.append(chunked_doc)
+
+    return chunked_docs
 
 def embed_and_store_chunks(documents, collection):
     """
     Embed and store chunks in the vector database.
+
+    :param documents: A list of chunked Document objects.
+    :param collection: The vector database collection to store embeddings.
     """
     for i, doc in enumerate(documents):
         try:
@@ -46,13 +56,19 @@ def embed_and_store_chunks(documents, collection):
                     metadatas=[doc.metadata]  # Include metadata
                 )
             else:
-                print(f"Failed to embed chunk {i}")
+                raise ValueError(f"Embedding failed for chunk {i}")
         except Exception as e:
             print(f"Error embedding chunk {i}: {e}")
 
-def retrieve_relevant_chunks(prompt, collection, max_chunks=10, token_budget=1024):
+def retrieve_relevant_chunks_within_token_budget(prompt, collection, max_chunks=10, token_budget=1024):
     """
     Retrieve the most relevant chunks for the given prompt, adhering to a token budget.
+
+    :param prompt: The query prompt.
+    :param collection: The vector database collection to query from.
+    :param max_chunks: Maximum number of chunks to retrieve.
+    :param token_budget: Token limit for the retrieved chunks.
+    :return: A list of relevant chunk dictionaries.
     """
     try:
         response = ollama.embeddings(model="mxbai-embed-large:latest", prompt=prompt)
@@ -62,6 +78,10 @@ def retrieve_relevant_chunks(prompt, collection, max_chunks=10, token_budget=102
                 query_embeddings=[embedding],
                 n_results=max_chunks
             )
+            if not all(isinstance(results.get(key, []), list) for key in ['documents', 'distances', 'metadatas']):
+                print("Unexpected response format from vector database.")
+                return []
+            
             all_docs = [
                 {"content": doc, "score": score, "metadata": meta}
                 for docs, scores, metas in zip(
@@ -72,10 +92,8 @@ def retrieve_relevant_chunks(prompt, collection, max_chunks=10, token_budget=102
                 for doc, score, meta in zip(docs, scores, metas)
             ]
             
-            # Sort chunks by relevance (lower distance = higher relevance)
-            sorted_docs = sorted(all_docs, key=lambda x: x["score"])
+            sorted_docs = sorted(all_docs, key=lambda x: x["score"], reverse=True)
             
-            # Concatenate chunks within the token budget
             context = []
             total_tokens = 0
             for doc in sorted_docs:
@@ -92,73 +110,63 @@ def retrieve_relevant_chunks(prompt, collection, max_chunks=10, token_budget=102
     except Exception as e:
         print(f"Error querying relevant documents: {e}")
         return []
-
-def format_response(relevant_chunks):
-    """
-    Format retrieved chunks into a coherent response.
-    """
-    grouped = {}
-    for chunk in relevant_chunks:
-        header = chunk["metadata"].get("header", "No Header")
-        if header not in grouped:
-            grouped[header] = []
-        grouped[header].append(chunk["content"])
-
-    response = []
-    for header, contents in grouped.items():
-        response.append(f"### {header}\n\n" + "\n\n".join(contents))
-    return "\n\n---\n\n".join(response)
-
+    
 def generate_optimized_response(prompt, context):
     """
     Generate a concise and contextually relevant response using an LLM.
+    Ensures that each chunk retains its section header for better comprehension.
+
+    :param prompt: The user query to answer.
+    :param context: The retrieved document context.
+    :return: A generated response string.
     """
     try:
-        # Combine the retrieved context
-        full_context = "\n\n".join([chunk["content"] for chunk in context])
+        full_context = "\n\n".join([
+            f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"
+            for chunk in context
+        ])
         
-        # Print the context being passed to the LLM
         print("### Context Provided to LLM ###")
         print(full_context)
         print("################################")
         
-        # Generate the response
         response = ollama.generate(
-            # model="llama3.1:8b-instruct-fp16",
             model="deepseek-r1:32b",
             prompt=(
                 f"Using this context:\n{full_context}\n\n"
                 f"Answer the following question concisely and accurately:\n{prompt}"
             ),
-            
         )
         return response.get('response', "No response generated.")
     except Exception as e:
         print(f"Error generating response: {e}")
         return "Error in response generation."
 
+# Initialize ChromaDB client and create a collection
+client = chromadb.Client()
+collection = client.create_collection(name="file_docs")
 
-# Path to JSON file containing parsed headers and content
-json_file_path = "data/alexnet/parsed_alexnet.json"
+# Path to JSON file containing doc object
+json_file_path = "data/alexnet/doc_alexnet.json"
 
-# Read and preprocess the JSON data
-parsed_data = read_json_files(json_file_path)
-documents = combine_header_and_paragraphs(parsed_data)
+# Process JSON to list of Document Objects
+docs = load_documents_from_json(json_file_path)
+
+# Split documents into smaller chunks while preserving header
+split_docs = chunk_document_preserving_header(docs)
 
 # Embed and store documents
-embed_and_store_chunks(documents, collection)
+embed_and_store_chunks(split_docs, collection)
 
 # Retrieve relevant chunks for a prompt
 prompt = "Describe the methodology used in the research to reduce overfitting, including any data augmentation techniques or regularization strategies. Wrap your answers in triple back ticks ``` ```"
 max_chunks = 10
 token_budget = 1024
-relevant_chunks = retrieve_relevant_chunks(prompt, collection, max_chunks=max_chunks, token_budget=token_budget)
+relevant_chunks = retrieve_relevant_chunks_within_token_budget(prompt, collection, max_chunks=max_chunks, token_budget=token_budget)
 
 # Format and generate the final response
 if relevant_chunks:
-    formatted_response = format_response(relevant_chunks)
     final_response = generate_optimized_response(prompt, relevant_chunks)
-    print("Formatted Response:\n", formatted_response)
     print("\nFinal Answer:\n", final_response)
 else:
     print("No relevant documents found.")
