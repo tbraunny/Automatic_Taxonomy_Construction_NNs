@@ -1,8 +1,24 @@
 """
-Example usage:
+This script extracts text from a PDF, filters out specific sections, and saves the processed content as a pickle (.pkl) file.
 
+## Purpose:
+1. **PDF to Document Conversion**: The script loads a PDF and converts it into a structured `Document` object.
+2. **Filtering Unwanted Sections**: It removes sections based on a predefined list (e.g., References, Citations, Related Works) using fuzzy matching.
+3. **Saving as Pickle**: The filtered `Document` objects are stored in a `.pkl` file for persistence and efficient retrieval.
+
+## Why Use Document Objects Instead of Plain Text?
+- **Metadata Retention**: Unlike plain text, `Document` objects keep metadata (e.g., page numbers, authors, etc.), making it easier to track information.
+- **Structured Processing**: They enable advanced processing (e.g., chunking, indexing, and NLP applications) in downstream tasks.
+
+## Why Use Pickling Instead of a Text File?
+- **Preserves Object Structure**: Unlike `.txt`, which only stores raw text, pickle saves the `Document` objects as they are.
+- **Faster Loading**: Pickle allows direct loading of structured data without additional parsing.
+- **Future Processing**: Storing the extracted text as objects makes it easier to use in machine learning, search indexing, or further NLP analysis.
+
+## Example Usage:
+```python
 from src.pdf_extraction.extract_filter_pdf_to_pkl import extract_filter_pdf_to_pkl
-extract_filter_pdf_to_pkl("data/resnet/resnet.pdf", "data/resnet/filtered_resnet.md")
+extract_filter_pdf_to_pkl("data/resnet/resnet.pdf", "data/resnet/filtered_resnet.pkl")
 """
 
 # Required dependencies: python-Levenshtein, fuzzywuzzy, langchain_core
@@ -92,4 +108,5 @@ def extract_filter_pdf_to_pkl(pdf_path: str, output_path: str):
     
     print(f"Filtered PDF content processed and written to file: {output_path}")
 
-# extract_filter_pdf_to_pkl("data/resnet/resnet.pdf", "data/resnet/filtered_resnet.pkl")
+model_name = 'alexnet'
+extract_filter_pdf_to_pkl(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/filtered_{model_name}.pkl")
