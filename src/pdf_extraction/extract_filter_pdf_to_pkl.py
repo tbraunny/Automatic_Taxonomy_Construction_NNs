@@ -109,4 +109,4 @@ def extract_filter_pdf_to_pkl(pdf_path: str, output_path: str):
     print(f"Filtered PDF content processed and written to file: {output_path}")
 
 model_name = 'alexnet'
-extract_filter_pdf_to_pkl(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/filtered_{model_name}.pkl")
+extract_filter_pdf_to_pkl(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/doc_{model_name}.pkl")
