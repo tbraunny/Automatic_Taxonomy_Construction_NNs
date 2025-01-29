@@ -4,22 +4,41 @@ import glob
 import os
 
 class CodeProcessor(ast.NodeVisitor):
-    def __init__(self, code): # initialize lists
+    def __init__(self, code , filepath): # initialize lists
+        self.metadata = []
         self.classes = []
         self.functions = []
-        #self.imports = []
+        self.assignments = []
         self.code_lines = code.split("\n")
+
+        self.metadata = {
+            "file_name": os.path.basename(filepath),
+            "file_size": os.path.getsize(filepath),  # size in bytes
+            "num_lines": len(self.code_lines),
+            "num_functions": 0,  
+            "num_classes": 0 ,  
+            "imports": []
+        }
 
     def visit_Import(self, node): # visit import statements
         for alias in node.names:
-            self.imports.append(alias.name)
+            self.metadata["imports"].append(alias.name)
 
     def visit_ImportFrom(self, node): # visit from ... import statements
         module_name = node.module
         for alias in node.names:
-            self.imports.append(f"{module_name}.{alias.name}")
+            self.metadata["imports"].append(f"{module_name}.{alias.name}")
+
+    def capture_variable_assignments(self, node):
+        # capture all variable assignments to encopmass hyperparameters
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    value = ast.unparse(node.value)
+                    self.assignments.append({target.id: value})
 
     def visit_ClassDef(self, node): # extracts class names & methods (includes function calls within methods)
+        self.metadata["num_classes"] += 1
         class_info = {
             "name": node.name,
             "methods": {},
@@ -43,6 +62,7 @@ class CodeProcessor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node): # fetch function names & params
+        self.metadata["num_functions"] += 1
         function_name = node.name
         parameters = [arg.arg for arg in node.args.args]
         self.functions.append({"name": function_name, "parameters": parameters})
@@ -69,19 +89,28 @@ class CodeProcessor(ast.NodeVisitor):
         elif isinstance(node.func, ast.Name):
             return node.func.id
         return "unknown"
+    
+    def visit_Assign(self, node):
+        for target in node.targets:
+            if isinstance(target, ast.Name): # capture variable assignments
+                value = ast.unparse(node.value)  # get value
+                self.assignments.append({target.id: value})
+
+        self.generic_visit(node)
 
     def parse_code(self): # structure the JSON
         return {
-            #"imports": self.imports,
-            "classes": self.classes,
-            "functions": self.functions
+            "metadata": self.metadata ,
+            "classes": self.classes ,
+            "functions": self.functions ,
+            "assignments": self.assignments
         }
 
 def process_code_file(filepath):
     with open(filepath, "r") as f:
         code = f.read()
 
-    processor = CodeProcessor(code)
+    processor = CodeProcessor(code , filepath)
     tree = ast.parse(code) # load code tree
     processor.visit(tree) # traverse nodes
 
