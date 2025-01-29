@@ -22,7 +22,8 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         """
         has_data_properties = any(cls in prop.domain for prop in ontology.data_properties())
         has_object_properties = any(cls in prop.domain for prop in ontology.object_properties())
-        return not has_data_properties and not has_object_properties
+        has_sub_classes = any(list(cls.subclasses()))
+        return (not has_data_properties and not has_object_properties) and not has_sub_classes
     
     def process_subclasses(cls: ThingClass, level: int, visited_classes: set):
         """

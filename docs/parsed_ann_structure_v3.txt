@@ -17,11 +17,11 @@
                     - sameLayerAs
                         - Class: Layer [Already Visited]
                       Possible Subclasses:
-                        - InOutLayer [Final Instantiation Required]
+                        - InOutLayer
                               Possible Subclasses:
                                 - InputLayer [Already Visited]
                                 - OutputLayer [Final Instantiation Required]
-                        - HiddenLayer [Final Instantiation Required]
+                        - HiddenLayer
                               Possible Subclasses:
                                 - ActivationLayer
                                       Possible Subclasses:
@@ -29,15 +29,15 @@
                                               Possible Subclasses:
                                                 - GRULayer [Final Instantiation Required]
                                                 - LSTMLayer [Final Instantiation Required]
-                                        - ConvolutionLayer [Final Instantiation Required]
+                                        - ConvolutionLayer
                                               Possible Subclasses:
                                                 - ConvolutionLayer [Already Visited]
                                                 - SeparableConvolutionLayer [Final Instantiation Required]
-                                        - DeconvolutionLayer [Final Instantiation Required]
+                                        - DeconvolutionLayer
                                               Possible Subclasses:
                                                 - SeparableDeconvolutionLayer [Final Instantiation Required]
                                         - FullyConnectedLayer [Final Instantiation Required]
-                                - AggregationLayer [Final Instantiation Required]
+                                - AggregationLayer
                                       Possible Subclasses:
                                         - BidirectionalRNNLayer
                                         - ConcatLayer [Final Instantiation Required]
@@ -45,13 +45,13 @@
                                         - PoolingLayer [Final Instantiation Required]
                                         - SumLayer [Final Instantiation Required]
                                         - UpscaleLayer [Final Instantiation Required]
-                                - ModificationLayer [Final Instantiation Required]
+                                - ModificationLayer
                                       Possible Subclasses:
                                         - NoiseLayer
-                                        - DropoutLayer (alexnet_dropoutlayer)
+                                        - DropoutLayer
                                         - BatchNormLayer [Final Instantiation Required]
                                         - FlattenLayer [Final Instantiation Required]
-                                - SeparationLayer [Final Instantiation Required]
+                                - SeparationLayer
                                       Possible Subclasses:
                                         - CloneLayer [Final Instantiation Required]
                                         - SplitLayer [Final Instantiation Required]
@@ -62,13 +62,13 @@
                         - Class: CostFunction
                           CostFunction Properties:
                             - hasLoss
-                                - Class: LossFunction [Final Instantiation Required]
+                                - Class: LossFunction
                                       Possible Subclasses:
                                         - BinaryCrossEntropy [Final Instantiation Required]
                                         - CategoricalCrossEntropy [Final Instantiation Required]
                                         - MSE [Final Instantiation Required]
                             - hasRegularizer
-                                - Class: RegularizerFunction [Final Instantiation Required]
+                                - Class: RegularizerFunction
                                       Possible Subclasses:
                                         - L1L2RegularizerFunction [Final Instantiation Required]
                                         - L1RegularizerFunction [Final Instantiation Required]
@@ -79,10 +79,10 @@
             - hasOutputLayer
                 - Class: OutputLayer [Already Visited]
             - hasTaskType
-                - Class: TaskCharacterization [Final Instantiation Required]
+                - Class: TaskCharacterization
                       Possible Subclasses:
                         - Adversarial [Final Instantiation Required]
-                        - Classification [Final Instantiation Required]
+                        - Classification
                               Possible Subclasses:
                                 - SemiSupervisedClassification [Final Instantiation Required]
                                 - SupervisedClassification [Final Instantiation Required]

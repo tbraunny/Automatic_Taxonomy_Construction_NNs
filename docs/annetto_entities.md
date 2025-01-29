@@ -1,5 +1,5 @@
 
-Classes in the ontology:
+# Classes in the ontology:
 - Dataset
 - EvaluationResult
 - ANNConfiguration
@@ -161,7 +161,7 @@ Classes in the ontology:
 - Xavier
 - ZerosInitialization
 
-Object Properties in the ontology:
+# Object Properties in the ontology:
 - derivedFrom
 - derivedTestDatasetFrom
 - derivedTrainingDatasetFrom
@@ -212,7 +212,7 @@ Object Properties in the ontology:
 - updatesLayer
 - withTrainingStrategy
 
-Data Properties in the ontology:
+# Data Properties in the ontology:
 - batch_size
 - condition_value
 - data_description
