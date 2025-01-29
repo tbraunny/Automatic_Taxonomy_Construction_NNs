@@ -5,7 +5,7 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
-from utils.rag_papers.llm_model import OllamaLLMModel
+from tests.deprecated.llm_model import OllamaLLMModel
 from deprecated.conversational_tree import ConversationTree
 from utils.owl.parse_annetto_structure import *
 from utils.owl.owl import *
