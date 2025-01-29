@@ -92,9 +92,12 @@ def process_code_file(filepath):
     print(f"Processed code saved to {output_file}")
     return processor.parse_code()
 
-if __name__ == '__main__':
+def main():
     ann_name = "alexnet"
     files = glob.glob(f"/home/richw/tom/ATCNN/data/{ann_name}/*.py") # accept all python files listed under a neural network folder
 
     for f in files:
         process_code_file(f)
+
+if __name__ == '__main__':
+    main()

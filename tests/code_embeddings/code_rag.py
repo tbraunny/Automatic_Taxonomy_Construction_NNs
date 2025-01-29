@@ -1,5 +1,7 @@
 import code_extractor
 import json
+import os
+import glob
 
 import langchain
 
@@ -7,20 +9,35 @@ from utils.llm_model import OllamaLLMModel
 from utils.parse_annetto_structure import *
 from utils.owl import *
 
+import numpy as np
+from transformers import LlamaTokenizer , LlamaModel
+
 """
 Setup rag pipeline for multiple code files
 Use the JSON files created from code_extractor as context within RAG
 """
+
+def load_json(path):
+    json_files = [f for f in os.listdir(path)]
+
+    model_data = []
+
+    for f in json_files:
+        with open(os.path.join(path , f) , 'r') as file:
+            model_data.append(json.load(file))
+
 
 class rag():
     def __init__():
         print("super")
 
 def main():
-    print("get started")
+    ann_name = "alexnet"
+    path = glob.glob(f"/home/richw/tom/ATCNN/data/{ann_name}/*.json")
+
+    load_json(path)
 
 if __name__ == '__main__':
-    print("try some shit")
     main()
 
 # import os
