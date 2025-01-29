@@ -22,7 +22,7 @@ import re
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
 from src.pdf_extraction.docling_pdf_loader import DoclingPDFLoader
-from utils.doc_obj_json_utils import save_documents_to_json, load_documents_from_json
+from utils.document_json_utils import save_documents_to_json
 
 EXCLUDED_SECTIONS = [
     "References", "Citations", "Related Works", "Authors", "Background"
