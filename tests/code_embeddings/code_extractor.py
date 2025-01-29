@@ -7,7 +7,7 @@ class CodeProcessor(ast.NodeVisitor):
     def __init__(self, code): # initialize lists
         self.classes = []
         self.functions = []
-        self.imports = []
+        #self.imports = []
         self.code_lines = code.split("\n")
 
     def visit_Import(self, node): # visit import statements
@@ -72,7 +72,7 @@ class CodeProcessor(ast.NodeVisitor):
 
     def parse_code(self): # structure the JSON
         return {
-            "imports": self.imports,
+            #"imports": self.imports,
             "classes": self.classes,
             "functions": self.functions
         }

@@ -1,15 +1,4 @@
 {
-   "imports": [
-      "os",
-      "torch",
-      "torch.nn",
-      "torch.optim",
-      "torch.nn.functional",
-      "torch.utils.data",
-      "torchvision.datasets",
-      "torchvision.transforms",
-      "tensorboardX.SummaryWriter"
-   ],
    "classes": [
       {
          "name": "AlexNet",
