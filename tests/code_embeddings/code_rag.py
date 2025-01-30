@@ -36,42 +36,31 @@ def chunk_code(model_json , chunk_size=512, chunk_overlap=100):
         separators=["\n\n", "def ", "class " , "__init__"]
     )  
 
-
-
+    # model_json is a list of dicts
+    split_code = []
     for code in model_json:
-        metadata_content = code.metadata.copy()
-        scope_marker = metadata_content.get("function" , "no_name")
+        metadata = json.dumps(code.get('metadata' , [])) # convert sections to strings for chunking
+        code_data = json.dumps(code.get('classes' , []) + code.get('functions' , []) + code.get('assignments' , []))
 
-        split_code = code_splitter.split_text(json.dumps(code))
+        split_code.extend(code_splitter.split_text(metadata))
+        split_code.extend(code_splitter.split_text(code_data))
 
-        for chunk in split_code:
-            chunked_code = (
-                metadata = {"function" : scope_marker} ,
-                code_content = chunk
-            )
-
-    # split_code = []
-    # for code in model_json:
-    #     metadata = json.dumps(code.get('metadata' , []))
-    #     code_data = json.dumps(code.get('code' , []))
-    #     split_code.extend(code_splitter.split_text(metadata))
-    #     split_code.extend(code_splitter.split_text(code_data))
-
-    return split_code
+    return split_code , metadata
 
 
-def embed_store(collection , code):
+def embed_store(collection , code , metadata):
     """
     Embed & store chunks within vector database (chromadb)
     """
-
+    
     for idx , snippet in enumerate(code):
         try:
             for i , chunk in enumerate(snippet):
+                print(type(chunk))
                 collection.add( # add to chromadb, embeddings handled by add function
                     ids = [f"{idx} : {i}"] , 
                     documents = chunk , 
-                    #metadatas=[snippet.metadata]
+                    #metadatas=[metadata]
                 )
         except Exception as e:
             print(f"Error embeddings chunk {idx}: {e}")
@@ -158,6 +147,15 @@ def generate_response(prompt , context , model):
     except Exception as e:
         print(f"Response failed to generate: {e}")
         return "Error in response generation (see terminal for details)."
+    
+def get_metadata(model_json):
+    metadata_dict = {'metadata' : []}
+
+    for code in model_json:
+        metadata = json.dumps(code.get('metadata' , {}))
+        metadata_dict['metadata'].append(metadata)
+
+    return metadata_dict
 
 def main():
     ann_name = "alexnet"
@@ -167,6 +165,8 @@ def main():
 
     split_code = chunk_code(model_data)
 
+    metadata = get_metadata(model_data)
+
     # initialize chromadb & collection
     chroma_client = chromadb.Client()
     chroma_collection = chroma_client.create_collection(
@@ -174,7 +174,7 @@ def main():
         embedding_function = embedding_functions.OllamaEmbeddingFunction(model_name="mxbai-embed-large" , url="http://127.0.0.1:11434")
     )
 
-    embed_store(chroma_collection , split_code)
+    embed_store(chroma_collection , split_code , metadata)
 
     prompt = "Describe how the architecture of the model, specifically the forward pass, mitigates ovefitting within the model"
     

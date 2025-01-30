@@ -10,7 +10,6 @@ class CodeProcessor(ast.NodeVisitor):
         self.functions = []
         self.assignments = []
         self.code_lines = code.split("\n")
-
         self.metadata = {
             "file_name": os.path.basename(filepath),
             "file_size": os.path.getsize(filepath),  # size in bytes
@@ -106,7 +105,7 @@ class CodeProcessor(ast.NodeVisitor):
             "assignments": self.assignments
         }
 
-def process_code_file(filepath):
+def process_code_file(filepath , count):
     with open(filepath, "r") as f:
         code = f.read()
 
@@ -114,7 +113,7 @@ def process_code_file(filepath):
     tree = ast.parse(code) # load code tree
     processor.visit(tree) # traverse nodes
 
-    output_file = filepath.replace(".py", "_processed.json")
+    output_file = filepath.replace(".py", f"_processed_{count}.json")
     with open(output_file, "w") as json_file:
         json.dump(processor.parse_code(), json_file, indent=3)
     
@@ -125,8 +124,10 @@ def main():
     ann_name = "alexnet"
     files = glob.glob(f"/home/richw/tom/ATCNN/data/{ann_name}/*.py") # accept all python files listed under a neural network folder
 
+    file_count = 0
     for f in files:
-        process_code_file(f)
+        process_code_file(f , file_count)
+        file_count += 1
 
 if __name__ == '__main__':
     main()
