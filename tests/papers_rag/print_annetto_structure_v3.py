@@ -1,6 +1,7 @@
 from owlready2 import Ontology, ThingClass, get_ontology
 from utils.constants import Constants as C
-from utils.owl.owl import get_property_range_type
+from utils.owl.owl import *
+
 
 def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
     """
@@ -22,7 +23,8 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         """
         has_data_properties = any(cls in prop.domain for prop in ontology.data_properties())
         has_object_properties = any(cls in prop.domain for prop in ontology.object_properties())
-        has_sub_classes = any(list(cls.subclasses()))
+        has_subclasses = any(list(cls.subclasses()))
+        return not has_subclasses
         return (not has_data_properties and not has_object_properties) and not has_sub_classes
     
     def process_subclasses(cls: ThingClass, level: int, visited_classes: set):
@@ -43,7 +45,9 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         for subclass in subclasses:
             if subclass in visited_classes:
                 # file.write(f"{indent}    - {subclass.name} [Already Visited]\n")
-                continue
+
+                subclass_marker = " [Final Instantiation Required]" if requires_final_instantiation(subclass) else ""
+                file.write(f"{indent}    - {subclass.name}{subclass_marker}\n")
             else:
                 subclass_marker = " [Final Instantiation Required]" if requires_final_instantiation(subclass) else ""
 
@@ -83,20 +87,33 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
             for prop in data_properties:
                 file.write(f"{indent}    - {prop.name} (atomic)\n")
 
-        # Process Object Properties
-        object_properties = [prop for prop in ontology.object_properties() if cls in prop.domain]
-        if object_properties:
-            file.write(f"{indent}  {cls.name} Properties:\n")
-            for prop in object_properties:
-                range_type = get_property_range_type(prop)
+        # # Process Object Properties
+        # object_properties = [prop for prop in ontology.object_properties() if cls in prop.domain]
+        # if object_properties:
+        #     file.write(f"{indent}  {cls.name} Properties:\n")
+        #     for prop in object_properties:
+        #         range_type = get_property_range_type(prop)
                 
-                if range_type == "atomic":
-                    file.write(f"{indent}    - {prop.name} (atomic)\n")
+        #         if range_type == "atomic":
+        #             file.write(f"{indent}    - {prop.name} (atomic)\n")
+        #         else:
+        #             file.write(f"{indent}    - {prop.name}\n")
+        #             for range_cls in prop.range:
+        #                 if isinstance(range_cls, ThingClass):
+        #                     process_class(range_cls, level + 2, visited_classes)
+
+
+        connected_classes_by_object_property = get_connected_classes(cls, ontology)
+        
+        if connected_classes_by_object_property:
+            file.write(f"{indent}  {cls.name} Properties:\n")
+            for connected_class in connected_classes_by_object_property:
+                if isinstance(connected_class, ThingClass):
+                    process_class(connected_class, level + 2, visited_classes)
                 else:
-                    file.write(f"{indent}    - {prop.name}\n")
-                    for range_cls in prop.range:
-                        if isinstance(range_cls, ThingClass):
-                            process_class(range_cls, level + 2, visited_classes)
+                    file.write(f"{indent}    - {connected_class.name} (atomic)\n")
+                    print(f"possible data property??? {connected_class}")
+
 
         # Recursively Process Subclasses
         if cls.subclasses():

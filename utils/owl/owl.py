@@ -75,7 +75,6 @@ def get_connected_classes(cls, ontology):
     return list(connected_classes)
 
 
-
 def get_subclasses(cls):
     """
     Retrieves all subclasses of a given class.
