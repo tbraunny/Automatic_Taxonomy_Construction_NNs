@@ -104,6 +104,34 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
 
 
         connected_classes_by_object_property = get_connected_classes(cls, ontology)
+
+        # Copied from owl.py in utils for your reference 
+        def get_connected_classes(cls, ontology):
+            """
+            Retrieves classes connected to the given class via object properties.
+
+            :param cls: The class for which to retrieve connected classes.
+            :param ontology: The ontology object.
+            :return: A list of connected classes.
+            """
+            connected_classes = set()
+
+            for prop in ontology.object_properties():
+                # Check if the domain of the property includes the class
+                if cls in prop.domain:
+                    # Add the range classes to the connected classes
+                    for range_cls in prop.range:
+                        connected_classes.add(range_cls)
+                # Also check if the class is in the range to get inverse properties
+                if cls in prop.range:
+                    for domain_cls in prop.domain:
+                        connected_classes.add(domain_cls)
+
+            return list(connected_classes)
+
+        # Recursively Process Subclasses
+        if cls.subclasses():
+            process_subclasses(cls, level + 1, visited_classes)
         
         if connected_classes_by_object_property:
             file.write(f"{indent}  {cls.name} Properties:\n")
@@ -115,9 +143,7 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
                     print(f"possible data property??? {connected_class}")
 
 
-        # Recursively Process Subclasses
-        if cls.subclasses():
-            process_subclasses(cls, level + 1, visited_classes)
+        
     
     with open(file_path, 'w') as file:
         # Ensure ANNConfiguration exists in the ontology

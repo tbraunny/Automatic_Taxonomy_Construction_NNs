@@ -1,214 +1,198 @@
 - Class: ANNConfiguration [Final Instantiation Required]
   ANNConfiguration Properties:
-        - Class: EvaluationResult [Final Instantiation Required]
-          Data Properties:
-            - eval_date (atomic)
-          EvaluationResult Properties:
-                - Class: TrainingStrategy [Final Instantiation Required]
-                  TrainingStrategy Properties:
-                        - Class: TrainedModel [Final Instantiation Required]
-                          TrainedModel Properties:
+        - Class: Network [Final Instantiation Required]
+          Network Properties:
+                - Class: NetworkSpecific
+                      Possible Subclasses:
+                        - TrainingSingle [Final Instantiation Required]
+                        - TrainingSingleForwardOnly [Final Instantiation Required]
+                  NetworkSpecific Properties:
+                        - Class: DatasetPipe [Final Instantiation Required]
+                          DatasetPipe Properties:
+                                - Class: InOutLayer
+                                      Possible Subclasses:
+                                        - InputLayer [Final Instantiation Required]
+                                        - OutputLayer [Final Instantiation Required]
+                                  InOutLayer Properties:
+                                - Class: NetworkEvaluation
+                                  Data Properties:
+                                    - eval_score (atomic)
+                                      Possible Subclasses:
+                                        - EvaluationResult [Final Instantiation Required]
+                                        - ConditionalEvaluation [Final Instantiation Required]
+                                  NetworkEvaluation Properties:
+                                        - Class: Metric
+                                              Possible Subclasses:
+                                                - TrueOrFalseExamples
+                                                      Possible Subclasses:
+                                                        - FalseExamples
+                                                              Possible Subclasses:
+                                                                - FalseNegatives [Final Instantiation Required]
+                                                                - FalsePositives [Final Instantiation Required]
+                                                        - TrueExamples
+                                                              Possible Subclasses:
+                                                                - TrueNegatives [Final Instantiation Required]
+                                                                - TruePositives [Final Instantiation Required]
+                                                - Accuracy [Final Instantiation Required]
+                                                - LogLikelihood
+                                                      Possible Subclasses:
+                                                        - ParzenWindow [Final Instantiation Required]
+                                                - MeanSquaredError [Final Instantiation Required]
+                                                - Precision [Final Instantiation Required]
+                                                - Recall [Final Instantiation Required]
+                                          Metric Properties:
+                                - Class: Dataset
+                                  Data Properties:
+                                    - data_description (atomic)
+                                    - data_doi (atomic)
+                                    - data_location (atomic)
+                                    - data_sample_dimensionality (atomic)
+                                    - data_sample_features (atomic)
+                                    - data_samples (atomic)
+                                    - is_transient_dataset (atomic)
+                                      Possible Subclasses:
+                                        - RandomNoiseDataset [Final Instantiation Required]
+                                        - Labelset [Final Instantiation Required]
+                                  Dataset Properties:
+                                        - Class: DataCharacterization
+                                              Possible Subclasses:
+                                                - Science
+                                                      Possible Subclasses:
+                                                        - Physics
+                                                              Possible Subclasses:
+                                                                - Astronomy [Final Instantiation Required]
+                                                                - Climate [Final Instantiation Required]
+                                                                - Weather [Final Instantiation Required]
+                                                        - Biology [Final Instantiation Required]
+                                                - Urban
+                                                      Possible Subclasses:
+                                                        - Buildings [Final Instantiation Required]
+                                                        - Vehicles [Final Instantiation Required]
+                                                - People
+                                                      Possible Subclasses:
+                                                        - Faces [Final Instantiation Required]
+                                                - Nature
+                                                      Possible Subclasses:
+                                                        - Fauna [Final Instantiation Required]
+                                                        - Flora [Final Instantiation Required]
+                                                        - Scenery [Final Instantiation Required]
+                                                - NumbersAndLetters
+                                                      Possible Subclasses:
+                                                        - NumericalDigits
+                                                              Possible Subclasses:
+                                                                - HandWrittenDigits [Final Instantiation Required]
+                                                        - LettersDigits [Final Instantiation Required]
+                                          DataCharacterization Properties:
+                                        - Class: DataType
+                                              Possible Subclasses:
+                                                - Image [Final Instantiation Required]
+                                                - MultiDimensionalCube [Final Instantiation Required]
+                                                - Text
+                                                      Possible Subclasses:
+                                                        - SemistructuredText [Final Instantiation Required]
+                                                        - UnstructuredText [Final Instantiation Required]
+                                                - Video [Final Instantiation Required]
+                                          DataType Properties:
+                        - Class: TrainingOptimizer
+                          Data Properties:
+                            - learning_rate (atomic)
+                            - momentum (atomic)
+                              Possible Subclasses:
+                                - AdaDelta [Final Instantiation Required]
+                                - AdaGrad [Final Instantiation Required]
+                                - AdaGradDA [Final Instantiation Required]
+                                - Adam [Final Instantiation Required]
+                                - Ftrl [Final Instantiation Required]
+                                - GradientDescent [Final Instantiation Required]
+                                - Momentum [Final Instantiation Required]
+                                - ProximalAdaGrad [Final Instantiation Required]
+                                - ProximalGradientDescent [Final Instantiation Required]
+                                - RMSProp [Final Instantiation Required]
+                          TrainingOptimizer Properties:
+                        - Class: Layer
+                          Data Properties:
+                            - layer_num_units (atomic)
+                              Possible Subclasses:
+                                - InOutLayer
+                                - HiddenLayer
+                                      Possible Subclasses:
+                                        - ActivationLayer
+                                              Possible Subclasses:
+                                                - RNNLayer
+                                                      Possible Subclasses:
+                                                        - GRULayer [Final Instantiation Required]
+                                                        - LSTMLayer [Final Instantiation Required]
+                                                - ConvolutionLayer
+                                                      Possible Subclasses:
+                                                        - ConvolutionLayer
+                                                        - SeparableConvolutionLayer [Final Instantiation Required]
+                                                - DeconvolutionLayer
+                                                      Possible Subclasses:
+                                                        - SeparableDeconvolutionLayer [Final Instantiation Required]
+                                                - FullyConnectedLayer [Final Instantiation Required]
+                                        - AggregationLayer
+                                              Possible Subclasses:
+                                                - BidirectionalRNNLayer [Final Instantiation Required]
+                                                - ConcatLayer [Final Instantiation Required]
+                                                - MultiplyLayer [Final Instantiation Required]
+                                                - PoolingLayer [Final Instantiation Required]
+                                                - SumLayer [Final Instantiation Required]
+                                                - UpscaleLayer [Final Instantiation Required]
+                                        - ModificationLayer
+                                              Possible Subclasses:
+                                                - NoiseLayer [Final Instantiation Required]
+                                                - DropoutLayer [Final Instantiation Required]
+                                                - BatchNormLayer [Final Instantiation Required]
+                                                - FlattenLayer [Final Instantiation Required]
+                                        - SeparationLayer
+                                              Possible Subclasses:
+                                                - CloneLayer [Final Instantiation Required]
+                                                - SplitLayer [Final Instantiation Required]
+                          Layer Properties:
                                 - Class: TrainedWeights [Final Instantiation Required]
                                   Data Properties:
                                     - trained_weights_array (atomic)
                                   TrainedWeights Properties:
-                                        - Class: Layer
-                                          Data Properties:
-                                            - layer_num_units (atomic)
-                                          Layer Properties:
-                                                - Class: NetworkSpecific
-                                                  NetworkSpecific Properties:
-                                                        - Class: DatasetPipe [Final Instantiation Required]
-                                                          DatasetPipe Properties:
-                                                                - Class: InOutLayer
-                                                                  InOutLayer Properties:
+                                        - Class: TrainedModel [Final Instantiation Required]
+                                          TrainedModel Properties:
+                                                - Class: TrainingStrategy [Final Instantiation Required]
+                                                  TrainingStrategy Properties:
+                                                        - Class: TrainingSession [Final Instantiation Required]
+                                                          TrainingSession Properties:
+                                                                - Class: TrainingStep
                                                                       Possible Subclasses:
-                                                                        - InputLayer [Final Instantiation Required]
-                                                                        - OutputLayer [Final Instantiation Required]
-                                                                - Class: NetworkEvaluation
-                                                                  Data Properties:
-                                                                    - eval_score (atomic)
-                                                                  NetworkEvaluation Properties:
-                                                                        - Class: Network [Final Instantiation Required]
-                                                                          Network Properties:
-                                                                                - Class: TaskCharacterization
-                                                                                  TaskCharacterization Properties:
-                                                                                      Possible Subclasses:
-                                                                                        - Adversarial [Final Instantiation Required]
-                                                                                        - Classification
-                                                                                              Possible Subclasses:
-                                                                                                - SemiSupervisedClassification [Final Instantiation Required]
-                                                                                                - SupervisedClassification [Final Instantiation Required]
-                                                                                        - Clustering [Final Instantiation Required]
-                                                                                        - Discrimination [Final Instantiation Required]
-                                                                                        - Generation [Final Instantiation Required]
-                                                                                        - Reconstruction [Final Instantiation Required]
-                                                                                        - Regression [Final Instantiation Required]
-                                                                                - Class: ObjectiveFunction
-                                                                                  ObjectiveFunction Properties:
-                                                                                        - Class: CostFunction [Final Instantiation Required]
-                                                                                          CostFunction Properties:
-                                                                                                - Class: LossFunction
-                                                                                                  LossFunction Properties:
-                                                                                                      Possible Subclasses:
-                                                                                                        - BinaryCrossEntropy [Final Instantiation Required]
-                                                                                                        - CategoricalCrossEntropy [Final Instantiation Required]
-                                                                                                        - MSE [Final Instantiation Required]
-                                                                                                - Class: RegularizerFunction
-                                                                                                  RegularizerFunction Properties:
-                                                                                                      Possible Subclasses:
-                                                                                                        - L1L2RegularizerFunction [Final Instantiation Required]
-                                                                                                        - L1RegularizerFunction [Final Instantiation Required]
-                                                                                                        - L2RegularizerFunction [Final Instantiation Required]
-                                                                                      Possible Subclasses:
-                                                                                        - MaxObjectiveFunction [Final Instantiation Required]
-                                                                                        - MinObjectiveFunction [Final Instantiation Required]
-                                                                        - Class: Metric
-                                                                          Metric Properties:
-                                                                              Possible Subclasses:
-                                                                                - TrueOrFalseExamples
-                                                                                      Possible Subclasses:
-                                                                                        - FalseExamples
-                                                                                              Possible Subclasses:
-                                                                                                - FalseNegatives [Final Instantiation Required]
-                                                                                                - FalsePositives [Final Instantiation Required]
-                                                                                        - TrueExamples
-                                                                                              Possible Subclasses:
-                                                                                                - TrueNegatives [Final Instantiation Required]
-                                                                                                - TruePositives [Final Instantiation Required]
-                                                                                - Accuracy [Final Instantiation Required]
-                                                                                - LogLikelihood
-                                                                                      Possible Subclasses:
-                                                                                        - ParzenWindow [Final Instantiation Required]
-                                                                                - MeanSquaredError [Final Instantiation Required]
-                                                                                - Precision [Final Instantiation Required]
-                                                                                - Recall [Final Instantiation Required]
-                                                                      Possible Subclasses:
-                                                                        - EvaluationResult [Final Instantiation Required]
-                                                                        - ConditionalEvaluation [Final Instantiation Required]
-                                                                - Class: Dataset
-                                                                  Data Properties:
-                                                                    - data_description (atomic)
-                                                                    - data_doi (atomic)
-                                                                    - data_location (atomic)
-                                                                    - data_sample_dimensionality (atomic)
-                                                                    - data_sample_features (atomic)
-                                                                    - data_samples (atomic)
-                                                                    - is_transient_dataset (atomic)
-                                                                  Dataset Properties:
-                                                                        - Class: Labelset [Final Instantiation Required]
-                                                                          Data Properties:
-                                                                            - labels_count (atomic)
-                                                                            - labels_dtype (atomic)
-                                                                          Labelset Properties:
-                                                                        - Class: DataCharacterization
-                                                                          DataCharacterization Properties:
-                                                                              Possible Subclasses:
-                                                                                - Science
-                                                                                      Possible Subclasses:
-                                                                                        - Physics
-                                                                                              Possible Subclasses:
-                                                                                                - Astronomy [Final Instantiation Required]
-                                                                                                - Climate [Final Instantiation Required]
-                                                                                                - Weather [Final Instantiation Required]
-                                                                                        - Biology [Final Instantiation Required]
-                                                                                - Urban
-                                                                                      Possible Subclasses:
-                                                                                        - Buildings [Final Instantiation Required]
-                                                                                        - Vehicles [Final Instantiation Required]
-                                                                                - People
-                                                                                      Possible Subclasses:
-                                                                                        - Faces [Final Instantiation Required]
-                                                                                - Nature
-                                                                                      Possible Subclasses:
-                                                                                        - Fauna [Final Instantiation Required]
-                                                                                        - Flora [Final Instantiation Required]
-                                                                                        - Scenery [Final Instantiation Required]
-                                                                                - NumbersAndLetters
-                                                                                      Possible Subclasses:
-                                                                                        - NumericalDigits
-                                                                                              Possible Subclasses:
-                                                                                                - HandWrittenDigits [Final Instantiation Required]
-                                                                                        - LettersDigits [Final Instantiation Required]
-                                                                        - Class: DataType
-                                                                          DataType Properties:
-                                                                              Possible Subclasses:
-                                                                                - Image [Final Instantiation Required]
-                                                                                - MultiDimensionalCube [Final Instantiation Required]
-                                                                                - Text
-                                                                                      Possible Subclasses:
-                                                                                        - SemistructuredText [Final Instantiation Required]
-                                                                                        - UnstructuredText [Final Instantiation Required]
-                                                                                - Video [Final Instantiation Required]
-                                                                      Possible Subclasses:
-                                                                        - RandomNoiseDataset [Final Instantiation Required]
-                                                                        - Labelset [Final Instantiation Required]
-                                                        - Class: TrainingOptimizer
-                                                          Data Properties:
-                                                            - learning_rate (atomic)
-                                                            - momentum (atomic)
-                                                          TrainingOptimizer Properties:
-                                                              Possible Subclasses:
-                                                                - AdaDelta [Final Instantiation Required]
-                                                                - AdaGrad [Final Instantiation Required]
-                                                                - AdaGradDA [Final Instantiation Required]
-                                                                - Adam [Final Instantiation Required]
-                                                                - Ftrl [Final Instantiation Required]
-                                                                - GradientDescent [Final Instantiation Required]
-                                                                - Momentum [Final Instantiation Required]
-                                                                - ProximalAdaGrad [Final Instantiation Required]
-                                                                - ProximalGradientDescent [Final Instantiation Required]
-                                                                - RMSProp [Final Instantiation Required]
-                                                      Possible Subclasses:
-                                                        - TrainingSingle [Final Instantiation Required]
-                                                        - TrainingSingleForwardOnly [Final Instantiation Required]
-                                              Possible Subclasses:
-                                                - InOutLayer
-                                                - HiddenLayer
-                                                      Possible Subclasses:
-                                                        - ActivationLayer
-                                                              Possible Subclasses:
-                                                                - RNNLayer
-                                                                      Possible Subclasses:
-                                                                        - GRULayer [Final Instantiation Required]
-                                                                        - LSTMLayer [Final Instantiation Required]
-                                                                - ConvolutionLayer
-                                                                      Possible Subclasses:
-                                                                        - ConvolutionLayer
-                                                                        - SeparableConvolutionLayer [Final Instantiation Required]
-                                                                - DeconvolutionLayer
-                                                                      Possible Subclasses:
-                                                                        - SeparableDeconvolutionLayer [Final Instantiation Required]
-                                                                - FullyConnectedLayer [Final Instantiation Required]
-                                                        - AggregationLayer
-                                                              Possible Subclasses:
-                                                                - BidirectionalRNNLayer [Final Instantiation Required]
-                                                                - ConcatLayer [Final Instantiation Required]
-                                                                - MultiplyLayer [Final Instantiation Required]
-                                                                - PoolingLayer [Final Instantiation Required]
-                                                                - SumLayer [Final Instantiation Required]
-                                                                - UpscaleLayer [Final Instantiation Required]
-                                                        - ModificationLayer
-                                                              Possible Subclasses:
-                                                                - NoiseLayer [Final Instantiation Required]
-                                                                - DropoutLayer [Final Instantiation Required]
-                                                                - BatchNormLayer [Final Instantiation Required]
-                                                                - FlattenLayer [Final Instantiation Required]
-                                                        - SeparationLayer
-                                                              Possible Subclasses:
-                                                                - CloneLayer [Final Instantiation Required]
-                                                                - SplitLayer [Final Instantiation Required]
-                        - Class: TrainingSession [Final Instantiation Required]
-                          TrainingSession Properties:
-                                - Class: TrainingStep
-                                  TrainingStep Properties:
-                                        - Class: TrainingLoop [Final Instantiation Required]
-                                          TrainingLoop Properties:
-                                                - Class: StopCondition
-                                                  StopCondition Properties:
-                                                      Possible Subclasses:
-                                                        - IterateUntil [Final Instantiation Required]
-                                                        - IterateFor [Final Instantiation Required]
+                                                                        - TrainingLoop [Final Instantiation Required]
+                                                                        - NetworkSpecific
+                                                                  TrainingStep Properties:
+                - Class: TaskCharacterization
+                      Possible Subclasses:
+                        - Adversarial [Final Instantiation Required]
+                        - Classification
+                              Possible Subclasses:
+                                - SemiSupervisedClassification [Final Instantiation Required]
+                                - SupervisedClassification [Final Instantiation Required]
+                        - Clustering [Final Instantiation Required]
+                        - Discrimination [Final Instantiation Required]
+                        - Generation [Final Instantiation Required]
+                        - Reconstruction [Final Instantiation Required]
+                        - Regression [Final Instantiation Required]
+                  TaskCharacterization Properties:
+                - Class: ObjectiveFunction
+                      Possible Subclasses:
+                        - MaxObjectiveFunction [Final Instantiation Required]
+                        - MinObjectiveFunction [Final Instantiation Required]
+                  ObjectiveFunction Properties:
+                        - Class: CostFunction [Final Instantiation Required]
+                          CostFunction Properties:
+                                - Class: LossFunction
                                       Possible Subclasses:
-                                        - TrainingLoop [Final Instantiation Required]
-                                        - NetworkSpecific
+                                        - BinaryCrossEntropy [Final Instantiation Required]
+                                        - CategoricalCrossEntropy [Final Instantiation Required]
+                                        - MSE [Final Instantiation Required]
+                                  LossFunction Properties:
+                                - Class: RegularizerFunction
+                                      Possible Subclasses:
+                                        - L1L2RegularizerFunction [Final Instantiation Required]
+                                        - L1RegularizerFunction [Final Instantiation Required]
+                                        - L2RegularizerFunction [Final Instantiation Required]
+                                  RegularizerFunction Properties:
