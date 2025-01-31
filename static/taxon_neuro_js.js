@@ -107,7 +107,10 @@ function gen_ont() {
         method: 'POST' })
     .then(data => {
         console.log(data);
+        console.log("before assignment: " , ontologyImage.src)
         ontologyImage.src = "/Automatic_Taxonomy_Construction_NNs/static/instance_graph.html?" + new Date().getTime(); // Force reload by appending timestamp
+        console.log("after assignment: " , ontologyImage.src)
+
         ontologyImage.style.display = 'block';
         //alert("IS THIS UNDEFINED");
     })
