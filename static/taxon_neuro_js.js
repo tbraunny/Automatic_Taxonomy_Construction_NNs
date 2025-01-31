@@ -107,7 +107,7 @@ function gen_ont() {
         method: 'POST' })
     .then(data => {
         console.log(data);
-        ontologyImage.src = ontologyImage.src + '?' + new Date().getTime(); // Force reload by appending timestamp
+        ontologyImage.src = '?' + new Date().getTime(); // Force reload by appending timestamp
         ontologyImage.style.display = 'block';
         //alert("IS THIS UNDEFINED");
     })
