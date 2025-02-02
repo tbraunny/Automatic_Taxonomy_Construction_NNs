@@ -121,7 +121,7 @@ def extract_filter_pdf_to_json(pdf_path: str, output_path: str):
     save_documents_to_json(filtered_docs, output_path)
 
 
-    # write_list_to_txt(filtered_docs, "wow.txt")
+    write_list_to_txt(filtered_docs, "wow.txt")
     
     # Example that doc -> json -> doc doesn't lose information
 
@@ -134,5 +134,5 @@ def extract_filter_pdf_to_json(pdf_path: str, output_path: str):
     
     print(f"Filtered PDF content processed and written to file: {output_path}")
 
-model_name = 'vgg16'
+model_name = 'alexnet'
 extract_filter_pdf_to_json(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/doc_{model_name}.json")

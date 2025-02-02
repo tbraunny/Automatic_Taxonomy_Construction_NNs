@@ -387,9 +387,13 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
     """
     if not issubclass(onto_class, Thing):
         raise ValueError("The provided class must be a subclass of owlready2.Thing")
+    
+    if not instance_name:
+        print("Warning: {onto_class} can't be instantiated without a name.")
+        return
 
-    # Create instance with optional name
-    instance = onto_class(instance_name) if instance_name else onto_class()
+    # Create instance with name
+    instance = onto_class(instance_name)
 
     # Assign additional properties if provided
     for key, value in properties.items():
