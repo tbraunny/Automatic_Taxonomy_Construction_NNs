@@ -1,158 +1,133 @@
-- Class: Network [Final Instantiation Required]
-        - Connected Class: TaskCharacterization
-            Subclasses of annett-o-0.1.TaskCharacterization:
-                - Subclass: Adversarial [Final Instantiation Required]
-                - Subclass: Classification
-                        - Subclass: SemiSupervisedClassification [Final Instantiation Required]
-                        - Subclass: SupervisedClassification [Final Instantiation Required]
-                - Subclass: Clustering [Final Instantiation Required]
-                - Subclass: Discrimination [Final Instantiation Required]
-                - Subclass: Generation [Final Instantiation Required]
-                - Subclass: Reconstruction [Final Instantiation Required]
-                - Subclass: Regression [Final Instantiation Required]
+- Class: Network
         - Connected Class: Layer
-            Data Properties:
-                - layer_num_units (atomic)
-            Subclasses of annett-o-0.1.Layer:
+                - Data Prop: layer_num_units (atomic)
                 - Subclass: InOutLayer
-                        - Subclass: InputLayer [Final Instantiation Required]
-                        - Subclass: OutputLayer [Final Instantiation Required]
+                        - Subclass: InputLayer
+                        - Subclass: OutputLayer
                 - Subclass: HiddenLayer
                         - Subclass: ActivationLayer
-                            Data Properties:
-                                - has_bias (atomic)
+                                - Data Prop: has_bias (atomic)
                                 - Connected Class: ActivationFunction
-                                    Subclasses of annett-o-0.1.ActivationFunction:
                                         - Subclass: NonDiff
-                                                - Subclass: Elu [Final Instantiation Required]
-                                                - Subclass: Relu [Final Instantiation Required]
-                                                - Subclass: Relu6 [Final Instantiation Required]
-                                        - Subclass: Linear [Final Instantiation Required]
+                                                - Subclass: Elu
+                                                - Subclass: Relu
+                                                - Subclass: Relu6
+                                        - Subclass: Linear
                                         - Subclass: Regularization
-                                                - Subclass: RandomDropOut [Final Instantiation Required]
+                                                - Subclass: RandomDropOut
                                         - Subclass: Smooth
-                                                - Subclass: Sigmoid [Final Instantiation Required]
-                                                - Subclass: SoftMax [Final Instantiation Required]
-                                                - Subclass: SoftPlus [Final Instantiation Required]
-                                                - Subclass: SoftSign [Final Instantiation Required]
-                                                - Subclass: Tanh [Final Instantiation Required]
+                                                - Subclass: Sigmoid
+                                                - Subclass: SoftMax
+                                                - Subclass: SoftPlus
+                                                - Subclass: SoftSign
+                                                - Subclass: Tanh
                                 - Subclass: RNNLayer
-                                    Data Properties:
-                                        - hasInitialState (atomic)
-                                        - sequence_length (atomic)
-                                        - Subclass: GRULayer [Final Instantiation Required]
-                                        - Subclass: LSTMLayer [Final Instantiation Required]
+                                        - Data Prop: hasInitialState (atomic)
+                                        - Data Prop: sequence_length (atomic)
+                                        - Subclass: GRULayer
+                                        - Subclass: LSTMLayer
                                 - Subclass: ConvolutionLayer
-                                        - Subclass: SeparableConvolutionLayer [Final Instantiation Required]
+                                        - Subclass: SeparableConvolutionLayer
                                 - Subclass: DeconvolutionLayer
-                                        - Subclass: SeparableDeconvolutionLayer [Final Instantiation Required]
-                                - Subclass: FullyConnectedLayer [Final Instantiation Required]
+                                        - Subclass: SeparableDeconvolutionLayer
+                                - Subclass: FullyConnectedLayer
                         - Subclass: AggregationLayer
-                                - Subclass: BidirectionalRNNLayer [Final Instantiation Required]
-                                - Subclass: ConcatLayer [Final Instantiation Required]
-                                - Subclass: MultiplyLayer [Final Instantiation Required]
-                                - Subclass: PoolingLayer [Final Instantiation Required]
-                                - Subclass: SumLayer [Final Instantiation Required]
-                                - Subclass: UpscaleLayer [Final Instantiation Required]
+                                - Subclass: BidirectionalRNNLayer
+                                - Subclass: ConcatLayer
+                                - Subclass: MultiplyLayer
+                                - Subclass: PoolingLayer
+                                - Subclass: SumLayer
+                                - Subclass: UpscaleLayer
                         - Subclass: ModificationLayer
-                                - Subclass: NoiseLayer [Final Instantiation Required]
+                                - Subclass: NoiseLayer
                                         - Connected Class: ProbabilityDistributionFunction
-                                            Subclasses of annett-o-0.1.ProbabilityDistributionFunction:
-                                                - Subclass: Exponential [Final Instantiation Required]
-                                                    Data Properties:
-                                                        - exponential_lambda (atomic)
-                                                - Subclass: Gaussian [Final Instantiation Required]
-                                                    Data Properties:
-                                                        - normal_mu (atomic)
-                                                        - normal_sigma (atomic)
-                                                - Subclass: Categorical [Final Instantiation Required]
-                                                - Subclass: Normal [Final Instantiation Required]
-                                                - Subclass: Uniform [Final Instantiation Required]
-                                - Subclass: DropoutLayer [Final Instantiation Required]
-                                    Data Properties:
-                                        - dropout_rate (atomic)
-                                - Subclass: BatchNormLayer [Final Instantiation Required]
-                                - Subclass: FlattenLayer [Final Instantiation Required]
+                                                - Subclass: Exponential
+                                                        - Data Prop: exponential_lambda (atomic)
+                                                - Subclass: Gaussian
+                                                        - Data Prop: normal_mu (atomic)
+                                                        - Data Prop: normal_sigma (atomic)
+                                                - Subclass: Categorical
+                                                - Subclass: Normal
+                                                - Subclass: Uniform
+                                - Subclass: DropoutLayer
+                                        - Data Prop: dropout_rate (atomic)
+                                - Subclass: BatchNormLayer
+                                - Subclass: FlattenLayer
                         - Subclass: SeparationLayer
-                                - Subclass: CloneLayer [Final Instantiation Required]
-                                - Subclass: SplitLayer [Final Instantiation Required]
+                                - Subclass: CloneLayer
+                                - Subclass: SplitLayer
         - Connected Class: ObjectiveFunction
-                - Connected Class: CostFunction [Final Instantiation Required]
-                        - Connected Class: LossFunction
-                            Subclasses of annett-o-0.1.LossFunction:
-                                - Subclass: BinaryCrossEntropy [Final Instantiation Required]
-                                - Subclass: CategoricalCrossEntropy [Final Instantiation Required]
-                                - Subclass: MSE [Final Instantiation Required]
+                - Connected Class: CostFunction
                         - Connected Class: RegularizerFunction
-                            Subclasses of annett-o-0.1.RegularizerFunction:
-                                - Subclass: L1L2RegularizerFunction [Final Instantiation Required]
-                                - Subclass: L1RegularizerFunction [Final Instantiation Required]
-                                - Subclass: L2RegularizerFunction [Final Instantiation Required]
-            Subclasses of annett-o-0.1.ObjectiveFunction:
-                - Subclass: MaxObjectiveFunction [Final Instantiation Required]
-                - Subclass: MinObjectiveFunction [Final Instantiation Required]
-- Class: TrainingStrategy [Final Instantiation Required]
-        - Connected Class: TrainingSession [Final Instantiation Required]
+                                - Subclass: L1L2RegularizerFunction
+                                - Subclass: L1RegularizerFunction
+                                - Subclass: L2RegularizerFunction
+                        - Connected Class: LossFunction
+                                - Subclass: BinaryCrossEntropy
+                                - Subclass: CategoricalCrossEntropy
+                                - Subclass: MSE
+                - Subclass: MaxObjectiveFunction
+                - Subclass: MinObjectiveFunction
+        - Connected Class: TaskCharacterization
+                - Subclass: Adversarial
+                - Subclass: Classification
+                        - Subclass: SemiSupervisedClassification
+                        - Subclass: SupervisedClassification
+                - Subclass: Clustering
+                - Subclass: Discrimination
+                - Subclass: Generation
+                - Subclass: Reconstruction
+                - Subclass: Regression
+- Class: TrainingStrategy
+        - Connected Class: TrainingSession
                 - Connected Class: TrainingStep
-                    Subclasses of annett-o-0.1.TrainingStep:
-                        - Subclass: TrainingLoop [Final Instantiation Required]
+                        - Subclass: TrainingLoop
                                 - Connected Class: StopCondition
-                                    Subclasses of annett-o-0.1.StopCondition:
-                                        - Subclass: IterateUntil [Final Instantiation Required]
-                                            Data Properties:
-                                                - condition_value (atomic)
-                                                - Connected Class: ConditionalEvaluation [Final Instantiation Required]
-                                        - Subclass: IterateFor [Final Instantiation Required]
-                                            Data Properties:
-                                                - num_of_iterations (atomic)
+                                        - Subclass: IterateUntil
+                                                - Data Prop: condition_value (atomic)
+                                                - Connected Class: ConditionalEvaluation
+                                        - Subclass: IterateFor
+                                                - Data Prop: num_of_iterations (atomic)
                         - Subclass: NetworkSpecific
-                                - Connected Class: TrainingOptimizer
-                                    Data Properties:
-                                        - learning_rate (atomic)
-                                        - momentum (atomic)
-                                    Subclasses of annett-o-0.1.TrainingOptimizer:
-                                        - Subclass: AdaDelta [Final Instantiation Required]
-                                        - Subclass: AdaGrad [Final Instantiation Required]
-                                        - Subclass: AdaGradDA [Final Instantiation Required]
-                                        - Subclass: Adam [Final Instantiation Required]
-                                        - Subclass: Ftrl [Final Instantiation Required]
-                                        - Subclass: GradientDescent [Final Instantiation Required]
-                                        - Subclass: Momentum [Final Instantiation Required]
-                                        - Subclass: ProximalAdaGrad [Final Instantiation Required]
-                                        - Subclass: ProximalGradientDescent [Final Instantiation Required]
-                                        - Subclass: RMSProp [Final Instantiation Required]
-                                - Connected Class: DatasetPipe [Final Instantiation Required]
+                                - Connected Class: DatasetPipe
                                         - Connected Class: Dataset
-                                            Data Properties:
-                                                - data_description (atomic)
-                                                - data_doi (atomic)
-                                                - data_location (atomic)
-                                                - data_sample_dimensionality (atomic)
-                                                - data_sample_features (atomic)
-                                                - data_samples (atomic)
-                                                - is_transient_dataset (atomic)
+                                                - Data Prop: data_description (atomic)
+                                                - Data Prop: data_doi (atomic)
+                                                - Data Prop: data_location (atomic)
+                                                - Data Prop: data_sample_dimensionality (atomic)
+                                                - Data Prop: data_sample_features (atomic)
+                                                - Data Prop: data_samples (atomic)
+                                                - Data Prop: is_transient_dataset (atomic)
+                                                - Connected Class: Labelset
+                                                        - Data Prop: labels_count (atomic)
+                                                        - Data Prop: labels_dtype (atomic)
                                                 - Connected Class: DataType
-                                                    Subclasses of annett-o-0.1.DataType:
-                                                        - Subclass: Image [Final Instantiation Required]
-                                                        - Subclass: MultiDimensionalCube [Final Instantiation Required]
+                                                        - Subclass: Image
+                                                        - Subclass: MultiDimensionalCube
                                                         - Subclass: Text
-                                                                - Subclass: SemistructuredText [Final Instantiation Required]
-                                                                - Subclass: UnstructuredText [Final Instantiation Required]
-                                                        - Subclass: Video [Final Instantiation Required]
-                                                - Connected Class: Labelset [Final Instantiation Required]
-                                                    Data Properties:
-                                                        - labels_count (atomic)
-                                                        - labels_dtype (atomic)
-                                            Subclasses of annett-o-0.1.Dataset:
-                                                - Subclass: RandomNoiseDataset [Final Instantiation Required]
-                                - Subclass: TrainingSingle [Final Instantiation Required]
-                                    Data Properties:
-                                        - batch_size (atomic)
-                                        - learning_rate_decay (atomic)
-                                        - learning_rate_decay_epochs (atomic)
-                                        - number_of_epochs (atomic)
-                                - Subclass: TrainingSingleForwardOnly [Final Instantiation Required]
-        - Connected Class: TrainedModel [Final Instantiation Required]
-                - Connected Class: TrainedWeights [Final Instantiation Required]
-                    Data Properties:
-                        - trained_weights_array (atomic)
+                                                                - Subclass: SemistructuredText
+                                                                - Subclass: UnstructuredText
+                                                        - Subclass: Video
+                                                - Subclass: RandomNoiseDataset
+                                - Connected Class: TrainingOptimizer
+                                        - Data Prop: learning_rate (atomic)
+                                        - Data Prop: momentum (atomic)
+                                        - Subclass: AdaDelta
+                                        - Subclass: AdaGrad
+                                        - Subclass: AdaGradDA
+                                        - Subclass: Adam
+                                        - Subclass: Ftrl
+                                        - Subclass: GradientDescent
+                                        - Subclass: Momentum
+                                        - Subclass: ProximalAdaGrad
+                                        - Subclass: ProximalGradientDescent
+                                        - Subclass: RMSProp
+                                - Subclass: TrainingSingle
+                                        - Data Prop: batch_size (atomic)
+                                        - Data Prop: learning_rate_decay (atomic)
+                                        - Data Prop: learning_rate_decay_epochs (atomic)
+                                        - Data Prop: number_of_epochs (atomic)
+                                - Subclass: TrainingSingleForwardOnly
+        - Connected Class: TrainedModel
+                - Connected Class: TrainedWeights
+                        - Data Prop: trained_weights_array (atomic)

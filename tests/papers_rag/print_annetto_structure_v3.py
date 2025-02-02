@@ -17,35 +17,32 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
 
         # If we've processed this class already, note it and return.
         if cls in processed_classes or cls.name in OMIT_CLASSES:
-            # file.write(f"{indent}- Connected Class: {cls.name} (already processed)\n")
             return
 
         processed_classes.add(cls)
         final_marker = " [Final Instantiation Required]" if requires_final_instantiation(cls) else ""
+        final_marker = ""
         file.write(f"{indent}- Connected Class: {cls.name}{final_marker}\n")
 
         # Data properties
         data_properties = get_class_data_properties(ontology, cls)
         if data_properties:
-            file.write(f"{indent}    Data Properties:\n")
+            # file.write(f"{indent}    Data Properties:\n")
             for prop in data_properties:
-                file.write(f"{indent}        - {prop.name} (atomic)\n")
+                file.write(f"{indent}        - Data Prop: {prop.name} (atomic)\n")
+
 
         # Process further object property connections
         connected = get_connected_classes(cls, ontology)
         if connected:
-            # file.write(f"{indent}    Connected Classes (via Obj Properties):\n")
             for conn in connected:
                 if isinstance(conn, ThingClass):
                     process_connected(conn, level + 2, processed_classes)
                 else:
                     file.write(f"{indent}        - {conn} (non-class connection?)\n")
 
-        # Optionally, if you want to see the subclass structure for a connected class,
-        # you can process its subclasses. (If not, comment out the following block.)
         subs = get_subclasses(cls)
         if subs:
-            file.write(f"{indent}    Subclasses of {cls}:\n")
             for sub in subs:
                 process_subclass(sub, level + 2, processed_classes)
 
@@ -58,14 +55,15 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
 
         processed_classes.add(subclass)
         final_marker = " [Final Instantiation Required]" if requires_final_instantiation(subclass) else ""
+        final_marker = ""
         file.write(f"{indent}- Subclass: {subclass.name}{final_marker}\n")
 
         # Data properties for the subclass
         data_properties = get_class_data_properties(ontology, subclass)
         if data_properties:
-            file.write(f"{indent}    Data Properties:\n")
+            # file.write(f"{indent}    Data Properties:\n")
             for prop in data_properties:
-                file.write(f"{indent}        - {prop.name} (atomic)\n")
+                file.write(f"{indent}        - Data Prop: {prop.name} (atomic)\n")
 
         # Process object property connections from the subclass
         connected_classes = get_connected_classes(subclass, ontology)
@@ -87,19 +85,20 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
         indent = "    " * level
 
         if cls in processed_classes or cls.name in OMIT_CLASSES:
-            # file.write(f"{indent}- Class: {cls.name} (already processed or omitted)\n")
             return
 
         processed_classes.add(cls)
         final_marker = " [Final Instantiation Required]" if requires_final_instantiation(cls) else ""
+        final_marker = ""
         file.write(f"{indent}- Class: {cls.name}{final_marker}\n")
 
         # Data Properties
         data_properties = get_class_data_properties(ontology, cls)
         if data_properties:
-            file.write(f"{indent}    Data Properties:\n")
+            # file.write(f"{indent}    Data Properties:\n")
             for prop in data_properties:
-                file.write(f"{indent}        - {prop.name} (atomic)\n")
+                file.write(f"{indent}        - Data Prop: {prop.name} (atomic)\n")
+
 
         # Process object property connections (using the same global processed set)
         connected_classes = get_connected_classes(cls, ontology)
