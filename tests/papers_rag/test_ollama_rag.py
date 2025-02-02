@@ -160,7 +160,7 @@ split_docs = chunk_document_preserving_header(docs)
 embed_and_store_chunks(split_docs, collection)
 
 # Retrieve relevant chunks for a prompt
-prompt = "Describe the methodology used in the research to reduce overfitting, including any data augmentation techniques or regularization strategies."
+prompt = "What is the las"
 max_chunks = 10
 token_budget = 1024
 relevant_chunks = retrieve_relevant_chunks_within_token_budget(prompt, collection, max_chunks=max_chunks, token_budget=token_budget)

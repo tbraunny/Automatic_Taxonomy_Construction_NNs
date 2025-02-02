@@ -5,11 +5,6 @@ import warnings
 def load_ontology(ontology_path):
     return get_ontology(ontology_path).load()
 
-# # Used for script writing and debugging
-# from utils.constants import Constants as C
-# onto = load_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}")
-
-
 """ 1) Class Functions """
 
 def get_class_parents(cls: ThingClass) -> list:
@@ -378,6 +373,32 @@ def print_instantiated_classes_and_properties(ontology: Ontology):
                     values_str = str(values)
                 print(f"  Property: {prop.name}, Values: {values_str}")
         print("-" * 40)
+
+# Create Instances
+
+def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties):
+    """
+    Creates an instance of a given class.
+
+    :param onto_class: The class to instantiate.
+    :param instance_name: Name of the new instance.
+    :param properties: (Optional) Additional properties to set (as keyword arguments).
+    :return: The created instance.
+    """
+    if not issubclass(onto_class, Thing):
+        raise ValueError("The provided class must be a subclass of owlready2.Thing")
+
+    # Create instance with optional name
+    instance = onto_class(instance_name) if instance_name else onto_class()
+
+    # Assign additional properties if provided
+    for key, value in properties.items():
+        if hasattr(instance, key):
+            setattr(instance, key, value)
+        else:
+            print(f"Warning: {onto_class.__name__} has no property '{key}'")
+
+    return instance
 
 def list_owl_classes(onto: Ontology):
     # List all classes

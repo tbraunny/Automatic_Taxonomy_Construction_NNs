@@ -15,7 +15,7 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
     """
     with open(file_path, 'w') as file:
 
-        def get_final_marker(cls: ThingClass) -> str:
+        def _get_final_marker(cls: ThingClass) -> str:
             """Return marker flags based on instantiation requirements."""
             marker = ""
             if requires_final_instantiation(cls):
@@ -24,14 +24,14 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
                 marker += "<IS>"
             return marker
 
-        def write_data_properties(indent: str, cls: ThingClass):
+        def _write_data_properties(indent: str, cls: ThingClass):
             """Write all data properties of a class, if any."""
             props = get_class_data_properties(ontology, cls)
             if props:
                 for prop in props:
                     file.write(f"{indent}        - Data Prop: {prop.name} (atomic)\n")
 
-        def process_entity(cls: ThingClass, label: str, level: int, processed_classes: set):
+        def _process_entity(cls: ThingClass, label: str, level: int, processed_classes: set):
             """
             Process an entity (class, connected class, or subclass) by writing its
             header, its data properties, and then recursively processing its connected
@@ -44,15 +44,15 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
                 return
 
             processed_classes.add(cls)
-            file.write(f"{indent}- {label}: {cls.name}{get_final_marker(cls)}\n")
-            write_data_properties(indent, cls)
+            file.write(f"{indent}- {label}: {cls.name}{_get_final_marker(cls)}\n")
+            _write_data_properties(indent, cls)
 
             # Process connected classes via object properties.
             connected = get_connected_classes(cls, ontology)
             if connected:
                 for conn in connected:
                     if isinstance(conn, ThingClass):
-                        process_entity(conn, "Connected Class", level + 2, processed_classes)
+                        _process_entity(conn, "Connected Class", level + 2, processed_classes)
                     else:
                         file.write(f"{indent}        - {conn} (non-class connection?)\n")
 
@@ -60,7 +60,7 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
             subs = get_subclasses(cls)
             if subs:
                 for sub in subs:
-                    process_entity(sub, "Subclass", level + 2, processed_classes)
+                    _process_entity(sub, "Subclass", level + 2, processed_classes)
 
         # Check for the required key class.
         if not hasattr(ontology, 'ANNConfiguration'):
@@ -71,9 +71,9 @@ def write_ontology_structure_to_file(ontology: Ontology, file_path: str):
 
         # Process the top-level classes.
         if hasattr(ontology, "Network"):
-            process_entity(ontology.Network, "Class", 0, processed_classes)
+            _process_entity(ontology.Network, "Class", 0, processed_classes)
         if hasattr(ontology, "TrainingStrategy"):
-            process_entity(ontology.TrainingStrategy, "Class", 0, processed_classes)
+            _process_entity(ontology.TrainingStrategy, "Class", 0, processed_classes)
 
         print("Ontology structure written successfully.")
 
