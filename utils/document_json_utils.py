@@ -20,16 +20,14 @@ def save_documents_to_json(documents: list, output_path: str):
         json.dump(json_data, f, indent=4, ensure_ascii=False)
 
     print(f"Documents saved successfully to {output_path}")
-
-def get_class_parent(cls: ThingClass) -> list:
-    """
-    Retrieves the direct parent classes of a given ontology class.
     
-    :param cls: The ontology class (ThingClass) for which to find direct parents.
-    :return: A list of direct parent classes, excluding any restrictions.
+def load_documents_from_json(input_path: str) -> list:
     """
-    return [parent for parent in cls.is_a if isinstance(parent, ThingClass)]
-
+    Loads a list of Document objects from a JSON file.
+    
+    :param input_path: Path to the JSON file.
+    :return: List of reconstructed Document objects.
+    """
     with open(input_path, "r", encoding="utf-8") as f:
         json_data = json.load(f)
 
