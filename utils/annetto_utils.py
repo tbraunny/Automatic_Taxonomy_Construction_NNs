@@ -27,8 +27,8 @@ def subclasses_requires_final_instantiation(cls: ThingClass) -> bool:
     subclasses = list(cls.subclasses())  # Get direct subclasses
 
     if not subclasses:  
-        return False  # If the class itself is a leaf, it doesn't need final instantiation.
+        return False  # If the class itself is a leaf
 
-    # Check if any direct subclasses are leaf classes (i.e., have no further subclasses)
+    # Check if any direct subclasses are leaf classes
 
     return any(not list(sub.subclasses()) for sub in subclasses)
