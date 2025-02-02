@@ -1,26 +1,28 @@
 - Class: ANNConfiguration [Final Instantiation Required]
-  ANNConfiguration Properties:
+  ANNConfiguration Obj Properties:
         - Class: Network [Final Instantiation Required]
-          Network Properties:
+          Network Obj Properties:
+                - Class: InputLayer [Final Instantiation Required]
+                  InputLayer Obj Properties:
                 - Class: NetworkSpecific
                       Possible Subclasses:
                         - TrainingSingle [Final Instantiation Required]
                         - TrainingSingleForwardOnly [Final Instantiation Required]
-                  NetworkSpecific Properties:
+                  NetworkSpecific Obj Properties:
                         - Class: DatasetPipe [Final Instantiation Required]
-                          DatasetPipe Properties:
+                          DatasetPipe Obj Properties:
                                 - Class: InOutLayer
                                       Possible Subclasses:
                                         - InputLayer [Final Instantiation Required]
                                         - OutputLayer [Final Instantiation Required]
-                                  InOutLayer Properties:
+                                  InOutLayer Obj Properties:
                                 - Class: NetworkEvaluation
                                   Data Properties:
                                     - eval_score (atomic)
                                       Possible Subclasses:
                                         - EvaluationResult [Final Instantiation Required]
                                         - ConditionalEvaluation [Final Instantiation Required]
-                                  NetworkEvaluation Properties:
+                                  NetworkEvaluation Obj Properties:
                                         - Class: Metric
                                               Possible Subclasses:
                                                 - TrueOrFalseExamples
@@ -40,7 +42,7 @@
                                                 - MeanSquaredError [Final Instantiation Required]
                                                 - Precision [Final Instantiation Required]
                                                 - Recall [Final Instantiation Required]
-                                          Metric Properties:
+                                          Metric Obj Properties:
                                 - Class: Dataset
                                   Data Properties:
                                     - data_description (atomic)
@@ -53,7 +55,7 @@
                                       Possible Subclasses:
                                         - RandomNoiseDataset [Final Instantiation Required]
                                         - Labelset [Final Instantiation Required]
-                                  Dataset Properties:
+                                  Dataset Obj Properties:
                                         - Class: DataCharacterization
                                               Possible Subclasses:
                                                 - Science
@@ -82,7 +84,7 @@
                                                               Possible Subclasses:
                                                                 - HandWrittenDigits [Final Instantiation Required]
                                                         - LettersDigits [Final Instantiation Required]
-                                          DataCharacterization Properties:
+                                          DataCharacterization Obj Properties:
                                         - Class: DataType
                                               Possible Subclasses:
                                                 - Image [Final Instantiation Required]
@@ -92,7 +94,7 @@
                                                         - SemistructuredText [Final Instantiation Required]
                                                         - UnstructuredText [Final Instantiation Required]
                                                 - Video [Final Instantiation Required]
-                                          DataType Properties:
+                                          DataType Obj Properties:
                         - Class: TrainingOptimizer
                           Data Properties:
                             - learning_rate (atomic)
@@ -108,7 +110,7 @@
                                 - ProximalAdaGrad [Final Instantiation Required]
                                 - ProximalGradientDescent [Final Instantiation Required]
                                 - RMSProp [Final Instantiation Required]
-                          TrainingOptimizer Properties:
+                          TrainingOptimizer Obj Properties:
                         - Class: Layer
                           Data Properties:
                             - layer_num_units (atomic)
@@ -148,22 +150,22 @@
                                               Possible Subclasses:
                                                 - CloneLayer [Final Instantiation Required]
                                                 - SplitLayer [Final Instantiation Required]
-                          Layer Properties:
+                          Layer Obj Properties:
                                 - Class: TrainedWeights [Final Instantiation Required]
                                   Data Properties:
                                     - trained_weights_array (atomic)
-                                  TrainedWeights Properties:
+                                  TrainedWeights Obj Properties:
                                         - Class: TrainedModel [Final Instantiation Required]
-                                          TrainedModel Properties:
+                                          TrainedModel Obj Properties:
                                                 - Class: TrainingStrategy [Final Instantiation Required]
-                                                  TrainingStrategy Properties:
+                                                  TrainingStrategy Obj Properties:
                                                         - Class: TrainingSession [Final Instantiation Required]
-                                                          TrainingSession Properties:
+                                                          TrainingSession Obj Properties:
                                                                 - Class: TrainingStep
                                                                       Possible Subclasses:
                                                                         - TrainingLoop [Final Instantiation Required]
                                                                         - NetworkSpecific
-                                                                  TrainingStep Properties:
+                                                                  TrainingStep Obj Properties:
                 - Class: TaskCharacterization
                       Possible Subclasses:
                         - Adversarial [Final Instantiation Required]
@@ -176,23 +178,23 @@
                         - Generation [Final Instantiation Required]
                         - Reconstruction [Final Instantiation Required]
                         - Regression [Final Instantiation Required]
-                  TaskCharacterization Properties:
+                  TaskCharacterization Obj Properties:
                 - Class: ObjectiveFunction
                       Possible Subclasses:
                         - MaxObjectiveFunction [Final Instantiation Required]
                         - MinObjectiveFunction [Final Instantiation Required]
-                  ObjectiveFunction Properties:
+                  ObjectiveFunction Obj Properties:
                         - Class: CostFunction [Final Instantiation Required]
-                          CostFunction Properties:
+                          CostFunction Obj Properties:
                                 - Class: LossFunction
                                       Possible Subclasses:
                                         - BinaryCrossEntropy [Final Instantiation Required]
                                         - CategoricalCrossEntropy [Final Instantiation Required]
                                         - MSE [Final Instantiation Required]
-                                  LossFunction Properties:
+                                  LossFunction Obj Properties:
                                 - Class: RegularizerFunction
                                       Possible Subclasses:
                                         - L1L2RegularizerFunction [Final Instantiation Required]
                                         - L1RegularizerFunction [Final Instantiation Required]
                                         - L2RegularizerFunction [Final Instantiation Required]
-                                  RegularizerFunction Properties:
+                                  RegularizerFunction Obj Properties:

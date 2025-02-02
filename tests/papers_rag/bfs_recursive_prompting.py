@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError
 
 from utils.constants import Constants as C
 from utils.owl.parse_annetto_structure import *
-from utils.owl.owl import *
+from utils.owl_utils import *
 
 
 class LLMResponse(BaseModel):
@@ -89,6 +89,12 @@ class OntologyTreeQuestioner:
 
         while queue:
             cls, parent_id = queue.pop(0)
+
+            omit_classes = ["DataCharacterization", "Metric"]
+
+            if cls.name in omit_classes:
+                print(f"Omitted class: {cls.name}")
+                continue
 
             if cls in visited_classes or cls is self.ontology.DataCharacterization:
                 continue
