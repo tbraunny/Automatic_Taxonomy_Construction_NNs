@@ -1,5 +1,5 @@
 from owlready2 import *
-from utils.owl.owl import *
+from utils.owl_utils import *
 from utils.constants import Constants as C
 
 

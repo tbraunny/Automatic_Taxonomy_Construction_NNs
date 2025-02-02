@@ -8,7 +8,7 @@ from utils.constants import Constants as C
 from tests.deprecated.llm_model import OllamaLLMModel
 from deprecated.conversational_tree import ConversationTree
 from utils.owl.parse_annetto_structure import *
-from utils.owl.owl import *
+from utils.owl_utils import *
 
 
 class LLMResponse(BaseModel):

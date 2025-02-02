@@ -37,6 +37,7 @@ def is_subclass(self, cls, parent_cls):
     """
     Determines whether a given class is a subclass of another class.
 
+    !!! Not sure if this is the correct logic !!!
     Args:
         cls: The class to check.
         parent_cls: The parent class to compare against.
@@ -54,25 +55,21 @@ def get_base_class(onto:Ontology):
 def get_connected_classes(cls, ontology):
     """
     Retrieves classes connected to the given class via object properties.
-
-    :param cls: The class for which to retrieve connected classes.
-    :param ontology: The ontology object.
-    :return: A list of connected classes.
     """
     connected_classes = set()
-
-    for prop in ontology.object_properties():
-        # Check if the domain of the property includes the class
-        if cls in prop.domain:
-            # Add the range classes to the connected classes
-            for range_cls in prop.range:
+    object_properties = [prop for prop in ontology.object_properties() if cls in prop.domain]
+    for prop in object_properties:
+        for range_cls in prop.range:
+            # Skip if the range is the same as cls
+            if range_cls == cls:
+                continue
+            if isinstance(range_cls, ThingClass):
                 connected_classes.add(range_cls)
-        # Also check if the class is in the range to get inverse properties
-        if cls in prop.range:
-            for domain_cls in prop.domain:
-                connected_classes.add(domain_cls)
+    connected_classes = list(connected_classes)
+    return connected_classes if connected_classes != [] else None
 
-    return list(connected_classes)
+
+
 
 
 def get_subclasses(cls):
