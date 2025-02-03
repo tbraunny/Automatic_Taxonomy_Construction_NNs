@@ -3,6 +3,11 @@ import json
 import glob
 import os
 
+"""
+Old implementation, served to convert relevant lines of code into a JSON format.
+
+DEPRECATED
+"""
 class CodeProcessor(ast.NodeVisitor):
     def __init__(self, code , filepath): # initialize lists
         self.metadata = []
