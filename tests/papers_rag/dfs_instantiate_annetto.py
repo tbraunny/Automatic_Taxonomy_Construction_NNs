@@ -10,6 +10,11 @@ from utils.llm_service import init_engine, query_llm
 
 OMIT_CLASSES = ["DataCharacterization", "Regularization"]
 
+Y_N_CLASSES = set(["DataCharacterization", "Regularization"])
+
+
+
+
 # from pydantic import BaseModel, ValidationError
 # from typing import List
 # class LLMResponse(BaseModel):
@@ -75,7 +80,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
         pass
 
     def _query_llm(instructions, prompt)-> str:
-        return "Convolutional Network"
+        return ["Convolutional Network 1", "Fully Con 3"]
     
     def _get_cls_prompt(cls:ThingClass) -> str:
         """Given a class, get an associated llm prompt for it to be instantiated"""
