@@ -378,6 +378,7 @@ def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str
 
 if __name__ == "__main__":
     json_file_path = "data/alexnet/doc_alexnet.json"
+    # json_file_path = "data/resnet/doc_resnet.json"
     engine = init_engine(
         json_file_path,
         collection_name="nn_docs",
@@ -387,11 +388,12 @@ if __name__ == "__main__":
 
     # Example queries.
     queries = [
-        ("What is the number of parameters in the first convolutional layer?", 512),
-        ("What activation function is used on the second fully-connected layer, if any?", 512),
-        ("""List the modification layers applied to the first convolutional layer, if any. 
-            Modification layers are integral components in neural network architectures that purposefully alter the data flow to optimize the learning process, manage complexity, and enhance robustness (e.g., Noise layers (Gaussian), Batch Normalization layers, flatten layers, separation layers (Clone or split layers)).""", 512),
-        ("What is the name of the dataset(s) used for this model?", 512)
+        ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modifiction and activationw layers""", 1024)
+        # ("What is the number of parameters in the first convolutional layer?", 512),
+        # ("What activation function is used on the second fully-connected layer, if any?", 512),
+        # ("""List the modification layers applied to the first convolutional layer, if any. 
+        #     Modification layers are integral components in neural network architectures that purposefully alter the data flow to optimize the learning process, manage complexity, and enhance robustness (e.g., Noise layers (Gaussian), Batch Normalization layers, flatten layers, separation layers (Clone or split layers)).""", 512),
+        # ("What is the name of the dataset(s) used for this model?", 512)
     ]
 
     for idx, (q, budget) in enumerate(queries, start=1):
