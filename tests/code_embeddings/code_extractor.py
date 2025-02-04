@@ -77,7 +77,7 @@ def process_code_file(filepath, count):
     processor = CodeProcessor(code)
     processor.visit(tree)
 
-    output_file = filepath.replace(".py", f"{count}_code.json")
+    output_file = filepath.replace(".py", f"_{count}_code.json")
     with open(output_file, "w") as json_file:
         json.dump(processor.parse_code() , json_file , indent=3)
     

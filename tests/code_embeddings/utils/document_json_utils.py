@@ -31,6 +31,12 @@ def load_documents_from_json(input_path: str) -> list:
     with open(input_path, "r", encoding="utf-8") as f:
         json_data = json.load(f)
 
+    with open(input_path, "r", encoding="utf-8") as f:
+            json_data = json.load(f)
+
+            print(type(json_data))  # Should be a list
+            print(json_data[:5])    # Print first 5 items (if it's a list)
+
     documents = [
         Document(page_content=doc["page_content"], metadata=doc["metadata"])
         for doc in json_data
