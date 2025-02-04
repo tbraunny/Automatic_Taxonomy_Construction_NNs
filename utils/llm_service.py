@@ -27,6 +27,7 @@ import chromadb
 
 from langchain_core.documents.base import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from utils.doc_chunker import semantically_chunk_documents
 from utils.document_json_utils import load_documents_from_json
 
 # Configure logging.
@@ -113,7 +114,7 @@ class LLMQueryEngine:
                 new_doc = Document(page_content=chunk_text,
                                    metadata={"section_header": header})
                 chunked_docs.append(new_doc)
-        return chunked_docs
+        return semantically_chunk_documents(documents)
 
     def _embed_and_store_chunks(self, documents):
         """
