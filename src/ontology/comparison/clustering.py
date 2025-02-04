@@ -2,17 +2,6 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage
 import owlready2
 
-def makeHierarchy(distancematrix,names):
-
-
-    #plt.figure(figsize=(10, 5))
-    #model_names = models#['mistral','phi','llama','llama2','gpt2']
-    #dendrogram(linkage_matrix_nn, labels=[f"{names[i]}" for i in range(len(names))])
-    #plt.title(f"Dendrogram of Agglomerative Clustering with Precomputed Distance Matrix")
-    #plt.xlabel("Sample Index")
-    #plt.ylabel("Distance")
-    #plt.show()
-    return linkage_matrix_nn
 
 def makeHierarchy(filename, linkage_matrix, names, classes={}):
 
