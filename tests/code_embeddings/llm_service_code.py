@@ -69,7 +69,7 @@ class LLMQueryEngine:
 
     def __init__(self,
                  json_file_path: str,
-                 collection_name: str = "nn_docs",
+                 collection_name: str = "nn_code",
                  chunk_size: int = 1000,
                  chunk_overlap: int = 200,
                  embedding_model: str = "bge-m3",
@@ -107,28 +107,12 @@ class LLMQueryEngine:
         chunked_docs = []
         for doc in documents:
             original_metadata = doc.metadata.copy() if doc.metadata else {}
-            classes = original_metadata.get("classes", [])
-            functions = original_metadata.get("functions" , [])
-            
-            for cls in classes:
-                class_name = cls["name"]
-                class_chunk = f"Class: {class_name}\n"
-                for method_name, details in cls["methods"].items():
-                    params = ", ".join(details["parameters"])
-                    class_chunk += f"  - Method: {method_name}({params})\n"
-            
-                chunked_docs.append(Document(page_content=class_chunk, 
-                                         metadata={"type": "class", "name": class_name}))
-
-        # Create chunks for each function
-        for func in functions:
-            func_name = func["name"]
-            params = ", ".join(func["parameters"])
-            func_chunk = f"Function: {func_name}({params})\n{func['body']}"
-
-            chunked_docs.append(Document(page_content=func_chunk, 
-                                         metadata={"type": "function", "name": func_name}))
-
+            header = original_metadata.get("section_header", "No Header")
+            chunks = text_splitter.split_text(doc.page_content)
+            for chunk_text in chunks:
+                new_doc = Document(page_content=chunk_text,
+                                   metadata={"section_header": header})
+                chunked_docs.append(new_doc)
         return chunked_docs
 
     def _embed_and_store_chunks(self, documents):
@@ -137,12 +121,10 @@ class LLMQueryEngine:
         """
         for i, doc in enumerate(documents):
             try:
-                # Use a code-aware embedding model
-                response = ollama.embeddings(model="mistral", prompt=doc.page_content)  # Replace with "codebert-base" if needed
+                response = ollama.embeddings(model=self.embedding_model, prompt=doc.page_content)
                 embedding = response.get("embedding")
-                
                 if embedding:
-                    doc_id = f"{doc.metadata['file_name']}_{doc.metadata['type']}_{doc.metadata['name']}"
+                    doc_id = f"chunk_{i}"
                     self.collection.add(
                         ids=[doc_id],
                         embeddings=[embedding],
@@ -151,7 +133,6 @@ class LLMQueryEngine:
                     )
                 else:
                     logger.error("Embedding failed for chunk %d", i)
-            
             except Exception as e:
                 logger.exception("Error embedding chunk %d: %s", i, str(e))
 
@@ -209,7 +190,7 @@ class LLMQueryEngine:
                 f"Text: {chunk_content}\n"
             )
             # Using a smaller model for scoring (adjust as needed).
-            response = ollama.generate(model=self.relevance_generation_model, prompt=prompt)
+            response = ollama.generate(model=self.relevance_generation_model, prompt=prompt , options={"num_ctx":1500})
             score_text = response.get("response", "").strip()
             logger.info("Raw relevance score response: %s", score_text)
 
@@ -287,7 +268,7 @@ class LLMQueryEngine:
             "List additional keywords or phrases (comma-separated) that could be used to expand the search:"
         )
         try:
-            expansion_response = ollama.generate(model=self.generation_model, prompt=expansion_prompt)
+            expansion_response = ollama.generate(model=self.generation_model, prompt=expansion_prompt , options={"num_ctx":1500})
             keywords = expansion_response.get("response", "").strip()
             logger.info("Iterative expansion keywords: %s", keywords)
         except Exception as e:
@@ -323,7 +304,7 @@ class LLMQueryEngine:
         full_prompt = get_llm_json_instructions(query, evidence_blocks)
         logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
-            response = ollama.generate(model=self.generation_model, prompt=full_prompt)
+            response = ollama.generate(model=self.generation_model, prompt=full_prompt , options={"num_ctx":1500})
             generated_text = response.get("response", "No response generated.").strip()
             logger.info("Raw generated response: %s", generated_text)
             # Expect the last non-empty line to be JSON.
@@ -366,7 +347,7 @@ class LLMQueryEngine:
         # Step 4: Iteratively expand context if necessary.
         expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
         # Step 5: Generate the final response.
-        return self.generate_response(query, expanded_context)
+        return self.generate_response(query, expanded_context , options={"num_ctx":1500})
 
 
 # Singleton instance for the engine.
@@ -398,10 +379,10 @@ def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str
 if __name__ == "__main__":
     # json_file_path = "data/alexnet/doc_alexnet.json"
     # json_file_path = "data/resnet/doc_resnet.json"
-    json_file_path = "data/alexnet/alexnet_0_code.json"
+    json_file_path = "data/alexnet/alexnet_code0.json"
     engine = init_engine(
         json_file_path,
-        collection_name="nn_docs",
+        collection_name="nn_code",
         chunk_size=1000,
         chunk_overlap=200
     )
