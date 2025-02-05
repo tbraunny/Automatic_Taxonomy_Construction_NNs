@@ -4,13 +4,9 @@ import networkx as nx
 import ollama
 import chromadb
 
-from langchain_core.documents.base import Document
 from utils.document_json_utils import load_documents_from_json
 from utils.doc_chunker import semantically_chunk_documents
 
-# ------------------------
-# VECTOR RETRIEVAL FUNCTIONS
-# ------------------------
 def embed_and_store_chunks(documents, collection):
     """
     Embed and store chunks in the vector database.
@@ -84,9 +80,6 @@ def retrieve_relevant_chunks(prompt, collection, max_chunks=30, token_budget=204
         return []
 
 
-# ------------------------
-# GRAPH RETRIEVAL FUNCTIONS
-# ------------------------
 def build_graph_from_documents(documents):
     """
     Build a directed graph representing the neural network from the code.
@@ -174,7 +167,7 @@ def generate_optimized_response(prompt, vector_context, graph_context):
         response = ollama.generate(
             model="deepseek-r1:32b",
             prompt=instructions,
-            options={"num_ctx": 1500},
+            options={"num_ctx": 3000},
         )
         return response.get('response', "No response generated.")
     except Exception as e:
@@ -182,29 +175,20 @@ def generate_optimized_response(prompt, vector_context, graph_context):
         return "Error in response generation."
 
 
-# ------------------------
-# MAIN PIPELINE
-# ------------------------
 def main():
-    # Initialize ChromaDB client and create (or get) a collection.
     client = chromadb.Client()
     collection = client.create_collection(name="file_docs")
     
-    # Specify the JSON file path containing Document objects.
-    # (Uncomment one of the following paths as needed.)
-    # json_file_path = "data/alexnet/doc_alexnet.json"
-    json_file_path = "data/resnet/doc_resnet.json"
+    json_file_path = "/home/richw/richie/Automatic_Taxonomy_Construction_NNs/data/alexnet/alexnet_code0.json"
     
     # Load documents from JSON.
     docs = load_documents_from_json(json_file_path)
     
-    # Optionally, split documents into smaller semantically coherent chunks.
     chunked_docs = semantically_chunk_documents(docs)
     
-    # Embed and store the document chunks in the vector DB.
     embed_and_store_chunks(chunked_docs, collection)
     
-    # Build a graph representation from the full documents (or the code-specific documents).
+    # Build a graph representation from the full documents
     graph = build_graph_from_documents(docs)
     ordered_layers = get_ordered_layers_from_graph(graph)
     
