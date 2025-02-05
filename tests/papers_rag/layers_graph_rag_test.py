@@ -6,7 +6,6 @@ import chromadb
 
 from langchain_core.documents.base import Document
 from utils.document_json_utils import load_documents_from_json
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from utils.doc_chunker import semantically_chunk_documents
 
 # ------------------------
