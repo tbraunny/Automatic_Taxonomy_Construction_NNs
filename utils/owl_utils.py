@@ -7,6 +7,27 @@ def load_ontology(ontology_path):
 
 """ 1) Class Functions """
 
+def split_camel_case(names:list[str]) -> list:
+    if isinstance(names, str):  # If a single string is passed, convert it into a list
+        names = [names]
+
+    split_names = []
+    for name in names:
+        if re.fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
+            split_names.append(name)
+        else:
+            # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
+            name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
+
+            # Split when a sequence of uppercase letters is followed by a lowercase letter
+            # (e.g., "CNNModel" → "CNN Model")
+            name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
+
+            split_names.append(name)
+
+    return split_names
+        
+
 def get_class_parents(cls: ThingClass) -> list:
     """
     Retrieves the direct 'is a' parent classes of a given ontology class.

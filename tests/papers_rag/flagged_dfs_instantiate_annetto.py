@@ -5,6 +5,7 @@ from utils.owl_utils import (
     create_cls_instance
 )
 from utils.annetto_utils import requires_final_instantiation, subclasses_requires_final_instantiation
+import re
 
 from utils.llm_service import init_engine, query_llm
 
@@ -104,27 +105,57 @@ def dfs_instantiate_annetto(ontology: Ontology):
     def get_cls_definition(cls):
         return """An Activation Layer in a neural network applies an activation function to the input data, introducing non-linearity to the model, which enables the network to learn complex patterns. It transforms the weighted sum of inputs in a layer before passing it to the next layer."""
     
+    def split_camel_case(names:list) -> list:
+        if isinstance(names, str):  # If a single string is passed, convert it into a list
+            names = [names]
+
+        split_names = []
+        for name in names:
+            if re.fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
+                split_names.append(name)
+            else:
+                # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
+                name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
+
+                # Split when a sequence of uppercase letters is followed by a lowercase letter
+                # (e.g., "CNNModel" → "CNN Model")
+                name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
+
+                split_names.append(name)
+
+        return split_names
+        
     def _get_subclasses_instances(cls:ThingClass) -> Thing:
         # Get prompt for given class
 
         ### Assumptions ###
-        network_name = "Convolutional Network"
+        network_name = "ConvolutionalNetwork"
 
         # Gets list of subclasses
         subclasses = get_subclasses(cls)
         subclass_names = [subclass.name for subclass in subclasses]
 
+        print(subclass_names)
+
+        class_name = split_camel_case(cls.name)
+        network_name = split_camel_case(network_name)
+
+        print(class_name, network_name,subclass_names)
+
         class_definition = get_cls_definition(cls)
 
-
         prompt = (
-            f"""Name each instance of {cls.name} in the {network_name}."""
-            f"""The definition of {cls.name} is {class_definition}.\n"""
-            f"""Examples of a {cls.name} are {subclass_names}."""
+            f"""Name each instance of {class_name} in the {network_name}."""
+            f"""The definition of {class_name} is {class_definition}.\n"""
+            f"""Examples and the appropriate output format are: {subclass_names}.\n"""
         )
 
+        # from random import sample
+        # random_numbers = sample(range(1, 16), 3)
+        # formatted_names = ", ".join(f"{name}_{num}" for name, num in zip(subclass_names, random_numbers)) + ""
+
         # Query LLM on prompt
-        named_instances = query_llm(prompt)
+        # named_instances = query_llm(prompt)
 
         print("Named Instances", named_instances)
 
