@@ -1,3 +1,0 @@
-langchain-huggingface
-docling 
-docling-core
