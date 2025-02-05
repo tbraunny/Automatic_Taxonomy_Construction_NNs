@@ -6,6 +6,7 @@
 def semantically_chunk_documents(documents, ollama_model="bge-m3:latest") -> list:
     from langchain_experimental.text_splitter import SemanticChunker
     import ollama
+
     class OllamaEmbeddings:
         def embed_documents(self, texts):
             # texts is a list of strings

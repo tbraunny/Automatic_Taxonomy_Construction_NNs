@@ -100,6 +100,40 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
         # return list of instance objects
         return ["Convolutional Layer", "Fully-Connected Layer", "Attention Layer"]
+    
+    def get_cls_definition(cls):
+        return """An Activation Layer in a neural network applies an activation function to the input data, introducing non-linearity to the model, which enables the network to learn complex patterns. It transforms the weighted sum of inputs in a layer before passing it to the next layer."""
+    
+    def _get_subclasses_instances(cls:ThingClass) -> Thing:
+        # Get prompt for given class
+
+        ### Assumptions ###
+        network_name = "Convolutional Network"
+
+        # Gets list of subclasses
+        subclasses = get_subclasses(cls)
+        subclass_names = [subclass.name for subclass in subclasses]
+
+        class_definition = get_cls_definition(cls)
+
+
+        prompt = (
+            f"""Name each instance of {cls.name} in the {network_name}."""
+            f"""The definition of {cls.name} is {class_definition}.\n"""
+            f"""Examples of a {cls.name} are {subclass_names}."""
+        )
+
+        # Query LLM on prompt
+        named_instances = query_llm(prompt)
+
+        print("Named Instances", named_instances)
+
+        # Parse prompt into list of instance names
+
+        # list of instance objects = _instantiate_cls (instance_names)
+
+        # return list of instance objects
+        return ["Convolutional Layer", "Fully-Connected Layer", "Attention Layer"]
 
     
 
@@ -108,17 +142,22 @@ def dfs_instantiate_annetto(ontology: Ontology):
         Process an entity (class, connected class, or subclass)
         """
 
+        cls = ontology.ActivationLayer
+
         if ancestor_things is None:
             ancestor_things = []
 
-        # Skip if already processed or omitted.
+        # Skip if already processed, preventing loops
+        # Skip if in omit list
         if cls in processed_classes or cls.name in OMIT_CLASSES:
             return
 
         processed_classes.add(cls)
 
-        # Process for list of instance objects
-        instances = _get_cls_instances(cls)
+        if cls.name in PARENT_CLASSES:
+            # Process parent class by checking if any of its subclasses exists, and if not creating new class blah 
+            # Process parent class; Check if any
+            instances = _get_subclasses_instances(cls)
 
         if not instances:
             print(f"No instances for {cls}")
@@ -168,8 +207,8 @@ def dfs_instantiate_annetto(ontology: Ontology):
     # Process the top-level classes.
     if hasattr(ontology, "Network"):
         _process_entity(ontology.Network, "Class", processed_classes)
-    if hasattr(ontology, "TrainingStrategy"):
-        _process_entity(ontology.TrainingStrategy, "Class", processed_classes)
+    # if hasattr(ontology, "TrainingStrategy"):
+    #     _process_entity(ontology.TrainingStrategy, "Class", processed_classes)
 
     # Need to have instances of Network be in the range of object hasNetwork and root_instance be in the domain
     # Need to have instances of TrainingStrategy be in the range of object hasTrainingStrategy and root_instance be in the domain
