@@ -1,2 +1,5 @@
-langchain-ollama
-llama-index-llms-langchain
+ollama
+rank_bm25
+langchain-huggingface
+llama-index-core
+chromadb

@@ -108,6 +108,7 @@ def generate_optimized_response(prompt, context):
             "Below are several context sections. Please read each section carefully and integrate the relevant information to answer the query.\n\n"
             "### Evidence Blocks:\n"
             f"{full_context}\n\n"
+            "###"
             f"Query: {prompt}\n"
             "Do not abreviate answers."
             "Please provide an explanation first, and then on a new line, output a JSON array object that contains only one key 'answer' "

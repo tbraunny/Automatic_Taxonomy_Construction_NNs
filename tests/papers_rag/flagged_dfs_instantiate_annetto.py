@@ -7,7 +7,7 @@ from utils.owl_utils import (
 from utils.annetto_utils import requires_final_instantiation, subclasses_requires_final_instantiation
 import re
 
-from utils.llm_service import init_engine, query_llm
+from utils.ranked_llm_service import init_engine, query_llm
 
 OMIT_CLASSES = ["DataCharacterization", "Regularization"]
 
