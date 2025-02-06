@@ -2,52 +2,15 @@ from owlready2 import Ontology, ThingClass, Thing, get_ontology
 from utils.constants import Constants as C
 from utils.owl_utils import (
     get_class_data_properties, get_connected_classes, get_subclasses, 
-    create_cls_instance
+    create_cls_instance, split_camel_case
 )
 from utils.annetto_utils import requires_final_instantiation, subclasses_requires_final_instantiation
-import re
 
-from utils.ranked_llm_service import init_engine, query_llm
+from utils.llm_service import init_engine, query_llm
 
 OMIT_CLASSES = ["DataCharacterization", "Regularization"]
 
 PARENT_CLASSES = set(["LossFunction", "RegularizerFunction", "ActivationLayer", "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer"])
-
-# from pydantic import BaseModel, ValidationError
-# from typing import List
-# class LLMResponse(BaseModel):
-#     """
-#     Data model for validating LLM responses.
-#     Attributes:
-#         instance_names (List[str]): List of ontology class names extracted from the LLM's response.
-#     """
-#     instance_names: List[str]
-
-# def validate_response(response_json:str):
-#         """Validates and parses the JSON response."""
-#         response_json = response_json if isinstance(response_json, dict) else json.loads(response.strip())
-#         return LLMResponse.model_validate(response_json)
-
-# def extract_JSON(response: str) -> dict:
-#     """
-#     Extracts JSON data from a response string.
-
-#     Args:
-#         response (str): The LLM's response containing JSON data.
-
-#     Returns:
-#         dict: Extracted JSON object.
-
-#     Raises:
-#         ValueError: If no valid JSON block is found in the response.
-#     """
-#     try:
-#         json_match = re.search(r'```json\n({.*?})\n```', response, re.DOTALL)
-#         if json_match:
-#             return json.loads(json_match.group(1))
-#         raise ValueError("No valid JSON block found in the response.")
-#     except json.JSONDecodeError as e:
-#         raise ValueError(f"Error decoding JSON: {e}\nResponse: {response}")
 
 def dfs_instantiate_annetto(ontology: Ontology):
     """
@@ -104,26 +67,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
     
     def get_cls_definition(cls):
         return """An Activation Layer in a neural network applies an activation function to the input data, introducing non-linearity to the model, which enables the network to learn complex patterns. It transforms the weighted sum of inputs in a layer before passing it to the next layer."""
-    
-    def split_camel_case(names:list) -> list:
-        if isinstance(names, str):  # If a single string is passed, convert it into a list
-            names = [names]
-
-        split_names = []
-        for name in names:
-            if re.fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
-                split_names.append(name)
-            else:
-                # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
-                name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
-
-                # Split when a sequence of uppercase letters is followed by a lowercase letter
-                # (e.g., "CNNModel" → "CNN Model")
-                name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
-
-                split_names.append(name)
-
-        return split_names
         
     def _get_subclasses_instances(cls:ThingClass) -> Thing:
         # Get prompt for given class
@@ -243,7 +186,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
     # Need to have instances of Network be in the range of object hasNetwork and root_instance be in the domain
     # Need to have instances of TrainingStrategy be in the range of object hasTrainingStrategy and root_instance be in the domain
-
 
     print("An ANN has been instantiated.")
 

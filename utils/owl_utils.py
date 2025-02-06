@@ -7,7 +7,7 @@ def load_ontology(ontology_path):
 
 """ 1) Class Functions """
 
-def split_camel_case(names:list[str]) -> list:
+def split_camel_case(names:list) -> list:
     if isinstance(names, str):  # If a single string is passed, convert it into a list
         names = [names]
 
