@@ -1,10 +1,42 @@
 # Example usage:
-# from utils.doc_chunker import chunk_document
-# chunked_docs = chunk_document(documents)
+# from utils.doc_chunker import semantically_chunk_documents
+# chunked_docs = semantically_chunk_documents(documents)
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-def chunk_document(documents, chunk_size=1000, chunk_overlap=200) -> list:
+def semantically_chunk_documents(documents, ollama_model="bge-m3:latest") -> list:
+    from langchain_experimental.text_splitter import SemanticChunker
+    import ollama
+
+    class OllamaEmbeddings:
+        def embed_documents(self, texts):
+            # texts is a list of strings
+            return [
+                ollama.embeddings(model=ollama_model, prompt=text)["embedding"]
+                for text in texts
+            ]
+    """
+    Semantically splits a list of documents into smaller chunks.
+    
+    :param documents: A list of documents to be split.
+    :return: A list of chunked documents.
+    """
+    embedder = OllamaEmbeddings()
+    text_splitter = SemanticChunker(embedder)
+
+    # Split the documents into smaller chunks
+    chunked_docs = text_splitter.split_documents(documents)
+
+    # Maybe be better to convert to one text, split, then piece back to doc, probably not though
+    # texts = [doc.page_content for doc in documents]
+    # full_text = " ".join(texts)
+    # chunked_texts = text_splitter.split_text(full_text)
+    # chunked_docs = [Document(page_content=chunk) for chunk in split_texts]
+
+    return chunked_docs
+
+def recursively_chunk_documents(documents, chunk_size=1000, chunk_overlap=200) -> list:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+
     """
     Splits a list of documents into smaller chunks.
     
