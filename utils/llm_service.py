@@ -53,15 +53,21 @@ from utils.document_json_utils import load_documents_from_json
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen:32b")
+
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
-# Dogger
+# Configure logging based on the verbose flag
+# Read verbose flag from environment variable or set default to False
+# export VERBOSE=True
+VERBOSE = os.environ.get("VERBOSE", "False").lower() in ("true", "1", "yes")
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s %(message)s'
+    level=logging.INFO if VERBOSE else logging.WARNING,  
+    format="%(asctime)s %(levelname)s %(message)s"
 )
+
 logger = logging.getLogger(__name__)
 
 # Retry Decorator (with exponential backoff)
@@ -118,7 +124,7 @@ def summarize_chunk(chunk_content: str, max_tokens: int) -> str:
         "keeping the most important details:\n\n"
         f"{chunk_content}"
     )
-    response = ollama.generate(model=GENERATION_MODEL, prompt=summary_prompt)
+    response = ollama.generate(model=SUMMARIZATION_MODEL, prompt=summary_prompt)
     summary = response.get("response", "").strip()
     return summary if summary else chunk_content
 
@@ -458,15 +464,16 @@ class LLMQueryEngine:
                     result_obj = json.loads(json_str)
                     if "answer" in result_obj:
                         answer = result_obj["answer"]
-                        if isinstance(answer, list):
-                            return ", ".join(answer)
+                        # if isinstance(answer, list):
+                        #     return ", ".join(answer)
                         return answer
                 except json.JSONDecodeError:
                     continue
             raise ValueError("No valid JSON with 'answer' key found.")
         except Exception as e:
             logger.exception("Error generating final response: %s", str(e))
-            return "Error generating response."
+            raise
+            # return "Error generating response."
 
     def query(self, query: str, max_chunks: int = 15, token_budget: int = 1024) -> str:
         """
@@ -485,6 +492,7 @@ class LLMQueryEngine:
         expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
         answer = self.generate_response(query, expanded_context)
         elapsed_time = time.time() - start_time
+
         # Log instrumentation data.
         log_data = {
             "query": query,
@@ -497,13 +505,15 @@ class LLMQueryEngine:
 # Singleton instance
 _engine_instance = None
 
-def init_engine(json_file_path: str, **kwargs) -> LLMQueryEngine:
+def init_engine(doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     """
     Initialize the LLMQueryEngine (singleton).
+    
+    This function takes in json path that represents the list of document objects
     """
     global _engine_instance
     if _engine_instance is None:
-        _engine_instance = LLMQueryEngine(json_file_path, **kwargs)
+        _engine_instance = LLMQueryEngine(doc_json_file_path, **kwargs)
     return _engine_instance
 
 def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str:
