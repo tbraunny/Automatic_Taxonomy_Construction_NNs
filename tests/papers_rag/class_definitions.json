@@ -6,5 +6,6 @@
     "Smooth": "a category of functions that are continuously differentiable.",
     "AggregationLayer": "a layer that combines multiple inputs into a single output.",
     "NoiseLayer": "a layer that introduces randomness to the input for regularization or robustness.",
-    "Layer": "each layer in the specified network. Each activation and modification layer should be considered a seperate layer."
+    "Layer": "each layer in the specified network. Each activation and modification layer should be considered a seperate layer.",
+    "TaskCharacterization": "a description of the task that the model is designed to solve."
   }

@@ -10,7 +10,7 @@ from utils.json_utils import get_json_value
 
 OMIT_CLASSES = ["DataCharacterization", "Regularization"]
 
-PARENT_CLASSES = set(["Layer", "LossFunction", "RegularizerFunction", "ActivationLayer", "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer"])
+PARENT_CLASSES = set(["Layer", "LossFunction", "RegularizerFunction", "ActivationLayer", "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer", "TaskCharacterization", "RegularizerFunction", "LossFunction"])
 
 def dfs_instantiate_annetto(ontology: Ontology):
     """
@@ -58,6 +58,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
             f"""List each instance of {class_definition} in the {network_name} sequentially. """
             # f"""Include repeated occurrences, exactly as they appear in the network structure."""
             f"""Do not generalize or collapse duplicate types; instead, explicitly enumerate each instance.\n\n"""
+            f"""The network to be considered in the context is {network_name}. Do not consider context from another type of network.\n\n"""
             f"""Use the following examples and output format as a guide: {subclass_names}\n"""
             f"""For example, if the entity has multiple instances, they should be listed as """
             f"""Entity 1, Entity 2, etc.\n """
@@ -90,7 +91,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
         """ Returns a list of instances of the subclasses of a class"""
 
         # combine prompt with RAG context
-        prompt = _get_cls_prompt(cls, network_name)
+        prompt = _get_cls_prompt(cls, network_name,network_name)
 
         # Query LLM on prompt
         named_instances = _query_llm(prompt)
@@ -129,7 +130,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
         # ASSUMPTION: Process instantiations by premarked parent classes 
         if cls.name in PARENT_CLASSES:
-            instances = _get_subclasses_instances(cls)
+            instances = _get_subclasses_instances(cls, ancestor_things[0].name)
 
             # Connect instance to parent instance by object property
             for instance in instances if instances else []:
@@ -139,6 +140,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
         if cls.name == "Layer":
             return
 
+        # Fuck, need logic for if instances exist and dont exist
         if instances:
             for instance in instances:
 
@@ -148,20 +150,21 @@ def dfs_instantiate_annetto(ontology: Ontology):
                 # Process data properties into instance object (probably?).
                 _instantiate_data_property(cls, instance, new_ancestor_things)
 
-                # Process connected classes via object properties.
-                connected_classes = get_connected_classes(cls, ontology)
-                if connected_classes:
-                    for connected_class in connected_classes:
-                        if isinstance(connected_class, ThingClass):
-                            _process_entity(connected_class, "Connected Class", processed_classes, ancestor_things)
-                        else:
-                            print(f"################ Non-Class Connection? ################\n")
+                def recurse():
+                    # Process connected classes via object properties.
+                    connected_classes = get_connected_classes(cls, ontology)
+                    if connected_classes:
+                        for connected_class in connected_classes:
+                            if isinstance(connected_class, ThingClass):
+                                _process_entity(connected_class, "Connected Class", processed_classes, ancestor_things)
+                            else:
+                                print(f"################ Non-Class Connection? ################\n")
 
-                # Process subclasses.
-                subclasses = get_subclasses(cls)
-                if subclasses:
-                    for subclass in subclasses:
-                        _process_entity(subclass, "Subclass", processed_classes, ancestor_things)
+                    # Process subclasses.
+                    subclasses = get_subclasses(cls)
+                    if subclasses:
+                        for subclass in subclasses:
+                            _process_entity(subclass, "Subclass", processed_classes, ancestor_things)
         else:
             return
 
@@ -170,8 +173,8 @@ def dfs_instantiate_annetto(ontology: Ontology):
         print("Error: Class 'ANNConfiguration' not found in ontology.")
         return
     
-    json_file_path = "data/alexnet/doc_alexnet.json"
-    init_engine(json_file_path) # Initialize LLM engine
+    paper_json_doc_file_path = "data/alexnet/doc_alexnet.json"
+    init_engine(paper_json_doc_file_path) # Initialize LLM engine
 
     processed_classes = set()
 
