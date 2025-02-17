@@ -1,190 +1,230 @@
 from owlready2 import Ontology, ThingClass, Thing, get_ontology
 from utils.constants import Constants as C
 from utils.owl_utils import (
-    get_class_data_properties, get_connected_classes, get_subclasses, 
-    create_cls_instance, split_camel_case, create_cls_instance, assign_object_property_relationship
+    get_class_data_properties,
+    get_connected_classes,
+    get_subclasses,
+    create_cls_instance, assign_object_property_relationship
 )
-from utils.annetto_utils import requires_final_instantiation, subclasses_requires_final_instantiation
+from utils.annetto_utils import (
+    requires_final_instantiation,
+    subclasses_requires_final_instantiation
+)
 from utils.llm_service import init_engine, query_llm
-from utils.json_utils import get_json_value
 
-OMIT_CLASSES = ["DataCharacterization", "Regularization"]
+# Classes to omit from instantiation
+OMIT_CLASSES = set(["DataCharacterization", "Regularization"])
 
-PARENT_CLASSES = set(["Layer", "LossFunction", "RegularizerFunction", "ActivationLayer", "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer", "TaskCharacterization", "RegularizerFunction", "LossFunction"])
+# Special parent classes (where special rules apply)
+PARENT_CLASSES = set([
+    "LossFunction", "RegularizerFunction", "ActivationLayer", 
+    "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer"
+])
+
 
 def dfs_instantiate_annetto(ontology: Ontology):
     """
-    
+    Recursively instantiate an ANN ontology using branch-specific ancestor context.
+    Each branch (e.g., a GAN with 'Generator' and 'Discriminator') is processed separately,
+    and the LLM is provided with the appropriate context so that children (like Layer)
+    know which branch (Generator or Discriminator) they belong to.
     """
-    def _needs_instantiation(cls: ThingClass) -> bool:
-        """Checks if a class should be instantiated."""
+
+    # Determines if a class should be instantiated
+    def _needs_final_instantiation(cls: ThingClass) -> bool:
         return requires_final_instantiation(cls)
-    
+
+    # Determines if the subclasses of a class should be instantiated
     def _needs_subclass_instantiation(cls: ThingClass) -> bool:
-        """Checks if new subclasses should be explored."""
-        return subclasses_requires_final_instantiation(cls)
-
-    def _instantiate_data_property(cls:ThingClass, instance:Thing, ancestor_things: list[Thing]=None):
-        """Write all data properties of a class, if any."""
-        props = get_class_data_properties(ontology, cls)
-        if props:
-            for prop in props:
-                # file.write(f"{indent}        - Data Prop: {prop.name} (atomic)\n")
-
-                # Query llm if a value for this data property exists
-
-                # Add it to instance
-                pass
-
+        if cls.name in PARENT_CLASSES:
+            return True
+        # return subclasses_requires_final_instantiation(cls)
+    
+    # Instantiate a class instance
     def _instantiate_cls(cls:ThingClass, instance_name:str) -> Thing:
         instance = create_cls_instance(cls, instance_name)
+        print(f"Instantiated {cls.name} with name: {instance_name}")
         return instance
 
-    def _query_llm(prompt)-> str:
-        return query_llm(prompt)
-    
-    def _get_cls_prompt(cls:ThingClass, network_name:str) -> str:
-        """Given a class, get an associated llm prompt for it to be instantiated"""
+    # Link a child instance to its parent instance via object property
+    def _link_instances(parent_instance: Thing, child_instance: Thing):
+        assign_object_property_relationship(ontology, parent_instance, child_instance)
 
-        # Get definition of the parent class
-        class_definition = _get_cls_definition(cls)
+    # Query the LLM
+    def _query_llm(instructions:str, prompt:str) -> str:
+        full_prompt = f"{instructions}\n{prompt}"
+        try:
+            print(f"LLM query: {full_prompt}")
+            response = query_llm(full_prompt)
+            print(f"LLM query response: {response}")
+            return response.strip()
+        except Exception as e:
+            print(f"LLM query error: {e}")
+            return ""
 
-        subclasses = get_subclasses(cls) # Gets list of cls subclasses
-        subclass_names = [subclass.name for subclass in subclasses] # Get list of names of subclasses
-        subclass_names = split_camel_case(subclass_names) # Split camel case names of subclasses
-        subclass_names = ", ".join(subclass_names) # Join names of subclasses into a string
-
-        prompt = (
-            f"""List each instance of {class_definition} in the {network_name} sequentially. """
-            # f"""Include repeated occurrences, exactly as they appear in the network structure."""
-            f"""Do not generalize or collapse duplicate types; instead, explicitly enumerate each instance.\n\n"""
-            f"""The network to be considered in the context is {network_name}. Do not consider context from another type of network.\n\n"""
-            f"""Use the following examples and output format as a guide: {subclass_names}\n"""
-            f"""For example, if the entity has multiple instances, they should be listed as """
-            f"""Entity 1, Entity 2, etc.\n """
-            f"""Ensure the output maintains the correct order of entities as found in the context."""
+    # Build a prompt for a given class, including the branch (ancestor) context
+    def _get_cls_prompt(cls: ThingClass, llm_context: list[str]) -> str:
+        context_str = " > ".join(llm_context) if llm_context else "None"
+        return (
+            f"Current branch context: {context_str}.\n"
+            f"Considering the neural network described in the paper, list the names of the relevant instances "
+            f"for the class '{cls.name}'. If there are multiple, return a comma-separated list."
         )
-        return prompt
 
-    def _get_cls_instances(cls:ThingClass) -> Thing:
-        # Get prompt for given class
+    # Query the LLM for instance names for a class, using the current branch context
+    def _get_cls_instances(cls: ThingClass, llm_context: list[str]) -> list[str]:
+        prompt = _get_cls_prompt(cls, llm_context)
+        instructions = (
+            "Return a comma-separated list of instance names. "
+            "For example: 'Convolutional Layer, Fully-Connected Layer'."
+            f"\n\n{prompt}"
+        )
+        instance_names = _query_llm(instructions, prompt)
+        print(type(instance_names))
+        if not instance_names:
+            return []
+        # instance_names = [name.strip() for name in response.split(",") if name.strip()]
+        print(f"LLM returned instances for {cls.name} with context {llm_context}: {instance_names}")
+        return instance_names
 
-        # combine prompt with RAG context
+    # Instantiate data properties for an instance by querying the LLM
+    def _instantiate_data_property(cls: ThingClass, instance: Thing, llm_context: list[str]):
+        data_props = get_class_data_properties(ontology, cls)
+        for prop in data_props:
+            if not hasattr(instance, prop.name) or not getattr(instance, prop.name):
+                prompt = (
+                    f"Current branch context: {' > '.join(llm_context)}.\n"
+                    f"For the instance '{instance.name}' of class '{cls.name}', provide a concise value "
+                    f"for the data property '{prop.name}'."
+                )
+                instructions = "Return a single value."
+                value = _query_llm(instructions, prompt)
+                if value:
+                    try:
+                        if prop.python_type in [int, float]:
+                            converted_value = float(value) if prop.python_type == float else int(value)
+                            setattr(instance, prop.name, converted_value)
+                        else:
+                            setattr(instance, prop.name, value)
+                        print(f"Set data property '{prop.name}' of {instance.name} to {value}.")
+                    except Exception as e:
+                        print(f"Error converting value for {prop.name} on {instance.name}: {e}")
+                        setattr(instance, prop.name, value)
+                else:
+                    print(f"No value returned for data property '{prop.name}' of {instance.name}.")
 
-        # combine prompt with general llm instructions 
+    # Recursion for _process_entity to handle connected classes and subclasses
+    def _process_entity_recursion(cls, processed_classes, full_context: list[Thing],  llm_context: list[str]):
+                # Process connected classes via object properties.
+                connected_classes = get_connected_classes(cls, ontology)
+                if connected_classes:
+                    for conn_cls in connected_classes:
+                        if isinstance(conn_cls, ThingClass):
+                            _process_entity(conn_cls, processed_classes, full_context, llm_context)
+                        else:
+                            print(f"Encountered non-class connection from {cls.name}.")
 
-        # Query LLM on prompt
+                # Process subclasses if they need instantiation.
+                subclasses = get_subclasses(cls)
+                if subclasses:
+                    for subclass in subclasses:
+                        # if _needs_subclass_instantiation(subclass):
+                            _process_entity(subclass, processed_classes, full_context, llm_context)
+                        # else:
+                        #     print(f"Skipping subclass instantiation for {subclass.name}.")
 
-        # Validate llm response format (i.e. pydantic for json)
-
-        # Parse prompt into list of instance names
-
-        # list of instance objects = _instantiate_cls (instance_names)
-
-        # return list of instance objects
-        return ["Convolutional Layer", "Fully-Connected Layer", "Attention Layer"]
-    
-    def _get_cls_definition(cls, json_prompts_path:str="tests/papers_rag/class_definitions.json") -> str:
-        return get_json_value(cls.name, json_prompts_path)
-        
-    def _get_subclasses_instances(cls:ThingClass, network_name:str) -> list[Thing]:
-        """ Returns a list of instances of the subclasses of a class"""
-
-        # combine prompt with RAG context
-        prompt = _get_cls_prompt(cls, network_name,network_name)
-
-        # Query LLM on prompt
-        named_instances = _query_llm(prompt)
-
-        print("\n\nNamed Instances", named_instances)####################
-
-        # Create list of instance objects
-        instances = []
-        for instance in named_instances:
-            instance_thing = _instantiate_cls(cls, instance)
-            print(f"Instance: {instance_thing}")####################
-            instances.append(instance_thing)
-
-        # return list of instance objects
-        return instances
-
-    
-
-    def _process_entity(cls: ThingClass, label: str, processed_classes: set, ancestor_things: list[Thing] = None):
-        """
-        Process an entity (class, connected class, or subclass)
-        """
-
-        # Need logic to handle instantiating a class not in 'parent classes' list but also has no subclasses 
-
-        if ancestor_things is None:
-            ancestor_things = []
-
-        # Skip if already processed, preventing loops
-        # Skip if in omit list
+    # Main recursive function that processes a class and its relationships
+    # full_context: list of all ancestor instances (Things) used for linking
+    # llm_context: list of instance names (from final instantiations) used in LLM queries
+    def _process_entity(cls: ThingClass, processed_classes: set, full_context: list[Thing],  llm_context: list[str]):
         if cls in processed_classes or cls.name in OMIT_CLASSES:
             return
-
-        # Add class to processed set
         processed_classes.add(cls)
 
-        # ASSUMPTION: Process instantiations by premarked parent classes 
-        if cls.name in PARENT_CLASSES:
-            instances = _get_subclasses_instances(cls, ancestor_things[0].name)
-
-            # Connect instance to parent instance by object property
-            for instance in instances if instances else []:
-                assign_object_property_relationship(ontology, ancestor_things[-1], instance)
-        
-        # ASSUMPTION: If using simplified Processing of Layer Class 
-        if cls.name == "Layer":
-            return
-
-        # Fuck, need logic for if instances exist and dont exist
-        if instances:
-            for instance in instances:
-
-                # Append current instance to ancestor chain.
-                new_ancestor_things = ancestor_things + [instance]
-            
-                # Process data properties into instance object (probably?).
-                _instantiate_data_property(cls, instance, new_ancestor_things)
-
-                def recurse():
-                    # Process connected classes via object properties.
-                    connected_classes = get_connected_classes(cls, ontology)
-                    if connected_classes:
-                        for connected_class in connected_classes:
-                            if isinstance(connected_class, ThingClass):
-                                _process_entity(connected_class, "Connected Class", processed_classes, ancestor_things)
-                            else:
-                                print(f"################ Non-Class Connection? ################\n")
-
-                    # Process subclasses.
-                    subclasses = get_subclasses(cls)
-                    if subclasses:
-                        for subclass in subclasses:
-                            _process_entity(subclass, "Subclass", processed_classes, ancestor_things)
+        if _needs_final_instantiation(cls):
+            # Final instantiation: ask the LLM for instance names.
+            instance_names = _get_cls_instances(cls, llm_context)
+            if instance_names:
+                for name in instance_names:
+                    instance = _instantiate_cls(cls, name)
+                    new_full_context = full_context + [instance]
+                    new_llm_context = llm_context + [name]
+                    _instantiate_data_property(cls, instance, new_llm_context)
+                    if full_context:
+                        parent_instance = full_context[-1]
+                        _link_instances(parent_instance, instance)
+                    _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
+            else:
+                # If no names were returned, continue recursion with the same contexts.
+                print(f"No instances returned for {cls.name}.####################")
+                _process_entity_recursion(cls, processed_classes, full_context, llm_context)
         else:
-            return
+            # Generic instantiation: generate a generic name.
+            # For example, if llm_context is ['convolutional_network', 'convolutional_layer'] and cls.name is 'AggregationLayer',
+            # then generic_name becomes 'convolutional_network-convolutional_layer-aggregationlayer'
+            generic_name = "-".join(llm_context + [cls.name.lower()]) if llm_context else cls.name.lower()
+            instance = _instantiate_cls(cls, generic_name)
+            new_full_context = full_context + [instance]
+            # Do not add the generic name to llm_context.
+            new_llm_context = llm_context
+            _instantiate_data_property(cls, instance, new_llm_context)
+            if full_context:
+                parent_instance = full_context[-1]
+                _link_instances(parent_instance, instance)
+            _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
 
-    # Check for the required key class.
+
+
+        # # Get instance names for the current class using the branch context.
+        # instance_names = _get_cls_instances(cls, ancestor_context)
+
+        # # Process the class instances.
+        # if instance_names:
+        #     for name in instance_names:
+        #         instance = _instantiate_cls(cls, name)
+        #         # Create a new branch context including this instance.
+        #         new_context = ancestor_context.append(instance)
+
+        #         # Process data properties for the instance.
+        #         _instantiate_data_property(cls, instance, new_context)
+
+        #         # Link the instance to its parent instance.
+        #         if ancestor_context:
+        #             parent_instance = ancestor_context[-1]
+        #             _link_instances(parent_instance, instance)
+        #         # Recurse on instance to process connected classes and subclasses.
+        #         _process_entity_recursion(cls,processed_classes,new_context)
+        # else:
+        #     # No instances returned, so process connected classes and subclasses.
+        #     _process_entity_recursion(cls,processed_classes,ancestor_context)
+
+    # Check for the required root class.
     if not hasattr(ontology, 'ANNConfiguration'):
         print("Error: Class 'ANNConfiguration' not found in ontology.")
         return
-    
-    paper_json_doc_file_path = "data/alexnet/doc_alexnet.json"
-    init_engine(paper_json_doc_file_path) # Initialize LLM engine
+
+    # Initialize the LLM engine with the document context (e.g., the GAN paper).
+    json_file_path = "data/alexnet/doc_alexnet.json"
+    init_engine(json_file_path)
 
     processed_classes = set()
 
-    # Instantiate the root class 
-    # ASSUMPTION: Assume initial network is 'Alexnet'
-    root_instance = create_cls_instance(ontology.ANNConfiguration, "Alexnet")
+    processed_classes.add(ontology.ANNConfiguration)
+    processed_classes.add(ontology.TrainingStrategy)
 
-    # Process the top-level classes
 
-    # ASSUMPTION: Assume initial network is 'Convolutional Network'
+    # Create the root instance of the ANN.
+    root_instance = create_cls_instance(ontology.ANNConfiguration, "ImageNet Classification with Deep Convolutional Neural Networks")
+
+    full_context = [root_instance]
+    llm_context = []  
+
+    # # Start processing top-level classes with an empty branch context.
+    # if hasattr(ontology, "Network"):
+    #     _process_entity(ontology.Network, processed_classes, full_context, llm_context)
+
+    # Will process Network class like this for now because describing the difference 
+    # between Network like convolutional network and kinds of layers is difficult
     if hasattr(ontology, "Network"):
         network_instances = []
         network_instances.append(create_cls_instance(ontology.Network, "Convolutional Network"))
@@ -193,23 +233,28 @@ def dfs_instantiate_annetto(ontology: Ontology):
             assign_object_property_relationship(ontology, root_instance, network_instance)
 
             for connected_class in get_connected_classes(ontology.Network, ontology):
-                _process_entity(connected_class, "Connected Class", processed_classes, [network_instance])
+                new_full_context = full_context + [connected_class]
+                new_llm_context = llm_context + [connected_class.name]
+                _process_entity(connected_class, processed_classes, new_full_context, new_llm_context)
 
+
+    # TODO Skipping TrainingStrategy for now
     # if hasattr(ontology, "TrainingStrategy"):
-    #     _process_entity(ontology.TrainingStrategy, "Class", processed_classes)
+    #     _process_entity(ontology.TrainingStrategy, processed_classes, full_context, llm_context)
 
-    # Need to have instances of TrainingStrategy be in the range of object hasTrainingStrategy and root_instance be in the domain
+    # TODO link the root instance to the top-level instances
 
-    print("ANN has been instantiated.")
+    print("An ANN has been successfully instantiated.")
+
 
 if __name__ == "__main__":
     OUTPUT_FILE = './test.txt'
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
-    ontology = get_ontology(ontology_path).load()    
+    ontology = get_ontology(ontology_path).load()
 
     with ontology:
         dfs_instantiate_annetto(ontology)
 
-        new_file_path = "annett-o-0.test.owl"
+        new_file_path = "annett-o-test.owl"
         ontology.save(file=new_file_path, format="rdfxml")
         print(f"Ontology saved to {new_file_path}")

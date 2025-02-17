@@ -501,7 +501,7 @@ def assign_object_property_relationship(ontology, domain_instance, range_instanc
 
     # Set the relation dynamically
     matching_property[domain_instance] = [range_instance]
-
+    
     assert range_instance in getattr(domain_instance, matching_property.name), \
     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
 
