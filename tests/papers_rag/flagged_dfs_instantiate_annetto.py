@@ -113,8 +113,41 @@ def dfs_instantiate_annetto(ontology: Ontology):
                 else:
                     print(f"No value returned for data property '{prop.name}' of {instance.name}.")
 
-    # Recursion for _process_entity to handle connected classes and subclasses
-    def _process_entity_recursion(cls, processed_classes, full_context: list[Thing],  llm_context: list[str]):
+    def get_instance_class(instance: Thing) -> ThingClass:
+        return type(instance)
+
+    def assign_object_property_relationship(ontology, domain_instance, range_instance):
+        """
+        Automatically finds the correct object property and assigns the relationship.
+
+        :param ontology: The ontology where the object property exists.
+        :param domain_instance: The instance to add to the domain.
+        :param range_instance: The instance to add to the range.
+        """
+        print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
+        domain_cls = get_instance_class(domain_instance)  # Get class of domain instance
+        range_cls = get_instance_class(range_instance)  # Get class of range instance
+
+        # Find the object property with domain_cls and range_cls
+        matching_property = None
+        for prop in ontology.object_properties():
+            if domain_cls in prop.domain and range_cls in prop.range:
+                matching_property = prop
+                break  # Stop after finding the first match; there shouldn't be more than one?
+
+        if not matching_property:
+            raise ValueError(f"No matching object property found for {domain_cls} -> {range_cls}")
+
+        # Set the relation dynamically
+        matching_property[domain_instance] = [range_instance]
+
+        print("hi". matching_property)
+        
+        assert range_instance in getattr(domain_instance, matching_property.name), \
+        f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
+
+    # Recursion for _process_entity to handle connected classes
+    def _connected_class_recursion(cls, processed_classes, full_context: list[Thing],  llm_context: list[str]):
                 # Process connected classes via object properties.
                 connected_classes = get_connected_classes(cls, ontology)
                 if connected_classes:
@@ -124,6 +157,8 @@ def dfs_instantiate_annetto(ontology: Ontology):
                         else:
                             print(f"Encountered non-class connection from {cls.name}.")
 
+    # Recursion for _process_entity to handle subclasses
+    def _subclass_recursion(cls, processed_classes, full_context: list[Thing],  llm_context: list[str]):
                 # Process subclasses if they need instantiation.
                 subclasses = get_subclasses(cls)
                 if subclasses:
@@ -136,21 +171,27 @@ def dfs_instantiate_annetto(ontology: Ontology):
     # Main recursive function that processes a class and its relationships
     # full_context: list of all ancestor instances (Things) used for linking
     # llm_context: list of instance names (from final instantiations) used in LLM queries
-    def _process_entity(cls: ThingClass, processed_classes: set, full_context: list[Thing],  llm_context: list[str]):
+    def _process_entity(cls: ThingClass, processed_classes: set, full_context: list[Thing],  llm_context: list[str], is_subclass=False):
         if cls in processed_classes or cls.name in OMIT_CLASSES:
             return
         processed_classes.add(cls)
 
+        # TODO Check if class has subclass. But
         if _needs_final_instantiation(cls):
             # Final instantiation: ask the LLM for instance names.
             instance_names = _get_cls_instances(cls, llm_context)
             if instance_names:
                 for name in instance_names:
                     instance = _instantiate_cls(cls, name)
-                    new_full_context = full_context + [instance]
+                    # For subclasses, replace the last element in the branch context.
+                    if is_subclass and full_context:
+                        new_full_context = full_context[:-1] + [instance]
+                    else:
+                        new_full_context = full_context + [instance]
                     new_llm_context = llm_context + [name]
                     _instantiate_data_property(cls, instance, new_llm_context)
-                    if full_context:
+                    # Only link connected classes; subclasses do not get linked via an object property.
+                    if not is_subclass and full_context:
                         parent_instance = full_context[-1]
                         _link_instances(parent_instance, instance)
                     _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
@@ -160,18 +201,53 @@ def dfs_instantiate_annetto(ontology: Ontology):
                 _process_entity_recursion(cls, processed_classes, full_context, llm_context)
         else:
             # Generic instantiation: generate a generic name.
-            # For example, if llm_context is ['convolutional_network', 'convolutional_layer'] and cls.name is 'AggregationLayer',
-            # then generic_name becomes 'convolutional_network-convolutional_layer-aggregationlayer'
             generic_name = "-".join(llm_context + [cls.name.lower()]) if llm_context else cls.name.lower()
             instance = _instantiate_cls(cls, generic_name)
-            new_full_context = full_context + [instance]
-            # Do not add the generic name to llm_context.
-            new_llm_context = llm_context
+            if is_subclass and full_context:
+                new_full_context = full_context[:-1] + [instance]
+            else:
+                new_full_context = full_context + [instance]
+            new_llm_context = llm_context  # Do not update the llm_context for generic instantiations.
             _instantiate_data_property(cls, instance, new_llm_context)
-            if full_context:
+            if not is_subclass and full_context:
                 parent_instance = full_context[-1]
                 _link_instances(parent_instance, instance)
             _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
+
+
+
+        # if _needs_final_instantiation(cls):
+        #     # Final instantiation: ask the LLM for instance names.
+        #     instance_names = _get_cls_instances(cls, llm_context)
+
+        #     if instance_names:
+        #         for name in instance_names:
+        #             instance = _instantiate_cls(cls, name)
+        #             new_full_context = full_context + [instance]
+        #             new_llm_context = llm_context + [name]
+        #             _instantiate_data_property(cls, instance, new_llm_context)
+        #             if full_context:
+        #                 parent_instance = full_context[-1]
+        #                 _link_instances(parent_instance, instance)
+        #             _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
+        #     else:
+        #         # If no names were returned, continue recursion with the same contexts.
+        #         print(f"No instances returned for {cls.name}.####################")
+        #         _process_entity_recursion(cls, processed_classes, full_context, llm_context)
+        # else:
+        #     # Generic instantiation: generate a generic name.
+        #     # For example, if llm_context is ['convolutional_network', 'convolutional_layer'] and cls.name is 'AggregationLayer',
+        #     # then generic_name becomes 'convolutional_network-convolutional_layer-aggregationlayer'
+        #     generic_name = "-".join(llm_context + [cls.name.lower()]) if llm_context else cls.name.lower()
+        #     instance = _instantiate_cls(cls, generic_name)
+        #     new_full_context = full_context + [instance]
+        #     # Do not add the generic name to llm_context.
+        #     new_llm_context = llm_context
+        #     _instantiate_data_property(cls, instance, new_llm_context)
+        #     if full_context:
+        #         parent_instance = full_context[-1]
+        #         _link_instances(parent_instance, instance)
+        #     _process_entity_recursion(cls, processed_classes, new_full_context, new_llm_context)
 
 
 
@@ -212,7 +288,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
     processed_classes.add(ontology.ANNConfiguration)
     processed_classes.add(ontology.TrainingStrategy)
 
-
     # Create the root instance of the ANN.
     root_instance = create_cls_instance(ontology.ANNConfiguration, "ImageNet Classification with Deep Convolutional Neural Networks")
 
@@ -233,8 +308,8 @@ def dfs_instantiate_annetto(ontology: Ontology):
             assign_object_property_relationship(ontology, root_instance, network_instance)
 
             for connected_class in get_connected_classes(ontology.Network, ontology):
-                new_full_context = full_context + [connected_class]
-                new_llm_context = llm_context + [connected_class.name]
+                new_full_context = full_context + [network_instance]
+                new_llm_context = llm_context + [network_instance.name]
                 _process_entity(connected_class, processed_classes, new_full_context, new_llm_context)
 
 
