@@ -1,6 +1,6 @@
 - Class: Network 
         - Connected Class: ObjectiveFunction
-                - Connected Class: CostFunction 
+                - Connected Class: CostFunction
                         - Connected Class: LossFunction
                                 - Subclass: BinaryCrossEntropy 
                                 - Subclass: CategoricalCrossEntropy 
@@ -12,10 +12,6 @@
                 - Subclass: MaxObjectiveFunction 
                 - Subclass: MinObjectiveFunction 
         - Connected Class: Layer
-                        instantiate_map = {
-                                "Network" : False
-                                "Layer" : ["classname1".."Elu" "Relu" "Sigmoid" ]
-                        }
                 - Data Prop: layer_num_units (atomic)
                 - Subclass: InOutLayer
                         - Subclass: InputLayer 

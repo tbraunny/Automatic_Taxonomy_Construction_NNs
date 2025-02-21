@@ -457,6 +457,8 @@ class LLMQueryEngine:
         try:
             response = ollama.generate(model=self.generation_model, prompt=full_prompt)
             generated_text = response.get("response", "No response generated.").strip()
+
+            print(generated_text)
             logger.info("Raw generated response: %s", generated_text)
             json_matches = re.findall(r'\{[^}]*\}', generated_text)
             for json_str in json_matches:

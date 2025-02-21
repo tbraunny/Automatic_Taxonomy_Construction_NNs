@@ -152,7 +152,9 @@ def get_object_properties_with_domain_and_range(ontology, domain_class, range_cl
     :param range_class: The range class to match.
     :return: A list of matching object properties.
     """
-    matching_properties = []
+    matching_property = None
+
+    counter = 0
 
     # Iterate over all object properties in the ontology
     for obj_property in ontology.object_properties():
@@ -162,9 +164,14 @@ def get_object_properties_with_domain_and_range(ontology, domain_class, range_cl
 
         # Check if the domain and range match the given classes
         if domain_class in domains and range_class in ranges:
-            matching_properties.append(obj_property)
+            matching_property = obj_property
+            counter += 1
 
-    return matching_properties
+    if counter > 1:
+        raise ValueError(f"More than one object property found with domain ({domain_class}) and range classes ({range_class}).")
+
+    print(f"Found object property: {matching_property} with domain ({domain_class}) and range ({range_class}).")
+    return matching_property
 
 
 def get_connected_classes(cls:ThingClass, ontology, return_object_properties:bool=False):
@@ -551,21 +558,46 @@ def get_instance_class(instance: Thing) -> ThingClass:
 #     assert range_instance in getattr(domain_instance, matching_property.name), \
 #     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
 
-def assign_object_property_relationship(ontology, domain_instance, range_instance, object_property):
-    """
-    Automatically finds the correct object property and assigns the relationship.
+# def assign_object_property_relationship(ontology, domain_instance, range_instance, object_property):
+#     """
+#     Automatically finds the correct object property and assigns the relationship.
 
-    :param ontology: The ontology where the object property exists.
-    :param domain_instance: The instance to add to the domain.
-    :param range_instance: The instance to add to the range.
-    :param object_property: The object property to use for the relationship.
-    """
-    print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
-    # Set the relation
-    object_property[domain_instance] = [range_instance]
+#     :param ontology: The ontology where the object property exists.
+#     :param domain_instance: The instance to add to the domain.
+#     :param range_instance: The instance to add to the range.
+#     :param object_property: The object property to use for the relationship.
+#     """
+#     print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
+#     # Set the relation
+#     object_property[domain_instance] = [range_instance]
     
-    assert range_instance in getattr(domain_instance, object_property.name), \
-    f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {object_property.name}"
+#     assert range_instance in getattr(domain_instance, object_property.name), \
+#     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {object_property.name}"
+
+def assign_object_property_relationship(domain: Thing, ranges: Thing, object_property: ObjectPropertyClass):
+    """
+    Connect two Thing instances via a specified ObjectProperty in Owlready2.
+
+    :param domain: The Thing instance representing the domain.
+    :param ranges: The Thing instance representing the range.
+    :param object_property: The ObjectProperty to connect the instances.
+    """
+
+    # Check if domain and ranges are instances of Thing
+    if not isinstance(domain, Thing):
+        raise TypeError("The 'demand' argument must be an instance of Thing.")
+    if not isinstance(ranges, Thing):
+        raise TypeError("The 'ranges' argument must be an instance of Thing.")
+
+    # Check if object_property is a valid ObjectProperty
+    if not isinstance(object_property, ObjectPropertyClass):
+        raise TypeError("The 'object_property' argument must be an instance of ObjectProperty.")
+
+    # Connect the two Thing instances
+    object_property[domain].append(ranges)
+
+    print(f"Connected {domain.name} to {ranges.name} via {object_property.name}")
+
 
 def list_owl_classes(onto: Ontology):
     # List all classes
