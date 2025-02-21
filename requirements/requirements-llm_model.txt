@@ -1,5 +1,0 @@
-ollama
-rank_bm25
-langchain-huggingface
-llama-index-core
-chromadb

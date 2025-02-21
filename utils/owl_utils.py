@@ -26,6 +26,37 @@ def split_camel_case(names:list) -> list:
             split_names.append(name)
 
     return split_names
+
+def get_highest_subclass_ancestor(cls):
+    """
+    This function finds the highest (most general) superclass for a given 
+class.
+    
+    Args:
+        cls: A ThingClass instance from which to find the highest 
+ancestor.
+        
+    Returns:
+        The original class with an explicit subclass relationship added to 
+its highest ancestor, if it doesn't already exist.
+    """
+    # Traverse up the hierarchy to find the highest ancestor
+    current_class = cls
+    while True:
+        parents = list(current_class.is_a)
+        if not parents:
+            break  # No more parents; this is the highest ancestor
+        current_class = parents[0]  # Move up to the first parent (you can modify this logic to handle multiple inheritance)
+    
+    # Now, 'current_class' is the highest ancestor
+    print(f"The highest ancestor of {cls} is {current_class}.")
+    
+    # If there's no explicit subclass relationship, create one
+    if not cls in current_class.subclasses():
+        print("Adding an explicit subclass relationship...")
+        cls.is_a.append(current_class)
+    
+    return cls
         
 
 def get_class_parents(cls: ThingClass) -> list:
@@ -38,6 +69,25 @@ def get_class_parents(cls: ThingClass) -> list:
     :return: A list of direct parent classes, excluding any restrictions.
     """
     return [parent for parent in cls.is_a if isinstance(parent, ThingClass)]
+
+def get_domain_class(ontology: Ontology, property_name: str) -> ThingClass:
+    """
+    Retrieves a class's object property domain class for a given class in an ontology.
+    """
+
+    # Find the property in the ontology
+    prop = getattr(ontology, property_name, None)
+    if not prop:
+        print(f"Property '{property_name}' not found in the ontology.")
+        return None
+
+    # Get the domain class of the property
+    domain_cls = prop.domain
+    if not domain_cls:
+        print(f"Property '{property_name}' has no domain class.")
+        return None
+
+    return domain_cls
 
 def get_class_by_name(onto, class_name):
     """
@@ -397,7 +447,7 @@ def print_instantiated_classes_and_properties(ontology: Ontology):
 
 # Create Instances
 
-def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties):
+def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties) -> Thing:
     """
     Creates an instance of a given class.
 
@@ -425,6 +475,36 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
 
     return instance
 
+def get_instance_class(instance: Thing) -> ThingClass:
+    return type(instance)
+
+def assign_object_property_relationship(ontology, domain_instance, range_instance):
+    """
+    Automatically finds the correct object property and assigns the relationship.
+
+    :param ontology: The ontology where the object property exists.
+    :param domain_instance: The instance to add to the domain.
+    :param range_instance: The instance to add to the range.
+    """
+    domain_cls = get_instance_class(domain_instance)  # Get class of domain instance
+    range_cls = get_instance_class(range_instance)  # Get class of range instance
+
+    # Find the object property with domain_cls and range_cls
+    matching_property = None
+    for prop in ontology.object_properties():
+        if domain_cls in prop.domain and range_cls in prop.range:
+            matching_property = prop
+            break  # Stop after finding the first match; there shouldn't be more than one?
+
+    if not matching_property:
+        raise ValueError(f"No matching object property found for {domain_cls} -> {range_cls}")
+
+    # Set the relation dynamically
+    matching_property[domain_instance] = [range_instance]
+
+    assert range_instance in getattr(domain_instance, matching_property.name), \
+    f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
+
 def list_owl_classes(onto: Ontology):
     # List all classes
     print("Classes in the ontology:")
@@ -442,3 +522,15 @@ def list_owl_data_properties(onto: Ontology):
     print("\nData Properties in the ontology:")
     for prop in onto.data_properties():
         print(f"- {prop.name}")
+
+if __name__ == "__main__":
+
+    ontology = get_ontology("data/owl/annett-o-0.1.owl").load()  
+
+    network_instance = create_cls_instance(ontology.Network, "Conv Network")
+    layer_instance = create_cls_instance(ontology.Layer, "Conv1")
+
+    assign_object_property_relationship(ontology, network_instance, layer_instance)
+
+
+    

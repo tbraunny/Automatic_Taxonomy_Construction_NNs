@@ -1,0 +1,19 @@
+# specifying docker-compose version
+version: '3'
+# defining services
+services:
+  # defining neo4j coomunity edition
+  neo4j:
+    image: neo4j:latest
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j_data:/data
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4J_PLUGINS=["apoc-extended","apoc"]
+  nlmingestor:
+    image: ghcr.io/nlmatics/nlm-ingestor:latest
+    ports: 
+      - "5001:5001"
