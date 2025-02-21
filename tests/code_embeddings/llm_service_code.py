@@ -190,7 +190,7 @@ class LLMQueryEngine:
                 f"Text: {chunk_content}\n"
             )
             # Using a smaller model for scoring (adjust as needed).
-            response = ollama.generate(model=self.relevance_generation_model, prompt=prompt , options={"num_ctx":1500})
+            response = ollama.generate(model=self.relevance_generation_model, prompt=prompt)
             score_text = response.get("response", "").strip()
             logger.info("Raw relevance score response: %s", score_text)
 
@@ -268,7 +268,7 @@ class LLMQueryEngine:
             "List additional keywords or phrases (comma-separated) that could be used to expand the search:"
         )
         try:
-            expansion_response = ollama.generate(model=self.generation_model, prompt=expansion_prompt , options={"num_ctx":1500})
+            expansion_response = ollama.generate(model=self.generation_model, prompt=expansion_prompt)
             keywords = expansion_response.get("response", "").strip()
             logger.info("Iterative expansion keywords: %s", keywords)
         except Exception as e:
@@ -304,7 +304,7 @@ class LLMQueryEngine:
         full_prompt = get_llm_json_instructions(query, evidence_blocks)
         logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
-            response = ollama.generate(model=self.generation_model, prompt=full_prompt , options={"num_ctx":1500})
+            response = ollama.generate(model=self.generation_model, prompt=full_prompt)
             generated_text = response.get("response", "No response generated.").strip()
             logger.info("Raw generated response: %s", generated_text)
             # Expect the last non-empty line to be JSON.
@@ -347,7 +347,7 @@ class LLMQueryEngine:
         # Step 4: Iteratively expand context if necessary.
         expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
         # Step 5: Generate the final response.
-        return self.generate_response(query, expanded_context , options={"num_ctx":1500})
+        return self.generate_response(query, expanded_context)
 
 
 # Singleton instance for the engine.

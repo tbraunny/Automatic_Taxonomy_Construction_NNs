@@ -159,7 +159,7 @@ def get_metadata(model_json):
 
 def main():
     ann_name = "alexnet"
-    path = glob.glob(f"/home/richw/tom/ATCNN/data/{ann_name}/*.json")
+    path = glob.glob(f"data/{ann_name}/*.json")
 
     model_data = load_json(path)
 
