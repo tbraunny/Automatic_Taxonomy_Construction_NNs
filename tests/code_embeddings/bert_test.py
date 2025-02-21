@@ -5,11 +5,15 @@ NOTES: I don't think this will work, the semantic space differs from the langcha
        in order to use both code & pdf in same chroma db either use CodeX for both extractions, or convert code to JSON
 """
 
+"""
+DEPRECATED
+"""
+
 import chromadb
 from transformers import RobertaTokenizer, RobertaModel
 import torch
 from sentence_transformers import SentenceTransformer
-import PyPDF2
+#import PyPDF2
 from sklearn.decomposition import PCA
 import numpy as np
 

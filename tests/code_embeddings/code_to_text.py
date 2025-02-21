@@ -2,6 +2,7 @@ import os
 import glob
 
 """
+DEPRECATED
 Convert python code to text for passage to RAG as document objects
 """
 

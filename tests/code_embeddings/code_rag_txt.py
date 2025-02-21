@@ -5,6 +5,11 @@ from langchain_core.documents.base import Document
 from utils.document_json_utils import load_documents_from_json
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+"""
+DEPRECATED
+"""
+
+
 def chunk_document_preserving_header(documents, chunk_size=1000, chunk_overlap=200) -> list:
     """
     Splits a list of documents into smaller chunks while preserving metadata headers.
