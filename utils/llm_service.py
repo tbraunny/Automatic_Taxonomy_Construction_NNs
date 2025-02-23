@@ -27,7 +27,6 @@ import os
 import json
 import logging
 import time
-import re
 import asyncio
 import hashlib
 from functools import wraps
@@ -460,21 +459,6 @@ class LLMQueryEngine:
             f"{evidence_blocks}\n\n"
         )
 
-        # full_prompt = (
-        #     "You are a helpful assistant that answers technical questions by fusing evidence from multiple documents.\n"
-        #     "Below are several context sections. Please read each section carefully and integrate the relevant information to answer the query.\n\n"
-        #     "### Evidence Blocks:\n"
-        #     f"{evidence_blocks}\n\n"
-        #     "###"
-        #     f"Query: {query}\n"
-        #     "Do not abreviate answers."
-        #     "Please provide an explanation first, and then on a new line, output a JSON array object that contains only one key 'answer' "
-        #     "with your answer listed as the value. For example, the last line of your output should be:\n"
-        #     """{"name":"John"}"""
-        #     """{"age":30}"""
-        #     """{"cars":["Ford", "BMW", "Fiat"]}"""
-        # )
-
         logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
             response = ollama.generate(model=self.generation_model, prompt=full_prompt)
@@ -494,22 +478,9 @@ class LLMQueryEngine:
                     logger.exception("JSON decoding error: %s", e)
 
             raise ValueError("No valid JSON with 'answer' key found.")
-            # json_matches = re.findall(r'\{[^}]*\}', generated_text)
-            # for json_str in json_matches:
-            #     try:
-            #         result_obj = json.loads(json_str)
-            #         if "answer" in result_obj:
-            #             answer = result_obj["answer"]
-            #             # if isinstance(answer, list):
-            #             #     return ", ".join(answer)
-            #             return answer
-            #     except json.JSONDecodeError:
-            #         continue
-            # raise ValueError("No valid JSON with 'answer' key found.")
         except Exception as e:
             logger.exception("Error generating final response: %s", str(e))
             raise
-            # return "Error generating response."
 
     def query(self, query: str, max_chunks: int = 15, token_budget: int = 1024) -> str:
         """

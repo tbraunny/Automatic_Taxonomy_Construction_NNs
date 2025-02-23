@@ -51,30 +51,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
             print(f"LLM query error: {e}")
             return ""
     
-    def _instantiate_data_properties(cls: ThingClass, instance: Thing, llm_context: list[str]):
-        data_props = get_class_data_properties(ontology, cls)
-        if data_props:
-            for prop in data_props:
-                if not hasattr(instance, prop.name) or not getattr(instance, prop.name):
-                    prompt = (f"Current branch context: {' > '.join(llm_context)}.\n"
-                              f"For the instance '{instance.name}' of class '{cls.name}', provide a concise value "
-                              f"for the data property '{prop.name}'.")
-                    instructions = "Return a single value."
-                    value = _query_llm(instructions, prompt)
-                    if value:
-                        try:
-                            if prop.python_type in [int, float]:
-                                converted_value = float(value) if prop.python_type == float else int(value)
-                                setattr(instance, prop.name, converted_value)
-                            else:
-                                setattr(instance, prop.name, value)
-                            print(f"Set data property '{prop.name}' of {instance.name} to {value}.")
-                        except Exception as e:
-                            print(f"Error converting value for {prop.name} on {instance.name}: {e}")
-                            setattr(instance, prop.name, value)
-                    else:
-                        print(f"No value returned for data property '{prop.name}' of {instance.name}.")
-    
     def _recurse_connected_classes(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
         connected = get_connected_classes(cls, ontology)
         if connected:
@@ -165,7 +141,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
             # Link the loss function instance to the cost instance.
             _link_instances(cost_function_instance, loss_function_instance, ontology.hasLoss)
-
 
 
 
@@ -406,19 +381,74 @@ def dfs_instantiate_annetto(ontology: Ontology):
         # Process Modification Layers
 
         # Process Separation Layers
+    
+    def _process_task_characterization(full_context: list[Thing]):
+
+        # Get the network instance from the full context.
+        network_thing = _find_ancestor_network_instance(full_context)
+        if not network_thing:
+            raise ValueError("No network instance found in the full context.")
+        network_thing_name = network_thing.name
+        
+        # Process the task characterization
+        task_characterization_prompt = (
+            "Extract the primary task that the given network architecture is designed to perform. "
+            "The primary task is the most important or central objective of the network. "
+            "Return the task name in JSON format with the key 'answer'.\n\n"
+
+            "The types of tasks include:\n"
+            "- Adversarial\n"
+            "- Classification\n"
+            "- SemiSupervised Classification\n"
+            "- Supervised Classification\n"
+            "- Clustering\n"
+            "- Discrimination\n"
+            "- Generation\n"
+            "- Reconstruction\n"
+            "- Regression\n"
+
+            "Examples:\n"
+            "1. Discrimination\n"
+            '{"answer": "Discriminator"}\n\n'
+            
+            "2. Network: Generator\n"
+            '{"answer": "Generation"}\n\n'
+            
+            "3. Network: Linear Regression\n"
+            '{"answer": "Regression"}\n\n'
+            
+            "Now, for the following network:\n"
+            f"Network: {network_thing_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+
+        task_characterization_response = _query_llm("", task_characterization_prompt)
+        if not task_characterization_response:
+            print("No response for task characterization.")
+            return
+        task_characterization_name = task_characterization_response
+        print(f"Task characterization: {task_characterization_name}", type(task_characterization_name))
+        # Instantiate the task characterization instance
+        task_characterization_instance = _instantiate_cls(ontology.TaskCharacterization, task_characterization_name)
+
+        # Link the task characterization instance to the network instance
+        _link_instances(network_thing, task_characterization_instance, ontology.hasTaskType)
 
 
-    def _process_entity(cls: ThingClass, processed: set, full_context: list[Thing], 
-                        llm_context: list[str], is_subclass: bool = False, object_property=None):
+
+    def _process_entity(cls: ThingClass, processed: set, full_context: list[Thing]):
         if cls in processed or cls.name in OMIT_CLASSES:
             return
         processed.add(cls)
 
-        if cls is ontology.Layer:
-            _process_layers(full_context)
+        # if cls is ontology.Layer:
+        #     _process_layers(full_context)
 
         # if cls is ontology.ObjectiveFunction:
         #     _process_objective_functions(full_context)
+
+        if cls is ontology.TaskCharacterization:
+            _process_task_characterization(full_context)
 
         return
         

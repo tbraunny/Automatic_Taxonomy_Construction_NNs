@@ -3249,60 +3249,11 @@
 
 <owl:NamedIndividual rdf:about="Convolutional Network">
   <rdf:type rdf:resource="Network"/>
-  <hasLayer rdf:resource="Convolutional 1"/>
-  <hasLayer rdf:resource="Convolutional 2"/>
-  <hasLayer rdf:resource="Convolutional 3"/>
-  <hasLayer rdf:resource="Convolutional 4"/>
-  <hasLayer rdf:resource="Convolutional 5"/>
-  <hasLayer rdf:resource="Fully Connected 1"/>
-  <hasLayer rdf:resource="Fully Connected 2"/>
-  <hasLayer rdf:resource="Fully Connected 3"/>
+  <hasTaskType rdf:resource="Supervised Classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="Convolutional 1">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Convolutional 2">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Convolutional 3">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Convolutional 4">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Convolutional 5">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Fully Connected 1">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Fully Connected 2">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="Fully Connected 3">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="Supervised Classification">
+  <rdf:type rdf:resource="TaskCharacterization"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
