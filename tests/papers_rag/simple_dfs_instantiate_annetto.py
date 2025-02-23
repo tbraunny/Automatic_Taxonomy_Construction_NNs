@@ -1,4 +1,4 @@
-from owlready2 import Ontology, ThingClass, Thing, get_ontology
+from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from utils.constants import Constants as C
 from utils.owl_utils import (
     get_class_data_properties,
@@ -7,67 +7,38 @@ from utils.owl_utils import (
     create_cls_instance, 
     assign_object_property_relationship, 
     create_subclass,
-    get_object_properties_with_domain_and_range, 
-    split_camel_case
 )
-# from utils.annetto_utils import ()
+from utils.annetto_utils import (int_to_ordinal, split_camel_case)
 from utils.llm_service import init_engine, query_llm
 
-# Import fuzzy matching library.
 from fuzzywuzzy import fuzz
 
 # Classes to omit from instantiation.
 OMIT_CLASSES = set(["DataCharacterization", "Regularization"])
 
-# Organizational nodes – if such a class has subclasses then we want to perform organizational instantiation.
-ORGANIZATIONAL_CLASSES = set([
-    "LossFunction", "RegularizerFunction", "AggregationLayer", 
-    "ModificationLayer", "SeparationLayer", "ObjectiveFunction", 
-    "TaskCharacterization", 
-])
-
-OBJECTIVE_FUNCTION_CLASSES = set(["ObjectiveFunction", "LossFunction", "RegularizerFunction", "CostFunction"])
-LAYER_CLASSES = set(["HiddenLayer", "InputLayer", "OutputLayer", "InOutLayer", "ActivationLayer", "ActivationFunction","NonDiff","Linear", "Smooth","AggregationLayer","ModificationLayer"])
-
-
 def dfs_instantiate_annetto(ontology: Ontology):
-
-    # def get_instantiation_type(cls: ThingClass) -> str:
-    #     """
-    #     Returns one of:
-    #       - "organizational": if the class has subclasses and is in ORGANIZATIONAL_CLASSES.
-    #       - "meaningful": if requires_final_instantiation(cls) is True (and not organizational).
-    #       - "generic": otherwise (for connected classes without subclasses).
-    #     """
-    #     if get_subclasses(cls):
-    #         if cls.name in ORGANIZATIONAL_CLASSES:
-    #             return "organizational"
-    #         else:
-    #             if requires_final_instantiation(cls):
-    #                 return "meaningful"
-    #             else:
-    #                 return "generic"
-    #     else:
-    #         if requires_final_instantiation(cls):
-    #             return "meaningful"
-    #         else:
-    #             return "generic"
 
     def _instantiate_cls(cls: ThingClass, instance_name: str) -> Thing:
         instance = create_cls_instance(cls, instance_name)
         print(f"Instantiated {cls.name} with name: {instance_name}")
         return instance
+    
+    def _instantiate_generic_class(cls: ThingClass, full_context: list[Thing]):
+        # Extract names from full_context and handle empty list properly
+        context_names = [thing.name for thing in full_context] if full_context else []
+        # Build the generic name
+        generic_name = "-".join(context_names + [cls.name.lower()])
+        # Instantiate the class
+        instance = _instantiate_cls(cls, generic_name)
+        
+        return instance
 
-    def _link_instances(parent_instance: Thing, child_instance: Thing, object_property):
+    def _link_instances(parent_instance: Thing, child_instance: Thing, object_property:ObjectProperty):
         """
         Assign the given object property relationship between parent and child.
         """
-        if object_property is None:
-            print(f"Warning: No object property provided for linking {parent_instance} and {child_instance}.")
-            return
-        print(f"Linking {parent_instance.name} and {child_instance.name} via {object_property}...")
         assign_object_property_relationship(parent_instance, child_instance, object_property)
-
+        print(f"Linked {parent_instance.name} and {child_instance.name} via {object_property}.")
 
     def _query_llm(instructions: str, prompt: str) -> str:
         full_prompt = f"{instructions}\n{prompt}"
@@ -79,24 +50,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
         except Exception as e:
             print(f"LLM query error: {e}")
             return ""
-    
-    def _get_cls_prompt(cls: ThingClass, llm_context: list[str]) -> str:
-        context_str = " > ".join(llm_context) if llm_context else "None"
-        return (f"Current branch context: {context_str}.\n"
-                f"Considering the neural network described in the paper, list the names of the relevant instances "
-                f"for the class '{cls.name}'. If there are multiple, return a comma-separated list.")
-    
-    def _get_cls_instances(cls: ThingClass, llm_context: list[str]) -> list[str]:
-        prompt = _get_cls_prompt(cls, llm_context)
-        instructions = ("Return a comma-separated list of instance names. "
-                        "For example: 'Convolutional Layer, Fully-Connected Layer'.\n\n" + prompt)
-        response = _query_llm(instructions, prompt)
-        if not response:
-            return []
-        # Here we assume the LLM returns a comma-separated list.
-        instance_names = response
-        print(f"LLM returned instances for {cls.name} with context {llm_context}: {instance_names}")
-        return instance_names
     
     def _instantiate_data_properties(cls: ThingClass, instance: Thing, llm_context: list[str]):
         data_props = get_class_data_properties(ontology, cls)
@@ -122,73 +75,339 @@ def dfs_instantiate_annetto(ontology: Ontology):
                     else:
                         print(f"No value returned for data property '{prop.name}' of {instance.name}.")
     
-    def _process_connected_classes(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
+    def _recurse_connected_classes(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
         connected = get_connected_classes(cls, ontology)
         if connected:
             for conn in connected:
                 if isinstance(conn, ThingClass):
-                    _process_entity(conn, processed, full_context, llm_context, is_subclass=False)
+                    _process_entity(conn, processed, full_context, llm_context)
                 else:
                     print(f"Encountered non-class connection from {cls.name}.")
     
-    def _process_subclasses(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
+    def _recurse_subclasses(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
         subs = get_subclasses(cls)
         if subs:
             for sub in subs:
-                _process_entity(sub, processed, full_context, llm_context, is_subclass=True)
+                _process_entity(sub, processed, full_context, llm_context)
 
-    def _get_list_layer_classes(cls: ThingClass, processed: set = None, layer_class_names: set = None):
-        if processed is None:
-            processed = set()
-        if layer_class_names is None:
-            layer_class_names = set()
+    def _find_ancestor_network_instance(full_context: list[Thing]):
+        """Find the network instance in the full context"""
+        return next((thing for thing in full_context if ontology.Network in thing.is_a), None)
+    
+    def _process_objective_functions(full_context: list[Thing]):
+        # Get the network instance from the full context.
+        network_thing = _find_ancestor_network_instance(full_context)
+        if not network_thing:
+            raise ValueError("No network instance found in the full context.")
+        
+        network_thing_name = network_thing.name
 
-        # Avoid processing the same class multiple times
-        if cls in processed:
-            return layer_class_names
-
-        processed.add(cls)
-
-        # Iterate through direct subclasses
-        for sub in cls.subclasses():
-            # Only add if not in exclude_list
-            if sub.name not in LAYER_CLASSES:
-                layer_class_names.add(sub.name)
-            # Recursive call
-            _get_list_layer_classes(sub, processed, layer_class_names)
-
-        return layer_class_names
-
-    def _process_layer_classes(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str], layer_class_names: set[str]):
-        layer_class_names = set()
-
-        layer_class_names = _get_list_layer_classes(cls, layer_class_names)
-
-        layer_class_names = split_camel_case(layer_class_names)
-
-        prompt = (f"Current branch context: {' > '.join(llm_context) if llm_context else 'None'}.\n"
-                    f"Name and count each instance of layers in the neural network described in the paper. \n"
-                    "For example: '7 Attention Layer, 2 RNN Layer'. "
-                    # "If there are multiple instances of the same layer, list them sequentially, incuding repeats. \n"
-                    f"Examples of layers include: {layer_class_names}. If you encounter a layer not in the list, please do not hesitate and provide the name.")
-        instructions = ""
-
-        response = _query_llm(instructions, prompt)
-        if not response:
-            print(f"No response for layer classes.")
+        # Process the loss functions used by the network.
+        loss_function_prompt = (
+            f"Extract only the names of the loss functions used for the {network_thing_name}'s architecture and return the result in JSON format with the key 'answer'. "
+            "Follow the examples below.\n\n"
+            "Examples:\n"
+            "Network: Discriminator\n"
+            '{"answer": ["Binary Cross-Entropy Loss"]}\n'
+            "Network: Discriminator\n"
+            '{"answer": ["Wasserstein Loss", "Hinge Loss"]}\n\n'
+            f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+        loss_function_response = _query_llm("", loss_function_prompt)
+        if not loss_function_response:
+            print("No response for loss function classes.")
             return
-        layer_instances = response
+        loss_function_names = loss_function_response  # expected to be a list of loss function names
 
-        for name in layer_instances:
-            instance = _instantiate_cls(cls, name)
-            new_context = full_context + [instance]
-            new_llm_context = llm_context + [name]
-            # _instantiate_data_properties(cls, instance, new_llm_context)
-            if full_context:
-                parent_instance = full_context[-1]
-                _link_instances(parent_instance, instance, object_property)
+        # For each loss function, determine its optimization direction and process its regularizers.
+        for loss_name in loss_function_names:
+            # Query whether this loss function is designed to minimize or maximize.
+            loss_objective_prompt = (
+                f"Is the {loss_name} function designed to minimize or maximize its objective function? "
+                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
+                "**Clarification:**\n"
+                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
+                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
+                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
+                "Examples:\n"
+                "Loss Function: Cross-Entropy Loss\n"
+                '{"answer": "minimize"}\n'
+                "Loss Function: Custom Score Function\n"
+                '{"answer": "maximize"}\n\n'
+                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
+                '{"answer": "<Your Answer Here>"}'
+            )
+            loss_obj_response = _query_llm("", loss_objective_prompt)
+            if not loss_obj_response:
+                print(f"No response for loss function objective for {loss_name}.")
+                continue
+            loss_obj_type = loss_obj_response.lower()
+
+            # Instantiate the appropriate loss function instance.
+            if loss_obj_type == "minimize":
+                objective_function_instance = _instantiate_generic_class(ontology.MinObjectiveFunction, full_context)
+            elif loss_obj_type == "maximize":
+                objective_function_instance = _instantiate_generic_class(ontology.MinObjectiveFunction, full_context)
+            else:
+                print(f"Invalid response for loss function objective for {loss_name}.")
+                continue
+            new_context = full_context + [objective_function_instance]
+
+            # Instantiate the loss function instance.
+            loss_function_instance = _instantiate_cls(ontology.LossFunction, loss_name)
+
+            # Instantiate the generic cost function instance.
+            cost_function_instance = _instantiate_generic_class(ontology.CostFunction, new_context)
+
+            # Link the loss function instance to the objective function instance.
+            _link_instances(objective_function_instance, cost_function_instance, ontology.hasCost)
+
+            # Link the loss function instance to the cost instance.
+            _link_instances(cost_function_instance, loss_function_instance, ontology.hasLoss)
+
+
+
+
+            # Process the regularizer functions explicitly associated with this loss function.
+            regularizer_function_prompt = (
+                f"Extract only the names of explicit regularizer functions that are mathematically added to the objective function for the {loss_name} loss function. "
+                "Exclude implicit regularization techniques like Dropout, Batch Normalization, or any regularization that is not directly part of the loss function. "
+                "Return the result in JSON format with the key 'answer'. Follow the examples below.\n\n"
+                
+                "Examples:\n"
+                "Loss Function: Discriminator Loss\n"
+                '{"answer": ["L1 Regularization"]}\n\n'
+                
+                "Loss Function: Generator Loss\n"
+                '{"answer": ["L2 Regularization", "Elastic Net"]}\n\n'
+                
+                "Loss Function: Cross-Entropy Loss\n"
+                '{"answer": []}\n\n'
+                
+                "Loss Function: Binary Cross-Entropy Loss\n"
+                '{"answer": ["L2 Regularization"]}\n\n'
+                
+                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
+                '{"answer": "<Your Answer Here>"}'
+            )
+
+            regularizer_response = _query_llm("", regularizer_function_prompt)
+            if not regularizer_response:
+                print(f"No response for regularizer function classes for loss function {loss_name}.")
+                continue
+            if regularizer_response == []:
+                print(f"No regularizer functions provided for loss function {loss_name}.")
+                continue
+            regularizer_names = regularizer_response  # expected to be a list of regularizer names
+
+            for reg_name in regularizer_names:
+                reg_instance = _instantiate_cls(ontology.RegularizerFunction, reg_name)
+                # Link the regularizer function instance to the loss function instance.
+                _link_instances(cost_function_instance, reg_instance, ontology.hasRegularizer)
+
 
     
+    def _process_layers(full_context: list[Thing]):
+
+        # Get the network instance from the full context.
+        network_thing = _find_ancestor_network_instance(full_context)
+        if not network_thing:
+            raise ValueError("No network instance found in the full context.")
+        
+        network_thing_name = network_thing.name
+
+        # Process the input layer
+
+        # Process the output layer
+
+        # Process the hidden layers
+
+
+
+
+        # Process Activation Layers
+        #  Data prop has_bias (boolean)
+
+        activation_layer_prompt = (
+            "Extract the number of instances of each core layer type in the given network architecture. "
+            "Only count layers that represent essential network operations such as convolutional layers, "
+            "fully connected (dense) layers, and attention layers. Do NOT count layers that serve as noise layers, "
+            "activation functions (e.g., ReLU, Sigmoid), or modification layers (e.g., dropout, batch normalization), "
+            "or pooling layers (e.g. max pool, average pool).\n\n"
+            
+            "Please provide the output in JSON format using the key \"answer\", where the value is a dictionary "
+            "mapping the layer type names to their counts.\n\n"
+            
+            "Examples:\n\n"
+
+            "1. Network Architecture Description:\n"
+            "- 3 Convolutional layers\n"
+            "- 2 Fully Connected layers\n"
+            "- 2 Recurrent layers\n"
+            "- 1 Attention layer\n"
+            "- 3 Transformer Encoder layers\n"
+            "Expected JSON Output:\n"
+            "{\n"
+            "  \"answer\": {\n"
+            "    \"Convolutional\": 3,\n"
+            "    \"Fully Connected\": 2,\n"
+            "    \"Recurrent\": 2,\n"
+            "    \"Attention\": 1\n"
+            "    \"Transformer Encoder\": 3\n"
+
+            "  }\n"
+            "}\n\n"
+
+            "2. Network Architecture Description:\n"
+            "- 3 Convolutional layers\n"
+            "- 2 Fully Connected layer\n"
+            "- 2 Recurrent layer\n"
+            "- 1 Attention layers\n"
+            "- 3 Transformer Encoder layers\n"
+            "Expected JSON Output:\n"
+            "{\n"
+            "  \"answer\": {\n"
+            "    \"Convolutional\": 4,\n"
+            "    \"FullyConnected\": 1,\n"
+            "    \"Recurrent\": 2,\n"
+            "    \"Attention\": 1\n"
+            "    \"Transformer Encoder\": 3\n"
+            "  }\n"
+            "}\n\n"
+
+            "Now, for the following network:\n"
+            f"Network: {network_thing_name}\n"
+            "Expected JSON Output:\n"
+            "{\n"
+            "  \"answer\": \"<Your Answer Here>\"\n"
+            "}\n"
+        )
+
+        activation_layer_response = _query_llm("", activation_layer_prompt)
+        if not activation_layer_response:
+            print("No response for activation layer classes.")
+            return
+        activation_layer_counts = activation_layer_response  # expected to be a dictionary of layer type names and counts
+
+        # Process the activation layers
+        for layer_type, layer_count in activation_layer_counts.items():
+
+            # Instantiate the activation layer instances.
+            for i in range(layer_count):
+                layer_instance = _instantiate_cls(ontology.ActivationLayer, f"{layer_type} {i + 1}")
+
+                print (f"Processing {layer_type} {i + 1}", type(layer_instance))
+
+                # Convert index to ordinal for natural language
+                layer_ordinal = int_to_ordinal(i + 1)
+
+                # Link the activation layer instance to the network instance.
+                _link_instances(network_thing, layer_instance, ontology.hasLayer)
+
+                # Process the data properties of the activation layer.
+                has_bias_prompt = (
+                    f"Does the {layer_ordinal} {layer_type} layer include a bias term? "
+                    "Please respond with either 'true', 'false', or an empty list [] if unknown, in JSON format using the key 'answer'.\n\n"
+                    
+                    "Clarification:\n"
+                    "- A layer has a bias term if it adds a constant (bias) to the weighted sum before applying the activation function.\n"
+                    "- Examples of layers that often include bias: Fully Connected (Dense) layers, Convolutional layers.\n"
+                    "- Some layers like Batch Normalization typically omit bias.\n\n"
+
+                    "Examples:\n"
+                    "1. Layer: Fully-Connected\n"
+                    '{"answer": "true"}\n\n'
+
+                    "2. Layer: Convolutional\n"
+                    '{"answer": "true"}\n\n'
+
+                    "3. Layer: Attention\n"
+                    '{"answer": "false"}\n\n'
+
+                    "4. Layer: UnknownLayerType\n"
+                    '{"answer": []}\n\n'
+
+                    f"Now, for the following layer:\n"
+                    f"Layer: {layer_ordinal} {layer_type}\n"
+                    '{"answer": "<Your Answer Here>"}'
+                )
+
+                # Query LLM for bias term
+                has_bias_response = _query_llm("", has_bias_prompt)
+                if not has_bias_response:
+                    print(f"No response for bias term for {layer_ordinal} {layer_type}.")
+                else:
+                    if has_bias_response.lower() == "true":
+                        layer_instance.has_bias = [True]
+
+                    if has_bias_response.lower() == "false":
+                        layer_instance.has_bias = [False]
+
+                    print(f"Set bias term for {layer_ordinal} {layer_type} to {layer_instance.has_bias}.")
+
+
+                # Process the activation function of the activation layer
+
+                # Convert index to ordinal for natural language
+                layer_ordinal = int_to_ordinal(i + 1)
+
+                # Process the activation function of the activation layer
+                activation_function_prompt = (
+                    f"Goal:\n"
+                    f"Identify the activation function used in the {layer_ordinal} {layer_type} layer, if any.\n\n"
+
+                    "Return Format:\n"
+                    "Respond with the activation function name in JSON format using the key 'answer'. If there is no activation function or it's unknown, return an empty list [].\n"
+                    "Example formats:\n"
+                    '{"answer": "ReLU"}\n'
+                    '{"answer": "Sigmoid"}\n'
+                    '{"answer": []}\n\n'
+
+                    "Clarification:\n"
+                    "- An activation function is a mathematical function applied to the output of a neuron or layer in a neural network to introduce non-linearity.\n"
+                    "- Common activation functions include ReLU, Sigmoid, Tanh, LeakyReLU, and Softmax.\n"
+                    "- Some layers may not have an activation function explicitly applied.\n\n"
+
+                    "Examples:\n"
+                    "1. Layer: 1st Convolutional\n"
+                    '{"answer": "ReLU"}\n\n'
+
+                    "2. Layer: 2nd Fully Connected\n"
+                    '{"answer": "Sigmoid"}\n\n'
+
+                    "3. Layer: 3rd Attention\n"
+                    '{"answer": []}\n\n'
+
+                    f"Now, for the following layer:\n"
+                    f"Layer: {layer_ordinal} {layer_type}\n"
+                    '{"answer": "<Your Answer Here>"}'
+                )
+
+                # Query LLM for activation function
+                activation_function_response = _query_llm("", activation_function_prompt)
+                if not activation_function_response:
+                    print(f"No response for activation function for {layer_ordinal} {layer_type}.")
+                    continue
+                else:
+                    # Parse response
+                    activation_function_name = activation_function_response
+
+                    # Instantiate the activation function instance if found
+                    if activation_function_name != "[]":
+                        activation_function_instance = _instantiate_cls(ontology.ActivationFunction, activation_function_name)
+                        # Link the activation function to the layer
+                        _link_instances(layer_instance, activation_function_instance, ontology.hasActivationFunction)
+                    else:
+                        print(f"No activation function associated with {layer_ordinal} {layer_type}.")
+
+        # Process Aggregation Layers
+
+        # Process Modification Layers
+
+        # Process Separation Layers
+
+
     def _process_entity(cls: ThingClass, processed: set, full_context: list[Thing], 
                         llm_context: list[str], is_subclass: bool = False, object_property=None):
         if cls in processed or cls.name in OMIT_CLASSES:
@@ -196,7 +415,10 @@ def dfs_instantiate_annetto(ontology: Ontology):
         processed.add(cls)
 
         if cls is ontology.Layer:
-            _process_layer_classes(cls, processed, full_context, llm_context, object_property)
+            _process_layers(full_context)
+
+        # if cls is ontology.ObjectiveFunction:
+        #     _process_objective_functions(full_context)
 
         return
         
@@ -285,35 +507,42 @@ def dfs_instantiate_annetto(ontology: Ontology):
             _process_subclasses(cls, processed, new_context, new_llm_context, object_property)
     
     
-    # Verify required root exists.
+    # Verify required root exists
     if not hasattr(ontology, 'ANNConfiguration'):
         print("Error: Class 'ANNConfiguration' not found in ontology.")
         return
     
-    # Initialize the LLM engine with the document context.
+    # Initialize the LLM engine with the document context
     json_file_path = "data/alexnet/doc_alexnet.json"
     init_engine(json_file_path)
-    
+
+    # Extract the title from the JSON file
+    from json import load
+    with open(json_file_path, 'r', encoding='utf-8') as file:
+        data = load(file)
+    titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
+    title = titles[0] if titles else None
+
     processed = set()
-    processed.add(ontology.ANNConfiguration)
-    processed.add(ontology.TrainingStrategy)
+    processed.add(ontology.TrainingStrategy) # Temporary fix to avoid infinite loop
     
-    # Create the root instance.
-    root_instance = _instantiate_cls(ontology.ANNConfiguration, "ImageNet Classification with Deep Convolutional Neural Networks")
-    full_context = [root_instance]
+    # Create the root instance
+    processed.add(ontology.ANNConfiguration)
+    ann_config_instance = _instantiate_cls(ontology.ANNConfiguration, title)
+    full_context = [ann_config_instance]
     llm_context = []
     
     # Process the top-level Network class.
     if hasattr(ontology, "Network"):
         network_instance = _instantiate_cls(ontology.Network, "Convolutional Network")
-        object_property = get_object_properties_with_domain_and_range(ontology, ontology.ANNConfiguration, ontology.Network)
-
-        _link_instances(root_instance, network_instance, object_property)
+        object_property = ontology.hasNetwork
+        # Link the network instance to the root instance.
+        _link_instances(ann_config_instance, network_instance, object_property)
         new_context = full_context + [network_instance]
         new_llm_context = llm_context + [network_instance.name]
-        for conn in get_connected_classes(ontology.Network, ontology):
-            if isinstance(conn, ThingClass):
-                _process_entity(conn, processed, new_context, new_llm_context, is_subclass=False)
+        for connected_class in get_connected_classes(ontology.Network, ontology):
+            if isinstance(connected_class, ThingClass):
+                _process_entity(connected_class, processed, new_context, new_llm_context)
     
     print("An ANN has been successfully instantiated.")
 
@@ -324,6 +553,6 @@ if __name__ == "__main__":
     
     with ontology:
         dfs_instantiate_annetto(ontology)
-        new_file_path = "annett-o-test.owl"
+        new_file_path = "data/owl/annett-o-test.owl"
         ontology.save(file=new_file_path, format="rdfxml")
         print(f"Ontology saved to {new_file_path}")

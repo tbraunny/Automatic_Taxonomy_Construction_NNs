@@ -1,34 +1,33 @@
-from owlready2 import ThingClass
+from re import sub, fullmatch
 
-def requires_final_instantiation(cls: ThingClass) -> bool:
-        """
-        Determines if a class requires instantiation as a standalone object.
-
-        A class requires instantiation if has no subclasses.
-
-        :param cls: The class to check.
-        :return: True if the class requires final instantiation, else False.
-        """
-        # has_data_properties = any(cls in prop.domain for prop in ontology.data_properties())
-        # has_object_properties = any(cls in prop.domain for prop in ontology.object_properties())
-        has_subclasses = any(list(cls.subclasses()))
-        return not has_subclasses
-
-def subclasses_requires_final_instantiation(cls: ThingClass) -> bool:
+def int_to_ordinal(n):
     """
-    Determines if a class is a direct parent of a leaf subclass.
-    
-    A class's subclasses require final instantiation if it has at least one subclass,
-    and all its subclasses have no further subclasses (i.e., they are leaf nodes).
-
-    :param cls: The ontology class to check.
-    :return: True if the class is a direct parent of a leaf class, else False.
+    Convert an integer into its ordinal representation.
+    For example: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", etc.
     """
-    subclasses = list(cls.subclasses())  # Get direct subclasses
+    if 10 <= n % 100 <= 20:
+        suffix = 'th'
+    else:
+        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+    return f"{n}{suffix}"
 
-    if not subclasses:  
-        return False  # If the class itself is a leaf
 
-    # Check if any direct subclasses are leaf classes
+def split_camel_case(names:list) -> list:
+    if isinstance(names, str):  # If a single string is passed, convert it into a list
+        names = [names]
 
-    return any(not list(sub.subclasses()) for sub in subclasses)
+    split_names = []
+    for name in names:
+        if fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
+            split_names.append(name)
+        else:
+            # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
+            name = sub(r'([a-z])([A-Z])', r'\1 \2', name)
+
+            # Split when a sequence of uppercase letters is followed by a lowercase letter
+            # (e.g., "CNNModel" → "CNN Model")
+            name = sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
+
+            split_names.append(name)
+
+    return split_names

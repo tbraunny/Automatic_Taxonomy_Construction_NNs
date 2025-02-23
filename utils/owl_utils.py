@@ -7,26 +7,6 @@ def load_ontology(ontology_path):
 
 """ 1) Class Functions """
 
-def split_camel_case(names:list) -> list:
-    if isinstance(names, str):  # If a single string is passed, convert it into a list
-        names = [names]
-
-    split_names = []
-    for name in names:
-        if re.fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
-            split_names.append(name)
-        else:
-            # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
-            name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
-
-            # Split when a sequence of uppercase letters is followed by a lowercase letter
-            # (e.g., "CNNModel" → "CNN Model")
-            name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
-
-            split_names.append(name)
-
-    return split_names
-
 def get_highest_subclass_ancestor(cls: ThingClass) -> ThingClass:
     """
     Finds the highest (most general) superclass for a given class, 
@@ -585,7 +565,7 @@ def assign_object_property_relationship(domain: Thing, ranges: Thing, object_pro
 
     # Check if domain and ranges are instances of Thing
     if not isinstance(domain, Thing):
-        raise TypeError("The 'demand' argument must be an instance of Thing.")
+        raise TypeError("The 'domain' argument must be an instance of Thing.")
     if not isinstance(ranges, Thing):
         raise TypeError("The 'ranges' argument must be an instance of Thing.")
 
@@ -621,14 +601,12 @@ if __name__ == "__main__":
 
     ontology = get_ontology("data/owl/annett-o-0.1.owl").load()  
 
-    instance1 = create_cls_instance(ontology.Network, "Conv Network")
-    instance2 = create_cls_instance(ontology.CostFunction, "Class1")
+    # instance1 = create_cls_instance(ontology.Network, "Conv Network")
+    # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
 
-    classes = ontology.CostFunction.is_a
-    print(classes)
+    # classes = ontology.CostFunction.is_a
+    # print(classes)
 
-    classes = assign_object_property_relationship(ontology, instance1, instance2)
+    # classes = assign_object_property_relationship(ontology, instance1, instance2)
 
 
-
-    
