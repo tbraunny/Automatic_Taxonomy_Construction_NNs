@@ -308,7 +308,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
         network_instance = _instantiate_cls(ontology.Network, "Convolutional Network")
         object_property = get_object_properties_with_domain_and_range(ontology, ontology.ANNConfiguration, ontology.Network)
 
-
         _link_instances(root_instance, network_instance, object_property)
         new_context = full_context + [network_instance]
         new_llm_context = llm_context + [network_instance.name]
