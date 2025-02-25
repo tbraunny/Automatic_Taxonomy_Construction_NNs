@@ -22,16 +22,6 @@ def dfs_instantiate_annetto(ontology: Ontology):
         instance = create_cls_instance(cls, instance_name)
         print(f"Instantiated {cls.name} with name: {instance_name}")
         return instance
-    
-    def _instantiate_generic_class(cls: ThingClass, full_context: list[Thing]):
-        # Extract names from full_context and handle empty list properly
-        context_names = [thing.name for thing in full_context] if full_context else []
-        # Build the generic name
-        generic_name = "-".join(context_names + [cls.name.lower()])
-        # Instantiate the class
-        instance = _instantiate_cls(cls, generic_name)
-        
-        return instance
 
     def _link_instances(parent_instance: Thing, child_instance: Thing, object_property:ObjectProperty):
         """
@@ -43,29 +33,14 @@ def dfs_instantiate_annetto(ontology: Ontology):
     def _query_llm(instructions: str, prompt: str) -> str:
         full_prompt = f"{instructions}\n{prompt}"
         try:
-            print(f"LLM query: {full_prompt}")
             response = query_llm(full_prompt)
+            print(f"LLM query: {full_prompt}")
             print(f"LLM query response: {response}")
             return response
         except Exception as e:
             print(f"LLM query error: {e}")
             return ""
     
-    def _recurse_connected_classes(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
-        connected = get_connected_classes(cls, ontology)
-        if connected:
-            for conn in connected:
-                if isinstance(conn, ThingClass):
-                    _process_entity(conn, processed, full_context, llm_context)
-                else:
-                    print(f"Encountered non-class connection from {cls.name}.")
-    
-    def _recurse_subclasses(cls: ThingClass, processed: set, full_context: list[Thing], llm_context: list[str]):
-        subs = get_subclasses(cls)
-        if subs:
-            for sub in subs:
-                _process_entity(sub, processed, full_context, llm_context)
-
     def _find_ancestor_network_instance(full_context: list[Thing]):
         """Find the network instance in the full context"""
         return next((thing for thing in full_context if ontology.Network in thing.is_a), None)
@@ -122,9 +97,9 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
             # Instantiate the appropriate loss function instance.
             if loss_obj_type == "minimize":
-                objective_function_instance = _instantiate_generic_class(ontology.MinObjectiveFunction, full_context)
+                objective_function_instance = _instantiate_cls(ontology.MinObjectiveFunction, f"{network_thing_name}_min_objective_function")
             elif loss_obj_type == "maximize":
-                objective_function_instance = _instantiate_generic_class(ontology.MinObjectiveFunction, full_context)
+                objective_function_instance = _instantiate_cls(ontology.MaxObjectiveFunction, f"{network_thing_name}_max_objective_function")
             else:
                 print(f"Invalid response for loss function objective for {loss_name}.")
                 continue
@@ -134,14 +109,13 @@ def dfs_instantiate_annetto(ontology: Ontology):
             loss_function_instance = _instantiate_cls(ontology.LossFunction, loss_name)
 
             # Instantiate the generic cost function instance.
-            cost_function_instance = _instantiate_generic_class(ontology.CostFunction, new_context)
+            cost_function_instance = _instantiate_cls(ontology.CostFunction, f"{objective_function_instance.name}_cost_function")
 
             # Link the loss function instance to the objective function instance.
             _link_instances(objective_function_instance, cost_function_instance, ontology.hasCost)
 
             # Link the loss function instance to the cost instance.
             _link_instances(cost_function_instance, loss_function_instance, ontology.hasLoss)
-
 
 
             # Process the regularizer functions explicitly associated with this loss function.
@@ -180,9 +154,7 @@ def dfs_instantiate_annetto(ontology: Ontology):
                 reg_instance = _instantiate_cls(ontology.RegularizerFunction, reg_name)
                 # Link the regularizer function instance to the loss function instance.
                 _link_instances(cost_function_instance, reg_instance, ontology.hasRegularizer)
-
-
-    
+ 
     def _process_layers(full_context: list[Thing]):
 
         # Get the network instance from the full context.
@@ -194,20 +166,78 @@ def dfs_instantiate_annetto(ontology: Ontology):
 
         # Process the input layer
 
+        input_layer_num_units_prompt = (
+            f"Extract the number of units in the input layer of the {network_thing_name} architecture. "
+            "The number of units refers to the number of neurons or nodes in the input layer. "
+            "Return the result as an integer in JSON format with the key 'answer'.\n\n"
+            
+            "Examples:\n"
+            "1. Network: Discriminator\n"
+            '{"answer": 784}\n\n'
+            
+            "2. Network: Generator\n"
+            '{"answer": 100}\n\n'
+            
+            "3. Network: Linear Regression\n"
+            '{"answer": 1}\n\n'
+            
+            f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+
+        input_layer_num_units_response = _query_llm("", input_layer_num_units_prompt)
+        if not input_layer_num_units_response:
+            print("No response for input layer units.")
+            return
+        input_layer_num_units = input_layer_num_units_response  # expected to be an integer
+
+        # Instantiate the input layer instance.
+        input_layer_instance = _instantiate_cls(ontology.InputLayer, f"{network_thing_name} Input Layer")
+
+        # Link the input layer instance to the network instance.
+        input_layer_instance.layer_num_units = [input_layer_num_units]
+
         # Process the output layer
 
-        # Process the hidden layers
+        output_layer_num_units_prompt = (
+            f"Extract the number of units in the output layer of the {network_thing_name} architecture. "
+            "The number of units refers to the number of neurons or nodes in the output layer. "
+            "Return the result as an integer in JSON format with the key 'answer'.\n\n"
+            
+            "Examples:\n"
+            "1. Network: Discriminator\n"
+            '{"answer": 1}\n\n'
+            
+            "2. Network: Generator\n"
+            '{"answer": 784}\n\n'
+            
+            "3. Network: Linear Regression\n"
+            '{"answer": 1}\n\n'
+            
+            f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
 
+        output_layer_num_units_response = _query_llm("", output_layer_num_units_prompt)
+        if not output_layer_num_units_response:
+            print("No response for output layer units.")
+            return
+        output_layer_num_units = output_layer_num_units_response  # expected to be an integer
 
+        # Instantiate the output layer instance.
+        output_layer_instance = _instantiate_cls(ontology.OutputLayer, f"{network_thing_name} Output Layer")
+
+        # Assign the output layer instance to it's number of parameters
+        output_layer_instance.layer_num_units = [output_layer_num_units]
 
 
         # Process Activation Layers
-        #  Data prop has_bias (boolean)
 
         activation_layer_prompt = (
-            "Extract the number of instances of each core layer type in the given network architecture. "
+            f"Extract the number of instances of each core layer type in the {network_thing_name} architecture. "
             "Only count layers that represent essential network operations such as convolutional layers, "
-            "fully connected (dense) layers, and attention layers. Do NOT count layers that serve as noise layers, "
+            "fully connected (dense) layers, and attention layers.\n"
+            "Do NOT count layers that serve as noise layers (i.e. guassian, normal, etc), "
             "activation functions (e.g., ReLU, Sigmoid), or modification layers (e.g., dropout, batch normalization), "
             "or pooling layers (e.g. max pool, average pool).\n\n"
             
@@ -375,10 +405,174 @@ def dfs_instantiate_annetto(ontology: Ontology):
                         _link_instances(layer_instance, activation_function_instance, ontology.hasActivationFunction)
                     else:
                         print(f"No activation function associated with {layer_ordinal} {layer_type}.")
+                
 
         # Process Aggregation Layers
 
         # Process Modification Layers
+
+        # Process Noise Layers
+
+        # First ask if there exists a noise layer
+        noise_layer_prompt = (
+            f"Does the {network_thing_name} architecture include any noise layers? "
+            "Noise layers are layers that introduce randomness or noise into the network. "
+            "Examples include Dropout, Gaussian Noise, and Batch Normalization. "
+            "Please respond with either 'true' or 'false' in JSON format using the key 'answer'.\n\n"
+            
+            "Examples:\n"
+            "1. Network: Discriminator\n"
+            '{"answer": "true"}\n\n'
+            
+            "2. Network: Generator\n"
+            '{"answer": "false"}\n\n'
+            
+            "3. Network: Linear Regression\n"
+            '{"answer": "true"}\n\n'
+            
+            f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+
+        noise_layer_response = _query_llm("", noise_layer_prompt)
+        if not noise_layer_response:
+            print("No response for noise layer classes.")
+            return
+        if noise_layer_response.lower() == "true":
+            
+            # Then we ask for the associated probability distribution function and it's associated hyperparameters in a json format
+            noise_layer_pdf_prompt = (
+                f"Extract the probability distribution function (PDF) and its associated hyperparameters for the noise layers in the {network_thing_name} architecture. "
+                "Noise layers introduce randomness or noise into the network. "
+                "Examples include Dropout, Gaussian Noise, and Batch Normalization. "
+                "Return the result in JSON format with the key 'answer'.\n\n"
+                
+                "Examples:\n"
+                "1. Network: Discriminator\n"
+                '{"answer": {"Dropout": {"rate": 0.5}}}\n\n'
+                
+                "2. Network: Generator\n"
+                '{"answer": {"Gaussian Noise": {"mean": 0, "stddev": 1}}}\n\n'
+                
+                "3. Network: Linear Regression\n"
+                '{"answer": {"Dropout": {"rate": 0.3}}}\n\n'
+                
+                f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+                '{"answer": "<Your Answer Here>"}'
+            )
+
+            noise_layer_pdf_response = _query_llm("", noise_layer_pdf_prompt)
+            if not noise_layer_pdf_response:
+                print("No response for noise layer PDF.")
+                return
+            noise_layer_pdf = noise_layer_pdf_response  # expected to be a dictionary of noise layer PDFs and hyperparameters
+
+            # Process the noise layers
+            for noise_name, noise_params in noise_layer_pdf.items():
+                # Instantiate the noise layer instance.
+                noise_layer_instance = _instantiate_cls(ontology.NoiseLayer, noise_name)
+                # Link the noise layer instance to the network instance.
+                _link_instances(network_thing, noise_layer_instance, ontology.hasLayer)
+                # Process the data properties of the noise layer.
+                for param_name, param_value in noise_params.items():
+                    setattr(noise_layer_instance, param_name, [param_value])
+            
+            # Process modification layers (e.g., dropout, batch normalization) excluding noise layers
+            modification_layer_prompt = (
+                f"Extract the number of instances of each modification layer type in the {network_thing_name} architecture. "
+                "Modification layers include layers that alter the input data or introduce noise, such as Dropout, Batch Normalization, and Layer Normalization. "
+                "Exclude noise layers (e.g., Gaussian Noise, Dropout) and activation layers (e.g., ReLU, Sigmoid) from your count.\n"
+                "Please provide the output in JSON format using the key \"answer\", where the value is a dictionary "
+                "mapping the layer type names to their counts.\n\n"
+                
+                "Examples:\n\n"
+
+                "1. Network Architecture Description:\n"
+                "- 3 Dropout layers\n"
+                "- 2 Batch Normalization layers\n"
+                "- 1 Layer Normalization layer\n"
+                "Expected JSON Output:\n"
+                "{\n"
+                "  \"answer\": {\n"
+                "    \"Dropout\": 3,\n"
+                "    \"Batch Normalization\": 2,\n"
+                "    \"Layer Normalization\": 1\n"
+                "  }\n"
+                "}\n\n"
+
+                "2. Network Architecture Description:\n"
+                "- 3 Dropout layers\n"
+                "- 2 Batch Normalization layers\n"
+                "- 1 Layer Normalization layer\n"
+                "Expected JSON Output:\n"
+                "{\n"
+                "  \"answer\": {\n"
+                "    \"Dropout\": 3,\n"
+                "    \"Batch Normalization\": 2,\n"
+                "    \"Layer Normalization\": 1\n"
+                "  }\n"
+                "}\n\n"
+
+                "Now, for the following network:\n"
+                f"Network: {network_thing_name}\n"
+                "Expected JSON Output:\n"
+                "{\n"
+                "  \"answer\": \"<Your Answer Here>\"\n"
+                "}\n"
+            )
+
+            modification_layer_response = _query_llm("", modification_layer_prompt)
+            if not modification_layer_response:
+                print("No response for modification layer classes.")
+                return
+            modification_layer_counts = modification_layer_response  # expected to be a dictionary of layer type names and counts
+
+            # If there is a fuzzy match with droput layer, process seperately and ask what its dropout rate is
+            dropout_match = next([s for s in modification_layer_counts if fuzz.token_set_ratio("dropout", s) >= 85])
+            if dropout_match:
+                # Process the dropout layer
+                dropout_layer_rate_prompt = (
+                    f"Extract the dropout rate for the Dropout layers in the {network_thing_name} architecture. "
+                    "The dropout rate is the fraction of input units to drop during training. "
+                    "Return the result as a float in JSON format with the key 'answer'.\n\n"
+                    
+                    "Examples:\n"
+                    "1. Network: Discriminator\n"
+                    '{"answer": 0.5}\n\n'
+                    
+                    "2. Network: Generator\n"
+                    '{"answer": 0.3}\n\n'
+                    
+                    "3. Network: Linear Regression\n"
+                    '{"answer": 0.2}\n\n'
+                    
+                    f"Now, for the following network:\nNetwork: {network_thing_name}\n"
+                    '{"answer": "<Your Answer Here>"}'
+                )
+
+                dropout_layer_rate_response = _query_llm("", dropout_layer_rate_prompt)
+                if not dropout_layer_rate_response:
+                    print("No response for dropout layer rate.")
+                    return
+                dropout_layer_rate = dropout_layer_rate_response
+
+            # Process the modification layers
+            for layer_type, layer_count in modification_layer_counts.items():
+                # Instantiate the modification layer instances.
+                for i in range(layer_count):
+                    if layer_type == dropout_match:
+                        layer_instance = _instantiate_cls(ontology.DropoutLayer, f"{layer_type} {i + 1}")
+                        # Set the dropout rate for the dropout layer
+                        layer_instance.dropout_rate = [dropout_layer_rate]
+                        _link_instances(network_thing, layer_instance, ontology.hasLayer)
+                        continue
+                    else:
+                        layer_instance = _instantiate_cls(ontology.ModificationLayer, f"{layer_type} {i + 1}")
+                        # Convert index to ordinal for natural language
+                        layer_ordinal = int_to_ordinal(i + 1)
+                        # Link the modification layer instance to the network instance.
+                        _link_instances(network_thing, layer_instance, ontology.hasLayer)
+
 
         # Process Separation Layers
     
@@ -434,108 +628,19 @@ def dfs_instantiate_annetto(ontology: Ontology):
         # Link the task characterization instance to the network instance
         _link_instances(network_thing, task_characterization_instance, ontology.hasTaskType)
 
-
-
     def _process_entity(cls: ThingClass, processed: set, full_context: list[Thing]):
         if cls in processed or cls.name in OMIT_CLASSES:
             return
         processed.add(cls)
 
-        # if cls is ontology.Layer:
-        #     _process_layers(full_context)
+        if cls is ontology.Layer:
+            _process_layers(full_context)
 
-        # if cls is ontology.ObjectiveFunction:
-        #     _process_objective_functions(full_context)
+        if cls is ontology.ObjectiveFunction:
+            _process_objective_functions(full_context)
 
         if cls is ontology.TaskCharacterization:
             _process_task_characterization(full_context)
-
-        return
-        
-        inst_type = get_instantiation_type(cls)
-        print(f"Processing {cls.name}: instantiation type = {inst_type}, is_subclass = {is_subclass}")
-        
-        # Helper to update branch context: when refining a parent instance with a subclass,
-        # we “replace” the last element of full_context.
-        def update_context(instance: Thing):
-            if is_subclass and full_context:
-                return full_context[:-1] + [instance]
-            else:
-                return full_context + [instance]
-        
-        if inst_type == "organizational":
-            known_subclasses = get_subclasses(cls)
-            known_map = {subcls.name.lower(): subcls for subcls in known_subclasses}
-            known_names_str = ", ".join(known_map.keys())
-            prompt = (f"Current branch context: {' > '.join(llm_context) if llm_context else 'None'}.\n"
-                      f"For the organizational class '{cls.name}', the known subclasses are: {known_names_str}.\n"
-                      "Based on the paper, list the relevant instance types for this category. "
-                      "Include instance names that match the known subclasses as well as any new types not in the list. "
-                      "Return a comma-separated list.")
-            instructions = ""
-            response = _query_llm(instructions, prompt)
-            if not response:
-                print(f"No response for organizational instantiation of {cls.name}.")
-                return
-            candidate_instances = [name.strip() for name in response.split(",") if name.strip()]
-            for candidate in candidate_instances:
-                best_match = None
-                best_score = 0
-                for known_name in known_map.keys():
-                    score = fuzz.ratio(candidate.lower(), known_name)
-                    if score > best_score:
-                        best_score = score
-                        best_match = known_name
-                threshold = 70  # adjust threshold as needed
-                if best_match and best_score >= threshold:
-                    chosen_subclass = known_map[best_match]
-                    print(f"Candidate '{candidate}' matched known subclass '{chosen_subclass.name}' with score {best_score}.")
-                else:
-                    new_subclass_name = candidate.replace(" ", "")
-                    print(f"Creating new subclass '{new_subclass_name}' under {cls.name} for candidate '{candidate}' (score: {best_score}).")
-                    with ontology:
-                        new_sub = create_subclass(ontology, new_subclass_name, cls)
-                    chosen_subclass = new_sub
-                    known_map[new_subclass_name.lower()] = new_sub
-                instance = _instantiate_cls(chosen_subclass, candidate)
-                new_full_context = full_context + [instance]
-                new_llm_context = llm_context + [candidate]
-                _instantiate_data_properties(chosen_subclass, instance, new_llm_context)
-                if full_context:
-                    parent_instance = full_context[-1]
-                    _link_instances(parent_instance, instance, object_property)
-                # Optionally process connected classes and subclasses:
-                # _process_connected_classes(chosen_subclass, processed, new_full_context, new_llm_context, object_property)
-                # _process_subclasses(chosen_subclass, processed, new_full_context, new_llm_context, object_property)
-        
-        elif inst_type == "meaningful":
-            instance_names = _get_cls_instances(cls, llm_context)
-            if not instance_names:
-                print(f"No LLM response for meaningful instantiation of {cls.name}; aborting branch.")
-                return
-            for name in instance_names:
-                instance = _instantiate_cls(cls, name)
-                new_context = update_context(instance)
-                new_llm_context = llm_context + [name]
-                _instantiate_data_properties(cls, instance, new_llm_context)
-                if full_context:
-                    parent_instance = full_context[-1]
-                    _link_instances(parent_instance, instance, object_property)
-                _process_connected_classes(cls, processed, new_context, new_llm_context, object_property)
-                _process_subclasses(cls, processed, new_context, new_llm_context, object_property)
-        
-        elif inst_type == "generic":
-            generic_name = "-".join(llm_context + [cls.name.lower()]) if llm_context else cls.name.lower()
-            instance = _instantiate_cls(cls, generic_name)
-            new_context = update_context(instance)
-            new_llm_context = llm_context  # do not update llm context for generic instantiation
-            _instantiate_data_properties(cls, instance, new_llm_context)
-            if full_context:
-                parent_instance = full_context[-1]
-                _link_instances(parent_instance, instance, object_property)
-            _process_connected_classes(cls, processed, new_context, new_llm_context, object_property)
-            _process_subclasses(cls, processed, new_context, new_llm_context, object_property)
-    
     
     # Verify required root exists
     if not hasattr(ontology, 'ANNConfiguration'):
@@ -572,12 +677,11 @@ def dfs_instantiate_annetto(ontology: Ontology):
         new_llm_context = llm_context + [network_instance.name]
         for connected_class in get_connected_classes(ontology.Network, ontology):
             if isinstance(connected_class, ThingClass):
-                _process_entity(connected_class, processed, new_context, new_llm_context)
+                _process_entity(connected_class, processed, new_context)
     
     print("An ANN has been successfully instantiated.")
 
 if __name__ == "__main__":
-    OUTPUT_FILE = './test.txt'
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
     ontology = get_ontology(ontology_path).load()
     

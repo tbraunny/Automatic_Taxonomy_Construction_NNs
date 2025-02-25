@@ -1,6 +1,7 @@
 from re import sub, fullmatch
 
 def int_to_ordinal(n):
+
     """
     Convert an integer into its ordinal representation.
     For example: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", etc.
@@ -13,6 +14,7 @@ def int_to_ordinal(n):
 
 
 def split_camel_case(names:list) -> list:
+
     if isinstance(names, str):  # If a single string is passed, convert it into a list
         names = [names]
 

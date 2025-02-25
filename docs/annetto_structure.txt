@@ -11,13 +11,13 @@
                                 - Subclass: L2RegularizerFunction 
                 - Subclass: MaxObjectiveFunction 
                 - Subclass: MinObjectiveFunction 
-        - Connected Class: Layer
-                - Data Prop: layer_num_units (atomic)
-                - Subclass: InOutLayer
+        - Connected Class: Layer 
+                - Data Prop: layer_num_units (atomic) 
+                - Subclass: InOutLayer 
                         - Subclass: InputLayer 
                         - Subclass: OutputLayer 
-                - Subclass: HiddenLayer
-                        - Subclass: ActivationLayer
+                - Subclass: HiddenLayer 
+                        - Subclass: ActivationLayer 
                                 - Data Prop: has_bias (atomic)
                                 - Connected Class: ActivationFunction
                                         - Subclass: NonDiff
