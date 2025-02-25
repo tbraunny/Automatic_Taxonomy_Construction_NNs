@@ -27,7 +27,6 @@ import os
 import json
 import logging
 import time
-import re
 import asyncio
 import hashlib
 from functools import wraps
@@ -54,7 +53,8 @@ CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
-SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen:32b")
+SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
+
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
@@ -391,11 +391,20 @@ class LLMQueryEngine:
                 break
             current_context_text = "\n\n".join(chunk["content"] for chunk in current_context)
             expansion_prompt = (
-                "The current context for answering the query is provided below. "
-                "Identify additional keywords or topics that could provide more relevant information.\n\n"
-                f"Current context:\n{current_context_text}\n\n"
-                "List additional keywords or phrases (comma-separated) to expand the search:"
-            )
+            "Goal:\n"
+            "Identify additional keywords or topics that could provide more relevant information for the query.\n\n"
+            
+            "Return Format:\n"
+            "Return a comma-separated list of keywords (no extra text or disclaimers).\n\n"
+            
+            "Warnings:\n"
+            "- If you are unsure, provide your best guess.\n"
+            "- Only list keywords; do not include phrases like 'I am an AI'.\n\n"
+            
+            "For context:\n"
+            f"{current_context_text}"
+        )
+
             try:
                 response = ollama.generate(model=self.generation_model, prompt=expansion_prompt)
                 keywords = response.get("response", "").strip()
@@ -429,51 +438,49 @@ class LLMQueryEngine:
             for chunk in context_chunks
         )
         full_prompt = (
-            "You are a helpful assistant that answers technical questions by fusing evidence from multiple documents.\n"
-            "Below are several context sections, each starting with a header. Please read each section carefully and integrate the relevant information to answer the query.\n\n"
-            "### Evidence Blocks:\n"
+            "Goal:\n"
+            "Answer the technical query by fusing the evidence from the provided context.\n\n"
+
+            f"Query: {query}"
+            
+            "Return Format:\n"
+            "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
+            "whose value is your final answer. Below are some examples:\n"
+            '{"answer": ["item1","item2"]}\n'
+            '{"answer": "true"}\n\n'
+            '{"answer": []}\n\n'
+
+            
+            "Warnings:\n"
+            "- Do not disclaim that you are an AI.\n"
+            "- Only use the context provided below; do not add outside information.\n\n"
+            
+            "Context Dump:\n"
             f"{evidence_blocks}\n\n"
-            f"Query: {query}\n"
-            "Please provide an explanation first, and then on a new line, output a JSON array object that contains only one key 'answer' "
-            "with your answer listed as the value. For example, the last line of your output should be:\n"
-            '{"answer": ["name1","name2","name3"]}'
-        )
-        full_prompt = (
-            "You are a helpful assistant that answers technical questions by fusing evidence from multiple documents.\n"
-            "Below are several context sections. Please read each section carefully and integrate the relevant information to answer the query.\n\n"
-            "### Evidence Blocks:\n"
-            f"{evidence_blocks}\n\n"
-            "###"
-            f"Query: {query}\n"
-            "Do not abreviate answers."
-            "Please provide an explanation first, and then on a new line, output a JSON array object that contains only one key 'answer' "
-            "with your answer listed as the value. For example, the last line of your output should be:\n"
-            """{"name":"John"}"""
-            """{"age":30}"""
-            """{"cars":["Ford", "BMW", "Fiat"]}"""
         )
 
         logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
             response = ollama.generate(model=self.generation_model, prompt=full_prompt)
             generated_text = response.get("response", "No response generated.").strip()
+
+            print(generated_text)
             logger.info("Raw generated response: %s", generated_text)
-            json_matches = re.findall(r'\{[^}]*\}', generated_text)
-            for json_str in json_matches:
+            start = generated_text.find("{")
+            end = generated_text.rfind("}")
+            if start != -1 and end != -1:
+                json_str = generated_text[start:end+1]
                 try:
                     result_obj = json.loads(json_str)
                     if "answer" in result_obj:
-                        answer = result_obj["answer"]
-                        # if isinstance(answer, list):
-                        #     return ", ".join(answer)
-                        return answer
-                except json.JSONDecodeError:
-                    continue
+                        return result_obj["answer"]
+                except json.JSONDecodeError as e:
+                    logger.exception("JSON decoding error: %s", e)
+
             raise ValueError("No valid JSON with 'answer' key found.")
         except Exception as e:
             logger.exception("Error generating final response: %s", str(e))
             raise
-            # return "Error generating response."
 
     def query(self, query: str, max_chunks: int = 15, token_budget: int = 1024) -> str:
         """

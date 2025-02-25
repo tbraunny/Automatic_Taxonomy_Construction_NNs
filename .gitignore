@@ -4,3 +4,5 @@ __pycache__/
 *.pyo
 .DS_Store
 front_end/static/instance_graph.html
+test.py
+test2.py

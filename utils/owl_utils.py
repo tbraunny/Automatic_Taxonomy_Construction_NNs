@@ -7,57 +7,40 @@ def load_ontology(ontology_path):
 
 """ 1) Class Functions """
 
-def split_camel_case(names:list) -> list:
-    if isinstance(names, str):  # If a single string is passed, convert it into a list
-        names = [names]
-
-    split_names = []
-    for name in names:
-        if re.fullmatch(r'[A-Z]{2,}[a-z]*$', name):  # Skip all-uppercase acronyms like "RNRtop"
-            split_names.append(name)
-        else:
-            # Split between lowercase-uppercase (e.g., "NoCoffee" → "No Coffee")
-            name = re.sub(r'([a-z])([A-Z])', r'\1 \2', name)
-
-            # Split when a sequence of uppercase letters is followed by a lowercase letter
-            # (e.g., "CNNModel" → "CNN Model")
-            name = re.sub(r'([A-Z]+)([A-Z][a-z])', r'\1 \2', name)
-
-            split_names.append(name)
-
-    return split_names
-
-def get_highest_subclass_ancestor(cls):
+def get_highest_subclass_ancestor(cls: ThingClass) -> ThingClass:
     """
-    This function finds the highest (most general) superclass for a given 
-class.
-    
+    Finds the highest (most general) superclass for a given class, 
+    Skips any parent that is not of type ThingClass.
+
     Args:
-        cls: A ThingClass instance from which to find the highest 
-ancestor.
-        
+        cls: A ThingClass instance from which to find the highest ancestor.
+
     Returns:
-        The original class with an explicit subclass relationship added to 
-its highest ancestor, if it doesn't already exist.
+        The ThingClass of the highest ancestor of cls, or cls itself 
+        if no higher ancestor is found.
     """
-    # Traverse up the hierarchy to find the highest ancestor
-    current_class = cls
+    current = cls
     while True:
-        parents = list(current_class.is_a)
-        if not parents:
-            break  # No more parents; this is the highest ancestor
-        current_class = parents[0]  # Move up to the first parent (you can modify this logic to handle multiple inheritance)
-    
-    # Now, 'current_class' is the highest ancestor
-    print(f"The highest ancestor of {cls} is {current_class}.")
-    
-    # If there's no explicit subclass relationship, create one
-    if not cls in current_class.subclasses():
-        print("Adding an explicit subclass relationship...")
-        cls.is_a.append(current_class)
-    
-    return cls
+        # Get immediate superclasses excluding owl.Thing
+        superclasses = []
+        for parent in current.is_a:
+            if not isinstance(parent, ThingClass):
+                continue  # Skip if not a ThingClass
+            
+            if parent == owl.Thing:
+                continue  # Skip owl.Thing
+            
+            superclasses.append(parent)
         
+        if not superclasses:
+            # No more valid parents to traverse
+            return current
+        
+        # Move to the first valid superclass
+        current = superclasses[0]
+
+
+
 
 def get_class_parents(cls: ThingClass) -> list:
     """
@@ -108,31 +91,76 @@ def get_class_by_name(onto, class_name):
         return None
 
 
-def is_subclass(cls, parent_cls):
+def is_subclass_of_class(cls, parent_cls):
     """
     Determines whether a given class is a subclass of another class.
 
-    !!! Not sure if this is the correct logic !!!
     Args:
         cls: The class to check.
-        parent_cls: The parent class to compare against.
+        parent_cls: The class to check against.
 
     Returns:
         bool: True if cls is a subclass of parent_cls, False otherwise.
     """
-    return parent_cls in cls.ancestors() and cls is not parent_cls
+    return issubclass(cls, parent_cls)
 
+def is_subclass_of_any(ontology, cls):
+    """
+    Determines whether a given class is a subclass of any class in the ontology.
+
+    Args:
+        ontology: The ontology containing the classes.
+        cls: The class to check.
+
+    Returns:
+        bool: True if cls is a subclass of any other class, False otherwise.
+    """
+
+    if cls.is_a:
+        return True
+    return False
 
 def get_base_class(onto:Ontology):
     return onto.ANNConfiguration
 
+def get_object_properties_with_domain_and_range(ontology, domain_class, range_class):
+    """
+    Returns a list of object properties in the ontology that have the specified domain and range classes.
 
-def get_connected_classes(cls, ontology):
+    :param ontology: The loaded Owlready2 ontology.
+    :param domain_class: The domain class to match.
+    :param range_class: The range class to match.
+    :return: A list of matching object properties.
+    """
+    matching_property = None
+
+    counter = 0
+
+    # Iterate over all object properties in the ontology
+    for obj_property in ontology.object_properties():
+        # Get domain and range for the property
+        domains = list(obj_property.domain)
+        ranges = list(obj_property.range)
+
+        # Check if the domain and range match the given classes
+        if domain_class in domains and range_class in ranges:
+            matching_property = obj_property
+            counter += 1
+
+    if counter > 1:
+        raise ValueError(f"More than one object property found with domain ({domain_class}) and range classes ({range_class}).")
+
+    print(f"Found object property: {matching_property} with domain ({domain_class}) and range ({range_class}).")
+    return matching_property
+
+
+def get_connected_classes(cls:ThingClass, ontology, return_object_properties:bool=False):
     """
     Retrieves classes connected to the given class via object properties.
     """
     connected_classes = set()
     object_properties = [prop for prop in ontology.object_properties() if cls in prop.domain]
+
     for prop in object_properties:
         for range_cls in prop.range:
             # Skip if the range is the same as cls
@@ -141,6 +169,7 @@ def get_connected_classes(cls, ontology):
             if isinstance(range_cls, ThingClass):
                 connected_classes.add(range_cls)
     connected_classes = list(connected_classes)
+
     return connected_classes if connected_classes != [] else None
 
 
@@ -478,32 +507,77 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
 def get_instance_class(instance: Thing) -> ThingClass:
     return type(instance)
 
-def assign_object_property_relationship(ontology, domain_instance, range_instance):
+# def assign_object_property_relationship(ontology, domain_instance, range_instance):
+#     """
+#     Automatically finds the correct object property and assigns the relationship.
+
+#     :param ontology: The ontology where the object property exists.
+#     :param domain_instance: The instance to add to the domain.
+#     :param range_instance: The instance to add to the range.
+#     """
+#     print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
+#     domain_cls = get_instance_class(domain_instance)  # Get class of domain instance
+#     range_cls = get_instance_class(range_instance)  # Get class of range instance
+
+#     if is_subclass_of_any(ontology, range_cls):
+#         range_cls = get_highest_subclass_ancestor(range_cls)
+
+#     # Find the object property with domain_cls and range_cls
+#     matching_property = None
+#     for prop in ontology.object_properties():
+#         if domain_cls in prop.domain and range_cls in prop.range:
+#             matching_property = prop
+#             break  # Stop after finding the first match; there shouldn't be more than one?
+
+#     if not matching_property:
+#         raise ValueError(f"No matching object property found for {domain_cls} -> {range_cls}")
+
+#     # Set the relation dynamically
+#     matching_property[domain_instance] = [range_instance]
+    
+#     assert range_instance in getattr(domain_instance, matching_property.name), \
+#     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
+
+# def assign_object_property_relationship(ontology, domain_instance, range_instance, object_property):
+#     """
+#     Automatically finds the correct object property and assigns the relationship.
+
+#     :param ontology: The ontology where the object property exists.
+#     :param domain_instance: The instance to add to the domain.
+#     :param range_instance: The instance to add to the range.
+#     :param object_property: The object property to use for the relationship.
+#     """
+#     print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
+#     # Set the relation
+#     object_property[domain_instance] = [range_instance]
+    
+#     assert range_instance in getattr(domain_instance, object_property.name), \
+#     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {object_property.name}"
+
+def assign_object_property_relationship(domain: Thing, ranges: Thing, object_property: ObjectPropertyClass):
     """
-    Automatically finds the correct object property and assigns the relationship.
+    Connect two Thing instances via a specified ObjectProperty in Owlready2.
 
-    :param ontology: The ontology where the object property exists.
-    :param domain_instance: The instance to add to the domain.
-    :param range_instance: The instance to add to the range.
+    :param domain: The Thing instance representing the domain.
+    :param ranges: The Thing instance representing the range.
+    :param object_property: The ObjectProperty to connect the instances.
     """
-    domain_cls = get_instance_class(domain_instance)  # Get class of domain instance
-    range_cls = get_instance_class(range_instance)  # Get class of range instance
 
-    # Find the object property with domain_cls and range_cls
-    matching_property = None
-    for prop in ontology.object_properties():
-        if domain_cls in prop.domain and range_cls in prop.range:
-            matching_property = prop
-            break  # Stop after finding the first match; there shouldn't be more than one?
+    # Check if domain and ranges are instances of Thing
+    if not isinstance(domain, Thing):
+        raise TypeError("The 'domain' argument must be an instance of Thing.")
+    if not isinstance(ranges, Thing):
+        raise TypeError("The 'ranges' argument must be an instance of Thing.")
 
-    if not matching_property:
-        raise ValueError(f"No matching object property found for {domain_cls} -> {range_cls}")
+    # Check if object_property is a valid ObjectProperty
+    if not isinstance(object_property, ObjectPropertyClass):
+        raise TypeError("The 'object_property' argument must be an instance of ObjectProperty.")
 
-    # Set the relation dynamically
-    matching_property[domain_instance] = [range_instance]
+    # Connect the two Thing instances
+    object_property[domain].append(ranges)
 
-    assert range_instance in getattr(domain_instance, matching_property.name), \
-    f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
+    print(f"Connected {domain.name} to {ranges.name} via {object_property.name}")
+
 
 def list_owl_classes(onto: Ontology):
     # List all classes
@@ -527,10 +601,12 @@ if __name__ == "__main__":
 
     ontology = get_ontology("data/owl/annett-o-0.1.owl").load()  
 
-    network_instance = create_cls_instance(ontology.Network, "Conv Network")
-    layer_instance = create_cls_instance(ontology.Layer, "Conv1")
+    # instance1 = create_cls_instance(ontology.Network, "Conv Network")
+    # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
 
-    assign_object_property_relationship(ontology, network_instance, layer_instance)
+    # classes = ontology.CostFunction.is_a
+    # print(classes)
+
+    # classes = assign_object_property_relationship(ontology, instance1, instance2)
 
 
-    
