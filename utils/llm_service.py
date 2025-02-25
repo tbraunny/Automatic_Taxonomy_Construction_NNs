@@ -45,8 +45,8 @@ except ImportError:
 from rank_bm25 import BM25Okapi
 import networkx as nx
 
-from utils.doc_chunker import semantically_chunk_documents
-from utils.document_json_utils import load_documents_from_json
+from doc_chunker import semantically_chunk_documents
+from document_json_utils import load_documents_from_json
 
 # Configs
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
@@ -339,6 +339,9 @@ class LLMQueryEngine:
         logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
         dense_candidates = self.retrieve_initial_chunks(query, max_chunks=max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks=max_chunks)
+
+        dense_candidates_code = self.retrieve_initial_chunks(query , max_chunks=max_chunks)
+
         return merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(self, ranked_chunks: list, token_budget: int) -> list:
@@ -534,7 +537,7 @@ def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str
 
 # For standalone testing
 if __name__ == "__main__":
-    json_file_path = "data/alexnet/doc_alexnet.json"
+    json_file_path = "data/alexnet/alexnet_code0.json"
     engine = init_engine(
         json_file_path,
         chunk_size=CHUNK_SIZE,
