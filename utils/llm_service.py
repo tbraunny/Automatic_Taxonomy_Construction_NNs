@@ -528,7 +528,56 @@ def init_engine(doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
 
 def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str:
     """
-    Public function to process a query.
+    Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
+
+    The prompt should include few-shot examples demonstrating the expected structure of the output.
+    The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value 
+    can be one of the following types: 
+    - Integer (e.g., `{"answer": 100}`)
+    - String (e.g., `{"answer": "ReLU Activation"}`)
+    - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
+    - Dictionary mapping strings to integers (e.g., `{"answer": {"Convolutional": 4, "FullyConnected": 1}}`)
+
+    The function checks for cached responses before querying the LLM.
+    If an error occurs, it logs the error and returns an empty response.
+
+    Example prompt structure:
+
+    Examples:
+    Loss Function: Discriminator Loss
+    1. Network: Discriminator
+    {"answer": 784}
+    
+    2. Network: Generator
+    {"answer": 100}
+    
+    3. Network: Linear Regression
+    {"answer": 1}
+    
+    Now, for the following network:
+    Network: {network_thing_name}
+    Expected JSON Output:
+    {"answer": "<Your Answer Here>"}
+
+    Loss Function: Generator Loss
+    {"answer": ["L2 Regularization", "Elastic Net"]}
+
+    Loss Function: Cross-Entropy Loss
+    {"answer": []}
+
+    Loss Function: Binary Cross-Entropy Loss
+    {"answer": ["L2 Regularization"]}
+
+    Now, for the following loss function:
+    Loss Function: {loss_name}
+    {"answer": "<Your Answer Here>"}
+
+    Args:
+        instructions (str): Additional guidance for formatting the response.
+        prompt (str): The main query containing the few-shot examples.
+
+    Returns:
+        Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
     """
     global _engine_instance
     if _engine_instance is None:

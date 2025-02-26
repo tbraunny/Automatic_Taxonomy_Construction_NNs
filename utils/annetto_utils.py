@@ -33,17 +33,3 @@ def split_camel_case(names:list) -> list:
             split_names.append(name)
 
     return split_names
-
-def get_right_of_last_underscore(s):
-    """
-    Returns the substring to the right of the last underscore.
-    
-    Args:
-        s (str): Input string.
-        
-    Returns:
-        str: Substring after the last underscore. Returns the original string if no underscore is found.
-    """
-    if "_" in s:
-        return s.rsplit("_", 1)[-1]
-    return s
