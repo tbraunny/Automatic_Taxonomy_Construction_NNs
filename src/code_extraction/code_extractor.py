@@ -117,27 +117,28 @@ class CodeProcessor(ast.NodeVisitor):
         return self.sections
 
 
-def process_code_file(filepath, count):
+def process_code_file(files):
     """
     Traverse abstract syntax tree & dump relevant code into JSON
     """
-    with open(filepath, "r") as f:
-        code = f.read()
+    for count , file in enumerate(files):
+        with open(file , "r") as f:
+            code = f.read()
 
-    tree = ast.parse(code)
+        tree = ast.parse(code)
 
-    # for node in ast.walk(tree):
-    #     for child in ast.iter_child_nodes(node):
-    #         child.parent = node  # set reference nodes (ex. node.parent)
-    
-    processor = CodeProcessor(code)
-    processor.visit(tree)
+        # for node in ast.walk(tree):
+        #     for child in ast.iter_child_nodes(node):
+        #         child.parent = node  # set reference nodes (ex. node.parent)
+        
+        processor = CodeProcessor(code)
+        processor.visit(tree)
 
-    output_file = filepath.replace(".py", f"_code{count}.json")
-    with open(output_file, "w") as json_file:
-        json.dump(processor.parse_code() , json_file , indent=3)
-    
-    print(f"JSONified code saved to {output_file}")
+        output_file = file.replace(".py", f"_code{count}.json")
+        with open(output_file, "w") as json_file:
+            json.dump(processor.parse_code() , json_file , indent=3)
+        
+        print(f"JSONified code saved to {output_file}")
 
 
 def main():
@@ -145,8 +146,7 @@ def main():
     files = glob.glob(f"data/{ann_name}/*.py")
     print("File(s) found: " , files)
 
-    for file_count, f in enumerate(files):
-        process_code_file(f , file_count)
+    process_code_file(files)
 
 
 if __name__ == '__main__':

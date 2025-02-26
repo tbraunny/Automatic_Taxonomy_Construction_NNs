@@ -45,8 +45,8 @@ except ImportError:
 from rank_bm25 import BM25Okapi
 import networkx as nx
 
-from doc_chunker import semantically_chunk_documents
-from document_json_utils import load_documents_from_json
+from utils.doc_chunker import semantically_chunk_documents
+from utils.document_json_utils import load_documents_from_json
 
 # Configs
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
@@ -535,7 +535,6 @@ def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str
         raise Exception("Engine not initialized. Please call init_engine(json_file_path) first.")
     return _engine_instance.query(query, max_chunks=max_chunks, token_budget=token_budget)
 
-# For standalone testing
 if __name__ == "__main__":
     json_file_path = "data/alexnet/alexnet_code0.json"
     engine = init_engine(
