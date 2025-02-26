@@ -34,6 +34,7 @@ from functools import wraps
 import numpy as np
 import ollama
 import faiss
+from typing import Union
 
 embedding_cache = {}  # In-memory only
 
@@ -428,10 +429,12 @@ class LLMQueryEngine:
         return current_context
     
     @retry(max_attempts=3)
-    def generate_response(self, query: str, context_chunks: list) -> str:
+    def generate_response(self, query: str, context_chunks: list) -> Union[dict, int, str, list[str]]:
         """
         Generate the final answer using a Fusion-in-Decoder style prompt,
         aggregating all the retrieved evidence.
+        Returns the final answer as a as a dictionary, int, str, list[str], depending 
+        on the format required for the llm to answer properly.
         """
         evidence_blocks = "\n\n".join(
             f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"

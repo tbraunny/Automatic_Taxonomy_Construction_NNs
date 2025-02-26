@@ -9,7 +9,7 @@ from utils.owl_utils import (
     assign_object_property_relationship, 
     create_subclass,
 )
-from utils.annetto_utils import int_to_ordinal, split_camel_case
+from utils.annetto_utils import int_to_ordinal, split_camel_case, get_right_of_last_underscore
 from utils.llm_service import init_engine, query_llm
 from fuzzywuzzy import fuzz
 from json import load
@@ -35,6 +35,7 @@ class OntologyInstantiator:
         """
         Instantiate a given ontology class with the specified instance name.
         """
+        instance_name = instance_name.replace(" ", "-").lower()
         unique_instance_name = f"{cls.name}_{instance_name}"
         instance = create_cls_instance(cls, unique_instance_name)
         self.logger.info(f"Instantiated {cls.name} with name: {unique_instance_name}")
@@ -65,7 +66,9 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"LLM query error: {e}")
             return ""
-
+        
+        
+    
     def _find_ancestor_network_instance(self) -> Thing:
         """
         Return the network instance from the current context.
@@ -523,14 +526,15 @@ class OntologyInstantiator:
         init_engine(self.json_file_path)
 
         # Extract the title from the JSON file.
-        try:
-            with open(self.json_file_path, 'r', encoding='utf-8') as file:
-                data = load(file)
-            titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
-            title = titles[0] if titles else "DefaultTitle"
-        except Exception as e:
-            self.logger.error(f"Error reading JSON file: {e}")
-            title = "DefaultTitle"
+        title = "AlexNet"
+        # try:
+        #     with open(self.json_file_path, 'r', encoding='utf-8') as file:
+        #         data = load(file)
+        #     titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
+        #     title = titles[0] if titles else "DefaultTitle"
+        # except Exception as e:
+        #     self.logger.error(f"Error reading JSON file: {e}")
+        #     title = "DefaultTitle"
 
         self.processed.add(self.ontology.TrainingStrategy)  # Temporary fix to avoid infinite loop
         self.processed.add(self.ontology.ANNConfiguration)
