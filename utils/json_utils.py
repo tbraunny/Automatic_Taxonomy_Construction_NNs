@@ -1,6 +1,7 @@
 import json
+from typing import Any
 
-def get_json_value(key: str, filename: str):
+def get_json_value(key: str, filename: str) -> Any:
     """
     Reads a JSON file and returns the value of the given key.
 

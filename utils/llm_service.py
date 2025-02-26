@@ -524,7 +524,7 @@ def init_engine(doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     global _engine_instance
     if _engine_instance is None:
         _engine_instance = LLMQueryEngine(doc_json_file_path, **kwargs)
-    return _engine_instance
+    return _engine_instance 
 
 def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str:
     """
