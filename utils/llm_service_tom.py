@@ -34,9 +34,10 @@ from functools import wraps
 import numpy as np
 import ollama
 import faiss
-from typing import Union
 
 embedding_cache = {}  # In-memory only
+
+#logging.basicConfig(level=logging.INFO) # for verbose logging
 
 try:
     import tiktoken
@@ -193,6 +194,32 @@ def _get_embedding(text: str, model: str) -> list:
         logger.error("Embedding failed for text: %s", text[:30])
         raise ValueError("Embedding failed")
 
+class FAISSIndexManager:
+    """Manages a persistent FAISS index to avoid reinitializing the vector db"""
+    
+    def __init__(self, embedding_dim: int):
+        self.embedding_dim = embedding_dim
+        self.index = faiss.IndexFlatIP(embedding_dim)
+        self.embeddings = []
+        self.mapping = []  # stores metadata corresponding to embeddings
+
+    def add_embeddings(self, new_embeddings: list, new_mapping: list):
+        """Add new embeddings and their mappings to the index."""
+        if not new_embeddings:
+            return
+        
+        new_embeddings = np.array(new_embeddings, dtype="float32")
+        norms = np.linalg.norm(new_embeddings, axis=1, keepdims=True)
+        new_embeddings = new_embeddings / np.maximum(norms, 1e-10)
+
+        self.index.add(new_embeddings)
+        self.embeddings.extend(new_embeddings)
+        self.mapping.extend(new_mapping)
+    
+    def get_index(self):
+        """Return the FAISS index instance."""
+        return self.index
+
 class LLMQueryEngine:
     """
     A robust LLM engine that implements a multi-stage retrieval-augmented generation pipeline:
@@ -218,6 +245,10 @@ class LLMQueryEngine:
         self.embedding_model = embedding_model
         self.generation_model = generation_model
 
+        self.faiss_index = None
+        self.dense_embeddings = []
+        self.dense_mapping = []
+
         # Load and process documents.
         docs = load_documents_from_json(json_file_path)
         logger.info("Loaded %d documents from %s", len(docs), json_file_path)
@@ -226,7 +257,7 @@ class LLMQueryEngine:
         logger.info("Chunked documents into %d chunks", len(self.chunked_docs))
 
         # Build in-memory dense retrieval index using FAISS.
-        self._build_faiss_index(self.chunked_docs)
+        self._update_faiss_index(self.chunked_docs)
 
         # Build BM25 index for sparse retrieval.
         self.bm25_corpus = [doc.page_content for doc in self.chunked_docs]
@@ -240,37 +271,75 @@ class LLMQueryEngine:
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""
-        return semantically_chunk_documents(documents, ollama_model=self.embedding_model)
+        temp = semantically_chunk_documents(documents, ollama_model=self.embedding_model)
+        print("TYPE DOC CHUNK: " , type(temp)) # temp is of type LIST
+        return temp
 
-    def _build_faiss_index(self, documents: list):
-        """
-        Compute embeddings for each document chunk, store them in memory,
-        and build a FAISS index (in-memory only).
-        """
-        self.dense_embeddings = []
-        self.dense_mapping = []  # Mapping from FAISS index to document chunks.
+    def _update_faiss_index(self, documents: list):
+        """Incrementally update the FAISS index with new embeddings."""
+        new_embeddings = []
+        new_mappings = []
+
         for doc in documents:
             try:
                 emb = _get_embedding(doc.page_content, self.embedding_model)
-                self.dense_embeddings.append(emb)
-                self.dense_mapping.append({
+                new_embeddings.append(emb)
+                new_mappings.append({
                     "content": doc.page_content,
                     "metadata": doc.metadata
                 })
             except Exception as e:
                 logger.exception("Error computing embedding for a document chunk: %s", str(e))
-        if not self.dense_embeddings:
-            raise ValueError("No embeddings computed.")
-        # Convert to a NumPy array of type float32.
-        dense_np = np.array(self.dense_embeddings).astype("float32")
-        # Normalize for cosine similarity.
-        norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
-        dense_np = dense_np / np.maximum(norms, 1e-10)
-        d = dense_np.shape[1]
-        # Create a FAISS index using inner product (cosine similarity).
-        self.faiss_index = faiss.IndexFlatIP(d)
-        self.faiss_index.add(dense_np)
-        logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
+
+        if not new_embeddings:
+            logger.warning("No new embeddings computed.")
+            return
+
+        # Convert to NumPy array of type float32 and normalize
+        new_embeddings_np = np.array(new_embeddings).astype("float32")
+        norms = np.linalg.norm(new_embeddings_np, axis=1, keepdims=True)
+        new_embeddings_np = new_embeddings_np / np.maximum(norms, 1e-10)
+
+        if self.faiss_index is None:
+            # Initialize FAISS index
+            d = new_embeddings_np.shape[1]
+            self.faiss_index = faiss.IndexFlatIP(d)
+            logger.info("Initialized new FAISS index with dimension %d.", d)
+
+        # Add new embeddings
+        self.faiss_index.add(new_embeddings_np)
+        self.dense_mapping.extend(new_mappings)
+        logger.info("Added %d new vectors to FAISS index.", len(new_embeddings_np))
+
+    # def _build_faiss_index(self, documents: list):
+    #     """
+    #     Compute embeddings for each document chunk, store them in memory,
+    #     and build a FAISS index (in-memory only).
+    #     """
+    #     self.dense_embeddings = []
+    #     self.dense_mapping = []  # Mapping from FAISS index to document chunks.
+    #     for doc in documents:
+    #         try:
+    #             emb = _get_embedding(doc.page_content, self.embedding_model)
+    #             self.dense_embeddings.append(emb)
+    #             self.dense_mapping.append({
+    #                 "content": doc.page_content,
+    #                 "metadata": doc.metadata
+    #             })
+    #         except Exception as e:
+    #             logger.exception("Error computing embedding for a document chunk: %s", str(e))
+    #     if not self.dense_embeddings:
+    #         raise ValueError("No embeddings computed.")
+    #     # Convert to a NumPy array of type float32.
+    #     dense_np = np.array(self.dense_embeddings).astype("float32")
+    #     # Normalize for cosine similarity.
+    #     norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
+    #     dense_np = dense_np / np.maximum(norms, 1e-10)
+    #     d = dense_np.shape[1]
+    #     # Create a FAISS index using inner product (cosine similarity).
+    #     self.faiss_index = faiss.IndexFlatIP(d)
+    #     self.faiss_index.add(dense_np)
+    #     logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
 
     @retry(max_attempts=3)
     def retrieve_initial_chunks(self, query: str, max_chunks: int = 10) -> list:
@@ -340,6 +409,9 @@ class LLMQueryEngine:
         logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
         dense_candidates = self.retrieve_initial_chunks(query, max_chunks=max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks=max_chunks)
+
+        dense_candidates_code = self.retrieve_initial_chunks(query , max_chunks=max_chunks)
+
         return merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(self, ranked_chunks: list, token_budget: int) -> list:
@@ -429,12 +501,10 @@ class LLMQueryEngine:
         return current_context
     
     @retry(max_attempts=3)
-    def generate_response(self, query: str, context_chunks: list) -> Union[dict, int, str, list[str]]:
+    def generate_response(self, query: str, context_chunks: list) -> str:
         """
         Generate the final answer using a Fusion-in-Decoder style prompt,
         aggregating all the retrieved evidence.
-        Returns the final answer as a as a dictionary, int, str, list[str], depending 
-        on the format required for the llm to answer properly.
         """
         evidence_blocks = "\n\n".join(
             f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"
@@ -524,69 +594,21 @@ def init_engine(doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     global _engine_instance
     if _engine_instance is None:
         _engine_instance = LLMQueryEngine(doc_json_file_path, **kwargs)
-    return _engine_instance 
+    return _engine_instance
 
-def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> Union[dict, int, str, list[str]]:
+def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str:
     """
-    Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
-
-    The prompt should include few-shot examples demonstrating the expected structure of the output.
-    The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value 
-    can be one of the following types: 
-    - Integer (e.g., `{"answer": 100}`)
-    - String (e.g., `{"answer": "ReLU Activation"}`)
-    - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
-    - Dictionary mapping strings to integers (e.g., `{"answer": {"Convolutional": 4, "FullyConnected": 1}}`)
-
-    The function checks for cached responses before querying the LLM.
-    If an error occurs, it logs the error and returns an empty response.
-
-    Example prompt structure:
-
-    Examples:
-    Loss Function: Discriminator Loss
-    1. Network: Discriminator
-    {"answer": 784}
-    
-    2. Network: Generator
-    {"answer": 100}
-    
-    3. Network: Linear Regression
-    {"answer": 1}
-    
-    Now, for the following network:
-    Network: {network_thing_name}
-    Expected JSON Output:
-    {"answer": "<Your Answer Here>"}
-
-    Loss Function: Generator Loss
-    {"answer": ["L2 Regularization", "Elastic Net"]}
-
-    Loss Function: Cross-Entropy Loss
-    {"answer": []}
-
-    Loss Function: Binary Cross-Entropy Loss
-    {"answer": ["L2 Regularization"]}
-
-    Now, for the following loss function:
-    Loss Function: {loss_name}
-    {"answer": "<Your Answer Here>"}
-
-    Args:
-        instructions (str): Additional guidance for formatting the response.
-        prompt (str): The main query containing the few-shot examples.
-
-    Returns:
-        Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
+    Public function to process a query.
     """
+
+    print(query)
     global _engine_instance
     if _engine_instance is None:
         raise Exception("Engine not initialized. Please call init_engine(json_file_path) first.")
     return _engine_instance.query(query, max_chunks=max_chunks, token_budget=token_budget)
 
-# For standalone testing
 if __name__ == "__main__":
-    json_file_path = "data/alexnet/doc_alexnet.json"
+    json_file_path = "data/alexnet/alexnet_code0.json"
     engine = init_engine(
         json_file_path,
         chunk_size=CHUNK_SIZE,
