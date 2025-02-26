@@ -239,7 +239,9 @@ class LLMQueryEngine:
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""
-        return semantically_chunk_documents(documents, ollama_model=self.embedding_model)
+        temp = semantically_chunk_documents(documents, ollama_model=self.embedding_model)
+        print("TYPE DOC CHUNK: " , type(temp)) # temp is of type LIST
+        return temp
 
     def _build_faiss_index(self, documents: list):
         """
