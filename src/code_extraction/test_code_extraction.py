@@ -1,18 +1,25 @@
 import unittest
 import ast
-from code_extractor import CodeProcessor  # Replace 'your_module' with the actual module name
+from code_extractor import CodeProcessor  
 
 class TestCodeProcessor(unittest.TestCase):
+    """
+    Test the proper organization of code according to the modeule
+    that it belongs to (global vars, class, function)
+    """
+
     def test_global_variable_extraction(self):
-        code = """x = 10\ny = 20"""
+        code = """x = 10\ny = 20\nif __name__ == '__main__':\n\tz = 30"""
         processor = CodeProcessor(code)
         tree = ast.parse(code)
         processor.visit(tree)
         
         global_vars = next((s for s in processor.sections if s["metadata"]["section_header"] == "Global Variables"), None)
+        global_other = next((s for s in processor.sections if s["metadata"]["section_header"] == "Global Other") , None)
         self.assertIsNotNone(global_vars)
-        self.assertIn("x = 10", global_vars["page_content"])
-        self.assertIn("y = 20", global_vars["page_content"])
+        self.assertIn("x = 10" , global_vars["page_content"])
+        self.assertIn("y = 20" , global_vars["page_content"])
+        self.assertIn("z = 30" , global_other["page_content"])
     
     def test_function_extraction(self):
         code = """def my_function():\n\treturn 42"""
