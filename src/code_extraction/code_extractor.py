@@ -55,7 +55,7 @@ class CodeProcessor(ast.NodeVisitor):
         Visits nodes that are a class traversing down tree from given node
         """
 
-        class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+        #class_code = self.extract_code_lines(node.lineno , node.end_lineno)
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , 
             "page_content" : "Functions: " + (", ".join([f"{func.name}" for func in node.body if isinstance(func , ast.FunctionDef)])) , 
