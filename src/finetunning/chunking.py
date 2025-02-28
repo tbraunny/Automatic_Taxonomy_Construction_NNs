@@ -12,7 +12,7 @@ def split_text(text,chunk=2048):
 
 def parse_pdf(path):
     converter = DocumentConverter()
-    result = converter.convert(source)
+    result = converter.convert(path)
     output = result.document.export_to_markdown()
     return output
 
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     data = glob.glob('data/*.txt') + glob.glob('data/*.md') + glob.glob('data/*.pdf')
     chunked_text = []
     for path in data:
-        if path.endwith('.pdf'):
+        if path.endswith('.pdf'):
             text = parse_pdf(path)
         else:
             text = open(path,'r').read()
