@@ -1,0 +1,36 @@
+task: llm-sft
+base_model: unsloth/DeepSeek-R1-Distill-Qwen-14B-unsloth-bnb-4bit
+project_name: autotrain-deepseek
+log: tensorboard
+backend: local
+
+data:
+  path: dataset
+  train_split: train
+  valid_split: null
+  chat_template: null
+  column_mapping:
+    text_column: text
+
+params:
+  block_size: 2048
+  model_max_length: 4096
+  epochs: 1
+  batch_size: 1
+  lr: 1e-5
+  peft: true
+  quantization: int4
+  target_modules: all-linear
+  padding: right
+  optimizer: adamw_torch
+  scheduler: linear
+  gradient_accumulation: 4
+  mixed_precision: bf16
+  merge_adapter: false
+  lora_dropout: 0
+  unsloth: true
+
+hub:
+  username: ${HF_USERNAME}
+  token: ${HF_TOKEN}
+  push_to_hub: false
