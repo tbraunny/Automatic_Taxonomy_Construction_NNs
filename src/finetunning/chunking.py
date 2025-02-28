@@ -20,9 +20,9 @@ if __name__ == '__main__':
 
     data = glob.glob('data/*.txt') + glob.glob('data/*.md') + glob.glob('data/*.pdf')
     chunked_text = []
-    for data in pdfs:
-        if data.endwith('.pdf'):
-            text = parse_pdf(data)
+    for path in data:
+        if path.endwith('.pdf'):
+            text = parse_pdf(path)
         else:
             text = open(path,'r').read()
         chunked_text += split_text(text)
