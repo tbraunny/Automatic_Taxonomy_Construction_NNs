@@ -446,14 +446,13 @@ class LLMQueryEngine:
 
             f"Query: {query}"
             
-            "Return Format:\n"
-            "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
-            "whose value is your final answer. Below are some examples:\n"
-            '{"answer": ["item1","item2"]}\n'
-            '{"answer": "true"}\n\n'
-            '{"answer": []}\n\n'
+            # "Return Format:\n"
+            # "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
+            # "whose value is your final answer. Below are some examples:\n"
+            # '{"answer": ["item1","item2"]}\n'
+            # '{"answer": "true"}\n\n'
+            # '{"answer": []}\n\n'
 
-            
             "Warnings:\n"
             "- Do not disclaim that you are an AI.\n"
             "- Only use the context provided below; do not add outside information.\n\n"

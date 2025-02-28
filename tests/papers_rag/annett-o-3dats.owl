@@ -3285,13 +3285,7 @@
 
 <owl:NamedIndividual rdf:about="92799309_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasLayer rdf:resource="92799309_input-layer"/>
   <hasTaskType rdf:resource="92799309_supervised-classification"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="92799309_input-layer">
-  <rdf:type rdf:resource="InputLayer"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">224x224x3</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="92799309_supervised-classification">
@@ -3305,13 +3299,7 @@
 
 <owl:NamedIndividual rdf:about="f1253bc7_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasLayer rdf:resource="f1253bc7_input-layer"/>
   <hasTaskType rdf:resource="f1253bc7_supervised-classification"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_input-layer">
-  <rdf:type rdf:resource="InputLayer"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">224x224x3</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="f1253bc7_supervised-classification">

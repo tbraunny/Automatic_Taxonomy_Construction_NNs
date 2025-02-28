@@ -1,4 +1,6 @@
 from re import sub, fullmatch
+from owlready2 import ThingClass
+from typing import List, Union
 
 def int_to_ordinal(n):
 
@@ -12,8 +14,7 @@ def int_to_ordinal(n):
         suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
     return f"{n}{suffix}"
 
-
-def split_camel_case(names:list) -> list:
+def split_camel_case(names:Union[list[str], str]) -> list[str]:
 
     if isinstance(names, str):  # If a single string is passed, convert it into a list
         names = [names]
@@ -33,3 +34,30 @@ def split_camel_case(names:list) -> list:
             split_names.append(name)
 
     return split_names
+
+def thingclass_names_to_str(list_things:List[ThingClass]) -> List[str]:
+    """
+    Takes a list of ThingClass objects and returns a list of their names as strings.
+    
+    :param things: List of ThingClass objects
+    :return: List of names as strings
+    """
+    return [thing.name for thing in list_things]
+
+def comma_separate(strings:List[str]) -> str:
+    """
+    Takes a list of strings and returns a single comma-separated string.
+    
+    :param strings: List of strings
+    :return: Comma-separated string
+    """
+    return ", ".join(strings)
+
+def make_thing_classes_readable(things:List[ThingClass]) -> str:
+    """
+    Takes a list of ThingClass objects and returns a human-readable string with their names.
+    
+    :param things: List of ThingClass objects
+    :return: Human-readable string
+    """
+    return comma_separate(split_camel_case(thingclass_names_to_str(things)))

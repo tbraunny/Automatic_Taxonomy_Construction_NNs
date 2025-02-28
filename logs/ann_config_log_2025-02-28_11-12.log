@@ -1,0 +1,540 @@
+2025-02-28 11:12:09,769 - INFO - Loaded 16 documents from data/alexnet/doc_alexnet.json
+2025-02-28 11:12:11,748 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,779 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,797 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,824 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,855 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,882 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,915 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,943 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,970 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:11,999 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,026 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,052 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,081 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,110 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,139 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,163 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,185 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,203 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,232 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,251 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,280 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,309 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,349 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,376 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,402 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,432 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,464 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,487 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,513 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,538 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,567 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,595 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,623 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,648 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,676 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,704 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,731 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,760 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,786 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,814 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,832 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,858 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,876 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,900 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,926 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,951 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,975 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:12,994 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,012 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,031 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,049 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,066 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,084 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,101 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,120 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,137 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,164 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,188 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,214 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,239 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,263 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,288 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,312 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,341 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,368 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,387 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,405 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,422 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,439 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,457 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,475 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,492 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,517 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,534 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,555 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,589 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,607 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,625 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,643 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,661 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,680 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,698 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,715 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,733 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,750 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,767 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,784 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,802 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,820 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,836 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,858 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,882 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,900 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,917 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,934 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,951 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,968 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:13,985 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,003 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,020 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,037 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,057 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,074 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,092 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,109 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,127 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,144 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,162 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,188 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,212 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,230 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,248 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,267 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,293 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,312 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,338 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,354 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,372 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,400 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,417 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,443 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,461 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,481 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,500 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,517 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,534 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,551 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,568 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,586 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,604 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,621 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,639 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,665 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,698 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,718 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,738 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,755 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,774 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,792 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,820 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,845 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,864 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,882 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,908 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,925 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,951 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,968 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:14,984 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,002 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,026 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,044 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,062 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,079 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,097 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,116 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,136 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,153 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,171 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,202 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,219 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,237 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,255 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,285 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,311 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,340 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,369 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,400 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,430 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,455 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,483 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,509 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,529 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,561 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,594 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,623 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,651 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,676 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,706 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,736 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,763 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,789 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,806 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,828 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,849 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,884 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,905 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,923 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,950 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,969 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:15,987 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,013 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,031 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,056 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,078 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,097 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,115 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,140 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,157 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,175 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,192 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,209 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,227 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,244 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,270 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,288 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,307 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,326 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,348 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,366 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,393 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,412 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,430 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,450 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,469 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,470 - INFO - Chunked documents into 33 chunks
+2025-02-28 11:12:16,489 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,507 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,532 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,563 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,584 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,609 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,628 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,645 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,664 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,686 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,706 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,741 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,772 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,799 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,820 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,840 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,861 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,891 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,930 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,958 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:16,975 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,028 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,046 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,066 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,084 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,101 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,127 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,186 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,218 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,275 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,304 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,331 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,362 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:17,374 - INFO - Built FAISS index with 33 vectors of dimension 1024.
+2025-02-28 11:12:17,375 - INFO - Built BM25 index for 33 document chunks.
+2025-02-28 11:12:17,376 - INFO - Built graph index with 33 nodes.
+2025-02-28 11:12:17,376 - INFO - Instantiated ANNConfiguration with name: alexnet.
+2025-02-28 11:12:17,376 - INFO - Instantiated Network with name: convolutional network.
+2025-02-28 11:12:17,377 - INFO - Linked alexnet and convolutional network via hasNetwork.
+2025-02-28 11:12:17,459 - INFO - Routing query to hybrid (FAISS dense + BM25) retrieval.
+2025-02-28 11:12:17,492 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"
+2025-02-28 11:12:34,101 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-28 11:12:34,103 - INFO - Assembled context with ~1074 tokens.
+2025-02-28 11:12:34,103 - INFO - Final prompt provided to LLM:
+Goal:
+Answer the technical query by fusing the evidence from the provided context.
+
+Query: 
+Extract the input size information for the input layer of the convolutional network architecture. If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). In this case, return the input dimensions as a string exactly in that format. If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. Your answer must be provided in JSON format with the key 'answer'.
+
+Examples:
+1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:
+{"answer": "128x128x3"}
+
+2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:
+{"answer": 100}
+
+3. For a network (e.g., a Linear Regression model) with a single input feature:
+{"answer": 1}
+
+Now, for the following network:
+Network: convolutional network
+{"answer": "<Your Answer Here>"}Warnings:
+- Do not disclaim that you are an AI.
+- Only use the context provided below; do not add outside information.
+
+Context Dump:
+### ReLU Nonlinearity
+## 3.1 ReLU Nonlinearity
+
+The standard way to model a neuron's output f as a function of its input x is with f ( x ) = tanh( x ) or f ( x ) = (1 + e -x ) -1 . In terms of training time with gradient descent, these saturating nonlinearities are much slower than the non-saturating nonlinearity f ( x ) = max(0 , x ) . Following Nair and Hinton [20], we refer to neurons with this nonlinearity as Rectified Linear Units (ReLUs). Deep convolutional neural networks with ReLUs train several times faster than their equivalents with tanh units. This is demonstrated in Figure 1, which shows the number of iterations required to reach 25% training error on the CIFAR-10 dataset for a particular four-layer convolutional network. This plot shows that we would not have been able to experiment with such large neural networks for this work if we had used traditional saturating neuron models. We are not the first to consider alternatives to traditional neuron models in CNNs.
+
+### Local Response Normalization
+## 3.3 Local Response Normalization
+
+ReLUs have the desirable property that they do not require input normalization to prevent them from saturating. If at least some training examples produce a positive input to a ReLU, learning will happen in that neuron. However, we still find that the following local normalization scheme aids generalization. Denoting by a i x,y the activity of a neuron computed by applying kernel i at position ( x, y ) and then applying the ReLU nonlinearity, the response-normalized activity b i x,y is given by the expression
+
+<!-- formula-not-decoded -->
+
+where the sum runs over n 'adjacent' kernel maps at the same spatial position, and N is the total number of kernels in the layer. The ordering of the kernel maps is of course arbitrary and determined before training begins. This sort of response normalization implements a form of lateral inhibition inspired by the type found in real neurons, creating competition for big activities amongst neuron outputs computed using different kernels. The constants k, n, α , and β are hyper-parameters whose values are determined using a validation set; we used k = 2 , n = 5 , α = 10 -4 , and β = 0 75 . .
+
+### Introduction
+1 Our network contains a number of new and unusual features which improve its performance and reduce its training time, which are detailed in Section 3. The size of our network made overfitting a significant problem, even with 1.2 million labeled training examples, so we used several effective techniques for preventing overfitting, which are described in Section 4. Our final network contains five convolutional and three fully-connected layers, and this depth seems to be important: we found that removing any convolutional layer (each of which contains no more than 1% of the model's parameters) resulted in inferior performance. In the end, the network's size is limited mainly by the amount of memory available on current GPUs and by the amount of training time that we are willing to tolerate. Our network takes between five and six days to train on two GTX 580 3GB GPUs. All of our experiments suggest that our results can be improved simply by waiting for faster GPUs and bigger datasets to become available.
+
+### Training on Multiple GPUs
+## 3.2 Training on Multiple GPUs
+
+A single GTX 580 GPU has only 3GB of memory, which limits the maximum size of the networks that can be trained on it. It turns out that 1.2 million training examples are enough to train networks which are too big to fit on one GPU. Therefore we spread the net across two GPUs. Current GPUs are particularly well-suited to cross-GPU parallelization, as they are able to read from and write to one another's memory directly, without going through host machine memory. The parallelization scheme that we employ essentially puts half of the kernels (or neurons) on each GPU, with one additional trick: the GPUs communicate only in certain layers. This means that, for example, the kernels of layer 3 take input from all kernel maps in layer 2. However, kernels in layer 4 take input only from those kernel maps in layer 3 which reside on the same GPU. Choosing the pattern of connectivity is a problem for cross-validation, but this allows us to precisely tune the amount of communication until it is an acceptable fraction of the amount of computation. The resultant architecture is somewhat similar to that of the 'columnar' CNN employed by Cire¸ san et al.
+
+### Overall Architecture
+The network's input dimension is 150,528, followed by layers with neuron counts: 253,440-186,624-64,896-64,896-43,264-4096-4096-1000. It has five convolutional layers; the second uses 256 kernels of size 5 × 5 × 48. The third to fifth are consecutively connected with kernel counts and sizes: 384 (3 × 3 × 256), 384 (3 × 3 × 192), and 256 (3 × 3 × 192). Fully-connected layers have 4096 neurons each. GPUs communicate at certain layers only.
+
+
+2025-02-28 11:13:13,001 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-28 11:13:13,002 - INFO - Raw generated response: <think>
+Okay, so I'm trying to figure out the input size for this convolutional network based on the provided context. Let me go through the information step by step.
+
+First, the query asks for either an image-based input in the format WidthxHeightxChannels or a total number of input units if it's not image-based. The examples given show that if it's image data, we need to return something like '128x128x3', and if it's not, just the integer count.
+
+Looking at the context dump, there are several sections: ReLU Nonlinearity, Local Response Normalization, Introduction, Training on Multiple GPUs, and Overall Architecture. The key details about the network structure should be in the Overall Architecture section.
+
+In that section, it says the network's input dimension is 150,528. Hmm, that number doesn't immediately look like an image size because I'm more familiar with numbers like 64x64x3 which equals 12288 or 224x224x3 which is around 150k. Wait, let me calculate: 224*224=50176, times 3 channels gives 150,528. Oh! So that's probably the input size.
+
+So, the network is image-based and the input dimensions are 224x224x3. Let me check if there's any other mention of input size elsewhere in the context. The Introduction mentions overfitting with 1.2 million examples but doesn't specify image size. The Training section talks about multiple GPUs but no input info. So, the only specific number given is 150,528 as the input dimension.
+
+To confirm: 224x224 pixels and 3 channels (RGB) would indeed be 224*224=50176 *3=150,528. That matches the given input dimension in the context. So the correct format is "224x224x3".
+</think>
+
+The input size for the convolutional network is determined to be 224x224 pixels with 3 color channels (RGB), totaling 150,528 dimensions.
+
+**Answer:** The input dimension is "224x224x3".
+
+```json
+{
+  "input_size": "224x224x3"
+}
+```
+2025-02-28 11:13:13,002 - ERROR - Error generating final response: No valid JSON with 'answer' key found.
+Traceback (most recent call last):
+  File "/home/richw/.richie/Automatic_Taxonomy_Construction_NNs/utils/llm_service.py", line 482, in generate_response
+    raise ValueError("No valid JSON with 'answer' key found.")
+ValueError: No valid JSON with 'answer' key found.
+2025-02-28 11:13:13,003 - WARNING - Function generate_response failed with error: No valid JSON with 'answer' key found.. Attempt 1/3
+2025-02-28 11:13:14,003 - INFO - Final prompt provided to LLM:
+Goal:
+Answer the technical query by fusing the evidence from the provided context.
+
+Query: 
+Extract the input size information for the input layer of the convolutional network architecture. If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). In this case, return the input dimensions as a string exactly in that format. If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. Your answer must be provided in JSON format with the key 'answer'.
+
+Examples:
+1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:
+{"answer": "128x128x3"}
+
+2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:
+{"answer": 100}
+
+3. For a network (e.g., a Linear Regression model) with a single input feature:
+{"answer": 1}
+
+Now, for the following network:
+Network: convolutional network
+{"answer": "<Your Answer Here>"}Warnings:
+- Do not disclaim that you are an AI.
+- Only use the context provided below; do not add outside information.
+
+Context Dump:
+### ReLU Nonlinearity
+## 3.1 ReLU Nonlinearity
+
+The standard way to model a neuron's output f as a function of its input x is with f ( x ) = tanh( x ) or f ( x ) = (1 + e -x ) -1 . In terms of training time with gradient descent, these saturating nonlinearities are much slower than the non-saturating nonlinearity f ( x ) = max(0 , x ) . Following Nair and Hinton [20], we refer to neurons with this nonlinearity as Rectified Linear Units (ReLUs). Deep convolutional neural networks with ReLUs train several times faster than their equivalents with tanh units. This is demonstrated in Figure 1, which shows the number of iterations required to reach 25% training error on the CIFAR-10 dataset for a particular four-layer convolutional network. This plot shows that we would not have been able to experiment with such large neural networks for this work if we had used traditional saturating neuron models. We are not the first to consider alternatives to traditional neuron models in CNNs.
+
+### Local Response Normalization
+## 3.3 Local Response Normalization
+
+ReLUs have the desirable property that they do not require input normalization to prevent them from saturating. If at least some training examples produce a positive input to a ReLU, learning will happen in that neuron. However, we still find that the following local normalization scheme aids generalization. Denoting by a i x,y the activity of a neuron computed by applying kernel i at position ( x, y ) and then applying the ReLU nonlinearity, the response-normalized activity b i x,y is given by the expression
+
+<!-- formula-not-decoded -->
+
+where the sum runs over n 'adjacent' kernel maps at the same spatial position, and N is the total number of kernels in the layer. The ordering of the kernel maps is of course arbitrary and determined before training begins. This sort of response normalization implements a form of lateral inhibition inspired by the type found in real neurons, creating competition for big activities amongst neuron outputs computed using different kernels. The constants k, n, α , and β are hyper-parameters whose values are determined using a validation set; we used k = 2 , n = 5 , α = 10 -4 , and β = 0 75 . .
+
+### Introduction
+1 Our network contains a number of new and unusual features which improve its performance and reduce its training time, which are detailed in Section 3. The size of our network made overfitting a significant problem, even with 1.2 million labeled training examples, so we used several effective techniques for preventing overfitting, which are described in Section 4. Our final network contains five convolutional and three fully-connected layers, and this depth seems to be important: we found that removing any convolutional layer (each of which contains no more than 1% of the model's parameters) resulted in inferior performance. In the end, the network's size is limited mainly by the amount of memory available on current GPUs and by the amount of training time that we are willing to tolerate. Our network takes between five and six days to train on two GTX 580 3GB GPUs. All of our experiments suggest that our results can be improved simply by waiting for faster GPUs and bigger datasets to become available.
+
+### Training on Multiple GPUs
+## 3.2 Training on Multiple GPUs
+
+A single GTX 580 GPU has only 3GB of memory, which limits the maximum size of the networks that can be trained on it. It turns out that 1.2 million training examples are enough to train networks which are too big to fit on one GPU. Therefore we spread the net across two GPUs. Current GPUs are particularly well-suited to cross-GPU parallelization, as they are able to read from and write to one another's memory directly, without going through host machine memory. The parallelization scheme that we employ essentially puts half of the kernels (or neurons) on each GPU, with one additional trick: the GPUs communicate only in certain layers. This means that, for example, the kernels of layer 3 take input from all kernel maps in layer 2. However, kernels in layer 4 take input only from those kernel maps in layer 3 which reside on the same GPU. Choosing the pattern of connectivity is a problem for cross-validation, but this allows us to precisely tune the amount of communication until it is an acceptable fraction of the amount of computation. The resultant architecture is somewhat similar to that of the 'columnar' CNN employed by Cire¸ san et al.
+
+### Overall Architecture
+The network's input dimension is 150,528, followed by layers with neuron counts: 253,440-186,624-64,896-64,896-43,264-4096-4096-1000. It has five convolutional layers; the second uses 256 kernels of size 5 × 5 × 48. The third to fifth are consecutively connected with kernel counts and sizes: 384 (3 × 3 × 256), 384 (3 × 3 × 192), and 256 (3 × 3 × 192). Fully-connected layers have 4096 neurons each. GPUs communicate at certain layers only.
+
+
+2025-02-28 11:13:41,491 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-28 11:13:41,491 - INFO - Raw generated response: <think>
+Okay, so I need to figure out the input size for this convolutional network architecture based on the provided context. Let me go through the information step by step.
+
+First, looking at the context dump, I see several sections: ReLU Nonlinearity, Local Response Normalization, Introduction, Training on Multiple GPUs, and Overall Architecture. The part that seems most relevant is under "Overall Architecture." 
+
+In that section, it says, "The network's input dimension is 150,528..." So the input size is given as a single number here, which is 150,528. That suggests that this might be an image-based network because image inputs are typically described by their dimensions (width x height x channels). However, I need to confirm if it's indeed image data or just a vector.
+
+Wait, the context also mentions "input dimension," which in machine learning often refers to the number of input features. For images, this is usually computed as width * height * channels. But here, the number 150,528 doesn't immediately look like an image dimension unless it's broken down into those components.
+
+Let me check if 150,528 can be factored into a common image size. Let's see: 150,528 divided by 3 (assuming RGB channels) would give 50,176 per channel. Hmm, that doesn't immediately ring a bell as a standard resolution. Alternatively, perhaps it's not an image input but rather a flattened vector.
+
+Wait, another thought: sometimes the input is described in terms of the total number of neurons or features. So if the network is convolutional but starts with a fully connected layer, maybe this 150,528 is the total number of input units. But no, convolutional networks usually take image inputs directly without flattening at the first layer.
+
+Wait again, perhaps I'm misunderstanding. Let me look for any mention of image dimensions elsewhere in the context. Scanning through, in the "Introduction," it mentions CIFAR-10 dataset, which typically uses 32x32 RGB images (i.e., 32x32x3). But the network described here is different since its input dimension is given as 150k.
+
+Wait another angle: perhaps 150,528 is calculated from an image size. Let's compute that. If we consider a standard image resolution, say 224x224 pixels (common in many models), which would be 224*224=50,176 per channel. With 3 channels, that's 50,176*3 = 150,528. Oh! That makes sense. So the input is a 224x224 RGB image because 224*224*3 equals 150,528.
+
+But wait, let me confirm that multiplication: 224 x 224 = 50,176. Then multiply by 3 for the channels: 50,176 * 3 = 150,528. Yep, that adds up.
+
+So putting it all together, the network's input is a 224x224 image with 3 color channels (RGB), totaling 150,528 input units. Therefore, the input size can be described as 224x224x3.
+</think>
+
+The input size for the convolutional network architecture is an RGB image of dimensions **224x224 pixels**. This results in a total input dimension of **150,528** (calculated as 224 * 224 * 3). 
+
+**Answer:** The network's input size is 224x224x3.
+2025-02-28 11:13:41,492 - ERROR - Error generating final response: No valid JSON with 'answer' key found.
+Traceback (most recent call last):
+  File "/home/richw/.richie/Automatic_Taxonomy_Construction_NNs/utils/llm_service.py", line 482, in generate_response
+    raise ValueError("No valid JSON with 'answer' key found.")
+ValueError: No valid JSON with 'answer' key found.
+2025-02-28 11:13:41,492 - WARNING - Function generate_response failed with error: No valid JSON with 'answer' key found.. Attempt 2/3
+2025-02-28 11:13:43,493 - INFO - Final prompt provided to LLM:
+Goal:
+Answer the technical query by fusing the evidence from the provided context.
+
+Query: 
+Extract the input size information for the input layer of the convolutional network architecture. If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). In this case, return the input dimensions as a string exactly in that format. If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. Your answer must be provided in JSON format with the key 'answer'.
+
+Examples:
+1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:
+{"answer": "128x128x3"}
+
+2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:
+{"answer": 100}
+
+3. For a network (e.g., a Linear Regression model) with a single input feature:
+{"answer": 1}
+
+Now, for the following network:
+Network: convolutional network
+{"answer": "<Your Answer Here>"}Warnings:
+- Do not disclaim that you are an AI.
+- Only use the context provided below; do not add outside information.
+
+Context Dump:
+### ReLU Nonlinearity
+## 3.1 ReLU Nonlinearity
+
+The standard way to model a neuron's output f as a function of its input x is with f ( x ) = tanh( x ) or f ( x ) = (1 + e -x ) -1 . In terms of training time with gradient descent, these saturating nonlinearities are much slower than the non-saturating nonlinearity f ( x ) = max(0 , x ) . Following Nair and Hinton [20], we refer to neurons with this nonlinearity as Rectified Linear Units (ReLUs). Deep convolutional neural networks with ReLUs train several times faster than their equivalents with tanh units. This is demonstrated in Figure 1, which shows the number of iterations required to reach 25% training error on the CIFAR-10 dataset for a particular four-layer convolutional network. This plot shows that we would not have been able to experiment with such large neural networks for this work if we had used traditional saturating neuron models. We are not the first to consider alternatives to traditional neuron models in CNNs.
+
+### Local Response Normalization
+## 3.3 Local Response Normalization
+
+ReLUs have the desirable property that they do not require input normalization to prevent them from saturating. If at least some training examples produce a positive input to a ReLU, learning will happen in that neuron. However, we still find that the following local normalization scheme aids generalization. Denoting by a i x,y the activity of a neuron computed by applying kernel i at position ( x, y ) and then applying the ReLU nonlinearity, the response-normalized activity b i x,y is given by the expression
+
+<!-- formula-not-decoded -->
+
+where the sum runs over n 'adjacent' kernel maps at the same spatial position, and N is the total number of kernels in the layer. The ordering of the kernel maps is of course arbitrary and determined before training begins. This sort of response normalization implements a form of lateral inhibition inspired by the type found in real neurons, creating competition for big activities amongst neuron outputs computed using different kernels. The constants k, n, α , and β are hyper-parameters whose values are determined using a validation set; we used k = 2 , n = 5 , α = 10 -4 , and β = 0 75 . .
+
+### Introduction
+1 Our network contains a number of new and unusual features which improve its performance and reduce its training time, which are detailed in Section 3. The size of our network made overfitting a significant problem, even with 1.2 million labeled training examples, so we used several effective techniques for preventing overfitting, which are described in Section 4. Our final network contains five convolutional and three fully-connected layers, and this depth seems to be important: we found that removing any convolutional layer (each of which contains no more than 1% of the model's parameters) resulted in inferior performance. In the end, the network's size is limited mainly by the amount of memory available on current GPUs and by the amount of training time that we are willing to tolerate. Our network takes between five and six days to train on two GTX 580 3GB GPUs. All of our experiments suggest that our results can be improved simply by waiting for faster GPUs and bigger datasets to become available.
+
+### Training on Multiple GPUs
+## 3.2 Training on Multiple GPUs
+
+A single GTX 580 GPU has only 3GB of memory, which limits the maximum size of the networks that can be trained on it. It turns out that 1.2 million training examples are enough to train networks which are too big to fit on one GPU. Therefore we spread the net across two GPUs. Current GPUs are particularly well-suited to cross-GPU parallelization, as they are able to read from and write to one another's memory directly, without going through host machine memory. The parallelization scheme that we employ essentially puts half of the kernels (or neurons) on each GPU, with one additional trick: the GPUs communicate only in certain layers. This means that, for example, the kernels of layer 3 take input from all kernel maps in layer 2. However, kernels in layer 4 take input only from those kernel maps in layer 3 which reside on the same GPU. Choosing the pattern of connectivity is a problem for cross-validation, but this allows us to precisely tune the amount of communication until it is an acceptable fraction of the amount of computation. The resultant architecture is somewhat similar to that of the 'columnar' CNN employed by Cire¸ san et al.
+
+### Overall Architecture
+The network's input dimension is 150,528, followed by layers with neuron counts: 253,440-186,624-64,896-64,896-43,264-4096-4096-1000. It has five convolutional layers; the second uses 256 kernels of size 5 × 5 × 48. The third to fifth are consecutively connected with kernel counts and sizes: 384 (3 × 3 × 256), 384 (3 × 3 × 192), and 256 (3 × 3 × 192). Fully-connected layers have 4096 neurons each. GPUs communicate at certain layers only.
+
+
+2025-02-28 11:14:20,173 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/generate "HTTP/1.1 200 OK"
+2025-02-28 11:14:20,173 - INFO - Raw generated response: <think>
+Okay, I need to figure out the input size for the convolutional network described in the context provided. Let me start by reading through the context carefully.
+
+The goal is to extract either the image dimensions (like WidthxHeightxChannels) if it's an image-based network or the total number of input units if it's not. The answer should be in JSON format with the key 'answer'.
+
+Looking at the context, I see a section titled "Overall Architecture." It mentions that the network's input dimension is 150,528. That sounds like the total number of input units because it's a single number, not specifying width, height, and channels.
+
+But wait, is this an image-based network? The problem statement says it's a convolutional network, which typically uses images as inputs. So maybe I should check if 150,528 corresponds to an image dimension.
+
+Let me think: Convolutional networks often take images in the format WidthxHeightxChannels. For example, a common input size is 224x224x3 for color images. Let's see what 150,528 would break down into.
+
+Calculating the cube root of 150,528 might help find possible dimensions. The cube root is approximately 53. So maybe something like 53x53x56? Wait, that doesn't make much sense because channels are usually a smaller number (like 3 for RGB). Alternatively, perhaps it's not in the format I expect.
+
+Wait another thought: Maybe the input isn't an image but a flattened vector. For instance, if the input is an image of size 224x224x3, that would be 150,528 (since 224*224=50,176 and 50,176*3=150,528). Oh! That fits. So the input size is 224x224x3, which equals 150,528 units.
+
+But let me confirm: The "input dimension" being 150,528 could mean that it's the total number of inputs, implying an image flattened into a single vector. So as an image, it would be 224x224 pixels with 3 channels (RGB). Therefore, I can represent this as 224x224x3.
+
+Alternatively, if it's not an image but another type of input, maybe it's just 150,528 units. But since the network is convolutional and typically processes images, it's more likely that the input dimension refers to a flattened version of the image.
+
+So putting this together: The input size is either 150,528 as a single number (if not an image) or 224x224x3 if it's an image. But wait, in the context provided, the overall architecture mentions that the first layer has 253,440 neurons. That suggests that the input is connected to these neurons, which would make sense for a flattened image.
+
+So, based on this, I think the input dimension is 150,528 as a single number. However, since it's a convolutional network, it's more accurate to present it as an image size. Let me check if 224x224x3 equals 150,528:
+
+224 * 224 = 50,176
+50,176 * 3 = 150,528
+
+Yes, that's correct. So the input is an image of size 224x224 with 3 channels.
+
+Wait another point: The context in "Overall Architecture" says the input dimension is 150,528. It doesn't explicitly say it's an image, but given it's a convolutional network, that makes sense. So should I present the answer as 150,528 or as 224x224x3?
+
+The problem says if it's an image-based network, to provide WidthxHeightxChannels. Since 224x224x3 equals 150,528, I think providing the dimensions is more informative and appropriate here.
+
+But looking back at the context again: The "Overall Architecture" section says the input dimension is 150,528. It doesn't specify that it's an image, but given it's a convolutional network, it must be processing images. So I can safely assume the input size is 224x224x3.
+
+Therefore, the answer should be in the format of WidthxHeightxChannels, which is 224x224x3.
+</think>
+
+The input dimension for the convolutional network is specified as 150,528. Since this corresponds to an image size of 224x224 pixels with 3 color channels (RGB), the correct representation is:
+
+```json
+{
+  "answer": "224x224x3"
+}
+```
+2025-02-28 11:14:20,174 - INFO - {"query": "\nExtract the input size information for the input layer of the convolutional network architecture. If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). In this case, return the input dimensions as a string exactly in that format. If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. Your answer must be provided in JSON format with the key 'answer'.\n\nExamples:\n1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:\n{\"answer\": \"128x128x3\"}\n\n2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:\n{\"answer\": 100}\n\n3. For a network (e.g., a Linear Regression model) with a single input feature:\n{\"answer\": 1}\n\nNow, for the following network:\nNetwork: convolutional network\n{\"answer\": \"<Your Answer Here>\"}", "elapsed_time": 122.71399521827698, "token_usage": 1074}
+2025-02-28 11:14:20,174 - INFO - Input number of tokens: 240
+2025-02-28 11:14:20,174 - INFO - Output number of tokens: 5
+2025-02-28 11:14:20,174 - INFO - LLM query: 
+Extract the input size information for the input layer of the convolutional network architecture. If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). In this case, return the input dimensions as a string exactly in that format. If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. Your answer must be provided in JSON format with the key 'answer'.
+
+Examples:
+1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:
+{"answer": "128x128x3"}
+
+2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:
+{"answer": 100}
+
+3. For a network (e.g., a Linear Regression model) with a single input feature:
+{"answer": 1}
+
+Now, for the following network:
+Network: convolutional network
+{"answer": "<Your Answer Here>"}
+2025-02-28 11:14:20,174 - INFO - LLM query response: 224x224x3
+2025-02-28 11:14:20,175 - INFO - Instantiated InputLayer with name: input layer.
+2025-02-28 11:14:20,176 - INFO - Linked convolutional network and input layer via hasLayer.
+2025-02-28 11:14:20,176 - INFO - Routing query to hybrid (FAISS dense + BM25) retrieval.
+2025-02-28 11:14:21,565 - INFO - HTTP Request: POST http://127.0.0.1:11434/api/embeddings "HTTP/1.1 200 OK"

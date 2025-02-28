@@ -1,6 +1,8 @@
 import logging
 import os
 import hashlib
+from datetime import datetime
+
 from typing import Dict, Any, Union, List, Optional
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from utils.constants import Constants as C
@@ -10,16 +12,24 @@ from utils.owl_utils import (
     create_subclass,
     get_all_subclasses
 )
-from utils.annetto_utils import int_to_ordinal
+from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.llm_service import init_engine, query_llm
 from rapidfuzz import process, fuzz
+
+try:
+    import tiktoken
+except ImportError:
+    tiktoken = None
 
 
 OMIT_CLASSES = {"DataCharacterization", "Regularization"} # Classes to omit from instantiation.
 
-log_dir = "/home/richw/.richie/Automatic_Taxonomy_Construction_NNs/logs" # Log directory
-log_file = os.path.join(log_dir, "ann_onto_instance.log")
+
+log_dir = "logs" 
+log_file = os.path.join(log_dir, f"ann_config_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+
 os.makedirs(log_dir, exist_ok=True)
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,21 +37,32 @@ logging.basicConfig(
     handlers=[
         logging.FileHandler(log_file),  # Write to file
         logging.StreamHandler()  # Print to console
+
     ],
+    force=True
 )
 logger = logging.getLogger(__name__)
+
+
+def num_tokens_from_string(string: str, encoding_name: str="cl100k_base") -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.get_encoding(encoding_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
 
 class OntologyInstantiator:
     """
     A class to instantiate an annett-o ontology by processing each main component separately and linking them together.
     """
-    def __init__(self, ontology: Ontology, json_file_path: str) -> None:
+    def __init__(self, ontology: Ontology, json_file_path: str, ann_config_name:str="AlexNet") -> None:
         self.ontology = ontology
         self.json_file_path = json_file_path
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
-        self.ann_config_name = "AlexNet" # Assume AlexNet for now.
+        self.ann_config_name = ann_config_name # Assume AlexNet for now.
         self.ann_config_hash = self._generate_ann_config_hash(self.ann_config_name)
+        self.total_input_tokens:int=0
+        self.total_output_tokens:int=0
 
     def _generate_ann_config_hash(self, ann_config_name: str) -> str:
         """
@@ -50,6 +71,7 @@ class OntologyInstantiator:
         """
         hash_object = hashlib.md5(ann_config_name.encode())  # Generate a consistent hash
         return hash_object.hexdigest()[:8]
+    
 
     def _instantiate_cls(self, cls: ThingClass, instance_name: str) -> Thing:
         """
@@ -128,6 +150,7 @@ class OntologyInstantiator:
         assign_object_property_relationship(parent_instance, child_instance, object_property)
         self.logger.info(f"Linked {self._unhash_instance_name(parent_instance.name)} and {self._unhash_instance_name(child_instance.name)} via {object_property.name}.")
 
+
     def _query_llm(self, instructions: str, prompt: str) -> Union[Dict[str, Any], int, str, List[str]]:
         """
         Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
@@ -187,32 +210,38 @@ class OntologyInstantiator:
             print("Using cached LLM response #")
             return self.llm_cache[full_prompt]
         try:
+            num_input_tokens = num_tokens_from_string(full_prompt)
+
             response = query_llm(full_prompt)
+
+            self.logger.info(f"Input number of tokens: {num_input_tokens}")
+            num_output_tokens = num_tokens_from_string(response, "cl100k_base")
+            self.logger.info(f"Output number of tokens: {num_output_tokens}")
+
+            self.total_input_tokens += num_input_tokens
+            self.total_output_tokens += num_output_tokens
+
             self.logger.info(f"LLM query: {full_prompt}")
             self.logger.info(f"LLM query response: {response}")
             self.llm_cache[full_prompt] = response
+
             return response
         except Exception as e:
             self.logger.error(f"LLM query error: {e}")
             return ""
-    
-
-    # def _find_ancestor_network_instance(self) -> Thing:
-    #     """
-    #     Return the network instance from the current context.
-    #     """
-    #     return next((thing for thing in self.full_context if self.ontology.Network in thing.is_a), None)
 
     def _process_objective_functions(self, network_instance:Thing) -> None:
         """
         Process loss, cost, and regularizer functions, and link them to it's network instance.
         """
-        if not network_instance:
-            raise ValueError("No network instance passed as arguement.")
         network_instance_name = self._unhash_instance_name(network_instance.name)
+
+        # Gets a list of all subclasses of LossFunction in a readable format, used for few shot exampling.
+        loss_function_subclass_names = make_thing_classes_readable(get_all_subclasses(self.ontology.LossFunction))
 
         loss_function_prompt = (
             f"Extract only the names of the loss functions used for the {network_instance_name}'s architecture and return the result in JSON format with the key 'answer'. "
+            f"Examples of loss functions include {loss_function_subclass_names}."
             "Follow the examples below.\n\n"
             "Examples:\n"
             "Network: Discriminator\n"
@@ -668,12 +697,14 @@ class OntologyInstantiator:
         Process the network class and it's components.
         """
         if not ann_config_instance:
-            raise ValueError("No ANN Configuration instance provided in _process_network.")
+            raise ValueError("No ANN Configuration instance in the ontology.")
+
 
         if hasattr(self.ontology, "Network"):
             # Here is where logic for processing the network instance would go.
             network_instances = [self._instantiate_cls(self.ontology.Network, "Convolutional Network")] # assumes network is convolutional
             
+
             # Process the components of the network instance.
             for network_instance in network_instances:
                 self._link_instances(ann_config_instance, network_instance, self.ontology.hasNetwork)
@@ -682,65 +713,85 @@ class OntologyInstantiator:
                 self._process_task_characterization(network_instance)
 
     def __addclasses(self)->None:
-        create_subclass(self.ontology, "Self-Supervised Classification", self.ontology.TaskCharacterization)
-        create_subclass(self.ontology, "Unsupervised Classification", self.ontology.TaskCharacterization)
 
+        new_classes = {
+            "Self-Supervised Classification": self.ontology.TaskCharacterization,
+            "Unsupervised Classification": self.ontology.TaskCharacterization
+            }
+        
+        for name, parent in new_classes.items():
+            try:
+                create_subclass(self.ontology, name, parent)
+            except Exception as e:
+                self.logger.error(f"Error creating new class {name}: {e}")
+                continue
 
-    
     def run(self) -> None:
         """
         Main method to run the ontology instantiation process.
         """
-        if not hasattr(self.ontology, 'ANNConfiguration'):
-            self.logger.error("Error: Class 'ANNConfiguration' not found in ontology.")
-            return
+        try:
+            if not hasattr(self.ontology, 'ANNConfiguration'):
+                self.logger.error("Error: Class 'ANNConfiguration' not found in ontology.")
+                return
 
-        # Initialize the LLM engine with the document context.
-        init_engine(self.json_file_path)
+            # Initialize the LLM engine with the document context.
+            init_engine(self.json_file_path)
 
-        # Could grab model name from user input or JSON file.
-        # Extract the title from the JSON file.
-        # try:
-        #     with open(self.json_file_path, 'r', encoding='utf-8') as file:
-        #         data = load(file)
-        #     titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
-        #     title = titles[0] if titles else "DefaultTitle"
-        # except Exception as e:
-        #     self.logger.error(f"Error reading JSON file: {e}")
-        #     title = "DefaultTitle"
+            self.__addclasses()
 
-        ann_config_instance = self._instantiate_cls(self.ontology.ANNConfiguration, self.ann_config_name)
+            # Could grab model name from user input or JSON file.
+            # Extract the title from the JSON file.
+            # try:
+            #     with open(self.json_file_path, 'r', encoding='utf-8') as file:
+            #         data = load(file)
+            #     titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
+            #     title = titles[0] if titles else "DefaultTitle"
+            # except Exception as e:
+            #     self.logger.error(f"Error reading JSON file: {e}")
+            #     title = "DefaultTitle"
 
-        # Process the network class and it's components.
-        self._process_network(ann_config_instance)
+            ann_config_instance = self._instantiate_cls(self.ontology.ANNConfiguration, self.ann_config_name)
 
-        # Process TrainingStrategy and it's components.
-        # self._process_training_strategy(ann_config_instance)
+            # Process the network class and it's components.
+            self._process_network(ann_config_instance)
 
-        # extract information about the application of the ANN (i.e. cancer detection)
-        # what kind of data, image, text
-        # Shapes of layers
+            # Process TrainingStrategy and it's components.
+            # self._process_training_strategy(ann_config_instance)
 
-        self.logger.info("An ANN has been successfully instantiated.")
+            # extract information about the application of the ANN (i.e. cancer detection)
+            # what kind of data, image, text
+            # Shapes of layers
+            
+            self.logger.info("An ANN has been successfully instantiated.")
 
+            self.logger.info(f"Total input tokens: {self.total_input_tokens}")
+            self.logger.info(f"Total output tokens: {self.total_output_tokens}")
+        except Exception as e:
+            self.logger.error(f"Error during ontology instantiation: {e}")
+            raise e
 
 if __name__ == "__main__":
     import time
     start_time = time.time()
-    OUTPUT_FILE = './test.txt'
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
     ontology = get_ontology(ontology_path).load()
-    with ontology:
-        instantiator = OntologyInstantiator(ontology, "data/resnet/doc_resnet.json")
-        instantiator.run()
-        new_file_path = "tests/papers_rag/annett-o-test.owl" # Assume test file for now.
-        ontology.save(file=new_file_path, format="rdfxml")
-        logging.info(f"Ontology saved to {new_file_path}")
-    
-    # Write this to be in minutes and seconds.
+
+    for name in ["alexnet", "resnet", "vgg16", "gan"]:
+        with ontology:
+            try:
+                instantiator = OntologyInstantiator(ontology, f"data/{name}/doc_{name}.json", f"{name}")
+                instantiator.run()
+            except Exception as e:
+                logging.error(f"Error instantiating the {name} ontology: {e}")
+                continue
+
+    # Move saving outside the loop to ensure all networks are stored in the final ontology
+    new_file_path = "tests/papers_rag/annett-o-test.owl"  # Assume test file for now.
+    ontology.save(file=new_file_path, format="rdfxml")
+    logging.info(f"Ontology saved to {new_file_path}")
+
     elapsed_time = time.time() - start_time
     minutes, seconds = divmod(elapsed_time, 60)
     logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
     logging.info("Ontology instantiation completed.")
-
-
