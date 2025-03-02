@@ -27,28 +27,18 @@ OMIT_CLASSES = {"DataCharacterization", "Regularization"} # Classes to omit from
 
 log_dir = "logs" 
 log_file = os.path.join(log_dir, f"ann_config_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
-
 os.makedirs(log_dir, exist_ok=True)
-
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler(log_file),  # Write to file
-        logging.StreamHandler()  # Print to console
-
+        # logging.StreamHandler()  # Print to console
     ],
     force=True
 )
 logger = logging.getLogger(__name__)
-
-
-def num_tokens_from_string(string: str, encoding_name: str="cl100k_base") -> int:
-    """Returns the number of tokens in a text string."""
-    encoding = tiktoken.get_encoding(encoding_name)
-    num_tokens = len(encoding.encode(string))
-    return num_tokens
 
 class OntologyInstantiator:
     """
@@ -61,8 +51,6 @@ class OntologyInstantiator:
         self.logger = logger
         self.ann_config_name = ann_config_name # Assume AlexNet for now.
         self.ann_config_hash = self._generate_ann_config_hash(self.ann_config_name)
-        self.total_input_tokens:int=0
-        self.total_output_tokens:int=0
 
     def _generate_ann_config_hash(self, ann_config_name: str) -> str:
         """
@@ -207,19 +195,10 @@ class OntologyInstantiator:
         full_prompt = f"{instructions}\n{prompt}"
         if full_prompt in self.llm_cache:
             self.logger.info(f"Using cached LLM response for prompt: {full_prompt}")
-            print("Using cached LLM response #")
+            print("Using cached LLM response #####")
             return self.llm_cache[full_prompt]
         try:
-            num_input_tokens = num_tokens_from_string(full_prompt)
-
-            response = query_llm(full_prompt)
-
-            self.logger.info(f"Input number of tokens: {num_input_tokens}")
-            num_output_tokens = num_tokens_from_string(response, "cl100k_base")
-            self.logger.info(f"Output number of tokens: {num_output_tokens}")
-
-            self.total_input_tokens += num_input_tokens
-            self.total_output_tokens += num_output_tokens
+            response = query_llm(self.ann_config_name, full_prompt)
 
             self.logger.info(f"LLM query: {full_prompt}")
             self.logger.info(f"LLM query response: {response}")
@@ -616,9 +595,6 @@ class OntologyInstantiator:
         
         network_instance_name = self._unhash_instance_name(network_instance.name)
 
-        
-
-        # Prompt LLM to extract task name
         # Prompt LLM to extract task name
         task_prompt = (
             f"Extract the primary task that the {network_instance_name} network architecture is designed to perform. "
@@ -665,7 +641,6 @@ class OntologyInstantiator:
             '{"answer": "<Your Answer Here>"}'
         )
 
-
         task_name = self._query_llm("", task_prompt)
 
         if not task_name:
@@ -701,16 +676,30 @@ class OntologyInstantiator:
 
 
         if hasattr(self.ontology, "Network"):
-            # Here is where logic for processing the network instance would go.
-            network_instances = [self._instantiate_cls(self.ontology.Network, "Convolutional Network")] # assumes network is convolutional
-            
 
-            # Process the components of the network instance.
-            for network_instance in network_instances:
-                self._link_instances(ann_config_instance, network_instance, self.ontology.hasNetwork)
-                self._process_layers(network_instance)
-                self._process_objective_functions(network_instance)
-                self._process_task_characterization(network_instance)
+            network_instances = []
+
+            if self._unhash_instance_name(ann_config_instance.name) =="gan": # Temp for gan & multi network
+                network_instances.append(self._instantiate_cls(self.ontology.Network, "Generator Network"))
+                network_instances.append(self._instantiate_cls(self.ontology.Network, "Discriminator Network"))
+
+                # Process the components of the network instance.
+                for network_instance in network_instances:
+                    self._link_instances(ann_config_instance, network_instance, self.ontology.hasNetwork)
+                    # self._process_layers(network_instance) # May be processed by onnx
+                    self._process_objective_functions(network_instance)
+                    self._process_task_characterization(network_instance)
+            else:
+
+                # Here is where logic for processing the network instance would go.
+                network_instances.append(self._instantiate_cls(self.ontology.Network, "Convolutional Network")) # assumes network is convolutional
+                
+                # Process the components of the network instance.
+                for network_instance in network_instances:
+                    self._link_instances(ann_config_instance, network_instance, self.ontology.hasNetwork)
+                    # self._process_layers(network_instance) # May be processed by onnx
+                    self._process_objective_functions(network_instance)
+                    self._process_task_characterization(network_instance)
 
     def __addclasses(self)->None:
 
@@ -736,9 +725,9 @@ class OntologyInstantiator:
                 return
 
             # Initialize the LLM engine with the document context.
-            init_engine(self.json_file_path)
+            init_engine(self.ann_config_name , self.json_file_path)
 
-            self.__addclasses()
+            self.__addclasses() # Add new classes to ontology
 
             # Could grab model name from user input or JSON file.
             # Extract the title from the JSON file.
@@ -765,8 +754,6 @@ class OntologyInstantiator:
             
             self.logger.info("An ANN has been successfully instantiated.")
 
-            self.logger.info(f"Total input tokens: {self.total_input_tokens}")
-            self.logger.info(f"Total output tokens: {self.total_output_tokens}")
         except Exception as e:
             self.logger.error(f"Error during ontology instantiation: {e}")
             raise e
@@ -777,13 +764,13 @@ if __name__ == "__main__":
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
     ontology = get_ontology(ontology_path).load()
 
-    for name in ["alexnet", "resnet", "vgg16", "gan"]:
+    for model_name in ["alexnet", "resnet", "vgg16", "gan"]:
         with ontology:
             try:
-                instantiator = OntologyInstantiator(ontology, f"data/{name}/doc_{name}.json", f"{name}")
+                instantiator = OntologyInstantiator(ontology, f"data/{model_name}/doc_{model_name}.json", model_name)
                 instantiator.run()
             except Exception as e:
-                logging.error(f"Error instantiating the {name} ontology: {e}")
+                logging.error(f"Error instantiating the {model_name} ontology: {e}")
                 continue
 
     # Move saving outside the loop to ensure all networks are stored in the final ontology
