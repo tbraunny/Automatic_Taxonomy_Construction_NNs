@@ -10,18 +10,11 @@ from utils.owl_utils import (
     create_cls_instance,
     assign_object_property_relationship,
     create_subclass,
-    get_all_subclasses,
-    get_class_by_name
+    get_all_subclasses
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.llm_service import init_engine, query_llm
 from rapidfuzz import process, fuzz
-
-try:
-    import tiktoken
-except ImportError:
-    tiktoken = None
-
 
 OMIT_CLASSES = {
     "DataCharacterization",
@@ -46,11 +39,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def setup_logger():
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
 
-    log_file = os.path.join(log_dir, f"ann_config_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+    log_file = os.path.join(
+        log_dir, f"ann_config_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
+    )
 
     logger = logging.getLogger("LLMServiceLogger")
     logger.setLevel(logging.INFO)
@@ -63,6 +59,7 @@ def setup_logger():
         logger.addHandler(file_handler)
 
     return logger
+
 
 # Use the dedicated logger
 logger = setup_logger()
@@ -87,9 +84,7 @@ class OntologyInstantiator:
         """
         Generate a unique hash identifier based on the given string.
         """
-        hash_object = hashlib.md5(
-            str.encode()
-        )  # Generate a consistent hash
+        hash_object = hashlib.md5(str.encode())  # Generate a consistent hash
         return hash_object.hexdigest()[:8]
 
     def _instantiate_cls(self, cls: ThingClass, instance_name: str) -> Thing:
@@ -258,7 +253,9 @@ class OntologyInstantiator:
         Process loss and regularizer functions, and link them to it's network instance.
         """
         try:
-            network_instance_name = self._unhash_and_format_instance_name(network_instance.name)
+            network_instance_name = self._unhash_and_format_instance_name(
+                network_instance.name
+            )
 
             # Gets a list of all subclasses of LossFunction in a readable format, used for few shot exampling.
             loss_function_subclass_names = make_thing_classes_readable(
@@ -268,20 +265,15 @@ class OntologyInstantiator:
             loss_function_prompt = (
                 f"Step 1: Identify and extract only the loss function names explicitly used in the {network_instance_name}'s architecture. "
                 f"Consider only those loss functions that are directly part of {network_instance_name}.\n\n"
-
                 "Step 2: For each extracted loss function, determine whether it is designed to **minimize** or **maximize** its objective function.\n"
                 "- If a function minimizes an error, cost, or divergence (e.g., Cross-Entropy Loss, MSE, Huber Loss), classify it as **minimize**.\n"
                 "- If a function maximizes a likelihood, reward, or score function (e.g., Log-Likelihood, Reinforcement Learning Reward Maximization), classify it as **maximize**.\n"
                 "- If a function minimizes the negative of a quantity (e.g., negative log-likelihood), it is still a **minimization problem**.\n"
                 "- Carefully analyze each function before making a decision.\n\n"
-
                 """Step 3: After reasoning through the loss functions and their objectives, return the final structured output **strictly in JSON format** using "answer" as the key", following this exact format:\n\n"""
-
                 "**Expected JSON Format:**\n"
                 '{"answer": [{"loss_function": "Loss Function Name", "objective": "minimize or maximize"}]}\n\n'
-
                 f"Some examples of loss functions include {loss_function_subclass_names}. If one of these match, response with its exact name\n\n"
-
                 "**Format Examples:**\n"
                 "Network: Discriminator\n"
                 '{"answer": [{"loss_function": "Binary Cross-Entropy Loss", "objective": "minimize"}]}\n'
@@ -291,20 +283,21 @@ class OntologyInstantiator:
                 '{"answer": [{"loss_function": "Policy Gradient Loss", "objective": "maximize"}]}\n\n'
                 "Network: Generator\n"
                 '{"answer": []\n\n'
-
                 f"Now, analyze the following network and think through the response carefully:\n"
                 f"Network: {network_instance_name}\n\n"
-
                 "**DO NOT OUTPUT JSON UNTIL YOU HAVE FINISHED THINKING.**\n"
                 "Once you have completed your reasoning, format your final answer strictly as JSON:\n\n"
                 '{"answer": "<Your Answer Here>"}'
             )
-            loss_function_names_and_objective = self._query_llm("", loss_function_prompt)
-
+            loss_function_names_and_objective = self._query_llm(
+                "", loss_function_prompt
+            )
 
             # If no loss function names are provided, create a default loss function instance and return.
             if not loss_function_names_and_objective:
-                self.logger.warning(f"No response for loss function in network {network_instance_name}.")
+                self.logger.warning(
+                    f"No response for loss function in network {network_instance_name}."
+                )
 
                 loss_name = "Unknown Loss Function"
                 cost_function_instance = self._instantiate_cls(
@@ -316,18 +309,23 @@ class OntologyInstantiator:
                 objective_function_instance = self._instantiate_cls(
                     self.ontology.MinObjectiveFunction, "Unknown Objective Function"
                 )
-                
+
                 self._link_instances(
                     objective_function_instance,
                     cost_function_instance,
                     self.ontology.hasCost,
                 )
                 self._link_instances(
-                    cost_function_instance, loss_function_instance, self.ontology.hasLoss
+                    cost_function_instance,
+                    loss_function_instance,
+                    self.ontology.hasLoss,
                 )
-            
+
             # Iterate through dictionary of loss function names and their objectives
-            for loss_function_name, objective_type in loss_function_names_and_objective.items():
+            for (
+                loss_function_name,
+                objective_type,
+            ) in loss_function_names_and_objective.items():
 
                 # Instantiate the objective function based on the objective type
                 if objective_type.lower() == "minimize":
@@ -340,18 +338,23 @@ class OntologyInstantiator:
                     )
                 else:
                     self.logger.warning(
-                        f"Invalid response for loss function objective type for {loss_function_name}, using minimzie as default.")
+                        f"Invalid response for loss function objective type for {loss_function_name}, using minimzie as default."
+                    )
                     objective_function_instance = self._instantiate_cls(
                         self.ontology.MinObjectiveFunction, "Min Objective Function"
-                    ) # Default to minimize if no response
+                    )  # Default to minimize if no response
 
                 # Get all known loss functions for the loss function
                 known_loss_functions = get_all_subclasses(self.ontology.Task)
 
                 # Check if the loss function name matches any known loss function
-                best_match_loss_class = self._fuzzy_match_class(loss_function_name, known_loss_functions, 95)
+                best_match_loss_class = self._fuzzy_match_class(
+                    loss_function_name, known_loss_functions, 95
+                )
                 if not best_match_loss_class:
-                    best_match_loss_class = create_subclass(self.ontology.LossFunction, loss_function_name)
+                    best_match_loss_class = create_subclass(
+                        self.ontology.LossFunction, loss_function_name
+                    )
 
                 # Instantiate the cost function and loss function
                 cost_function_instance = self._instantiate_cls(
@@ -368,19 +371,19 @@ class OntologyInstantiator:
                     self.ontology.hasCost,
                 )
                 self._link_instances(
-                    cost_function_instance, loss_function_instance, self.ontology.hasLoss
+                    cost_function_instance,
+                    loss_function_instance,
+                    self.ontology.hasLoss,
                 )
 
                 regularizer_function_prompt = (
                     f"Extract only the names of explicit regularizer functions that are mathematically added to the objective function for the {loss_name} loss function. "
                     "Exclude implicit regularization techniques like Dropout, Batch Normalization, or any regularization that is not directly part of the loss function. "
                     "Return the result in JSON format with the key 'answer'. Follow the examples below.\n\n"
-
                     "Clarifications:\n"
                     "L2 Regularization is a technique that explicitly adds a penalty term to the loss function, encouraging smaller weights and reducing overfitting. This means that during backpropagation, the gradient update includes an additional term derived from this penalty."
                     "Weight Decay is an optimization technique that directly modifies the weight update rule by scaling the weights down after each step, effectively implementing L2 regularization but without explicitly altering the loss function"
                     "\n\n"
-
                     "Examples:\n"
                     "Loss Function: Discriminator Loss\n"
                     '{"answer": ["L1 Regularization"]}\n\n'
@@ -399,18 +402,22 @@ class OntologyInstantiator:
                         f"No response for regularizer function classes for loss function {loss_name}."
                     )
                     continue
-                    
+
                 for reg_name in regularizer_names:
-                    best_match_reg_class = self._fuzzy_match_class(regularizer_names, known_loss_functions, 95)
+                    best_match_reg_class = self._fuzzy_match_class(
+                        regularizer_names, known_loss_functions, 95
+                    )
 
                     if not best_match_reg_class:
-                        best_match_class = create_subclass(self.ontology.RegularizerFunction, reg_name)
-                    
-                    reg_instance = self._instantiate_cls(
-                        best_match_class, reg_name
-                    )
+                        best_match_class = create_subclass(
+                            self.ontology.RegularizerFunction, reg_name
+                        )
+
+                    reg_instance = self._instantiate_cls(best_match_class, reg_name)
                     self._link_instances(
-                        cost_function_instance, reg_instance, self.ontology.hasRegularizer
+                        cost_function_instance,
+                        reg_instance,
+                        self.ontology.hasRegularizer,
                     )
         except Exception as e:
             self.logger.error(f"Error processing objective functions: {e}")
@@ -425,7 +432,7 @@ class OntologyInstantiator:
             objective_function_instance = self._instantiate_cls(
                 self.ontology.MinObjectiveFunction, "Unknown Objective Function"
             )
-            
+
             self._link_instances(
                 objective_function_instance,
                 cost_function_instance,
@@ -435,8 +442,7 @@ class OntologyInstantiator:
                 cost_function_instance, loss_function_instance, self.ontology.hasLoss
             )
             return
-            
-            
+
         # loss_function_prompt = (
         #     f"Extract only the names of the loss functions used for only the {network_instance_name}'s architecture and return the result in JSON format with the key 'answer'. "
         #     f"Examples of loss functions include {loss_function_subclass_names}."
@@ -454,7 +460,7 @@ class OntologyInstantiator:
         # # If no loss function names are provided, create a default loss function instance and return.
         # if not loss_function_names:
         #     self.logger.info("No response for loss function classes.")
-            
+
         #     loss_name = "Unknown Loss Function"
 
         #     cost_function_instance = self._instantiate_cls(
@@ -570,11 +576,13 @@ class OntologyInstantiator:
         #             cost_function_instance, reg_instance, self.ontology.hasRegularizer
         #         )
 
-    def _process_layers(self, network_instance: str) -> None:
+    def _old_process_layers(self, network_instance: str) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
-        network_instance_name = self._unhash_and_format_instance_name(network_instance.name)
+        network_instance_name = self._unhash_and_format_instance_name(
+            network_instance.name
+        )
 
         # Process Input Layer
         input_layer_prompt = (
@@ -692,8 +700,10 @@ class OntologyInstantiator:
                     activation_layer_instance = self._instantiate_cls(
                         self.ontology.ActivationLayer, f"{layer_type} {i + 1}"
                     )
-                    activation_layer_instance_name = self._unhash_and_format_instance_name(
-                        activation_layer_instance.name
+                    activation_layer_instance_name = (
+                        self._unhash_and_format_instance_name(
+                            activation_layer_instance.name
+                        )
                     )
                     self._link_instances(
                         network_instance,
@@ -928,7 +938,9 @@ class OntologyInstantiator:
         if not network_instance:
             raise ValueError("No network instance found in the full context.")
 
-        network_instance_name = self._unhash_and_format_instance_name(network_instance.name)
+        network_instance_name = self._unhash_and_format_instance_name(
+            network_instance.name
+        )
 
         # Prompt LLM to extract task name
         task_prompt = (
@@ -975,20 +987,24 @@ class OntologyInstantiator:
 
         # Get subclasses of TaskCharacterization
         known_tasks_classes = get_all_subclasses(self.ontology.TaskCharacterization)
-        
+
         # Perform fuzzy matching
-        best_match_task_class = self._fuzzy_match_class(task_name, known_tasks_classes, 95)
+        best_match_task_class = self._fuzzy_match_class(
+            task_name, known_tasks_classes, 95
+        )
         if not best_match_task_class:
             best_match_task_class = create_subclass(
                 self.ontology, task_name, self.ontology.TaskCharacterization
             )
 
         # Instantiate and link the task characterization instance
-        task_class = get_class_by_name(self.ontology, task_name)
-        task_instance = self._instantiate_cls(task_class, task_name)
+        # task_class = get_class_by_name(self.ontology, task_name)
+        task_instance = self._instantiate_cls(best_match_task_class, task_name)
         self._link_instances(network_instance, task_instance, self.ontology.hasTaskType)
 
-        self.logger.info(f"Task characterization '{task_name}' linked to network instance '{network_instance_name}'.")
+        self.logger.info(
+            f"Task characterization '{task_name}' linked to network instance '{network_instance_name}'."
+        )
 
     def _process_network(self, ann_config_instance: Thing) -> None:
         """
@@ -1058,7 +1074,9 @@ class OntologyInstantiator:
         """
         try:
             if not hasattr(self.ontology, "ANNConfiguration"):
-                raise AttributeError("Error: Class 'ANNConfiguration' not found in ontology.")
+                raise AttributeError(
+                    "Error: Class 'ANNConfiguration' not found in ontology."
+                )
 
             # Initialize the LLM engine with the document context.
             init_engine(self.ann_config_name, self.json_file_path)

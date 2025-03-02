@@ -489,7 +489,6 @@ class LLMQueryEngine:
                     self.total_input_tokens += num_input_tokens
                     self.total_output_tokens += num_output_tokens
 
-
                     if "answer" in result_obj:
                         return result_obj["answer"]
                 except json.JSONDecodeError as e:
