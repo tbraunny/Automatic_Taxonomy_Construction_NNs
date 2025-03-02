@@ -41,7 +41,10 @@ def chat_page():
     WHERE n.uri IS NOT NULL AND n.uri CONTAINS 'GAN'
     RETURN n
 
-    Based on the above, answer the following question by creating a Cypher query to retrieve the relevant data from the graph.
+    Based on the above, answer the following question by creating a Cypher query to retrieve the relevant data from the graph. 
+    (Do not change the structure of the graph)
+    
+    If there is no relevant Cypher query return nothing.
 
     Question: {question}
     """
@@ -58,6 +61,12 @@ def chat_page():
     - Simple Classification
 
     You will receive the context (results of a Cypher query) and a question. Based on that, return an understandable answer.
+    
+    If there is no context provided, try to answer the question pertaining to aspects in the graph. 
+    
+    Do not mention anything about the context in the answer.
+    
+    
 
     Context: {context}
     Question: {question}
@@ -78,16 +87,22 @@ def chat_page():
 
     st.title("Chat with AI")
     st.write("Enter a prompt, and the model will generate a response.")
-    user_input = st.text_area("Enter your prompt:")
-    
-    if st.button("Generate"):
-        if user_input:
-            try:
-                answer = graphCypher_chain.invoke({"schema" : graph.get_schema, "query": user_input})
-                st.write(f"Answer: {answer['result']}")
-            except Exception as e:
-                st.write(f"Error: {str(e)}")
-        else:
-            st.write("Please enter a prompt!")
+    messages = st.container()
+
+    # Create a chat input field
+    user_input = st.chat_input("Enter your prompt:")
+
+    if user_input:
+        try:
+            # Replace 'graphCypher_chain.invoke' with your actual function to generate a response
+            answer = graphCypher_chain.invoke({"schema": graph.get_schema, "query": user_input})
+            # Display the user's message
+            messages.chat_message("user").write(user_input)
+            # Display the model's response
+            messages.chat_message("assistant").write(f"Answer: {answer['result']}")
+        except Exception as e:
+            st.write("An error occurred while processing your request. Please ask questions related to the taxonomy.")
+    else:
+        st.write("Please enter a prompt!")
 
         

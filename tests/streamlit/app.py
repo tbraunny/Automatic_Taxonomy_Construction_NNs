@@ -1,7 +1,27 @@
 import streamlit as st
 from graphpage import display_graph
 from LLMchat import chat_page
+import webbrowser
 
+
+# st.markdown(
+#     """
+#     <style>
+#     .banner {
+#         background-color: #4CAF50; 
+#         color: white; 
+#         font-size: 36px; 
+#         padding: 20px;
+#         text-align: center;
+#         border-radius: 10px;
+#     }
+#     </style>
+#     <div class="banner">
+#         Welcome to My Streamlit App!
+#     </div>
+#     """, 
+#     unsafe_allow_html=True
+# )
 
 # Page 1: Home
 def home_page():
@@ -36,24 +56,59 @@ def home_page():
         st.markdown("""
         - [Chase Carthen (PhD Student of CSE at University of Nevada, Reno)](https://scholar.google.com/citations?user=X9yIPe4AAAAJ&hl=en)
         - [Dr. Alireza Tavakkoli (Associate Professor of CSE at University of Nevada, Reno)](https://www.unr.edu/cse/people/alireza-tavakkoli)
+        - [Dr. Fred Harris, Jr. (Associate Dean of Faculty and Academic Affairs; Foundation Professor of Computer Science & Engineering)](https://www.unr.edu/cse/people/fred-harris)
         """)
     with st.container():
         st.header('Instructors:')
-        st.markdown("""
-        - [Sara Davis]
-        - [David Feil-Seifer]
-        - [Vinh Le]
-        - [Levi Scully]
-        """)
+        with st.expander("list of Instructors"):
+            st.markdown("""
+            - [Sara Davis]
+            - [David Feil-Seifer]
+            - [Vinh Le]
+            - [Levi Scully]
+            """)
+        
+    with st.container():
+        st.header('Project-Related Resources')
+        
+        with st.expander("list of resources"):
+            st.markdown("""
+            - [Ontology Population Using LLM's](https://arxiv.org/abs/2411.01612)
+            - [Semantic Similarity of Ontology Instances Tailored on the Application Context](https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context)
+            - [Making Neural Networks FAIR](https://arxiv.org/pdf/1907.11569#page=1.50)
+            - [deepseek-r1](https://ollama.com/library/deepseek-r1)
+            - [ollama](https://ollama.com/)
+            """)
+    
+    with st.container():
+        st.header('Check out our [GitHub repository](https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs/)!')
 
+def test_page():
+    import streamlit as st
+    import streamlit.components.v1 as components
+# Your main content here
+    animation_html = """
+    <a href="http://localhost:8866/" target="_blank">
+        <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+        <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+    </a>
+    """
+
+    # Use Streamlit to display the animation as a clickable button
+    st.title("Clickable Lottie Animation")
+    components.html(animation_html, height=400)
 
 # Sidebar for navigation
-page = st.sidebar.radio("Select a Page", ("Home", "Chat with AI", "Graph"))
+st.sidebar.markdown("## Welcome to TaxonNeuro!")
+
+page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📊 Graph", "🔬 Test"))
 
 # Conditional rendering of pages based on selection
-if page == "Home":
+if page == "🏠 Home":
     home_page()
-elif page == "Chat with AI":
+elif page == "🤖 Chat with AI":
     chat_page()
-elif page == "Graph":
+elif page == "📊 Graph":
     display_graph()
+elif page == "🔬 Test":
+    test_page()
