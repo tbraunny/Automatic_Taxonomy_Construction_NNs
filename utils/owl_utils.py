@@ -190,7 +190,7 @@ def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
 """
 Modifications to get_all_subclasses
 - Issue: circular recursion, max depth reached upon function call
-- Remedy: list tracking visited nodes, do not visit same node twice
+- Remedy: set tracking visited nodes, do not visit same node twice
 - Original code commented out below
 """
 #################################################################
