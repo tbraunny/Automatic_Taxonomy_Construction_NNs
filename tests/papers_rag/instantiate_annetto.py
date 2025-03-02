@@ -2,6 +2,7 @@ import logging
 import os
 import hashlib
 from datetime import datetime
+import time
 
 from typing import Dict, Any, Union, List, Optional
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
@@ -39,46 +40,29 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-def setup_logger():
-    log_dir = "logs"
-    os.makedirs(log_dir, exist_ok=True)
-
-    log_file = os.path.join(
-        log_dir, f"ann_config_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
-    )
-
-    logger = logging.getLogger("LLMServiceLogger")
-    logger.setLevel(logging.INFO)
-
-    # Check if the logger already has handlers to prevent duplicate logging
-    if not logger.hasHandlers():
-        file_handler = logging.FileHandler(log_file)
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        file_handler.setFormatter(formatter)
-        logger.addHandler(file_handler)
-
-    return logger
-
-
-# Use the dedicated logger
-logger = setup_logger()
-
-
 class OntologyInstantiator:
     """
     A class to instantiate an annett-o ontology by processing each main component separately and linking them together.
     """
 
     def __init__(
-        self, ontology: Ontology, json_file_path: str, ann_config_name: str = "AlexNet"
+        self, ontology_path: Ontology, list_json_doc_paths: str, ann_config_name: str = "alexnet", output_owl_path: str = "default.owl"
     ) -> None:
-        self.ontology = ontology
-        self.json_file_path = json_file_path
+        """
+        Initialize the OntologyInstantiator class.
+        # Args:
+            ontology_path (str): The path to the ontology file.
+            json_doc_files_paths (list[str]): The list of str paths to the JSON_doc files for paper and/or code.
+            ann_config_name (str): The name of the ANN configuration.
+            output_owl_path (str): The path to save the output OWL file.
+        """
+        self.ontology = get_ontology(ontology_path).load()
+        self.list_json_doc_paths = list_json_doc_paths
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
-        self.ann_config_name = ann_config_name  # Assume AlexNet for now.
+        self.ann_config_name = ann_config_name.lower().strip()
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
+        self.output_owl_path = output_owl_path
 
     def _generate_hash(self, str: str) -> str:
         """
@@ -1068,77 +1052,74 @@ class OntologyInstantiator:
             except Exception as e:
                 self.logger.error(f"Error creating new class {name}: {e}")
 
+    def save_ontology(self) -> None:
+        """
+        Saves the ontology to the pre-specified file.
+        """
+        self.ontology.save(file=self.output_owl_path, format="rdfxml")
+        self.logger.info(f"Ontology saved to {self.output_owl_path}")
+
     def run(self) -> None:
         """
         Main method to run the ontology instantiation process.
         """
+
         try:
-            if not hasattr(self.ontology, "ANNConfiguration"):
-                raise AttributeError(
-                    "Error: Class 'ANNConfiguration' not found in ontology."
+            with self.ontology:
+                start_time = time.time()
+
+                if not hasattr(self.ontology, "ANNConfiguration"):
+                    raise AttributeError(
+                        "Error: Class 'ANNConfiguration' not found in ontology."
+                    )
+
+                # Initialize the LLM engine for each json_document context in paper and/or code.
+                for count , j in enumerate(self.list_json_doc_paths):
+                    init_engine(self.ann_config_name,j)
+
+                self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
+
+                # Instantiate the ANN Configuration class.
+                ann_config_instance = self._instantiate_cls(
+                    self.ontology.ANNConfiguration, self.ann_config_name
                 )
 
-            # Initialize the LLM engine with the document context.
-            init_engine(self.ann_config_name, self.json_file_path)
+                # Process the network class and it's components.
+                self._process_network(ann_config_instance)
 
-            self.__addclasses()  # Add new classes to ontology
+                # Process TrainingStrategy and it's components.
+                # self._process_training_strategy(ann_config_instance)
 
-            # Could grab model name from user input or JSON file.
-            # Extract the title from the JSON file.
-            # try:
-            #     with open(self.json_file_path, 'r', encoding='utf-8') as file:
-            #         data = load(file)
-            #     titles = [item['metadata']['title'] for item in data if 'metadata' in item and 'title' in item['metadata']]
-            #     title = titles[0] if titles else "DefaultTitle"
-            # except Exception as e:
-            #     self.logger.error(f"Error reading JSON file: {e}")
-            #     title = "DefaultTitle"
+                # Log time taken to instantiate the ontology.
+                minutes, seconds = divmod(time.time() - start_time, 60)
+                logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
 
-            ann_config_instance = self._instantiate_cls(
-                self.ontology.ANNConfiguration, self.ann_config_name
-            )
-
-            # Process the network class and it's components.
-            self._process_network(ann_config_instance)
-
-            # Process TrainingStrategy and it's components.
-            # self._process_training_strategy(ann_config_instance)
-
-            # extract information about the application of the ANN (i.e. cancer detection)
-            # what kind of data, image, text
-            # Shapes of layers
-
-            self.logger.info("An ANN has been successfully instantiated.")
+                logging.info(f"Ontology instantiation completed for {self.ann_config_name}.")
 
         except Exception as e:
-            self.logger.error(f"Error during ontology instantiation: {e}")
+            self.logger.error(f"Error during the {self.ann_config_name} ontology instantiation: {e}")
             raise e
 
-
+# For standalone testing
 if __name__ == "__main__":
-    import time
+    import glob
 
-    start_time = time.time()
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
-    ontology = get_ontology(ontology_path).load()
 
-    for model_name in ["alexnet", "resnet", "vgg16", "gan"]:
-        with ontology:
+    for model_name in ["alexnet", "resnet"]:#, "vgg16"]#, "gan"]: # Assume we can model name from user or something
             try:
+                code_files = glob.glob(f"data/{model_name}/*.py")
+                pdf_file = f"data/{model_name}/{model_name}.pdf"
+
+                # Here these paths will each need to be extracted from the PDF and code files to json_docs.json
+
+                # Now we have JSON files for both the papers and code files respectively.
+                list_json_doc_paths = glob.glob(f"data/{model_name}/*.json")
+
                 instantiator = OntologyInstantiator(
-                    ontology, f"data/{model_name}/doc_{model_name}.json", model_name
+                    ontology_path, list_json_doc_paths, model_name
                 )
                 instantiator.run()
             except Exception as e:
-                logging.error(f"Error instantiating the {model_name} ontology: {e}")
-                continue
-
-    # Move saving outside the loop to ensure all networks are stored in the final ontology
-    new_file_path = "tests/papers_rag/annett-o-test.owl"  # Assume test file for now.
-    ontology.save(file=new_file_path, format="rdfxml")
-    logging.info(f"Ontology saved to {new_file_path}")
-
-    elapsed_time = time.time() - start_time
-    minutes, seconds = divmod(elapsed_time, 60)
-    logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
-    logging.info("Ontology instantiation completed.")
+                print(f"Error instantiating the {model_name} ontology in __name__: {e}")
+                continue    
