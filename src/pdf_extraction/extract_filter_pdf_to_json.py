@@ -134,5 +134,5 @@ def extract_filter_pdf_to_json(pdf_path: str, output_path: str):
     
     print(f"Filtered PDF content processed and written to file: {output_path}")
 
-model_name = 'alexnet'
+model_name = 'aae'
 extract_filter_pdf_to_json(f"data/{model_name}/{model_name}.pdf", f"data/{model_name}/doc_{model_name}.json")

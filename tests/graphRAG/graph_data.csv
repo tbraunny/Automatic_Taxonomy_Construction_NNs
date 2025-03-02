@@ -1,0 +1,14 @@
+# Nodes Table
+Node Name,LayerTypes
+TaskType,
+LayerType,FullyConnected
+SimpleClassification,FullyConnected
+GAN,FullyConnected
+AAE,"BatchNorm, Concat, Dropout, FullyConnected"
+
+# Edges Table
+Source Node,Target Node,Relationship Type
+TaskType,LayerType,"hasReconstruction, hasGeneration, hasGenerative, hasClassification, hasSupervisedClassification, hasDiscrimination, hasAdversarial, hasClustering"
+LayerType,SimpleClassification,hasFullyConnected
+LayerType,GAN,hasFullyConnected
+LayerType,AAE,"hasDropout, hasFullyConnected, hasBatchNorm, hasConcat"
