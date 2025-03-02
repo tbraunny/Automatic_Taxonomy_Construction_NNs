@@ -11,7 +11,7 @@ from utils.owl_utils import (
     create_cls_instance,
     assign_object_property_relationship,
     create_subclass,
-    get_all_subclasses
+    get_all_subclasses,
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.llm_service import init_engine, query_llm
@@ -40,13 +40,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 class OntologyInstantiator:
     """
     A class to instantiate an annett-o ontology by processing each main component separately and linking them together.
     """
 
     def __init__(
-        self, ontology_path: Ontology, list_json_doc_paths: str, ann_config_name: str = "alexnet", output_owl_path: str = "default.owl"
+        self,
+        ontology_path: Ontology,
+        list_json_doc_paths: str,
+        ann_config_name: str = "alexnet",
+        output_owl_path: str = "default.owl",
     ) -> None:
         """
         Initialize the OntologyInstantiator class.
@@ -71,7 +76,7 @@ class OntologyInstantiator:
         hash_object = hashlib.md5(str.encode())  # Generate a consistent hash
         return hash_object.hexdigest()[:8]
 
-    def _instantiate_cls(self, cls: ThingClass, instance_name: str) -> Thing:
+    def _instantiate_and_format_class(self, cls: ThingClass, instance_name: str) -> Thing:
         """
         Instantiate a given ontology class with the specified instance name.
         Uses the ANN configuration hash as a prefix for uniqueness.
@@ -284,13 +289,13 @@ class OntologyInstantiator:
                 )
 
                 loss_name = "Unknown Loss Function"
-                cost_function_instance = self._instantiate_cls(
+                cost_function_instance = self._instantiate_and_format_class(
                     self.ontology.CostFunction, "cost function"
                 )
-                loss_function_instance = self._instantiate_cls(
+                loss_function_instance = self._instantiate_and_format_class(
                     self.ontology.LossFunction, loss_name
                 )
-                objective_function_instance = self._instantiate_cls(
+                objective_function_instance = self._instantiate_and_format_class(
                     self.ontology.MinObjectiveFunction, "Unknown Objective Function"
                 )
 
@@ -313,18 +318,18 @@ class OntologyInstantiator:
 
                 # Instantiate the objective function based on the objective type
                 if objective_type.lower() == "minimize":
-                    objective_function_instance = self._instantiate_cls(
+                    objective_function_instance = self._instantiate_and_format_class(
                         self.ontology.MinObjectiveFunction, "Min Objective Function"
                     )
                 elif objective_type.lower() == "maximize":
-                    objective_function_instance = self._instantiate_cls(
+                    objective_function_instance = self._instantiate_and_format_class(
                         self.ontology.MaxObjectiveFunction, f"Max Objective Function"
                     )
                 else:
                     self.logger.warning(
                         f"Invalid response for loss function objective type for {loss_function_name}, using minimzie as default."
                     )
-                    objective_function_instance = self._instantiate_cls(
+                    objective_function_instance = self._instantiate_and_format_class(
                         self.ontology.MinObjectiveFunction, "Min Objective Function"
                     )  # Default to minimize if no response
 
@@ -341,10 +346,10 @@ class OntologyInstantiator:
                     )
 
                 # Instantiate the cost function and loss function
-                cost_function_instance = self._instantiate_cls(
+                cost_function_instance = self._instantiate_and_format_class(
                     self.ontology.CostFunction, "cost function"
                 )
-                loss_function_instance = self._instantiate_cls(
+                loss_function_instance = self._instantiate_and_format_class(
                     best_match_loss_class, loss_function_name
                 )
 
@@ -397,7 +402,7 @@ class OntologyInstantiator:
                             self.ontology.RegularizerFunction, reg_name
                         )
 
-                    reg_instance = self._instantiate_cls(best_match_class, reg_name)
+                    reg_instance = self._instantiate_and_format_class(best_match_class, reg_name)
                     self._link_instances(
                         cost_function_instance,
                         reg_instance,
@@ -407,13 +412,13 @@ class OntologyInstantiator:
             self.logger.error(f"Error processing objective functions: {e}")
 
             loss_name = "Unknown Loss Function"
-            cost_function_instance = self._instantiate_cls(
+            cost_function_instance = self._instantiate_and_format_class(
                 self.ontology.CostFunction, "cost function"
             )
-            loss_function_instance = self._instantiate_cls(
+            loss_function_instance = self._instantiate_and_format_class(
                 self.ontology.LossFunction, loss_name
             )
-            objective_function_instance = self._instantiate_cls(
+            objective_function_instance = self._instantiate_and_format_class(
                 self.ontology.MinObjectiveFunction, "Unknown Objective Function"
             )
 
@@ -447,10 +452,10 @@ class OntologyInstantiator:
 
         #     loss_name = "Unknown Loss Function"
 
-        #     cost_function_instance = self._instantiate_cls(
+        #     cost_function_instance = self._instantiate_and_format_class(
         #         self.ontology.CostFunction, "cost function"
         #     )
-        #     loss_function_instance = self._instantiate_cls(
+        #     loss_function_instance = self._instantiate_and_format_class(
         #         self.ontology.LossFunction, loss_name
         #     )
         #     self._link_instances(
@@ -489,11 +494,11 @@ class OntologyInstantiator:
         #     loss_obj_type = loss_obj_response.lower()
 
         #     if loss_obj_type == "minimize":
-        #         objective_function_instance = self._instantiate_cls(
+        #         objective_function_instance = self._instantiate_and_format_class(
         #             self.ontology.MinObjectiveFunction, "Min Objective Function"
         #         )
         #     elif loss_obj_type == "maximize":
-        #         objective_function_instance = self._instantiate_cls(
+        #         objective_function_instance = self._instantiate_and_format_class(
         #             self.ontology.MaxObjectiveFunction, f"Max Objective Function"
         #         )
         #     else:
@@ -502,10 +507,10 @@ class OntologyInstantiator:
         #         )
         #         continue
 
-        #     cost_function_instance = self._instantiate_cls(
+        #     cost_function_instance = self._instantiate_and_format_class(
         #         self.ontology.CostFunction, "cost function"
         #     )
-        #     loss_function_instance = self._instantiate_cls(
+        #     loss_function_instance = self._instantiate_and_format_class(
         #         self.ontology.LossFunction, loss_name
         #     )
 
@@ -553,7 +558,7 @@ class OntologyInstantiator:
         #         continue
 
         #     for reg_name in regularizer_names:
-        #         reg_instance = self._instantiate_cls(
+        #         reg_instance = self._instantiate_and_format_class(
         #             self.ontology.RegularizerFunction, reg_name
         #         )
         #         self._link_instances(
@@ -590,7 +595,7 @@ class OntologyInstantiator:
         if not input_units:
             self.logger.info("No response for input layer units.")
         else:
-            input_layer_instance = self._instantiate_cls(
+            input_layer_instance = self._instantiate_and_format_class(
                 self.ontology.InputLayer, "Input Layer"
             )
             input_layer_instance.layer_num_units = [input_units]
@@ -617,7 +622,7 @@ class OntologyInstantiator:
         if not output_units:
             self.logger.info("No response for output layer units.")
         else:
-            output_layer_instance = self._instantiate_cls(
+            output_layer_instance = self._instantiate_and_format_class(
                 self.ontology.OutputLayer, "Output Layer"
             )
             output_layer_instance.layer_num_units = [output_units]
@@ -681,7 +686,7 @@ class OntologyInstantiator:
         else:
             for layer_type, layer_count in activation_layer_counts.items():
                 for i in range(layer_count):
-                    activation_layer_instance = self._instantiate_cls(
+                    activation_layer_instance = self._instantiate_and_format_class(
                         self.ontology.ActivationLayer, f"{layer_type} {i + 1}"
                     )
                     activation_layer_instance_name = (
@@ -741,7 +746,7 @@ class OntologyInstantiator:
                     )
                     if activation_function_response:
                         if activation_function_response != "[]":
-                            activation_function_instance = self._instantiate_cls(
+                            activation_function_instance = self._instantiate_and_format_class(
                                 self.ontology.ActivationFunction,
                                 activation_function_response,
                             )
@@ -802,7 +807,7 @@ class OntologyInstantiator:
                         ) in (
                             noise_layer_pdf.items()
                         ):  # Not sure if this is the correct way to iterate over the dictionary.
-                            noise_layer_instance = self._instantiate_cls(
+                            noise_layer_instance = self._instantiate_and_format_class(
                                 self.ontology.NoiseLayer, noise_name
                             )
                             self._link_instances(
@@ -893,7 +898,7 @@ class OntologyInstantiator:
                 for layer_type, layer_count in modification_layer_counts.items():
                     for i in range(layer_count):
                         if dropout_match and layer_type == dropout_match:
-                            dropout_layer_instance = self._instantiate_cls(
+                            dropout_layer_instance = self._instantiate_and_format_class(
                                 self.ontology.DropoutLayer, f"{layer_type} {i + 1}"
                             )
                             if dropout_layer_rate:
@@ -906,7 +911,7 @@ class OntologyInstantiator:
                                 self.ontology.hasLayer,
                             )
                         else:
-                            modification_layer_instance = self._instantiate_cls(
+                            modification_layer_instance = self._instantiate_and_format_class(
                                 self.ontology.ModificationLayer, f"{layer_type} {i + 1}"
                             )
                             self._link_instances(
@@ -983,7 +988,7 @@ class OntologyInstantiator:
 
         # Instantiate and link the task characterization instance
         # task_class = get_class_by_name(self.ontology, task_name)
-        task_instance = self._instantiate_cls(best_match_task_class, task_name)
+        task_instance = self._instantiate_and_format_class(best_match_task_class, task_name)
         self._link_instances(network_instance, task_instance, self.ontology.hasTaskType)
 
         self.logger.info(
@@ -1006,10 +1011,10 @@ class OntologyInstantiator:
                 self._unhash_and_format_instance_name(ann_config_instance.name) == "gan"
             ):  # Temp for gan & multi network
                 network_instances.append(
-                    self._instantiate_cls(self.ontology.Network, "Generator Network")
+                    self._instantiate_and_format_class(self.ontology.Network, "Generator Network")
                 )
                 network_instances.append(
-                    self._instantiate_cls(
+                    self._instantiate_and_format_class(
                         self.ontology.Network, "Discriminator Network"
                     )
                 )
@@ -1025,7 +1030,7 @@ class OntologyInstantiator:
             else:
                 # Here is where logic for processing the network instance would go.
                 network_instances.append(
-                    self._instantiate_cls(
+                    self._instantiate_and_format_class(
                         self.ontology.Network, "Convolutional Network"
                     )
                 )  # assumes network is convolutional for cnn
@@ -1074,13 +1079,13 @@ class OntologyInstantiator:
                     )
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
-                for count , j in enumerate(self.list_json_doc_paths):
-                    init_engine(self.ann_config_name,j)
+                for count, j in enumerate(self.list_json_doc_paths):
+                    init_engine(self.ann_config_name, j)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
 
                 # Instantiate the ANN Configuration class.
-                ann_config_instance = self._instantiate_cls(
+                ann_config_instance = self._instantiate_and_format_class(
                     self.ontology.ANNConfiguration, self.ann_config_name
                 )
 
@@ -1092,12 +1097,18 @@ class OntologyInstantiator:
 
                 # Log time taken to instantiate the ontology.
                 minutes, seconds = divmod(time.time() - start_time, 60)
-                logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
+                logging.info(
+                    f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds."
+                )
 
-                logging.info(f"Ontology instantiation completed for {self.ann_config_name}.")
+                logging.info(
+                    f"Ontology instantiation completed for {self.ann_config_name}."
+                )
 
         except Exception as e:
-            self.logger.error(f"Error during the {self.ann_config_name} ontology instantiation: {e}")
+            self.logger.error(
+                f"Error during the {self.ann_config_name} ontology instantiation: {e}"
+            )
             raise e
 
 # For standalone testing
@@ -1106,20 +1117,23 @@ if __name__ == "__main__":
 
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
 
-    for model_name in ["alexnet", "resnet"]:#, "vgg16"]#, "gan"]: # Assume we can model name from user or something
-            try:
-                code_files = glob.glob(f"data/{model_name}/*.py")
-                pdf_file = f"data/{model_name}/{model_name}.pdf"
+    for model_name in [
+        "alexnet",
+        "resnet",
+    ]:  # , "vgg16"]#, "gan"]: # Assume we can model name from user or something
+        try:
+            code_files = glob.glob(f"data/{model_name}/*.py")
+            pdf_file = f"data/{model_name}/{model_name}.pdf"
 
-                # Here these paths will each need to be extracted from the PDF and code files to json_docs.json
+            # Here these paths will each need to be extracted from the PDF and code files to json_docs.json
 
-                # Now we have JSON files for both the papers and code files respectively.
-                list_json_doc_paths = glob.glob(f"data/{model_name}/*.json")
+            # Now we have JSON files for both the papers and code files respectively.
+            list_json_doc_paths = glob.glob(f"data/{model_name}/*.json")
 
-                instantiator = OntologyInstantiator(
-                    ontology_path, list_json_doc_paths, model_name
-                )
-                instantiator.run()
-            except Exception as e:
-                print(f"Error instantiating the {model_name} ontology in __name__: {e}")
-                continue    
+            instantiator = OntologyInstantiator(
+                ontology_path, list_json_doc_paths, model_name
+            )
+            instantiator.run()
+        except Exception as e:
+            print(f"Error instantiating the {model_name} ontology in __name__: {e}")
+            continue
