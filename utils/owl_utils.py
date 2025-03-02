@@ -185,23 +185,45 @@ def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
     """
     return list(cls.subclasses())
 
-def get_all_subclasses(cls: ThingClass) -> List[ThingClass]:
-    """
-    Recursively retrieves all subclasses of a given class.
 
-    Args:
-        cls (ThingClass): The class for which to find its subclasses.
-
-    Returns:
-        List[ThingClass]: A list of all subclasses of the given class, including nested ones.
+#################################################################
+"""
+Modifications to get_all_subclasses
+- Issue: circular recursion, max depth reached upon function call
+- Remedy: list tracking visited nodes, do not visit same node twice
+- Original code commented out below
+"""
+#################################################################
+def get_all_subclasses(cls: ThingClass , visited=None) -> List[ThingClass]:
     """
-    subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
-    for subclass in subclasses.copy():  # Iterate over a copy to modify safely
-        subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
+    # Recursively retrieves all unique subclasses of a given class.
+
+    # Args:
+    #     cls (ThingClass): The class for which to find its subclasses.
+    #     visited: Set of visited nodes
+
+    # Returns:
+    #     List[ThingClass]: A list of all subclasses of the given class, including nested ones.
+    # """
+
+    if visited is None: #initial
+        visited = set()
+
+    if cls in visited: # if node has been visited, skip
+        return []
+
+    visited.add(cls)  # mark as visited
+    subclasses = set(get_immediate_subclasses(cls))
+
+    for subclass in list(subclasses): 
+        subclasses.update(get_all_subclasses(subclass, visited)) # find all subclasses thru RECURSION
+
     return list(subclasses)
-
-
-
+    
+    # subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
+    # for subclass in subclasses.copy():  # Iterate over a copy to modify safely
+    #     subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
+    # return list(subclasses)
 
 
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
