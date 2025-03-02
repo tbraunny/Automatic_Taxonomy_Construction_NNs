@@ -1441,6 +1441,14 @@
   <rdfs:subClassOf rdf:resource="Constant"/>
 </owl:Class>
 
+<owl:Class rdf:about="Self-Supervised Classification">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
+
+<owl:Class rdf:about="Unsupervised Classification">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
+
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -3242,113 +3250,101 @@
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ANNConfiguration_ImageNet Classification with Deep Convolutional Neural Networks">
+<owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="Network_Convolutional Network"/>
+  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="Network_Convolutional Network">
+<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="TaskCharacterization_Classification"/>
-  <hasLayer rdf:resource="InputLayer_Network_Convolutional Network Input Layer"/>
-  <hasLayer rdf:resource="OutputLayer_Network_Convolutional Network Output Layer"/>
-  <hasLayer rdf:resource="ActivationLayer_Convolutional 1"/>
-  <hasLayer rdf:resource="ActivationLayer_Convolutional 2"/>
-  <hasLayer rdf:resource="ActivationLayer_Convolutional 3"/>
-  <hasLayer rdf:resource="ActivationLayer_Convolutional 4"/>
-  <hasLayer rdf:resource="ActivationLayer_Convolutional 5"/>
-  <hasLayer rdf:resource="ActivationLayer_Fully Connected 1"/>
-  <hasLayer rdf:resource="ActivationLayer_Fully Connected 2"/>
-  <hasLayer rdf:resource="ActivationLayer_Fully Connected 3"/>
-  <hasLayer rdf:resource="ModificationLayer_Layer Normalization 1"/>
-  <hasLayer rdf:resource="ModificationLayer_Layer Normalization 2"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="TaskCharacterization_Classification">
-  <rdf:type rdf:resource="TaskCharacterization"/>
+<owl:NamedIndividual rdf:about="709942bd_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="709942bd_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="MinObjectiveFunction_Network_Convolutional Network_min_objective_function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="CostFunction_MinObjectiveFunction_Network_Convolutional Network_min_objective_function_cost_function"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="LossFunction_Cross-Entropy Loss">
+<owl:NamedIndividual rdf:about="709942bd_unknown-loss-function">
   <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="CostFunction_MinObjectiveFunction_Network_Convolutional Network_min_objective_function_cost_function">
+<owl:NamedIndividual rdf:about="709942bd_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="709942bd_cost-function"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_resnet">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="d53410e0_convolutional-network"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
+  <rdf:type rdf:resource="Network"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="LossFunction_Cross-Entropy Loss"/>
+  <hasLoss rdf:resource="d53410e0_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="InputLayer_Network_Convolutional Network Input Layer">
-  <rdf:type rdf:resource="InputLayer"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">150528</layer_num_units>
+<owl:NamedIndividual rdf:about="d53410e0_unknown-loss-function">
+  <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="OutputLayer_Network_Convolutional Network Output Layer">
-  <rdf:type rdf:resource="OutputLayer"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</layer_num_units>
+<owl:NamedIndividual rdf:about="d53410e0_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="d53410e0_cost-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Convolutional 1">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="92799309_vgg16">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="92799309_convolutional-network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationFunction_ReLU">
-  <rdf:type rdf:resource="ActivationFunction"/>
+<owl:NamedIndividual rdf:about="92799309_convolutional-network">
+  <rdf:type rdf:resource="Network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Convolutional 2">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="92799309_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="92799309_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Convolutional 3">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="92799309_unknown-loss-function">
+  <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Convolutional 4">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="92799309_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="92799309_cost-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Convolutional 5">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="f1253bc7_gan">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="f1253bc7_generator-network"/>
+  <hasNetwork rdf:resource="f1253bc7_discriminator-network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Fully Connected 1">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="f1253bc7_generator-network">
+  <rdf:type rdf:resource="Network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Fully Connected 2">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="f1253bc7_discriminator-network">
+  <rdf:type rdf:resource="Network"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ActivationLayer_Fully Connected 3">
-  <rdf:type rdf:resource="ActivationLayer"/>
-  <hasActivationFunction rdf:resource="ActivationFunction_ReLU"/>
-  <has_bias rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</has_bias>
+<owl:NamedIndividual rdf:about="f1253bc7_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="f1253bc7_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ModificationLayer_Layer Normalization 1">
-  <rdf:type rdf:resource="ModificationLayer"/>
+<owl:NamedIndividual rdf:about="f1253bc7_unknown-loss-function">
+  <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="ModificationLayer_Layer Normalization 2">
-  <rdf:type rdf:resource="ModificationLayer"/>
+<owl:NamedIndividual rdf:about="f1253bc7_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="f1253bc7_cost-function"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

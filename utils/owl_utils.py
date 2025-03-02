@@ -150,7 +150,6 @@ def get_object_properties_with_domain_and_range(ontology, domain_class, range_cl
     if counter > 1:
         raise ValueError(f"More than one object property found with domain ({domain_class}) and range classes ({range_class}).")
 
-    print(f"Found object property: {matching_property} with domain ({domain_class}) and range ({range_class}).")
     return matching_property
 
 
@@ -174,9 +173,9 @@ def get_connected_classes(cls:ThingClass, ontology, return_object_properties:boo
 
 
 
-def get_subclasses(cls):
+def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
     """
-    Retrieves all subclasses of a given class.
+    Retrieves all direct subclasses of a given class.
 
     Args:
         cls (ThingClass): The class for which to find it's subclasses.
@@ -185,6 +184,23 @@ def get_subclasses(cls):
         List[ThingClass]: A list of subclasses to the given class.
     """
     return list(cls.subclasses())
+
+def get_all_subclasses(cls: ThingClass) -> List[ThingClass]:
+    """
+    Recursively retrieves all subclasses of a given class.
+
+    Args:
+        cls (ThingClass): The class for which to find its subclasses.
+
+    Returns:
+        List[ThingClass]: A list of all subclasses of the given class, including nested ones.
+    """
+    subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
+    for subclass in subclasses.copy():  # Iterate over a copy to modify safely
+        subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
+    return list(subclasses)
+
+
 
 
 
@@ -489,7 +505,7 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
         raise ValueError("The provided class must be a subclass of owlready2.Thing")
     
     if not instance_name:
-        print("Warning: {onto_class} can't be instantiated without a name.")
+        print(f"Warning: {onto_class} can't be instantiated without a name.")
         return
 
     # Create instance with name
@@ -500,59 +516,12 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
         if hasattr(instance, key):
             setattr(instance, key, value)
         else:
-            print(f"Warning: {onto_class.__name__} has no property '{key}'")
+            print(f"Warning: {onto_class.name} has no property '{key}'")
 
     return instance
 
 def get_instance_class(instance: Thing) -> ThingClass:
     return type(instance)
-
-# def assign_object_property_relationship(ontology, domain_instance, range_instance):
-#     """
-#     Automatically finds the correct object property and assigns the relationship.
-
-#     :param ontology: The ontology where the object property exists.
-#     :param domain_instance: The instance to add to the domain.
-#     :param range_instance: The instance to add to the range.
-#     """
-#     print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
-#     domain_cls = get_instance_class(domain_instance)  # Get class of domain instance
-#     range_cls = get_instance_class(range_instance)  # Get class of range instance
-
-#     if is_subclass_of_any(ontology, range_cls):
-#         range_cls = get_highest_subclass_ancestor(range_cls)
-
-#     # Find the object property with domain_cls and range_cls
-#     matching_property = None
-#     for prop in ontology.object_properties():
-#         if domain_cls in prop.domain and range_cls in prop.range:
-#             matching_property = prop
-#             break  # Stop after finding the first match; there shouldn't be more than one?
-
-#     if not matching_property:
-#         raise ValueError(f"No matching object property found for {domain_cls} -> {range_cls}")
-
-#     # Set the relation dynamically
-#     matching_property[domain_instance] = [range_instance]
-    
-#     assert range_instance in getattr(domain_instance, matching_property.name), \
-#     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {matching_property.name}"
-
-# def assign_object_property_relationship(ontology, domain_instance, range_instance, object_property):
-#     """
-#     Automatically finds the correct object property and assigns the relationship.
-
-#     :param ontology: The ontology where the object property exists.
-#     :param domain_instance: The instance to add to the domain.
-#     :param range_instance: The instance to add to the range.
-#     :param object_property: The object property to use for the relationship.
-#     """
-#     print(f"Assigning object property relationship between {domain_instance} and {range_instance}...")
-#     # Set the relation
-#     object_property[domain_instance] = [range_instance]
-    
-#     assert range_instance in getattr(domain_instance, object_property.name), \
-#     f"Adding Object Property Relationship Failed: {range_instance} is not linked to {domain_instance} via {object_property.name}"
 
 def assign_object_property_relationship(domain: Thing, ranges: Thing, object_property: ObjectPropertyClass):
     """
@@ -576,8 +545,6 @@ def assign_object_property_relationship(domain: Thing, ranges: Thing, object_pro
     # Connect the two Thing instances
     object_property[domain].append(ranges)
 
-    print(f"Connected {domain.name} to {ranges.name} via {object_property.name}")
-
 
 def list_owl_classes(onto: Ontology):
     # List all classes
@@ -600,6 +567,9 @@ def list_owl_data_properties(onto: Ontology):
 if __name__ == "__main__":
 
     ontology = get_ontology("data/owl/annett-o-0.1.owl").load()  
+
+    temp = get_all_subclasses(ontology.TaskCharacterization)
+    print(temp)
 
     # instance1 = create_cls_instance(ontology.Network, "Conv Network")
     # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
