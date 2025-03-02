@@ -3257,11 +3257,20 @@
 
 <owl:NamedIndividual rdf:about="709942bd_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="709942bd_supervised-classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
+<owl:NamedIndividual rdf:about="709942bd_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="709942bd_unknown-loss-function"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_unknown-loss-function">
+  <rdf:type rdf:resource="LossFunction"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="709942bd_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="d53410e0_resnet">
@@ -3271,30 +3280,20 @@
 
 <owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="d53410e0_supervised-classification"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="d53410e0_min-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="d53410e0_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="d53410e0_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="d53410e0_categorical-cross-entropy"/>
-  <hasRegularizer rdf:resource="d53410e0_l2-regularization"/>
+  <hasLoss rdf:resource="d53410e0_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_categorical-cross-entropy">
+<owl:NamedIndividual rdf:about="d53410e0_unknown-loss-function">
   <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_l2-regularization">
-  <rdf:type rdf:resource="RegularizerFunction"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="d53410e0_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
+<owl:NamedIndividual rdf:about="d53410e0_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="d53410e0_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="92799309_vgg16">
@@ -3304,11 +3303,20 @@
 
 <owl:NamedIndividual rdf:about="92799309_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="92799309_supervised-classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
+<owl:NamedIndividual rdf:about="92799309_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="92799309_unknown-loss-function"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_unknown-loss-function">
+  <rdf:type rdf:resource="LossFunction"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="92799309_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="f1253bc7_gan">
@@ -3319,34 +3327,24 @@
 
 <owl:NamedIndividual rdf:about="f1253bc7_generator-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="f1253bc7_generation"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="f1253bc7_discriminator-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="f1253bc7_discrimination"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_min-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="f1253bc7_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="f1253bc7_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="f1253bc7_binary-cross-entropy-loss"/>
+  <hasLoss rdf:resource="f1253bc7_unknown-loss-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_binary-cross-entropy-loss">
+<owl:NamedIndividual rdf:about="f1253bc7_unknown-loss-function">
   <rdf:type rdf:resource="LossFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_generation">
-  <rdf:type rdf:resource="Generation"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_discrimination">
-  <rdf:type rdf:resource="Discrimination"/>
+<owl:NamedIndividual rdf:about="f1253bc7_unknown-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="f1253bc7_cost-function"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

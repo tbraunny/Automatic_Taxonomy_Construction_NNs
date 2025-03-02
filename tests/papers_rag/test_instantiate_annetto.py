@@ -1,434 +1,94 @@
 import instantiate_annetto as inst_ann
+import  utils.llm_service as llm_service
+
+from owlready2 import *
+from utils.constants import Constants as C
+
 
 def test_num_tokens_from_string():
     assert inst_ann.num_tokens_from_string("a b c") == 3
-    print(inst_ann.num_tokens_from_string(""" Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}"Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}"Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}"Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}"Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}"Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}Is the {loss_name} function designed to minimize or maximize its objective function? "
-                "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
-                "**Clarification:**\n"
-                "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
-                "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
-                "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
-                "Examples:\n"
-                "Loss Function: Cross-Entropy Loss\n"
-                '{"answer": "minimize"}\n'
-                "Loss Function: Custom Score Function\n"
-                '{"answer": "maximize"}\n\n'
-                f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
-                '{"answer": "<Your Answer Here>"}'"""))
-# My tests :)
-test_num_tokens_from_string()
+
+def test_query_llm():
+    model_name = "alexnet"
+    network_instance_name = "convolutional network"
+    try:
+        llm_service.init_engine(model_name, f"data/{model_name}/doc_{model_name}.json")
+    except Exception as e:
+        raise Exception(f"Error initializing the LLM engine: {e}")
+
+    try:
+        int_prompt = (
+            f"What is the number of input parameters in the {network_instance_name} network architecture?\n"
+            "Return the result as an integer in JSON format with the key 'answer'.\n\n"
+            "Examples:\n"
+            "1. Network: Discriminator\n"
+            '{"answer": 1}\n\n'
+            "2. Network: Generator\n"
+            '{"answer": 784}\n\n'
+            "3. Network: Linear Regression\n"
+            '{"answer": 1}\n\n'
+            f"Now, for the following network:\nNetwork: {network_instance_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+            )
+        assert type(llm_service.query_llm(model_name,int_prompt)) == int
+    except Exception as e:
+        raise Exception(f"LLM Service failed to response with a propert integer json format: {e}")
+
+    try:
+        str_prompt = (
+            f"Goal:\Name the first layer used in the {network_instance_name} network.\n\n"
+            "Return Format:\nRespond with the layer name in JSON format using the key 'answer'. If there is no activation function or it's unknown, return an empty list [].\n"
+            "Examples:\n"
+            '{"answer": "Convolutional"}\n'
+            '{"answer": "Dense"}\n'
+            '{"answer": []}\n\n'
+            f"Now, for the following network:\Network: {network_instance_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+        assert type(llm_service.query_llm(model_name,str_prompt)) == str
+    except Exception as e:
+        raise Exception(f"LLM Service failed to response with a propert string json format: {e}")
+
+    # Process Activation Layers
+    try:
+        dict_prompt = (
+            f"Extract the number of instances of convolutional layers and fully-connected (dense) layers in the {network_instance_name} architecture. "
+            'Please provide the output in JSON format using the key "answer", where the value is a dictionary '
+            "mapping the layer type name to it's counts.\n\n"
+            "Examples:\n\n"
+            "Expected JSON Output:\n"
+            "{\n"
+            '  "answer": {\n'
+            '    "Convolutional": 4,\n'
+            '    "FullyConnected": 1,\n'
+            "  }\n"
+            "}\n\n"
+            "Now, for the following network:\n"
+            f"Network: {network_instance_name}\n"
+            "Expected JSON Output:\n"
+            "{\n"
+            '  "answer": "<Your Answer Here>"\n'
+            "}\n"
+        )
+        respose =  llm_service.query_llm(model_name,dict_prompt)
+        assert isinstance(respose, dict) and all(isinstance(k, str) and isinstance(v, any) for k, v in respose.items())
+    except Exception as e:
+        raise Exception(f"LLM Service failed to response with a propert dictionary json format: {e}")
+    
+    try:
+        list_of_any_prompt = (
+            f"List the first two layers used in the {network_instance_name} network architecture.\n\n"
+            "Return Format:\nRespond with a list of activation function names in JSON format using the key 'answer'.\n"
+            "Examples:\n"
+            '{"answer": ["ReLU", "Sigmoid"]}\n'
+            '{"answer": ["ReLU", "Softmax"]}\n'
+            '{"answer": ["ReLU"]}\n\n'
+            f"Now, for the following network:\nNetwork: {network_instance_name}\n"
+            '{"answer": "<Your Answer Here>"}'
+        )
+        response = llm_service.query_llm(model_name,list_of_any_prompt)
+
+        assert isinstance(response, list) and all(isinstance(i, any) for i in response)
+    except Exception as e:
+        raise Exception(f"LLM Service failed to response with a propert list[any] json format: {e}")
+

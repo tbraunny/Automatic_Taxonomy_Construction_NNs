@@ -43,8 +43,6 @@ try:
 except ImportError:
     tiktoken = None
 
-
-
 from rank_bm25 import BM25Okapi
 import networkx as nx
 
@@ -58,24 +56,23 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
 SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
 
-
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
-from datetime import datetime
-log_dir = "logs" 
-log_file = os.path.join(log_dir, f"llm_service_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
-os.makedirs(log_dir, exist_ok=True)
+# from datetime import datetime
+# log_dir = "logs" 
+# log_file = os.path.join(log_dir, f"llm_service_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+# os.makedirs(log_dir, exist_ok=True)
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_file),  # Write to file
-        # logging.StreamHandler()  # Print to console
-    ],
-    force=True
-)
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+#     handlers=[
+#         logging.FileHandler(log_file),  # Write to file
+#         # logging.StreamHandler()  # Print to console
+#     ],
+#     force=True
+# )
 logger = logging.getLogger(__name__)
 
 # Retry Decorator (with exponential backoff)

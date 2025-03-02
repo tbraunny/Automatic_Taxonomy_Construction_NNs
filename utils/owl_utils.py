@@ -505,7 +505,7 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
         raise ValueError("The provided class must be a subclass of owlready2.Thing")
     
     if not instance_name:
-        print("Warning: {onto_class} can't be instantiated without a name.")
+        print(f"Warning: {onto_class} can't be instantiated without a name.")
         return
 
     # Create instance with name
@@ -516,7 +516,7 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
         if hasattr(instance, key):
             setattr(instance, key, value)
         else:
-            print(f"Warning: {onto_class.__name__} has no property '{key}'")
+            print(f"Warning: {onto_class.name} has no property '{key}'")
 
     return instance
 
