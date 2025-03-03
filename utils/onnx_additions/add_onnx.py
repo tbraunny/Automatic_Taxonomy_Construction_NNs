@@ -8,6 +8,7 @@ NOTE:
 - put following in bash terminal:
     ssh -L 5433:172.20.199.232:5432 netid@nxlogin.engr.unr.edu
 """
+from typing import List, Union, Dict
 
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
@@ -78,8 +79,8 @@ class OnnxAddition:
         with self.engine.connect() as conn:
             layer = conn.execute(text("SELECT layer_name , known_type , model_id , attributes FROM layer"))
             model = conn.execute(text("SELECT model_id , model_name FROM model"))
-            self.layer_list = layer.fetchall()
-            self.model_list = model.fetchall()
+            self.layer_list:List = layer.fetchall()
+            self.model_list:Union[str , List[str] , int , List[int]] = model.fetchall()
 
         return self.layer_list , self.model_list
 

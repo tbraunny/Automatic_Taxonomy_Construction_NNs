@@ -577,7 +577,7 @@ class OntologyInstantiator:
         #             cost_function_instance, reg_instance, self.ontology.hasRegularizer
         #         )
 
-    def process_layers(self, network_instance: str) -> None:
+    def process_layers(self, network_instance: Thing) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
@@ -606,7 +606,7 @@ class OntologyInstantiator:
             self._link_instances(ann_config , network_instance , self.ontology.hasNetwork)
 
             subclasses = get_all_subclasses(self.ontology.Layer)
-            best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 95)
+            best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 70)
 
             if not best_subclass_match: # create subclass if layer type not found in ontology
                 best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)

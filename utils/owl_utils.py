@@ -1,6 +1,7 @@
 from owlready2 import *
 from typing import List
 import warnings
+from typing import Optional, Union, List
 
 def load_ontology(ontology_path):
     return get_ontology(ontology_path).load()
@@ -324,23 +325,30 @@ def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = N
     Returns:
         ThingClass: The newly created class or the existing class if it already exists.
     """
-    # Check if the class already exists
-    existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
-    if existing_class is not None:
-        warnings.warn(f"Class '{class_name}' already exists.")
-        return existing_class
+    try:
+        # Check if the class already exists
+        existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
+        if existing_class is not None:
+            warnings.warn(f"Class '{class_name}' already exists.")
+            return existing_class
 
-    # Set base class to Thing if no base_class is provided
-    if base_class is None:
-        base_class = ontology.Thing 
+        # Set base class to Thing if no base_class is provided
+        if base_class is None:
+            base_class = ontology.Thing 
 
-    # Dynamically create the new class using `type()`
-    new_class = type(class_name, (base_class,), {"namespace": ontology})
-    setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
-    # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
-    return new_class
+        if hasattr(ontology , class_name):
+            print(f"Class {class_name} already exists.")
+            return None
 
-def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass) -> ThingClass:
+        # Dynamically create the new class using `type()`
+        new_class = type(class_name, (base_class,), {"namespace": ontology})
+        setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
+        # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
+        return new_class
+    except Exception as e:
+        raise e
+
+def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass) -> Optional[ThingClass]:
     """
     Dynamically creates a subclass in the ontology if it does not already exist.
 
@@ -355,6 +363,10 @@ def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass)
     # Enforce base_class
     if base_class is None:
         warnings.warn(f"No base class defined for subclass '{class_name}'.")
+        return None
+
+    if hasattr(ontology, class_name):
+        print(f"Subclass {class_name} already exists in ontology")
         return None
     # Create class with base_class
     return create_class(ontology=ontology, class_name=class_name, base_class=base_class)
