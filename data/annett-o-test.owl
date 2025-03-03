@@ -3264,6 +3264,10 @@
   <hasTaskType rdf:resource="709942bd_unknown"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="709942bd_min-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="709942bd_unknown">
   <rdf:type rdf:resource="Unknown"/>
 </owl:NamedIndividual>

@@ -370,6 +370,13 @@ class OntologyInstantiator:
                 objective_function_instance = self._instantiate_and_format_class(
                     self.ontology.MinObjectiveFunction, "Min Objective Function"
                 )  # Default to minimize if no response
+            
+            # Link objective function instance to network instance.
+            self._link_instances(
+                network_instance,
+                objective_function_instance,
+                self.ontology.hasObjectiveFunction,
+            )
 
             # Get all known loss functions for the loss function
             known_loss_functions = get_all_subclasses(self.ontology.LossFunction)
@@ -926,7 +933,7 @@ class OntologyInstantiator:
                 )
                 # self._process_layers(network_instance) # May be processed by onnx
                 self._process_objective_functions(network_instance)
-                # self._process_task_characterization(network_instance)
+                self._process_task_characterization(network_instance)
         except Exception as e:
             self.logger.error(
                 f"Error processing the '{ann_config_instance}' networks: {e}",
