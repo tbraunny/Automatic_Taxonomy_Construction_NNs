@@ -20,8 +20,12 @@ class TrainingSingleResponse(LLMResponse[TrainingSingleDetails]):
     pass
 
 # Define a model for the optimizer details.
-class OptimizerDetails(BaseModel):
-    optimizer: Literal[
+class TrainingOptimizerDetails(BaseModel):
+    # Data properties
+    learning_rate: float = Field(..., description="The learning rate used by the optimizer.")
+    momentum: float = Field(..., description="The momentum value used by the optimizer.")
+    # Subclass
+    subclass: Literal[
         "AdaDelta",
         "AdaGrad",
         "AdaGradDA",
@@ -34,13 +38,66 @@ class OptimizerDetails(BaseModel):
         "RMSProp",
         "UNKNOWN",
     ] = Field(..., description="Name of the training optimizer.")
-    learning_rate: float = Field(..., description="The learning rate used by the optimizer.")
-    momentum: float = Field(..., description="The momentum value used by the optimizer.")
+    
 
 # Now define a specialized response type using the generic interface.
-class TrainingOptimizerResponse(LLMResponse[OptimizerDetails]):
+class TrainingOptimizerResponse(LLMResponse[TrainingOptimizerDetails]):
     pass
 
+
+"""Define Dataset Models"""
+# Define a model to represent the dataset details.
+
+class DataTypeDetails(BaseModel):
+    # Datatype Subclass
+    subclass: Literal[
+        "Image",
+        "MultiDimensionalCube",
+        "Text",
+        "Video"] = Field(..., description="The type of data present in the dataset.")
+    
+class DatasetDetails(BaseModel):
+    # Data Properties
+    data_description: str = Field(..., description="A brief description of the dataset.")
+    data_doi: Optional[str] = Field(None, description="The DOI of the dataset, if available.")
+    data_location: Optional[str] = Field(None, description="The physical or digital location of the dataset.")
+    data_sample_dimensionality: Optional[str] = Field(None, description="The dimensionality (or shape) of a single data sample.")
+    data_sample_features: Optional[str] = Field(None, description="The features or attributes present in each data sample.")
+    data_samples: Optional[int] = Field(None, description="The total number of data samples in the dataset.")
+    is_transient_dataset: Optional[bool] = Field(None, description="Whether the dataset is transient (temporary) or persistent.")
+    # Connected classes
+    dataType: DataTypeDetails
+
+# Create a specialized response model for dataset processing.
+class DatasetResponse(LLMResponse[DatasetDetails]):
+    pass
+
+"""Define Dataset Models"""
+# Define a model to represent the dataset details.
+
+class DataTypeDetails(BaseModel):
+    # Datatype Subclass
+    subclass: Literal[
+        "Image",
+        "MultiDimensionalCube",
+        "Text",
+        "Video"] = Field(..., description="The type of data present in the dataset.")
+    
+class DatasetDetails(BaseModel):
+    # Data Properties
+    data_description: str = Field(..., description="A brief description of the dataset.")
+    data_doi: Optional[str] = Field(None, description="The DOI of the dataset, if available.")
+    data_location: Optional[str] = Field(None, description="The physical or digital location of the dataset.")
+    data_sample_dimensionality: Optional[str] = Field(None, description="The dimensionality (or shape) of a single data sample.")
+    data_sample_features: Optional[str] = Field(None, description="The features or attributes present in each data sample.")
+    data_samples: Optional[int] = Field(None, description="The total number of data samples in the dataset.")
+    is_transient_dataset: Optional[bool] = Field(None, description="Whether the dataset is transient (temporary) or persistent.")
+    # Connected classes
+    dataType: DataTypeDetails
+
+# Create a specialized response model for dataset processing.
+class DatasetResponse(LLMResponse[DatasetDetails]):
+    pass
 
 """Define Process Objective Function"""
 
