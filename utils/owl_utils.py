@@ -585,6 +585,27 @@ def assign_object_property_relationship(
     # Connect the two Thing instances
     object_property[domain].append(ranges)
 
+def link_data_property_to_instance(instance: Thing, data_property: DataPropertyClass, value):
+    """
+    Links a data property to a Thing instance with a specified value.
+
+    :param instance: The Thing instance to link the data property to.
+    :param data_property: The DataProperty to link to the instance.
+    :param value: The value to set for the data property.
+    """
+    try:
+        # Check if instance is an instance of Thing
+        if not isinstance(instance, Thing):
+            raise TypeError("The 'instance' argument must be an instance of Thing.")
+
+        # Check if data_property is a valid DataProperty
+        if not isinstance(data_property, DataPropertyClass):
+            raise TypeError("The 'data_property' argument must be an instance of DataProperty.")
+
+        # Set the data property value for the instance
+        instance.data_property = [value]
+    except Exception as e:
+        print(f"Error setting data property: {e}")
 
 def list_owl_classes(onto: Ontology):
     # List all classes
