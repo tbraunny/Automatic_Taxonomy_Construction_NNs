@@ -9,7 +9,7 @@ from utils.onnx_additions.add_onnx import OnnxAddition
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
-
+import warnings
 from utils.constants import Constants as C
 from utils.owl_utils import (
     create_cls_instance,
@@ -171,6 +171,24 @@ class OntologyInstantiator:
         )
 
         return class_name_map[match] if score >= threshold else None
+
+    def _fuzzy_match_list(self , class_names: List[str], threshold: int = 80) -> Optional[str]:
+        """
+        Perform fuzzy matching to find the best match for an instance in a list of strings.
+
+        :param instance_name: The instance name.
+        :param class_names: A list of string names to match with.
+        :param threshold: The minimum score required for a match.
+        :return: The best-matching string or None if no good match is found.
+        """
+        if not all(isinstance(name, str) for name in class_names):
+            raise TypeError("Expected class_names to be a list of strings.")
+        if not isinstance(threshold, int):
+            raise TypeError("Expected threshold to be an integer.")
+
+        match, score, _ = process.extractOne(self.ann_config_name, class_names, scorer=fuzz.ratio)
+
+        return match if score >= threshold else None
 
     def _link_instances(
         self,
@@ -458,20 +476,22 @@ class OntologyInstantiator:
             # fetch info from database
             onn = OnnxAddition()
             onn.init_engine()
-            layer_list , model_list = onn.fetch_layers()
-            num_models = len(model_list)
+            models_list = onn.fetch_models()
+            num_models = len(models_list)
             prev_model = None
             subclasses:List[ThingClass] = get_all_subclasses(self.ontology.Layer)
 
+            # fetch ann config name, find relevant model in database
+            best_model_name = self._fuzzy_match_list(models_list)
+            if not best_model_name:
+                warnings.warn(f"Model name {best_model_name} not found in database")
+                pass # throw to josue's script for llm instantiation
+
+            # fetch layer list of relevant model
+            layer_list = onn.fetch_layers(best_model_name)
 
             for name in layer_list:
-                layer_name , model_type , model_id , attributes = name
-
-                model_str = str(model_id) # for cls instantiation compatibility
-                #ann_config = self._instantiate_cls(self.ontology.ANNConfiguration, model_str)
-
-                # if not hasattr(self.ontology.Network , model_str): # prevent duplicate networks
-                #     network_instance = self._instantiate_cls(self.ontology.Network , model_str)
+                layer_name , model_type , model_id , model_name = name
 
                 #odd mismatch that is owlready2's fault, not mine
                 if model_type == "Softmax":
@@ -479,33 +499,25 @@ class OntologyInstantiator:
                 if model_type == "ReLU": # apprently owl is very case sensitive
                     model_type = "Relu"
 
-                #self._link_instances(ann_config , network_instance , self.ontology.hasNetwork)
-                #print(subclasses)
                 best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 70)
 
-                #print("best match: " , best_subclass_match)
-
                 if not best_subclass_match: # create subclass if layer type not found in ontology
-                    #print(f"subclass created {model_type}")
                     best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)
-                    #print("mark")
-                    subclasses.append(best_subclass_match)
+                    subclasses.append(best_subclass_match) # track subclasses, ensure no duplicates
                 
                 #Debugging
                 if model_id != prev_model:
-                    print(f"Processing model {model_id} / {num_models}" , end='\r')
-                    #self.logger.info(f"Model ID: " , model_id , "\nSubclass: " , best_subclass_match , "\nModel Type: " , model_type , "\n Match Type: " , type(best_subclass_match))
-                    # if isinstance(best_subclass_match, Thing):
-                    #     self.logger.info(f"{best_subclass_match} is an instance of Thing.")
-                    # else:
-                    #     self.logger.info(f"{best_subclass_match} is not an instance of Thing.") 
+                    self.logger.info(f"Processing model {model_id} / {num_models}")
+                    self.logger.info(f"Model name {model_name}, subclass match {best_subclass_match}")
 
                 layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
                 self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
-            self.logger.info("Finished processing layers")
+            self.logger.info(f"All layers of {model_name} successfully processed")
+
         except Exception as e:
-            self.logger.error(f"Error in _process_layers for {model_type}: {e}",exc_info=True)
+            print("ERROR")
+            self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
 
     def _old_process_layers(self, network_instance: str) -> None:
         """

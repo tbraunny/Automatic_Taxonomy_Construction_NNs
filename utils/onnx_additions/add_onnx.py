@@ -57,40 +57,35 @@ class OnnxAddition:
             except Exception as e:
                 logging.exception(f"Failed to connect to database: {e}")
 
-    def init_onto(self , new_path="tests/onnx_additions/annetto-o-test.owl"):
-        """
-        Initialize ontology
-        """
-        onto_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
-        self.onto = get_ontology(onto_path).load()
-
-        with self.onto: 
-            try:
-                self.onto.save(file=new_path , format="rdfxml")
-                logging.info(f"Ontology saved to {new_path}")
-            except Exception as e:
-                logging.excpetion(f"Error saving ontology: {e}")
-
-    def fetch_layers(self):
+    def fetch_layers(self , network):
         """
         Fetch all relevant layer information from graph db
-        Returns lists of all layers & all models
+        Returns lists of all layers w model names
         """
         with self.engine.connect() as conn:
-            layer = conn.execute(text("SELECT layer_name , known_type , model_id , attributes FROM layer WHERE model_id IN (191 , 198 , 206)")) # modified for demo, should grab ALL networks
-            model = conn.execute(text("SELECT model_id , model_name FROM model"))
-            self.layer_list:List = layer.fetchall()
-            self.model_list:Union[str , List[str] , int , List[int]] = model.fetchall()
+            layer_info = conn.execute(text(f"SELECT l.layer_name, l.known_type, l.model_id, m.model_name FROM layer l JOIN model m ON l.model_id = m.model_id WHERE m.model_name = :network") , {"network": network})
+            self.layer_list:List = layer_info.fetchall()
 
-        return self.layer_list , self.model_list
+        return self.layer_list
 
+    def fetch_models(self):
+        """
+        Fetch all models in the database by id & name
+        """
+        with self.engine.connect() as conn:
+            models = conn.execute(text("SELECT model_name FROM model"))
+            #self.model_list:Union[int , List[int] , str , List[str]] = models.fetchall()
+            self.model_list: List[str] = [row[0] for row in models.fetchall()]  # Extract the first column
+
+
+        return self.model_list
 
 def instantiate_onnx_annetto():
+    # testing
     onto_path="tests/onnx_additions/annetto-o-test.owl"
     inst = OnnxAddition()
     inst.init_engine()
-    #inst.init_onto(onto_path)
-    inst.fetch_layers()
+    inst.fetch_layers(network="alexnet")
     
 
 if __name__ == '__main__':

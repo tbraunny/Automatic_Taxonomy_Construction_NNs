@@ -631,11 +631,6 @@ def link_data_property_to_instance(instance: Thing, data_property: DataPropertyC
         print(f"Error setting data property: {e}")
 
 def list_owl_classes(onto: Ontology):
-    # List all classes
-    #print("Classes in the ontology:")
-    #for cls in onto.classes():
-        #print(f"- {cls.name}")
-
     return [cls for cls in onto.classes()]
 
 
