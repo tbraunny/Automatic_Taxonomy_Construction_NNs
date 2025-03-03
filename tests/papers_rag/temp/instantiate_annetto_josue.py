@@ -13,7 +13,7 @@ from utils.owl_utils import (
     get_all_subclasses
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
-from utils.llm_service import init_engine, query_llm
+from utils.llm_service_josue import init_engine, query_llm, query_llm
 from rapidfuzz import process, fuzz
 
 try:
@@ -144,7 +144,7 @@ class OntologyInstantiator:
         self.logger.info(f"Linked {self._unhash_and_format_instance_name(parent_instance.name)} and {self._unhash_and_format_instance_name(child_instance.name)} via {object_property.name}.")
 
 
-    def _query_llm(self, instructions: str, prompt: str) -> Union[Dict[str, Any], int, str, List[str]]:
+    def _query_llm(self, instructions: str, prompt: str, json_format_instructions: Optional[str], pydantic_type_schema: Optional[type[BaseModel]]) -> Union[Dict[str, Any], int, str, List[str]]:
         """
         Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
 
@@ -203,7 +203,8 @@ class OntologyInstantiator:
             print("Using cached LLM response #####")
             return self.llm_cache[full_prompt]
         try:
-            response = query_llm(self.ann_config_name, full_prompt)
+            # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
+            response = query_llm(self.ann_config_name, full_prompt, json_format_instructions, pydantic_type_schema)
 
             self.logger.info(f"LLM query: {full_prompt}")
             self.logger.info(f"LLM query response: {response}")

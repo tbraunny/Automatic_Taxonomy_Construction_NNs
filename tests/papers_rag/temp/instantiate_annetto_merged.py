@@ -21,10 +21,8 @@ from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 from typing import Union, List, Dict, Any, Type
 
-
 #TODO UPDATE THIS
 from utils.llm_service_josue import init_engine, query_llm 
-
 
 OMIT_CLASSES = {
     "DataCharacterization",
@@ -1355,72 +1353,8 @@ class OntologyInstantiator:
             print(f"Training Single Instance Learning Rate Decay: {training_single_instance.learning_rate_decay}")
             print(f"Training Single Instance Number of Epochs: {training_single_instance.number_of_epochs}")
             print(f"Training Single Instance Learning Rate Decay Epochs: {training_single_instance.learning_rate_decay_epochs}")
-        
-            """TODO: REMOVE UNDER"""
-
-            # Process TrainingSingle data properties:
-            # Process batch_size
-            batch_size_prompt = (
-                "Extract the batch size used in the network-specific training step. "
-                "The batch size is the number of training examples utilized in one iteration. "
-                "Return the batch size as an integer in JSON format with the key 'answer'.\n\n"
-                "Examples:\n"
-                "1. Batch Size: 32\n"
-                '{"answer": 32}\n\n'
-                "2. Batch Size: 64\n"
-                '{"answer": 64}\n\n'
-                "3. Batch Size: 128\n"
-                '{"answer": 128}\n\n'
-                "Now, for the following batch size:\n"
-                '{"answer": "<Your Answer Here>"}'
-            )
-            batch_size = self._query_llm("", batch_size_prompt)
-            if not batch_size:
-                self.logger.info("No response for batch size.")
-            else:
-                training_single_instance.batch_size = [batch_size]
             
-            # Process Learning Rate Decay
-            learning_rate_decay_prompt = (
-                "Extract the learning rate decay used in the network-specific training step. "
-                "The learning rate decay is a reduction in the learning rate over time to improve convergence. "
-                "Return the learning rate decay as a float in JSON format with the key 'answer'.\n\n"
-                "Examples:\n"
-                "1. Learning Rate Decay: 0.1\n"
-                '{"answer": 0.1}\n\n'
-                "2. Learning Rate Decay: 0.01\n"
-                '{"answer": 0.01}\n\n'
-                "3. Learning Rate Decay: 0.001\n"
-                '{"answer": 0.001}\n\n'
-                "Now, for the following learning rate decay:\n"
-                '{"answer": "<Your Answer Here>"}'
-            )
-            learning_rate_decay = self._query_llm("", learning_rate_decay_prompt)
-            if not learning_rate_decay:
-                self.logger.info("No response for learning rate decay.")
-            else:
-                training_single_instance.learning_rate_decay = [learning_rate_decay]
-
-            #Process number of epochs:
-            num_epochs_prompt = (
-                "Extract the number of epochs used in the network-specific training step. "
-                "An epoch is a complete pass through the entire training dataset. "
-                "Return the number of epochs as an integer in JSON format with the key 'answer'.\n\n"
-                "Examples:\n"
-                "1. Number of Epochs: 10\n"
-                '{"answer": 10}\n\n'
-                "2. Number of Epochs: 20\n"
-                '{"answer": 20}\n\n'
-                "3. Number of Epochs: 30\n"
-                '{"answer": 30}\n\n'
-                "Now, for the following number of epochs:\n"
-                '{"answer": "<Your Answer Here>"}'
-            )
-            num_epochs = self._query_llm("", num_epochs_prompt)
-            if not num_epochs:
-                self.logger.info("No response for number of epochs.")
-            else:
-                training_single_instance.num_epochs = [num_epochs]
+            """TODO: REMOVE UNDER"""
             
             # Process TrainingSingle connected classes:
 
@@ -1432,6 +1366,9 @@ class OntologyInstantiator:
             dataset_instance = self._instantiate_and_format_class(self.ontology.Dataset, "Dataset")
 
             self._link_instances(dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet)
+            # Process dataset
+            self._process_dataset(dataset_pipe_instance)
+            return
 
             # Process Training Optimizer
             # TODO: Insert subclasses from ontology instead.
@@ -1533,6 +1470,86 @@ class OntologyInstantiator:
         self._link_instances(dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet)
 
         # Define dataset properties and datatype
+
+        dataset_prompt = "Based on the provided paper, extract and describe the dataset details used.\n"
+
+        dataset_json_format_prompt = (
+                "Your answer should include the following information:\n"
+                "- data_description: A brief description of the dataset, including what data it contains, its source, and the number of examples. (Required)\n"
+                "- data_doi: The DOI of the dataset, if available. (Optional)\n"
+                "- data_location: The physical or digital location of the dataset. (Optional)\n"
+                "- data_sample_dimensionality: The dimensions or shape of a single data sample (e.g., \"28x28\" for MNIST images). (Optional)\n"
+                "- data_sample_features: A description of the features or attributes present in each data sample. (Optional)\n"
+                "- data_samples: The total number of data samples in the dataset. (Optional)\n"
+                "- is_transient_dataset: A boolean indicating whether the dataset is transient (temporary) or persistent. (Optional)\n"
+                "- dataType: An object with a key \"subclass\" representing the type of data present in the dataset. "
+                "The subclass must be one of the following: \"Image\", \"MultiDimensionalCube\", \"Text\", or \"Video\".\n\n"
+                "Return your answer strictly in JSON format with a key \"answer\". For example:\n"
+                "{\n"
+                "  \"answer\": {\n"
+                "    \"data_description\": \"The MNIST database of handwritten digits, containing 60,000 training and 10,000 test examples.\",\n"
+                "    \"data_doi\": \"10.1234/mnist\",\n"
+                "    \"data_location\": \"http://yann.lecun.com/exdb/mnist/\",\n"
+                "    \"data_sample_dimensionality\": \"28x28\",\n"
+                "    \"data_sample_features\": \"Grayscale pixel values\",\n"
+                "    \"data_samples\": 70000,\n"
+                "    \"is_transient_dataset\": false,\n"
+                "    \"dataType\": {\n"
+                "      \"subclass\": \"Image\"\n"
+                "    }\n"
+                "  }\n"
+                "}\n"
+                "If any optional field is not available, you may omit it or return None."
+            )
+        
+        dataset_response = self._query_llm("", dataset_prompt, dataset_json_format_prompt, pydantic_type_schema=DatasetResponse)
+
+        dataset_details = dataset_response.answer
+
+        dataset_instance.data_description = [dataset_details.data_description]
+        if dataset_details.data_doi is not None:
+            dataset_instance.data_doi = [dataset_details.data_doi]
+        if dataset_details.data_location is not None:
+            dataset_instance.data_location = [dataset_details.data_location]
+        if dataset_details.data_sample_dimensionality is not None:
+            dataset_instance.data_sample_dimensionality = [dataset_details.data_sample_dimensionality]
+        if dataset_details.data_sample_features is not None:
+            dataset_instance.data_sample_features = [dataset_details.data_sample_features]
+        if dataset_details.data_samples is not None:
+            dataset_instance.data_samples = [dataset_details.data_samples]
+        if dataset_details.is_transient_dataset is not None:
+            dataset_instance.is_transient_dataset = [dataset_details.is_transient_dataset]
+        
+        # Process Datatype
+        best_data_type_match = self._fuzzy_match_class(dataset_details.dataType.subclass, get_all_subclasses(self.ontology.DataType))
+        if best_data_type_match:
+            print(f"Best Data Type Match: {best_data_type_match}")
+            data_type_instance = self._instantiate_and_format_class(best_data_type_match, "Data Type")
+        else:
+            print(f"Unknown Data Type: {dataset_details.dataType.subclass}")
+
+        print(f"Dataset Details: {dataset_details}")
+        print(f"Dataset Details Data Description: {dataset_details.data_description}")
+        print(f"Dataset Details Data DOI: {dataset_details.data_doi}")
+        print(f"Dataset Details Data Location: {dataset_details.data_location}")
+        print(f"Dataset Details Data Sample Dimensionality: {dataset_details.data_sample_dimensionality}")
+        print(f"Dataset Details Data Sample Features: {dataset_details.data_sample_features}")
+        print(f"Dataset Details Data Samples: {dataset_details.data_samples}")
+        print(f"Dataset Details Is Transient Dataset: {dataset_details.is_transient_dataset}")
+        print(f"Dataset Details Data Type: {dataset_details.dataType.subclass}")
+
+        print(f"Dataset Instance: {dataset_instance}")
+        print(f"Dataset Instance Data Description: {dataset_instance.data_description}")
+        print(f"Dataset Instance Data DOI: {dataset_instance.data_doi}")
+        print(f"Dataset Instance Data Location: {dataset_instance.data_location}")
+        print(f"Dataset Instance Data Sample Dimensionality: {dataset_instance.data_sample_dimensionality}")
+        print(f"Dataset Instance Data Sample Features: {dataset_instance.data_sample_features}")
+        print(f"Dataset Instance Data Samples: {dataset_instance.data_samples}")
+        print(f"Dataset Instance Is Transient Dataset: {dataset_instance.is_transient_dataset}")
+        print(f"Dataset Instance Data Type: {dataset_instance.hasDataType}")
+
+        return
+        # TODO: remove lower
 
         data_description_prompt = (
             "Based on the provided paper, extract and describe the type of data used in the dataset. "
