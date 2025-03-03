@@ -6,3 +6,6 @@ __pycache__/
 front_end/static/instance_graph.html
 test.py
 logs
+tests/papers_rag/annett-o-test(2).owl
+.venv/
+data/annett-o-test.owl

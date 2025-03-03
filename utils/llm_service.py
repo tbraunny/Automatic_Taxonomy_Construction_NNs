@@ -38,6 +38,8 @@ from typing import Union
 
 embedding_cache = {}  # In-memory only
 
+#logging.basicConfig(level=logging.INFO) # for verbose logging
+
 try:
     import tiktoken
 except ImportError:
@@ -458,6 +460,9 @@ class LLMQueryEngine:
         self.logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
         dense_candidates = self.retrieve_initial_chunks(query, max_chunks=max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks=max_chunks)
+
+        dense_candidates_code = self.retrieve_initial_chunks(query , max_chunks=max_chunks)
+
         return merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(self, ranked_chunks: list, token_budget: int) -> list:

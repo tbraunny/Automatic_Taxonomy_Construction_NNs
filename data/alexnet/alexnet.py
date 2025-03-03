@@ -1,354 +1,216 @@
-import argparse
-import sys
-import pickle
-import numpy as np
-
-import cifar10_utils
-import cifar100_utils
-
-import tensorflow as tf
-from tensorflow.contrib.layers import conv2d
-from tensorflow.contrib.layers import max_pool2d
-from tensorflow.contrib.layers import flatten
-from tensorflow.contrib.layers import fully_connected
-
-cifar10_dataset_folder_path = 'cifar-10-batches-py'
-save_model_path = './image_classification'
-
-class AlexNet:
-    def __init__(self, dataset, learning_rate):
-        self.dataset = dataset
-
-        if dataset == "cifar10":
-          self.num_classes = 10
-        elif dataset == "cifar100":
-          self.num_classes = 100
-
-        self.learning_rate = learning_rate
-        self.input = tf.placeholder(tf.float32, [None, 224, 224, 3], name='input')
-        self.label = tf.placeholder(tf.int32, [None, self.num_classes], name='label')
-
-        self.logits = self.load_model()
-        self.model = tf.identity(self.logits, name='logits')
-
-        self.cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.logits, labels=self.label), name='cost')
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate, name='adam').minimize(self.cost)
-
-        self.correct_pred = tf.equal(tf.argmax(self.model, 1), tf.argmax(self.label, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32), name='accuracy')
-
-    def load_model(self):
-        # 1st
-        conv1 = conv2d(self.input, num_outputs=96,
-                    kernel_size=[11,11], stride=4, padding="VALID",
-                    activation_fn=tf.nn.relu)
-        lrn1 = tf.nn.local_response_normalization(conv1, bias=2, alpha=0.0001,beta=0.75)
-        pool1 = max_pool2d(lrn1, kernel_size=[3,3], stride=2)
-
-        # 2nd
-        conv2 = conv2d(pool1, num_outputs=256,
-                    kernel_size=[5,5], stride=1, padding="VALID",
-                    biases_initializer=tf.ones_initializer(),
-                    activation_fn=tf.nn.relu)
-        lrn2 = tf.nn.local_response_normalization(conv2, bias=2, alpha=0.0001, beta=0.75)
-        pool2 = max_pool2d(lrn2, kernel_size=[3,3], stride=2)
-
-        #3rd
-        conv3 = conv2d(pool2, num_outputs=384,
-                    kernel_size=[3,3], stride=1, padding="VALID",
-                    activation_fn=tf.nn.relu)
-
-        #4th
-        conv4 = conv2d(conv3, num_outputs=384,
-                    kernel_size=[3,3], stride=1, padding="VALID",
-                    biases_initializer=tf.ones_initializer(),
-                    activation_fn=tf.nn.relu)
-
-        #5th
-        conv5 = conv2d(conv4, num_outputs=256,
-                    kernel_size=[3,3], stride=1, padding="VALID",
-                    biases_initializer=tf.ones_initializer(),
-                    activation_fn=tf.nn.relu)
-        pool5 = max_pool2d(conv5, kernel_size=[3,3], stride=2)
-
-        #6th
-        flat = flatten(pool5)
-        fcl1 = fully_connected(flat, num_outputs=4096,
-                                biases_initializer=tf.ones_initializer(), activation_fn=tf.nn.relu)
-        dr1 = tf.nn.dropout(fcl1, 0.5)
-
-        #7th
-        fcl2 = fully_connected(dr1, num_outputs=4096,
-                                biases_initializer=tf.ones_initializer(), activation_fn=tf.nn.relu)
-        dr2 = tf.nn.dropout(fcl2, 0.5)
-
-        #output
-        out = fully_connected(dr2, num_outputs=self.num_classes, activation_fn=None)
-        return out
-
-    def label_to_name():
-        return ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-
-    def test(self, image, save_model_path):
-        resize_images = []
-        loaded_graph = tf.Graph()
-
-        with tf.Session(graph=loaded_graph) as sess:
-            loader = tf.train.import_meta_graph(save_model_path + '.meta')
-            loader.restore(sess, save_model_path)
-
-            loaded_x = loaded_graph.get_tensor_by_name('input:0')
-            loaded_y = loaded_graph.get_tensor_by_name('label:0')
-            loaded_logits = loaded_graph.get_tensor_by_name('logits:0')
-            loaded_acc = loaded_graph.get_tensor_by_name('accuracy:0')
-
-            resize_image = skimage.transform.resize(image, (224, 224), mode='constant')
-            resize_images.append(resize_image)
-
-            predictions = sess.run(
-                tf.nn.softmax(loaded_logits),
-                feed_dict={loaded_x: tmpTestFeatures, loaded_y: random_test_labels})
-
-            label_names = load_label_names()
-
-            predictions_array = []
-            pred_names = []
-
-            for index, pred_value in enumerate(predictions[0]):
-                tmp_pred_name = label_names[index]
-                predictions_array.append({tmp_pred_name : pred_value})
-
-            return predictions_array
-
-    def train_from_ckpt(self, epochs, batch_size, valid_set, save_model_path):
-        tmpValidFeatures, valid_labels = valid_set
-
-        loaded_graph = tf.Graph()
-
-        with tf.Session(graph=loaded_graph) as sess:
-            loader = tf.train.import_meta_graph(save_model_path + '.meta')
-            loader.restore(sess, save_model_path)
-
-            loaded_x = loaded_graph.get_tensor_by_name('input:0')
-            loaded_y = loaded_graph.get_tensor_by_name('label:0')
-            loaded_logits = loaded_graph.get_tensor_by_name('logits:0')
-            loaded_acc = loaded_graph.get_tensor_by_name('accuracy:0')
-
-            optimizer = loaded_graph.get_operation_by_name('adam')
-
-            print('starting training ... ')
-            for epoch in range(epochs):
-                n_batches = 5
-
-                if self.dataset == 'cifar10':
-                    n_batches = 5
-
-                    for batch_i in range(1, n_batches + 1):
-                        self._train_cifar10(sess,
-                                            loaded_x, loaded_y, loaded_optimizer, loaded_acc,
-                                            epoch, batch_i, batch_size, valid_set)
-
-                else:
-                    self._train_cifar100(sess,
-                                         loaded_x, loaded_y, loaded_optimizer, loaded_acc,
-                                         epoch, batch_size, valid_set)
-
-            # Save Model
-            saver = tf.train.Saver()
-            save_path = saver.save(sess, save_model_path)
-
-    def _train_cifar10(self, sess,
-                        input, label, optimizer, accuracy,
-                        epoch, batch_i, batch_size, valid_set):
-        tmpValidFeatures, valid_labels = valid_set
-
-        for batch_features, batch_labels in cifar10_utils.load_preprocess_training_batch(batch_i, batch_size):
-            _ = sess.run(optimizer,
-                        feed_dict={input: batch_features,
-                                   label: batch_labels})
-
-        print('Epoch {:>2}, CIFAR-10 Batch {}: '.format(epoch + 1, batch_i), end='')
-
-        # calculate the mean accuracy over all validation dataset
-        valid_acc = 0
-        for batch_valid_features, batch_valid_labels in cifar10_utils.batch_features_labels(tmpValidFeatures, valid_labels, batch_size):
-            valid_acc += sess.run(accuracy,
-                                feed_dict={input:batch_valid_features,
-                                           label:batch_valid_labels})
-
-        tmp_num = tmpValidFeatures.shape[0]/batch_size
-        print('Validation Accuracy {:.6f}'.format(valid_acc/tmp_num))
-
-    def _train_cifar100(self, sess,
-                          input, label, optimizer, accuracy,
-                          epoch, batch_size, valid_set):
-        tmpValidFeatures, valid_labels = valid_set
-
-        for batch_features, batch_labels in cifar100_utils.load_preprocess_training_batch(batch_size):
-            _ = sess.run(optimizer,
-                        feed_dict={input: batch_features,
-                                   label: batch_labels})
-
-        print('Epoch {:>2}, CIFAR-100 : '.format(epoch + 1), end='')
-
-        # calculate the mean accuracy over all validation dataset
-        valid_acc = 0
-        for batch_valid_features, batch_valid_labels in cifar100_utils.batch_features_labels(tmpValidFeatures, valid_labels, batch_size):
-            valid_acc += sess.run(accuracy,
-                                feed_dict={input:batch_valid_features,
-                                            label:batch_valid_labels})
-
-        tmp_num = tmpValidFeatures.shape[0]/batch_size
-        print('Validation Accuracy {:.6f}'.format(valid_acc/tmp_num))
-
-    def train(self, epochs, batch_size, valid_set, save_model_path):
-        tmpValidFeatures, valid_labels = valid_set
-
-        with tf.Session() as sess:
-            print('global_variables_initializer...')
-            sess.run(tf.global_variables_initializer())
-
-            print('starting training ... ')
-            for epoch in range(epochs):
-                n_batches = 5
-
-                if self.dataset == 'cifar10':
-                    for batch_i in range(1, n_batches + 1):
-                        self._train_cifar10(sess,
-                                            self.input, self.label, self.optimizer, self.accuracy,
-                                            epoch, batch_i, batch_size, valid_set)
-                elif self.dataset == 'cifar100':
-                    self._train_cifar100(sess,
-                                         self.input, self.label, self.optimizer, self.accuracy,
-                                         epoch, batch_size, valid_set)
-
-
-            # Save Model
-            saver = tf.train.Saver()
-            save_path = saver.save(sess, save_model_path)
-
-def parse_args(args):
-    parser = argparse.ArgumentParser(description='Script for running AlexNet')
-
-    parser.add_argument('--dataset', help='imagenet or cifar10, cifar10 is the default', default='cifar10')
-    parser.add_argument('--dataset-path', help='location where the dataset is present', default='none')
-    parser.add_argument('--gpu-mode', help='single or multi', default='single')
-    parser.add_argument('--learning-rate', help='learning rate', default=0.00005)
-    parser.add_argument('--epochs', default=20)
-    parser.add_argument('--batch-size', default=64)
-
-    return parser.parse_args(args)
-
-def main():
-    args = sys.argv[1:]
-    args = parse_args(args)
-
-    dataset = args.dataset
-    dataset_path = args.dataset_path
-    gpu_mode = args.gpu_mode
-    learning_rate = args.learning_rate
-    epochs = args.epochs
-    batch_size = args.batch_size
-
-    if dataset == 'cifar10' and dataset_path == 'none':
-        cifar10_utils.download(cifar10_dataset_folder_path)
-
-    if dataset == 'cifar10':
-        print('preprocess_and_save_data...')
-        cifar10_utils.preprocess_and_save_data(cifar10_dataset_folder_path)
-
-        print('load features and labels for valid dataset...')
-        valid_features, valid_labels = pickle.load(open('preprocess_validation.p', mode='rb'))
-
-        print('converting valid images to fit into imagenet size...')
-        tmpValidFeatures = cifar10_utils.convert_to_imagenet_size(valid_features[:1000])
-    else:
-        sys.exit(0)
-
-    alexNet = AlexNet(dataset, learning_rate)
-    alexNet.train(epochs, batch_size, (tmpValidFeatures, valid_labels), save_model_path)
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
 """
-def multi_gpu_convnet():
-    # on GPU #1
-    with tf.device('/gpu:0'):
-        # 1st Convolutional Layer
-        conv1_1 = tf.nn.conv2d(input, [11, 11, 3, 48], [1, 4, 4, 1], "SAME")
-        lrn1_1 = tf.nn.local_response_normalization(conv1_1)
-        pool1_1 = tf.nn.max_pool(lrn1_1)
+Implementation of AlexNet, from paper
+"ImageNet Classification with Deep Convolutional Neural Networks" by Alex Krizhevsky et al.
 
-        # 2nd Convolutional Layer
-        conv2_1 = tf.nn.conv2d(pool1_1, [5, 5, 48, 128], [1, 4, 4, 1], "SAME")
-        lrn2_1 = tf.nn.local_response_normalization(conv2_1)
-        pool2_1 = tf.nn.max_pool(lrn2_1)
-
-        conv3_1 = tf.nn.conv2d(pool2_1, [3, 3, 128, 192], [1, 4, 4, 1], "SAME")
-
-
-    # on GPU #2
-    with tf.device('/gpu:1'):
-        # 1st Convolutional Layer
-        conv1_2 = tf.nn.conv2d(input, [11, 11, 3, 48], [1, 4, 4, 1], "SAME")
-        lrn1_2 = tf.nn.local_response_normalization(conv1_2)
-        pool1_2 = tf.nn.max_pool(lrn1_2)
-
-        # 2nd Convolutional Layer
-        conv2_2 = tf.nn.conv2d(pool1_2, [5, 5, 48, 128], [1, 4, 4, 1], "SAME")
-        lrn2_2 = tf.nn.local_response_normalization(conv2_2)
-        pool2_2 = tf.nn.max_pool(lrn2_2)
-
-        conv3_2 = tf.nn.conv2d(pool2_2, [3, 3, 128, 192], [1, 4, 4, 1], "SAME")
-
-    ############ 3rd Convolutional Layer #########################################
-    ##############################################################################
-    ############ 4th Convolutional Layer #########################################
-
-    with tf.device('/gpu:0'):
-        conv4_1_input = tf.concat([conv3_1, conv3_2], 0)
-        conv4_1 = tf.nn.conv2d(conv4_1_input, [3, 3, 192, 192], [1, 4, 4, 1], "SAME")
-
-        conv5_1 = tf.nn.conv2d(conv4_1, [5, 5, 192, 128], [1, 4, 4, 1], "SAME")
-        lrn5_1 = tf.nn.local_response_normalization(conv5_1)
-        pool5_1 = tf.nn.max_pool(lrn5_1)
-
-        flat_1 = tf.contrib.layers.flatten(pool5_1)
-
-    with tf.device('/gpu:1'):
-        conv4_2_input = tf.concat([conv3_2, conv3_1], 0)
-        conv4_2 = tf.nn.conv2d(conv4_2_input, [3, 3, 192, 192], [1, 4, 4, 1], "SAME")
-
-        conv5_2 = tf.nn.conv2d(conv4_2, [5, 5, 192, 128], [1, 4, 4, 1], "SAME")
-        lrn5_2 = tf.nn.local_response_normalization(conv5_2)
-        pool5_2 = tf.nn.max_pool(lrn5_2)
-
-        flat_2 = tf.contrib.layers.flatten(pool5_2)
-
-    with tf.device('/gpu:0'):
-        fcl1_1_input = tf.concat([flat_1, flat_2], 0)
-        fcl1_1 = tf.contrib.layers.fully_connected(fcl1_1_input, 2048)
-
-    with tf.device('/gpu:1'):
-        fcl1_2_input = tf.concat([flat_1, flat_2], 0)
-        fcl1_2 = tf.contrib.layers.fully_connected(fcl1_2_input, 2048)
-
-    with tf.device('/gpu:0'):
-        fcl2_1_input = tf.concat([fcl1_1, fcl1_2], 0)
-        fcl2_1 = tf.contrib.layers.fully_connected(fcl2_1_input, 2048)
-
-    with tf.device('/gpu:1'):
-        fcl2_2_input = tf.concat([fcl1_1, fcl1_2], 0)
-        fcl2_2 = tf.contrib.layers.fully_connected(fcl2_2_input, 2048)
-
-    with tf.device('/gpu:0'):
-        fcl3_1_input = tf.concat([fcl2_1, fcl2_2], 0)
-        out = tf.contrib.layers.fully_connected(fcl3_1_input, 1000, activation_fn=None)
-
-    return out
+See: https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf
 """
+import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+from torch.utils import data
+import torchvision.datasets as datasets
+import torchvision.transforms as transforms
+from tensorboardX import SummaryWriter
+
+# define pytorch device - useful for device-agnostic execution
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# define model parameters
+NUM_EPOCHS = 90  # original paper
+BATCH_SIZE = 128
+MOMENTUM = 0.9
+LR_DECAY = 0.0005
+LR_INIT = 0.01
+IMAGE_DIM = 227  # pixels
+NUM_CLASSES = 1000  # 1000 classes for imagenet 2012 dataset
+DEVICE_IDS = [0, 1, 2, 3]  # GPUs to use
+# modify this to point to your data directory
+INPUT_ROOT_DIR = 'alexnet_data_in'
+TRAIN_IMG_DIR = 'alexnet_data_in/imagenet'
+OUTPUT_DIR = 'alexnet_data_out'
+LOG_DIR = OUTPUT_DIR + '/tblogs'  # tensorboard logs
+CHECKPOINT_DIR = OUTPUT_DIR + '/models'  # model checkpoints
+
+# make checkpoint path directory
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+
+
+class AlexNet(nn.Module):
+    """
+    Neural network model consisting of layers propsed by AlexNet paper.
+    """
+    def __init__(self, num_classes=1000):
+        """
+        Define and allocate layers for this neural net.
+
+        Args:
+            num_classes (int): number of classes to predict with this model
+        """
+        super().__init__()
+        # input size should be : (b x 3 x 227 x 227)
+        # The image in the original paper states that width and height are 224 pixels, but
+        # the dimensions after first convolution layer do not lead to 55 x 55.
+        self.net = nn.Sequential(
+            nn.Conv2d(in_channels=3, out_channels=96, kernel_size=11, stride=4),  # (b x 96 x 55 x 55)
+            nn.ReLU(),
+            nn.LocalResponseNorm(size=5, alpha=0.0001, beta=0.75, k=2),  # section 3.3
+            nn.MaxPool2d(kernel_size=3, stride=2),  # (b x 96 x 27 x 27)
+            nn.Conv2d(96, 256, 5, padding=2),  # (b x 256 x 27 x 27)
+            nn.ReLU(),
+            nn.LocalResponseNorm(size=5, alpha=0.0001, beta=0.75, k=2),
+            nn.MaxPool2d(kernel_size=3, stride=2),  # (b x 256 x 13 x 13)
+            nn.Conv2d(256, 384, 3, padding=1),  # (b x 384 x 13 x 13)
+            nn.ReLU(),
+            nn.Conv2d(384, 384, 3, padding=1),  # (b x 384 x 13 x 13)
+            nn.ReLU(),
+            nn.Conv2d(384, 256, 3, padding=1),  # (b x 256 x 13 x 13)
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=3, stride=2),  # (b x 256 x 6 x 6)
+        )
+        # classifier is just a name for linear layers
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=0.5, inplace=True),
+            nn.Linear(in_features=(256 * 6 * 6), out_features=4096),
+            nn.ReLU(),
+            nn.Dropout(p=0.5, inplace=True),
+            nn.Linear(in_features=4096, out_features=4096),
+            nn.ReLU(),
+            nn.Linear(in_features=4096, out_features=num_classes),
+        )
+        self.init_bias()  # initialize bias
+
+    def init_bias(self):
+        for layer in self.net:
+            if isinstance(layer, nn.Conv2d):
+                nn.init.normal_(layer.weight, mean=0, std=0.01)
+                nn.init.constant_(layer.bias, 0)
+        # original paper = 1 for Conv2d layers 2nd, 4th, and 5th conv layers
+        nn.init.constant_(self.net[4].bias, 1)
+        nn.init.constant_(self.net[10].bias, 1)
+        nn.init.constant_(self.net[12].bias, 1)
+
+    def forward(self, x):
+        """
+        Pass the input through the net.
+
+        Args:
+            x (Tensor): input tensor
+
+        Returns:
+            output (Tensor): output tensor
+        """
+        x = self.net(x)
+        x = x.view(-1, 256 * 6 * 6)  # reduce the dimensions for linear layer input
+        return self.classifier(x)
+
+
+if __name__ == '__main__':
+    # print the seed value
+    seed = torch.initial_seed()
+    print('Used seed : {}'.format(seed))
+
+    tbwriter = SummaryWriter(log_dir=LOG_DIR)
+    print('TensorboardX summary writer created')
+
+    # create model
+    alexnet = AlexNet(num_classes=NUM_CLASSES).to(device)
+    # train on multiple GPUs
+    alexnet = torch.nn.parallel.DataParallel(alexnet, device_ids=DEVICE_IDS)
+    print(alexnet)
+    print('AlexNet created')
+
+    # create dataset and data loader
+    dataset = datasets.ImageFolder(TRAIN_IMG_DIR, transforms.Compose([
+        # transforms.RandomResizedCrop(IMAGE_DIM, scale=(0.9, 1.0), ratio=(0.9, 1.1)),
+        transforms.CenterCrop(IMAGE_DIM),
+        # transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    ]))
+    print('Dataset created')
+    dataloader = data.DataLoader(
+        dataset,
+        shuffle=True,
+        pin_memory=True,
+        num_workers=8,
+        drop_last=True,
+        batch_size=BATCH_SIZE)
+    print('Dataloader created')
+
+    # create optimizer
+    # the one that WORKS
+    optimizer = optim.Adam(params=alexnet.parameters(), lr=0.0001)
+    ### BELOW is the setting proposed by the original paper - which doesn't train....
+    # optimizer = optim.SGD(
+    #     params=alexnet.parameters(),
+    #     lr=LR_INIT,
+    #     momentum=MOMENTUM,
+    #     weight_decay=LR_DECAY)
+    print('Optimizer created')
+
+    # multiply LR by 1 / 10 after every 30 epochs
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    print('LR Scheduler created')
+
+    # start training!!
+    print('Starting training...')
+    total_steps = 1
+    for epoch in range(NUM_EPOCHS):
+        lr_scheduler.step()
+        for imgs, classes in dataloader:
+            imgs, classes = imgs.to(device), classes.to(device)
+
+            # calculate the loss
+            output = alexnet(imgs)
+            loss = F.cross_entropy(output, classes)
+
+            # update the parameters
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            # log the information and add to tensorboard
+            if total_steps % 10 == 0:
+                with torch.no_grad():
+                    _, preds = torch.max(output, 1)
+                    accuracy = torch.sum(preds == classes)
+
+                    print('Epoch: {} \tStep: {} \tLoss: {:.4f} \tAcc: {}'
+                        .format(epoch + 1, total_steps, loss.item(), accuracy.item()))
+                    tbwriter.add_scalar('loss', loss.item(), total_steps)
+                    tbwriter.add_scalar('accuracy', accuracy.item(), total_steps)
+
+            # print out gradient values and parameter average values
+            if total_steps % 100 == 0:
+                with torch.no_grad():
+                    # print and save the grad of the parameters
+                    # also print and save parameter values
+                    print('*' * 10)
+                    for name, parameter in alexnet.named_parameters():
+                        if parameter.grad is not None:
+                            avg_grad = torch.mean(parameter.grad)
+                            print('\t{} - grad_avg: {}'.format(name, avg_grad))
+                            tbwriter.add_scalar('grad_avg/{}'.format(name), avg_grad.item(), total_steps)
+                            tbwriter.add_histogram('grad/{}'.format(name),
+                                    parameter.grad.cpu().numpy(), total_steps)
+                        if parameter.data is not None:
+                            avg_weight = torch.mean(parameter.data)
+                            print('\t{} - param_avg: {}'.format(name, avg_weight))
+                            tbwriter.add_histogram('weight/{}'.format(name),
+                                    parameter.data.cpu().numpy(), total_steps)
+                            tbwriter.add_scalar('weight_avg/{}'.format(name), avg_weight.item(), total_steps)
+
+            total_steps += 1
+
+        # save checkpoints
+        checkpoint_path = os.path.join(CHECKPOINT_DIR, 'alexnet_states_e{}.pkl'.format(epoch + 1))
+        state = {
+            'epoch': epoch,
+            'total_steps': total_steps,
+            'optimizer': optimizer.state_dict(),
+            'model': alexnet.state_dict(),
+            'seed': seed,
+        }
+        torch.save(state, checkpoint_path)
