@@ -1,0 +1,8 @@
+ollama
+rank_bm25
+chromadb
+numpy
+faiss-cpu
+networkx
+tiktoken
+# llama-index-core

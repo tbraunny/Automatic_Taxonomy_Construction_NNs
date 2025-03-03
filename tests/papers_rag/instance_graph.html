@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 1500px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#000000", "font": {"color": "#000000"}, "id": "cdebdc3c_alexnet", "label": "alexnet", "shape": "dot", "size": 40, "title": "Class: ANNConfiguration"}, {"color": "#c43c4e", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-network", "label": "convolutional-network", "shape": "dot", "size": 20, "title": "Class: Network"}, {"color": "#fbaa0e", "font": {"color": "#000000"}, "id": "cdebdc3c_supervised-classification", "label": "supervised-classification", "shape": "dot", "size": 20, "title": "Class: SupervisedClassification"}, {"color": "#9e2963", "font": {"color": "#000000"}, "id": "cdebdc3c_input-layer", "label": "input-layer", "shape": "dot", "size": 20, "title": "Class: InputLayer"}, {"color": "#d44841", "font": {"color": "#000000"}, "id": "cdebdc3c_output-layer", "label": "output-layer", "shape": "dot", "size": 20, "title": "Class: OutputLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-1", "label": "convolutional-1", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#c43c4e", "font": {"color": "#000000"}, "id": "cdebdc3c_relu", "label": "relu", "shape": "dot", "size": 20, "title": "Class: ActivationFunction"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-2", "label": "convolutional-2", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-3", "label": "convolutional-3", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-4", "label": "convolutional-4", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-5", "label": "convolutional-5", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_convolutional-6", "label": "convolutional-6", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}, {"color": "#fa9306", "font": {"color": "#000000"}, "id": "cdebdc3c_fully-connected-1", "label": "fully-connected-1", "shape": "dot", "size": 20, "title": "Class: ActivationLayer"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_alexnet", "label": "hasNetwork", "title": "hasNetwork", "to": "cdebdc3c_convolutional-network", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasTaskType", "title": "hasTaskType", "to": "cdebdc3c_supervised-classification", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_input-layer", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_output-layer", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-1", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-2", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-3", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-4", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-5", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_convolutional-6", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-network", "label": "hasLayer", "title": "hasLayer", "to": "cdebdc3c_fully-connected-1", "width": 1.5}, {"arrows": "to", "color": "#a8a8a8", "from": "cdebdc3c_convolutional-1", "label": "hasActivationFunction", "title": "hasActivationFunction", "to": "cdebdc3c_relu", "width": 1.5}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"font": {"size": 14, "color": "#343434"}, "scaling": {"min": 15, "max": 30}, "shapeProperties": {"useBorderWithImage": true}}, "edges": {"color": {"color": "#a8a8a8", "highlight": "#848484"}, "smooth": {"type": "dynamic"}}, "physics": {"enabled": true, "stabilization": {"enabled": true, "iterations": 1000, "fit": true}, "forceAtlas2Based": {"gravitationalConstant": -50, "springLength": 300, "springConstant": 0.05}, "solver": "forceAtlas2Based"}, "layout": {"improvedLayout": true, "hierarchical": false}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

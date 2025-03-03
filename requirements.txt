@@ -1,11 +1,11 @@
--r "requirements/requirements-rag_engine.txt"
 -r "requirements/requirements-doc_chunker.txt"
--r "requirements/requirements-embedding_model.txt"
--r "requirements/requirements-llm_model.txt"
+-r "requirements/requirements-llm_service.txt"
 -r "requirements/requirements-owl.txt"
--r "requirements/requirements-front_end.txt"
 -r "requirements/requirements-pdf_extraction.txt"
-
+-r "requirements/requirements-pytest.txt"
+-r "requirements/requirements-instantiate_annetto.txt"
+# -r "requirements/requirements-front_end.txt"
+# -r "requirements/requirements-graph_viz.txt"
 
 
 

@@ -10,46 +10,8 @@ from utils.llm_service import init_engine, query_llm
 
 OMIT_CLASSES = ["DataCharacterization", "Regularization"]
 
-Y_N_CLASSES = set(["DataCharacterization", "Regularization"])
+PARENT_CLASSES = set(["LossFunction", "RegularizerFunction", "ActivationLayer", "NonDiff", "Smooth", "AggregationLayer", "NoiseLayer"])
 
-
-
-
-# from pydantic import BaseModel, ValidationError
-# from typing import List
-# class LLMResponse(BaseModel):
-#     """
-#     Data model for validating LLM responses.
-#     Attributes:
-#         instance_names (List[str]): List of ontology class names extracted from the LLM's response.
-#     """
-#     instance_names: List[str]
-
-# def validate_response(response_json:str):
-#         """Validates and parses the JSON response."""
-#         response_json = response_json if isinstance(response_json, dict) else json.loads(response.strip())
-#         return LLMResponse.model_validate(response_json)
-
-# def extract_JSON(response: str) -> dict:
-#     """
-#     Extracts JSON data from a response string.
-
-#     Args:
-#         response (str): The LLM's response containing JSON data.
-
-#     Returns:
-#         dict: Extracted JSON object.
-
-#     Raises:
-#         ValueError: If no valid JSON block is found in the response.
-#     """
-#     try:
-#         json_match = re.search(r'```json\n({.*?})\n```', response, re.DOTALL)
-#         if json_match:
-#             return json.loads(json_match.group(1))
-#         raise ValueError("No valid JSON block found in the response.")
-#     except json.JSONDecodeError as e:
-#         raise ValueError(f"Error decoding JSON: {e}\nResponse: {response}")
 
 def dfs_instantiate_annetto(ontology: Ontology):
     """
