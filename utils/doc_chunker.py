@@ -6,6 +6,7 @@
 def semantically_chunk_documents(documents, ollama_model="bge-m3:latest") -> list:
     from langchain_experimental.text_splitter import SemanticChunker
     import ollama
+
     class OllamaEmbeddings:
         def embed_documents(self, texts):
             # texts is a list of strings
@@ -13,6 +14,7 @@ def semantically_chunk_documents(documents, ollama_model="bge-m3:latest") -> lis
                 ollama.embeddings(model=ollama_model, prompt=text)["embedding"]
                 for text in texts
             ]
+        
     """
     Semantically splits a list of documents into smaller chunks.
     
@@ -33,6 +35,7 @@ def semantically_chunk_documents(documents, ollama_model="bge-m3:latest") -> lis
 
     return chunked_docs
 
+# Slower; use only if semantically_chunk_documents is not working
 def recursively_chunk_documents(documents, chunk_size=1000, chunk_overlap=200) -> list:
     from langchain.text_splitter import RecursiveCharacterTextSplitter
 
