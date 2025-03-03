@@ -1449,10 +1449,6 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Unknown">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
-</owl:Class>
-
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -3261,15 +3257,15 @@
 
 <owl:NamedIndividual rdf:about="709942bd_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="709942bd_unknown"/>
+  <hasTaskType rdf:resource="709942bd_supervised-classification"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_min-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_unknown">
-  <rdf:type rdf:resource="Unknown"/>
+<owl:NamedIndividual rdf:about="709942bd_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
