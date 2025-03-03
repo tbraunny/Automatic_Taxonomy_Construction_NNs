@@ -1,0 +1,3 @@
+pydantic
+owlready2
+rapidfuzz

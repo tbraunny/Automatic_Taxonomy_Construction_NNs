@@ -1,6 +1,6 @@
 from re import sub, fullmatch
 from owlready2 import ThingClass
-from typing import List, Union , Optional
+from typing import List, Union, Optional
 from rapidfuzz import process, fuzz
 
 
@@ -65,7 +65,7 @@ def make_thing_classes_readable(things:List[ThingClass]) -> str:
     return comma_separate(split_camel_case(thingclass_names_to_str(things)))
 
 def fuzzy_match_class(
-        self, instance_name: str, classes: List[ThingClass], threshold: int = 80
+        instance_name: str, classes: List[ThingClass], threshold: int = 80
     ) -> Optional[ThingClass]:
         """
         Perform fuzzy matching to find the best match for an instance to a known class.

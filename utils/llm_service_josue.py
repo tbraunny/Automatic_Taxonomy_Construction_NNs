@@ -34,15 +34,18 @@ from functools import wraps
 import numpy as np
 import ollama
 import faiss
+from typing import Union
+from pydantic import BaseModel
+from typing import Type, Any
 
 embedding_cache = {}  # In-memory only
-
-#logging.basicConfig(level=logging.INFO) # for verbose logging
 
 try:
     import tiktoken
 except ImportError:
     tiktoken = None
+
+
 
 from rank_bm25 import BM25Okapi
 import networkx as nx
@@ -55,21 +58,27 @@ CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "neuroexpert:latest")
 SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
 
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
-# Configure logging based on the verbose flag
-# Read verbose flag from environment variable or set default to False
-# export VERBOSE=True
-VERBOSE = os.environ.get("VERBOSE", "False").lower() in ("true", "1", "yes")
-logging.basicConfig(
-    level=logging.INFO if VERBOSE else logging.WARNING,  
-    format="%(asctime)s %(levelname)s %(message)s"
-)
+from datetime import datetime
+log_dir = "logs" 
+log_file = os.path.join(log_dir, f"llm_service_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+os.makedirs(log_dir, exist_ok=True)
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_file),  # Write to file
+        # logging.StreamHandler()  # Print to console
+    ],
+    force=True
+)
 logger = logging.getLogger(__name__)
 
 # Retry Decorator (with exponential backoff)
@@ -102,7 +111,7 @@ async def async_generate(model: str, prompt: str):
     return await loop.run_in_executor(None, lambda: ollama.generate(model=model, prompt=prompt))
 
 # Token counting and summarization
-def count_tokens(text: str) -> int:
+def num_tokens_from_string(text: str) -> int:
     """
     Count tokens using tiktoken if available,
     otherwise use a simple word count.
@@ -194,32 +203,6 @@ def _get_embedding(text: str, model: str) -> list:
         logger.error("Embedding failed for text: %s", text[:30])
         raise ValueError("Embedding failed")
 
-class FAISSIndexManager:
-    """Manages a persistent FAISS index to avoid reinitializing the vector db"""
-    
-    def __init__(self, embedding_dim: int):
-        self.embedding_dim = embedding_dim
-        self.index = faiss.IndexFlatIP(embedding_dim)
-        self.embeddings = []
-        self.mapping = []  # stores metadata corresponding to embeddings
-
-    def add_embeddings(self, new_embeddings: list, new_mapping: list):
-        """Add new embeddings and their mappings to the index."""
-        if not new_embeddings:
-            return
-        
-        new_embeddings = np.array(new_embeddings, dtype="float32")
-        norms = np.linalg.norm(new_embeddings, axis=1, keepdims=True)
-        new_embeddings = new_embeddings / np.maximum(norms, 1e-10)
-
-        self.index.add(new_embeddings)
-        self.embeddings.extend(new_embeddings)
-        self.mapping.extend(new_mapping)
-    
-    def get_index(self):
-        """Return the FAISS index instance."""
-        return self.index
-
 class LLMQueryEngine:
     """
     A robust LLM engine that implements a multi-stage retrieval-augmented generation pipeline:
@@ -244,102 +227,63 @@ class LLMQueryEngine:
         self.chunk_overlap = chunk_overlap
         self.embedding_model = embedding_model
         self.generation_model = generation_model
-
-        self.faiss_index = None
-        self.dense_embeddings = []
-        self.dense_mapping = []
+        self.total_input_tokens:int=0
+        self.total_output_tokens:int=0
+        self.logger = logger
 
         # Load and process documents.
         docs = load_documents_from_json(json_file_path)
-        logger.info("Loaded %d documents from %s", len(docs), json_file_path)
+        self.logger.info("Loaded %d documents from %s", len(docs), json_file_path)
 
         self.chunked_docs = self._chunk_documents(docs)
-        logger.info("Chunked documents into %d chunks", len(self.chunked_docs))
+        self.logger.info("Chunked documents into %d chunks", len(self.chunked_docs))
 
         # Build in-memory dense retrieval index using FAISS.
-        self._update_faiss_index(self.chunked_docs)
+        self._build_faiss_index(self.chunked_docs)
 
         # Build BM25 index for sparse retrieval.
         self.bm25_corpus = [doc.page_content for doc in self.chunked_docs]
         self.bm25_tokens = [doc.page_content.lower().split() for doc in self.chunked_docs]
         self.bm25_index = BM25Okapi(self.bm25_tokens)
-        logger.info("Built BM25 index for %d document chunks.", len(self.chunked_docs))
+        self.logger.info("Built BM25 index for %d document chunks.", len(self.chunked_docs))
 
         # Build a simple graph index using networkx.
         self.graph = self.build_graph_index(self.chunked_docs)
-        logger.info("Built graph index with %d nodes.", self.graph.number_of_nodes())
+        self.logger.info("Built graph index with %d nodes.", self.graph.number_of_nodes())
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""
-        temp = semantically_chunk_documents(documents, ollama_model=self.embedding_model)
-        print("TYPE DOC CHUNK: " , type(temp)) # temp is of type LIST
-        return temp
+        return semantically_chunk_documents(documents, ollama_model=self.embedding_model)
 
-    def _update_faiss_index(self, documents: list):
-        """Incrementally update the FAISS index with new embeddings."""
-        new_embeddings = []
-        new_mappings = []
-
+    def _build_faiss_index(self, documents: list):
+        """
+        Compute embeddings for each document chunk, store them in memory,
+        and build a FAISS index (in-memory only).
+        """
+        self.dense_embeddings = []
+        self.dense_mapping = []  # Mapping from FAISS index to document chunks.
         for doc in documents:
             try:
                 emb = _get_embedding(doc.page_content, self.embedding_model)
-                new_embeddings.append(emb)
-                new_mappings.append({
+                self.dense_embeddings.append(emb)
+                self.dense_mapping.append({
                     "content": doc.page_content,
                     "metadata": doc.metadata
                 })
             except Exception as e:
-                logger.exception("Error computing embedding for a document chunk: %s", str(e))
-
-        if not new_embeddings:
-            logger.warning("No new embeddings computed.")
-            return
-
-        # Convert to NumPy array of type float32 and normalize
-        new_embeddings_np = np.array(new_embeddings).astype("float32")
-        norms = np.linalg.norm(new_embeddings_np, axis=1, keepdims=True)
-        new_embeddings_np = new_embeddings_np / np.maximum(norms, 1e-10)
-
-        if self.faiss_index is None:
-            # Initialize FAISS index
-            d = new_embeddings_np.shape[1]
-            self.faiss_index = faiss.IndexFlatIP(d)
-            logger.info("Initialized new FAISS index with dimension %d.", d)
-
-        # Add new embeddings
-        self.faiss_index.add(new_embeddings_np)
-        self.dense_mapping.extend(new_mappings)
-        logger.info("Added %d new vectors to FAISS index.", len(new_embeddings_np))
-
-    # def _build_faiss_index(self, documents: list):
-    #     """
-    #     Compute embeddings for each document chunk, store them in memory,
-    #     and build a FAISS index (in-memory only).
-    #     """
-    #     self.dense_embeddings = []
-    #     self.dense_mapping = []  # Mapping from FAISS index to document chunks.
-    #     for doc in documents:
-    #         try:
-    #             emb = _get_embedding(doc.page_content, self.embedding_model)
-    #             self.dense_embeddings.append(emb)
-    #             self.dense_mapping.append({
-    #                 "content": doc.page_content,
-    #                 "metadata": doc.metadata
-    #             })
-    #         except Exception as e:
-    #             logger.exception("Error computing embedding for a document chunk: %s", str(e))
-    #     if not self.dense_embeddings:
-    #         raise ValueError("No embeddings computed.")
-    #     # Convert to a NumPy array of type float32.
-    #     dense_np = np.array(self.dense_embeddings).astype("float32")
-    #     # Normalize for cosine similarity.
-    #     norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
-    #     dense_np = dense_np / np.maximum(norms, 1e-10)
-    #     d = dense_np.shape[1]
-    #     # Create a FAISS index using inner product (cosine similarity).
-    #     self.faiss_index = faiss.IndexFlatIP(d)
-    #     self.faiss_index.add(dense_np)
-    #     logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
+                self.logger.exception("Error computing embedding for a document chunk: %s", str(e))
+        if not self.dense_embeddings:
+            raise ValueError("No embeddings computed.")
+        # Convert to a NumPy array of type float32.
+        dense_np = np.array(self.dense_embeddings).astype("float32")
+        # Normalize for cosine similarity.
+        norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
+        dense_np = dense_np / np.maximum(norms, 1e-10)
+        d = dense_np.shape[1]
+        # Create a FAISS index using inner product (cosine similarity).
+        self.faiss_index = faiss.IndexFlatIP(d)
+        self.faiss_index.add(dense_np)
+        self.logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
 
     @retry(max_attempts=3)
     def retrieve_initial_chunks(self, query: str, max_chunks: int = 10) -> list:
@@ -365,7 +309,7 @@ class LLMQueryEngine:
                 })
             return candidate_chunks
         except Exception as e:
-            logger.exception("Error retrieving initial (dense) chunks: %s", str(e))
+            self.logger.exception("Error retrieving initial (dense) chunks: %s", str(e))
             return []
 
     def retrieve_bm25_chunks(self, query: str, max_chunks: int = 10) -> list:
@@ -406,12 +350,9 @@ class LLMQueryEngine:
         """
         Logical routing that merges dense (FAISS) and BM25 results.
         """
-        logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
+        self.logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
         dense_candidates = self.retrieve_initial_chunks(query, max_chunks=max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks=max_chunks)
-
-        dense_candidates_code = self.retrieve_initial_chunks(query , max_chunks=max_chunks)
-
         return merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(self, ranked_chunks: list, token_budget: int) -> list:
@@ -437,7 +378,7 @@ class LLMQueryEngine:
             header = group_keys[idx % len(group_keys)]
             if groups[header]:
                 candidate = groups[header].pop(0)
-                candidate_tokens = count_tokens(candidate["content"])
+                candidate_tokens = num_tokens_from_string(candidate["content"])
                 if total_tokens + candidate_tokens <= token_budget:
                     context.append(candidate)
                     total_tokens += candidate_tokens
@@ -446,10 +387,10 @@ class LLMQueryEngine:
                     summarized = summarize_chunk(candidate["content"], max_tokens=remaining_tokens)
                     candidate["content"] = summarized
                     context.append(candidate)
-                    total_tokens += count_tokens(summarized)
+                    total_tokens += num_tokens_from_string(summarized)
                     break
             idx += 1
-        logger.info("Assembled context with ~%d tokens.", total_tokens)
+        self.logger.info("Assembled context with ~%d tokens.", total_tokens)
         return context
 
     def iterative_context_expansion(self, query: str, current_context: list, token_budget: int, max_rounds: int = 3) -> list:
@@ -459,7 +400,7 @@ class LLMQueryEngine:
         """
         round_counter = 0
         while round_counter < max_rounds:
-            current_token_count = sum(count_tokens(chunk["content"]) for chunk in current_context)
+            current_token_count = sum(num_tokens_from_string(chunk["content"]) for chunk in current_context)
             if current_token_count >= 0.7 * token_budget:
                 break
             current_context_text = "\n\n".join(chunk["content"] for chunk in current_context)
@@ -481,9 +422,9 @@ class LLMQueryEngine:
             try:
                 response = ollama.generate(model=self.generation_model, prompt=expansion_prompt)
                 keywords = response.get("response", "").strip()
-                logger.info("Round %d expansion keywords: %s", round_counter + 1, keywords)
+                self.logger.info("Round %d expansion keywords: %s", round_counter + 1, keywords)
             except Exception as e:
-                logger.exception("Error during iterative context expansion: %s", str(e))
+                self.logger.exception("Error during iterative context expansion: %s", str(e))
                 break
             if not keywords:
                 break
@@ -494,17 +435,110 @@ class LLMQueryEngine:
                 if candidate["content"] not in existing_contents:
                     current_context.append(candidate)
                     existing_contents.add(candidate["content"])
-                    current_token_count += count_tokens(candidate["content"])
+                    current_token_count += num_tokens_from_string(candidate["content"])
                     if current_token_count >= token_budget:
                         break
             round_counter += 1
         return current_context
-    
+
     @retry(max_attempts=3)
-    def generate_response(self, query: str, context_chunks: list) -> str:
+    def generate_structured_response(self, query: str, context_chunks: list, json_format_instructions: str, cls_schema: Type[BaseModel]) -> Any:
+        """
+        Build the final prompt, send it to the LLM via Ollama, and parse the resulting response 
+        into a structured JSON output according to a provided Pydantic model schema.
+
+        This function implements a Fusion-in-Decoder style approach:
+        1. It concatenates the context chunks (each with metadata such as section headers) 
+            into a single "evidence dump".
+        2. It constructs a final prompt that includes:
+            - The goal (to answer the technical query).
+            - The original query.
+            - JSON formatting instructions that describe the expected output.
+            - A warning to avoid additional text beyond the JSON output.
+            - The context dump from the candidate chunks.
+        3. It calls the LLM (via `ollama.generate`) with the full prompt. 
+            The call includes a formatting argument, which is obtained by calling 
+            `cls_schema.model_json_schema()`. This expects that `cls_schema` is a Pydantic model class.
+        4. It then extracts and cleans the generated text, and attempts to parse it using the Pydantic model’s 
+            JSON validation (via `cls_schema.model_validate_json`).
+
+        Args:
+            query (str): The technical query that the LLM needs to answer.
+            context_chunks (list): A list of document chunks with keys such as 'content' and 'metadata' that provide evidence.
+            json_format_instructions (str): Instructions describing the exact JSON output format expected from the LLM.
+            cls_schema (Type[BaseModel]): A Pydantic model class defining the expected structure of the JSON response.
+                                        It must implement the method `model_json_schema()`.
+
+        Returns:
+            Any: The parsed LLM response. This will be an instance of the Pydantic `cls_schema` .
+
+        Raises:
+            Exception: If the LLM fails to generate a valid response after the allowed retry attempts.
+                    Exceptions from JSON parsing or schema validation are logged and re-raised.
+        """
+        # Construct a string with all context evidence, grouping by section header.
+        evidence_blocks = "\n\n".join(
+            f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"
+            for chunk in context_chunks
+        )
+        
+        # Build the full prompt by combining the query, JSON format instructions, warnings, and the evidence blocks.
+        full_prompt = (
+            "Goal:\n"
+            "Answer the technical query by fusing the evidence from the provided context.\n\n"
+            f"Query: {query}\n\n"
+            "Instructions:\n"
+            f"{json_format_instructions}\n\n"
+            "Ensure that no additional text or keys are returned.\n"
+            "Warnings:\n"
+            "- Do not include extra explanations, greetings, or disclaimers.\n"
+            "- Use only the provided context to answer the question.\n\n"
+            "Context Dump:\n"
+            f"{evidence_blocks}\n\n"
+        )
+        
+        self.logger.info("Final prompt provided to LLM:\n%s", full_prompt)
+        try:
+            # Debug prints to verify types and values of key parameters.
+            print(f"Query: {query},\n\n json_format_instructions: {json_format_instructions},\n\n cls_schema: {cls_schema}\n\n")
+            print(f" Query Type: {type(query)},\n\n json_format_instructions Type: {type(json_format_instructions)},\n\n cls_schema Type: {type(cls_schema)}\n\n")
+            
+            # Call the LLM with the full prompt and specify the expected JSON schema as a format hint.
+            response = ollama.generate(model=self.generation_model, prompt=full_prompt, format=cls_schema.model_json_schema())
+            print(f"Response: {response}\n\n, of type {type(response)}\n\n")
+            
+            # Extract and clean the generated text from the LLM response.
+            generated_text = response.get("response", "No response generated.").strip()
+            print(f"ç: {generated_text}\n\n of type {type(generated_text)}\n\n")
+            self.logger.info("Raw generated response: %s", generated_text)
+            
+            # Parse the generated text into a structured model using Pydantic's validation.
+            parsed = cls_schema.model_validate_json(generated_text)
+            print(f"Parsed: {parsed}, of type {type(parsed)}\n\n")
+            
+            # Log token usage for instrumentation.
+            num_input_tokens = num_tokens_from_string(full_prompt)
+            self.logger.info(f"Input number of tokens on prompt: {num_input_tokens}")
+            num_output_tokens = num_tokens_from_string(generated_text)
+            self.logger.info(f"Output number of tokens on response: {num_output_tokens}")
+            self.total_input_tokens += num_input_tokens
+            self.total_output_tokens += num_output_tokens
+            
+            # Return the parsed response as a dictionary if requested, otherwise return the model instance.
+            return parsed
+            
+        except Exception as e:
+            self.logger.exception("Error generating final response: %s", str(e))
+            raise
+
+
+    @retry(max_attempts=3)
+    def generate_response(self, query: str, context_chunks: list,) -> Union[dict, int, str, list[str]]:
         """
         Generate the final answer using a Fusion-in-Decoder style prompt,
         aggregating all the retrieved evidence.
+        Returns the final answer as a as a dictionary, int, str, list[str], depending 
+        on the format required for the llm to answer properly.
         """
         evidence_blocks = "\n\n".join(
             f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"
@@ -516,14 +550,13 @@ class LLMQueryEngine:
 
             f"Query: {query}"
             
-            "Return Format:\n"
-            "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
-            "whose value is your final answer. Below are some examples:\n"
-            '{"answer": ["item1","item2"]}\n'
-            '{"answer": "true"}\n\n'
-            '{"answer": []}\n\n'
+            # "Return Format:\n"
+            # "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
+            # "whose value is your final answer. Below are some examples:\n"
+            # '{"answer": ["item1","item2"]}\n'
+            # '{"answer": "true"}\n\n'
+            # '{"answer": []}\n\n'
 
-            
             "Warnings:\n"
             "- Do not disclaim that you are an AI.\n"
             "- Only use the context provided below; do not add outside information.\n\n"
@@ -532,28 +565,69 @@ class LLMQueryEngine:
             f"{evidence_blocks}\n\n"
         )
 
-        logger.info("Final prompt provided to LLM:\n%s", full_prompt)
+        
+
+        self.logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
+
             response = ollama.generate(model=self.generation_model, prompt=full_prompt)
             generated_text = response.get("response", "No response generated.").strip()
-
-            print(generated_text)
-            logger.info("Raw generated response: %s", generated_text)
+            
+            self.logger.info("Raw generated response: %s", generated_text)
             start = generated_text.find("{")
             end = generated_text.rfind("}")
             if start != -1 and end != -1:
                 json_str = generated_text[start:end+1]
                 try:
                     result_obj = json.loads(json_str)
+
+                    num_input_tokens = num_tokens_from_string(full_prompt)
+                    self.logger.info(f"Input number of tokens on prompt: {num_input_tokens}")
+                    num_output_tokens = num_tokens_from_string(generated_text)
+                    self.logger.info(f"Output number of tokens on response: {num_output_tokens}")
+                    self.total_input_tokens += num_input_tokens
+                    self.total_output_tokens += num_output_tokens
+
+
                     if "answer" in result_obj:
                         return result_obj["answer"]
                 except json.JSONDecodeError as e:
-                    logger.exception("JSON decoding error: %s", e)
+                    self.logger.exception("JSON decoding error: %s", e)
 
             raise ValueError("No valid JSON with 'answer' key found.")
         except Exception as e:
-            logger.exception("Error generating final response: %s", str(e))
+            self.logger.exception("Error generating final response: %s", str(e))
             raise
+
+    def query_json(self, query: str, json_format_instructions: str, cls_schema: Type[BaseModel] = None, max_chunks: int = 15, token_budget: int = 1024) -> str:
+        """
+        The high-level query method that ties together:
+          - Candidate retrieval,
+          - Context assembly,
+          - Iterative expansion, and
+          - Final answer generation.
+        """
+        self.logger.info("Querying LLM with structured response format.")
+
+        start_time = time.time()
+        candidates = self.route_query(query, max_chunks=max_chunks)
+        if not candidates:
+            self.logger.warning("No candidate chunks retrieved for query: %s", query)
+            return "No relevant documents found."
+        context_chunks = self.assemble_context(candidates, token_budget)
+        expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
+        answer = self.generate_structured_response(query, expanded_context, json_format_instructions, cls_schema)
+        elapsed_time = time.time() - start_time
+
+        # Log instrumentation data.
+        log_data = {
+            "query": query,
+            "elapsed_time": elapsed_time,
+            "token_usage": sum(num_tokens_from_string(c['content']) for c in expanded_context)
+        }
+        self.logger.info(json.dumps(log_data))
+        return answer
+
 
     def query(self, query: str, max_chunks: int = 15, token_budget: int = 1024) -> str:
         """
@@ -563,64 +637,144 @@ class LLMQueryEngine:
           - Iterative expansion, and
           - Final answer generation.
         """
+
+        self.logger.info("Querying LLM with unstructured response format.")
         start_time = time.time()
         candidates = self.route_query(query, max_chunks=max_chunks)
         if not candidates:
-            logger.warning("No candidate chunks retrieved for query: %s", query)
+            self.logger.warning("No candidate chunks retrieved for query: %s", query)
             return "No relevant documents found."
         context_chunks = self.assemble_context(candidates, token_budget)
         expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
-        answer = self.generate_response(query, expanded_context)
+        answer = self.generate_response(query, expanded_context, )
         elapsed_time = time.time() - start_time
 
         # Log instrumentation data.
         log_data = {
             "query": query,
             "elapsed_time": elapsed_time,
-            "token_usage": sum(count_tokens(c['content']) for c in expanded_context)
+            "token_usage": sum(num_tokens_from_string(c['content']) for c in expanded_context)
         }
-        logger.info(json.dumps(log_data))
+        self.logger.info(json.dumps(log_data))
         return answer
 
-# Singleton instance
-_engine_instance = None
+# Remove the singleton _engine_instance and use a dictionary instead.
+_engine_instances = {}
 
-def init_engine(doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
+def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     """
-    Initialize the LLMQueryEngine (singleton).
+    Initialize and cache an LLMQueryEngine instance per model name.
+    """
+    if model_name not in _engine_instances:
+        _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, **kwargs)
+    return _engine_instances[model_name]
+
+
+def query_llm(model_name: str, query: str, json_format_instructions: str = None, cls_schema: Type[BaseModel] = None,  max_chunks: int = 10, token_budget: int = 1024) -> Union[dict, int, str, list[str]]:
+    """
+    Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
+
+    The prompt should include few-shot examples demonstrating the expected structure of the output.
+    The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value 
+    can be one of the following types: 
+    - Integer (e.g., `{"answer": 100}`)
+    - String (e.g., `{"answer": "ReLU Activation"}`)
+    - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
+    - Dictionary mapping strings to integers (e.g., `{"answer": {"Convolutional": 4, "FullyConnected": 1}}`)
+
+    The function checks for cached responses before querying the LLM.
+    If an error occurs, it logs the error and returns an empty response.
+
+    Example prompt structure:
+
+    Examples:
+    Loss Function: Discriminator Loss
+    1. Network: Discriminator
+    {"answer": 784}
     
-    This function takes in json path that represents the list of document objects
-    """
-    global _engine_instance
-    if _engine_instance is None:
-        _engine_instance = LLMQueryEngine(doc_json_file_path, **kwargs)
-    return _engine_instance
+    2. Network: Generator
+    {"answer": 100}
+    
+    3. Network: Linear Regression
+    {"answer": 1}
+    
+    Now, for the following network:
+    Network: {network_thing_name}
+    Expected JSON Output:
+    {"answer": "<Your Answer Here>"}
 
-def query_llm(query: str, max_chunks: int = 10, token_budget: int = 1024) -> str:
-    """
-    Public function to process a query.
-    """
+    Loss Function: Generator Loss
+    {"answer": ["L2 Regularization", "Elastic Net"]}
 
-    print(query)
-    global _engine_instance
-    if _engine_instance is None:
-        raise Exception("Engine not initialized. Please call init_engine(json_file_path) first.")
-    return _engine_instance.query(query, max_chunks=max_chunks, token_budget=token_budget)
+    Loss Function: Cross-Entropy Loss
+    {"answer": []}
 
+    Loss Function: Binary Cross-Entropy Loss
+    {"answer": ["L2 Regularization"]}
+
+    Now, for the following loss function:
+    Loss Function: {loss_name}
+    {"answer": "<Your Answer Here>"}
+
+    Args:
+        instructions (str): Additional guidance for formatting the response.
+        prompt (str): The main query containing the few-shot examples.
+
+    Returns:
+        Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
+    """
+    if model_name not in _engine_instances:
+        raise Exception(
+            f"Engine for model '{model_name}' not initialized. Please call init_engine with the appropriate doc_json_file_path first."
+        )
+    engine = _engine_instances[model_name]
+    # If cls_schema and json_format_instructions are provided, use the structured response method.
+    if cls_schema and json_format_instructions:
+        return engine.query_json(query, json_format_instructions, cls_schema, max_chunks=max_chunks, token_budget=token_budget)
+        
+
+    return engine.query(query, max_chunks=max_chunks, token_budget=token_budget)
+
+
+
+# For standalone testing
 if __name__ == "__main__":
-    json_file_path = "data/alexnet/alexnet_code0.json"
+
+    # Example for testing purposes
+    class Layer(BaseModel):
+        type: str
+        size: int
+
+    class NeuralNetworkDetails(BaseModel):
+        layers: list[Layer]
+
+
+    json_file_path = "data/alexnet/doc_alexnet.json"
     engine = init_engine(
-        json_file_path,
+        model_name=GENERATION_MODEL,
+        doc_json_file_path=json_file_path,
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP
     )
 
     queries = [
-        ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers""", 1024),
+        # ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers""", 1024),
+        ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers. Do not generalize internal layers and include modification and activation layers. Also, specify the size of each layer (number of neurons or filters).""", 1024),
     ]
+
+    json_format_instructions = ("Return a JSON object with a key 'layers'. The value should be a list of objects, "
+        "where each object represents one layer in the neural network. Each object must have exactly two keys: "
+        "'type' (a string, e.g., 'Convolution', 'ReLU', 'Pooling', 'FullyConnected', etc.) and "
+        "'size' (an integer representing the number of neurons/filters in that layer).\n"
+        "For example, if the network has 7 layers, the output might look like:\n")
 
     for idx, (q, budget) in enumerate(queries, start=1):
         start_time = time.time()
-        answer = query_llm(q, token_budget=budget)
+        answer = query_llm(GENERATION_MODEL, q, json_format_instructions, NeuralNetworkDetails, token_budget=budget)
+        print("\n\nStructured Layer Details:\n")
+        for i, layer in enumerate(answer.layers, start=1):
+            layer = layer.model_dump()
+            print(f"Layer {i}: Type = {layer['type']}, Size = {layer['size']}")
+
         elapsed = time.time() - start_time
         print(f"Example {idx}:\nAnswer: {answer}\nTime: {elapsed:.2f} seconds\n")

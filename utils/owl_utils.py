@@ -6,18 +6,20 @@ from typing import Optional, Union, List
 def load_ontology(ontology_path):
     return get_ontology(ontology_path).load()
 
+
 """ 1) Class Functions """
+
 
 def get_highest_subclass_ancestor(cls: ThingClass) -> ThingClass:
     """
-    Finds the highest (most general) superclass for a given class, 
+    Finds the highest (most general) superclass for a given class,
     Skips any parent that is not of type ThingClass.
 
     Args:
         cls: A ThingClass instance from which to find the highest ancestor.
 
     Returns:
-        The ThingClass of the highest ancestor of cls, or cls itself 
+        The ThingClass of the highest ancestor of cls, or cls itself
         if no higher ancestor is found.
     """
     current = cls
@@ -27,20 +29,18 @@ def get_highest_subclass_ancestor(cls: ThingClass) -> ThingClass:
         for parent in current.is_a:
             if not isinstance(parent, ThingClass):
                 continue  # Skip if not a ThingClass
-            
+
             if parent == owl.Thing:
                 continue  # Skip owl.Thing
-            
+
             superclasses.append(parent)
-        
+
         if not superclasses:
             # No more valid parents to traverse
             return current
-        
+
         # Move to the first valid superclass
         current = superclasses[0]
-
-
 
 
 def get_class_parents(cls: ThingClass) -> list:
@@ -48,11 +48,12 @@ def get_class_parents(cls: ThingClass) -> list:
     Retrieves the direct 'is a' parent classes of a given ontology class.
 
     Note: No class in the ontology has more than one parent as of Feb 1 2025
-    
+
     :param cls: The ontology class (ThingClass) for which to find direct parents.
     :return: A list of direct parent classes, excluding any restrictions.
     """
     return [parent for parent in cls.is_a if isinstance(parent, ThingClass)]
+
 
 def get_domain_class(ontology: Ontology, property_name: str) -> ThingClass:
     """
@@ -72,6 +73,7 @@ def get_domain_class(ontology: Ontology, property_name: str) -> ThingClass:
         return None
 
     return domain_cls
+
 
 def get_class_by_name(onto, class_name):
     """
@@ -105,6 +107,7 @@ def is_subclass_of_class(cls, parent_cls):
     """
     return issubclass(cls, parent_cls)
 
+
 def is_subclass_of_any(ontology, cls):
     """
     Determines whether a given class is a subclass of any class in the ontology.
@@ -121,8 +124,10 @@ def is_subclass_of_any(ontology, cls):
         return True
     return False
 
-def get_base_class(onto:Ontology):
+
+def get_base_class(onto: Ontology):
     return onto.ANNConfiguration
+
 
 def get_object_properties_with_domain_and_range(ontology, domain_class, range_class):
     """
@@ -149,17 +154,23 @@ def get_object_properties_with_domain_and_range(ontology, domain_class, range_cl
             counter += 1
 
     if counter > 1:
-        raise ValueError(f"More than one object property found with domain ({domain_class}) and range classes ({range_class}).")
+        raise ValueError(
+            f"More than one object property found with domain ({domain_class}) and range classes ({range_class})."
+        )
 
     return matching_property
 
 
-def get_connected_classes(cls:ThingClass, ontology, return_object_properties:bool=False):
+def get_connected_classes(
+    cls: ThingClass, ontology, return_object_properties: bool = False
+):
     """
     Retrieves classes connected to the given class via object properties.
     """
     connected_classes = set()
-    object_properties = [prop for prop in ontology.object_properties() if cls in prop.domain]
+    object_properties = [
+        prop for prop in ontology.object_properties() if cls in prop.domain
+    ]
 
     for prop in object_properties:
         for range_cls in prop.range:
@@ -171,7 +182,6 @@ def get_connected_classes(cls:ThingClass, ontology, return_object_properties:boo
     connected_classes = list(connected_classes)
 
     return connected_classes if connected_classes != [] else None
-
 
 
 def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
@@ -186,16 +196,7 @@ def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
     """
     return list(cls.subclasses())
 
-
-#################################################################
-"""
-Modifications to get_all_subclasses
-- Issue: circular recursion, max depth reached upon function call
-- Remedy: set tracking visited nodes, do not visit same node twice
-- Original code commented out below
-"""
-#################################################################
-def get_all_subclasses(cls: ThingClass , visited=None) -> List[ThingClass]:
+def get_all_subclasses(cls: ThingClass) -> List[ThingClass]:
     """
     # Recursively retrieves all unique subclasses of a given class.
 
@@ -203,28 +204,16 @@ def get_all_subclasses(cls: ThingClass , visited=None) -> List[ThingClass]:
     #     cls (ThingClass): The class for which to find its subclasses.
     #     visited: Set of visited nodes
 
-    # Returns:
-    #     List[ThingClass]: A list of all subclasses of the given class, including nested ones.
-    # """
-
-    if visited is None: #initial
-        visited = set()
-
-    if cls in visited: # if node has been visited, skip
-        return []
-
-    visited.add(cls)  # mark as visited
-    subclasses = set(get_immediate_subclasses(cls))
-
-    for subclass in list(subclasses): 
-        subclasses.update(get_all_subclasses(subclass, visited)) # find all subclasses thru RECURSION
-
+    Returns:
+        List[ThingClass]: A list of all subclasses of the given class, including nested ones.
+    """
+    subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
+    for subclass in subclasses.copy():  # Iterate over a copy to modify safely
+        subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
     return list(subclasses)
-    
-    # subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
-    # for subclass in subclasses.copy():  # Iterate over a copy to modify safely
-    #     subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
-    # return list(subclasses)
+
+
+
 
 
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
@@ -241,8 +230,9 @@ def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Pro
     return [prop for prop in ontology.properties() if onto_class in prop.domain]
 
 
-
-def get_class_data_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+def get_class_data_properties(
+    ontology: Ontology, onto_class: ThingClass
+) -> List[Property]:
     """
     Retrieves all data properties in the given ontology that have the specified class as their domain.
 
@@ -256,8 +246,9 @@ def get_class_data_properties(ontology: Ontology, onto_class: ThingClass) -> Lis
     return [prop for prop in ontology.data_properties() if onto_class in prop.domain]
 
 
-
-def get_class_object_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
+def get_class_object_properties(
+    ontology: Ontology, onto_class: ThingClass
+) -> List[Property]:
     """
     Retrieves all object properties in the given ontology that have the specified class as their domain.
 
@@ -271,7 +262,6 @@ def get_class_object_properties(ontology: Ontology, onto_class: ThingClass) -> L
     return [prop for prop in ontology.object_properties() if onto_class in prop.domain]
 
 
-
 def get_property_range_type(property: Property) -> str:
     """
     Determines if the range of a property is atomic or refers to another class.
@@ -282,7 +272,7 @@ def get_property_range_type(property: Property) -> str:
     Returns:
         str: "atomic" if the range is a primitive datatype, otherwise "class".
     """
-    
+
     if not property.range:
         return "atomic"
 
@@ -298,7 +288,6 @@ def get_property_range_type(property: Property) -> str:
     return "atomic"
 
 
-
 def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     """
     Retrieves all restrictions (including cardinality restrictions) applied to a specified class.
@@ -309,11 +298,16 @@ def get_class_restrictions(onto_class: ThingClass) -> List[Restriction]:
     Returns:
         List[Restriction]: A list of restrictions applied to the class.
     """
-    return [restriction for restriction in onto_class.is_a if isinstance(restriction, Restriction)]
+    return [
+        restriction
+        for restriction in onto_class.is_a
+        if isinstance(restriction, Restriction)
+    ]
 
 
-
-def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = None) -> ThingClass:
+def create_class(
+    ontology: Ontology, class_name: str, base_class: ThingClass = None
+) -> ThingClass:
     """
     Dynamically creates a class in the ontology if it does not already exist.
 
@@ -325,30 +319,23 @@ def create_class(ontology: Ontology, class_name: str, base_class: ThingClass = N
     Returns:
         ThingClass: The newly created class or the existing class if it already exists.
     """
-    try:
-        # Check if the class already exists
-        existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
-        if existing_class is not None:
-            warnings.warn(f"Class '{class_name}' already exists.")
-            return existing_class
+    # Check if the class already exists
+    existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
+    if existing_class is not None:
+        warnings.warn(f"Class '{class_name}' already exists.")
+        return existing_class
 
-        # Set base class to Thing if no base_class is provided
-        if base_class is None:
-            base_class = ontology.Thing 
+    # Set base class to Thing if no base_class is provided
+    if base_class is None:
+        base_class = ontology.Thing 
 
-        if hasattr(ontology , class_name):
-            print(f"Class {class_name} already exists.")
-            return None
+    # Dynamically create the new class using `type()`
+    new_class = type(class_name, (base_class,), {"namespace": ontology})
+    setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
+    # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
+    return new_class
 
-        # Dynamically create the new class using `type()`
-        new_class = type(class_name, (base_class,), {"namespace": ontology})
-        setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
-        # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
-        return new_class
-    except Exception as e:
-        raise e
-
-def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass) -> Optional[ThingClass]:
+def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass) -> ThingClass:
     """
     Dynamically creates a subclass in the ontology if it does not already exist.
 
@@ -371,7 +358,9 @@ def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass)
     # Create class with base_class
     return create_class(ontology=ontology, class_name=class_name, base_class=base_class)
 
+
 """ 2) Instance Functions """
+
 
 def get_class_instances(cls: ThingClass) -> list:
     """
@@ -385,6 +374,7 @@ def get_class_instances(cls: ThingClass) -> list:
     """
     return cls.instances()
 
+
 def explore_instance(instance, depth=0, visited=None):
     """
     Recursively explores an OWL instance and its relationships, printing its properties and values.
@@ -397,11 +387,11 @@ def explore_instance(instance, depth=0, visited=None):
     Returns:
         None: The function prints the exploration results and does not return any value.
     """
-    
+
     # Initialize the visited set if this is the first call
     if visited is None:
         visited = set()
-    
+
     # Prevent infinite loops by skipping already visited instances
     if instance in visited:
         return
@@ -414,7 +404,7 @@ def explore_instance(instance, depth=0, visited=None):
     # Loop through all properties of the instance
     for prop in instance.get_properties():
         print(f"{indent}  Property: {prop.name}")
-        
+
         # Iterate through the values of the property
         for value in prop[instance]:
             try:
@@ -428,7 +418,9 @@ def explore_instance(instance, depth=0, visited=None):
                 print(f"{indent}    Error reading value: {e}")
 
 
-def get_instance_class_properties(ontology: Ontology, instance: Thing) -> List[Property]:
+def get_instance_class_properties(
+    ontology: Ontology, instance: Thing
+) -> List[Property]:
     """
     Retrieves all properties in the ontology that are applicable to the class of a given instance.
 
@@ -443,9 +435,10 @@ def get_instance_class_properties(ontology: Ontology, instance: Thing) -> List[P
     instance_class = instance.is_a[0] if instance.is_a else None
     if not instance_class:
         return []
-    
+
     # Retrieve properties based on the instance's class domain
     return get_class_properties(ontology, instance_class)
+
 
 def get_instantiated_properties(instance: Thing) -> List[Property]:
     """
@@ -459,9 +452,12 @@ def get_instantiated_properties(instance: Thing) -> List[Property]:
     """
     instantiated_properties = []
     for prop in instance.get_properties():
-        if instance.__getattr__(prop.name):  # Check if the property has a non-empty value
+        if instance.__getattr__(
+            prop.name
+        ):  # Check if the property has a non-empty value
             instantiated_properties.append(prop)
     return instantiated_properties
+
 
 def get_instantiated_property_values(instance: Thing) -> dict:
     """
@@ -479,8 +475,7 @@ def get_instantiated_property_values(instance: Thing) -> dict:
     return property_values
 
 
-
-def get_object_properties_for_class(ontology: Ontology,cls: ThingClass):
+def get_object_properties_for_class(ontology: Ontology, cls: ThingClass):
     """
     Retrieves all object properties where the given class is in the domain.
 
@@ -493,7 +488,6 @@ def get_object_properties_for_class(ontology: Ontology,cls: ThingClass):
     """
     return {prop for prop in ontology.object_properties() if cls in prop.domain}
     # return {prop for prop in ontology.properties() if cls in prop.domain}
-
 
 
 def print_instantiated_classes_and_properties(ontology: Ontology):
@@ -511,7 +505,7 @@ def print_instantiated_classes_and_properties(ontology: Ontology):
         classes = instance.is_a
         class_names = [cls.name for cls in classes if cls.name]
         print(f"  Classes: {', '.join(class_names) if class_names else 'None'}")
-        
+
         # Get instantiated properties and their values
         properties = instance.get_properties()
         for prop in properties:
@@ -524,9 +518,13 @@ def print_instantiated_classes_and_properties(ontology: Ontology):
                 print(f"  Property: {prop.name}, Values: {values_str}")
         print("-" * 40)
 
+
 # Create Instances
 
-def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties) -> Thing:
+
+def create_cls_instance(
+    onto_class: ThingClass, instance_name: str, **properties
+) -> Thing:
     """
     Creates an instance of a given class.
 
@@ -535,8 +533,8 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
     :param properties: (Optional) Additional properties to set (as keyword arguments).
     :return: The created instance.
     """
-    # if not issubclass(onto_class, Thing):
-    #     raise ValueError("The provided class must be a subclass of owlready2.Thing")
+    if not issubclass(onto_class, Thing):
+        raise ValueError("The provided class must be a subclass of owlready2.Thing")
     
     if not instance_name:
         print(f"Warning: {onto_class} can't be instantiated without a name.")
@@ -554,10 +552,14 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
 
     return instance
 
+
 def get_instance_class(instance: Thing) -> ThingClass:
     return type(instance)
 
-def assign_object_property_relationship(domain: Thing, ranges: Thing, object_property: ObjectPropertyClass):
+
+def assign_object_property_relationship(
+    domain: Thing, ranges: Thing, object_property: ObjectPropertyClass
+):
     """
     Connect two Thing instances via a specified ObjectProperty in Owlready2.
 
@@ -574,11 +576,34 @@ def assign_object_property_relationship(domain: Thing, ranges: Thing, object_pro
 
     # Check if object_property is a valid ObjectProperty
     if not isinstance(object_property, ObjectPropertyClass):
-        raise TypeError("The 'object_property' argument must be an instance of ObjectProperty.")
+        raise TypeError(
+            "The 'object_property' argument must be an instance of ObjectProperty."
+        )
 
     # Connect the two Thing instances
     object_property[domain].append(ranges)
 
+def link_data_property_to_instance(instance: Thing, data_property: DataPropertyClass, value):
+    """
+    Links a data property to a Thing instance with a specified value.
+
+    :param instance: The Thing instance to link the data property to.
+    :param data_property: The DataProperty to link to the instance.
+    :param value: The value to set for the data property.
+    """
+    try:
+        # Check if instance is an instance of Thing
+        if not isinstance(instance, Thing):
+            raise TypeError("The 'instance' argument must be an instance of Thing.")
+
+        # Check if data_property is a valid DataProperty
+        if not isinstance(data_property, DataPropertyClass):
+            raise TypeError("The 'data_property' argument must be an instance of DataProperty.")
+
+        # Set the data property value for the instance
+        instance.data_property = [value]
+    except Exception as e:
+        print(f"Error setting data property: {e}")
 
 def list_owl_classes(onto: Ontology):
     # List all classes
@@ -586,11 +611,13 @@ def list_owl_classes(onto: Ontology):
     for cls in onto.classes():
         print(f"- {cls.name}")
 
+
 def list_owl_object_properties(onto: Ontology):
     # List all object properties
     print("\nObject Properties in the ontology:")
     for prop in onto.object_properties():
         print(f"- {prop.name}")
+
 
 def list_owl_data_properties(onto: Ontology):
     # List all data properties
@@ -598,9 +625,10 @@ def list_owl_data_properties(onto: Ontology):
     for prop in onto.data_properties():
         print(f"- {prop.name}")
 
+
 if __name__ == "__main__":
 
-    ontology = get_ontology("data/owl/annett-o-0.1.owl").load()  
+    ontology = get_ontology("data/owl/annett-o-0.1.owl").load()
 
     temp = get_all_subclasses(ontology.TaskCharacterization)
     print(temp)
@@ -612,5 +640,3 @@ if __name__ == "__main__":
     # print(classes)
 
     # classes = assign_object_property_relationship(ontology, instance1, instance2)
-
-
