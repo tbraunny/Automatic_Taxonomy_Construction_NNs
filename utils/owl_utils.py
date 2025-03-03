@@ -535,8 +535,8 @@ def create_cls_instance(
     :param properties: (Optional) Additional properties to set (as keyword arguments).
     :return: The created instance.
     """
-    if not issubclass(onto_class, Thing):
-        raise ValueError("The provided class must be a subclass of owlready2.Thing")
+    # if not issubclass(onto_class, Thing):
+    #     raise ValueError("The provided class must be a subclass of owlready2.Thing")
 
     if not instance_name:
         print(f"Warning: {onto_class} can't be instantiated without a name.")
