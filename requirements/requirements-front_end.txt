@@ -1,5 +1,0 @@
-typing
-typing_extensions
-fastapi[standard]
-pydantic
-neo4j
