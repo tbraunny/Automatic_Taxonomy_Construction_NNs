@@ -669,7 +669,7 @@ def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryE
     return _engine_instances[model_name]
 
 
-def query_llm(model_name: str, query: str, json_format_instructions: str = "", cls_schema: Type[BaseModel] = None,  max_chunks: int = 10, token_budget: int = 1024) -> Union[dict, int, str, list[str]]:
+def query_llm(model_name: str, query: str, json_format_instructions: str = None, cls_schema: Type[BaseModel] = None,  max_chunks: int = 10, token_budget: int = 1024) -> Union[dict, int, str, list[str]]:
     """
     Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
 

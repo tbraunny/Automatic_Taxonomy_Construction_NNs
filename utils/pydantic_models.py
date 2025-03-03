@@ -9,7 +9,6 @@ T = TypeVar("T")
 class LLMResponse(GenericModel, Generic[T]):
     answer: T
 
-
 # Define a model for TrainingSingle details.
 class TrainingSingleDetails(BaseModel):
     batch_size: int = Field(..., description="The batch size used in the training step.")
@@ -44,3 +43,6 @@ class OptimizerDetails(BaseModel):
 # Now define a specialized response type using the generic interface.
 class TrainingOptimizerResponse(LLMResponse[OptimizerDetails]):
     pass
+
+
+"""Define Process Task Characterizations"""

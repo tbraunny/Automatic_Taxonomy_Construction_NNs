@@ -16,7 +16,7 @@ from utils.owl_utils import (
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 # from utils.llm_service import init_engine, query_llm
 
-from utils.pydantic_models import LLMResponse
+from utils.pydantic_models import *
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 from typing import Union, List, Dict, Any, Type
@@ -174,132 +174,67 @@ class OntologyInstantiator:
             f"Linked {self._unhash_and_format_instance_name(parent_instance.name)} and {self._unhash_and_format_instance_name(child_instance.name)} via {object_property.name}."
         )
 
-    def _query_llm_pydantic(
-        self, instructions: str, prompt: str, json_format_string: str, pydantic_model: Type[BaseModel]
-    ) -> Any:
-        """
-        Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
-
-        The prompt should include few-shot examples demonstrating the expected structure of the output.
-        The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value
-        can be one of the following types:
-        - Integer (e.g., `{"answer": 100}`)
-        - String (e.g., `{"answer": "ReLU Activation"}`)
-        - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
-        - Dictionary mapping strings to integers (e.g., `{"answer": {"Convolutional": 4, "FullyConnected": 1}}`)
-
-        The function checks for cached responses before querying the LLM.
-        If an error occurs, it logs the error and returns an empty response.
-
-        Example prompt structure:
-
-        Examples:
-        Loss Function: Discriminator Loss
-        1. Network: Discriminator
-        {"answer": 784}
-
-        2. Network: Generator
-        {"answer": 100}
-
-        3. Network: Linear Regression
-        {"answer": 1}
-
-        Now, for the following network:
-        Network: {network_thing_name}
-        Expected JSON Output:
-        {"answer": "<Your Answer Here>"}
-
-        Loss Function: Generator Loss
-        {"answer": ["L2 Regularization", "Elastic Net"]}
-
-        Loss Function: Cross-Entropy Loss
-        {"answer": []}
-
-        Loss Function: Binary Cross-Entropy Loss
-        {"answer": ["L2 Regularization"]}
-
-        Now, for the following loss function:
-        Loss Function: {loss_name}
-        {"answer": "<Your Answer Here>"}
-
-        Args:
-            instructions (str): Additional guidance for formatting the response.
-            prompt (str): The main query containing the few-shot examples.
-
-        Returns:
-            Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
-        """
-        full_prompt = f"{instructions}\n{prompt}"
-        if full_prompt in self.llm_cache:
-            self.logger.info(f"Using cached LLM response for prompt: {full_prompt}")
-            print("Using cached LLM response #####")
-            return self.llm_cache[full_prompt]
-        try:
-            response = query_llm(self.ann_config_name, full_prompt)
-
-            self.logger.info(f"LLM query: {full_prompt}")
-            self.logger.info(f"LLM query response: {response}")
-            self.llm_cache[full_prompt] = response
-
-            return response
-        except Exception as e:
-            self.logger.error(f"LLM query error: {e}")
-            return ""
         
-    def _query_llm(
-        self, instructions: str, prompt: str
-    ) -> Union[Dict[str, Any], int, str, List[str]]:
+    def _query_llm(self, instructions: str, prompt: str, json_format_instructions: Optional[str], pydantic_type_schema: Optional[type[BaseModel]]) -> Union[Dict[str, Any], int, str, List[str]]:
         """
-        Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
+            Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
 
-        The prompt should include few-shot examples demonstrating the expected structure of the output.
-        The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value
-        can be one of the following types:
-        - Integer (e.g., `{"answer": 100}`)
-        - String (e.g., `{"answer": "ReLU Activation"}`)
-        - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
-        - Dictionary mapping strings to integers (e.g., `{"answer": {"Convolutional": 4, "FullyConnected": 1}}`)
+            The prompt should include few-shot examples demonstrating the expected structure of the output.
+            The LLM is expected to return a JSON object where the primary key is "answer", and the value 
+            can be one of the following types:
+            - Integer (e.g., {"answer": 100})
+            - String (e.g., {"answer": "ReLU Activation"})
+            - List of strings (e.g., {"answer": ["L1 Regularization", "Dropout"]})
+            - Dictionary mapping strings to integers (e.g., {"answer": {"Convolutional": 4, "FullyConnected": 1}})
 
-        The function checks for cached responses before querying the LLM.
-        If an error occurs, it logs the error and returns an empty response.
+            If both `json_format_instructions` and `pydantic_type_schema` are provided, the function will
+            parse the LLM's response and return it as an instance of the provided Pydantic class, ensuring that
+            the output conforms to the expected schema.
 
-        Example prompt structure:
+            The function checks for cached responses before querying the LLM.
+            If an error occurs, it logs the error and returns an empty response.
 
-        Examples:
-        Loss Function: Discriminator Loss
-        1. Network: Discriminator
-        {"answer": 784}
+            Example prompt structure:
 
-        2. Network: Generator
-        {"answer": 100}
+            Examples:
+            Loss Function: Discriminator Loss
+            1. Network: Discriminator
+            {"answer": 784}
+            
+            2. Network: Generator
+            {"answer": 100}
+            
+            3. Network: Linear Regression
+            {"answer": 1}
+            
+            Now, for the following network:
+            Network: {network_thing_name}
+            Expected JSON Output:
+            {"answer": "<Your Answer Here>"}
 
-        3. Network: Linear Regression
-        {"answer": 1}
+            Loss Function: Generator Loss
+            {"answer": ["L2 Regularization", "Elastic Net"]}
 
-        Now, for the following network:
-        Network: {network_thing_name}
-        Expected JSON Output:
-        {"answer": "<Your Answer Here>"}
+            Loss Function: Cross-Entropy Loss
+            {"answer": []}
 
-        Loss Function: Generator Loss
-        {"answer": ["L2 Regularization", "Elastic Net"]}
+            Loss Function: Binary Cross-Entropy Loss
+            {"answer": ["L2 Regularization"]}
 
-        Loss Function: Cross-Entropy Loss
-        {"answer": []}
+            Now, for the following loss function:
+            Loss Function: {loss_name}
+            {"answer": "<Your Answer Here>"}
 
-        Loss Function: Binary Cross-Entropy Loss
-        {"answer": ["L2 Regularization"]}
+            Args:
+                instructions (str): Additional guidance for formatting the response.
+                prompt (str): The main query containing the few-shot examples.
+                json_format_instructions (Optional[str]): Additional JSON formatting instructions.
+                pydantic_type_schema (Optional[type[BaseModel]]): A Pydantic model class that defines the expected output schema.
 
-        Now, for the following loss function:
-        Loss Function: {loss_name}
-        {"answer": "<Your Answer Here>"}
-
-        Args:
-            instructions (str): Additional guidance for formatting the response.
-            prompt (str): The main query containing the few-shot examples.
-
-        Returns:
-            Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
+            Returns:
+                Union[dict, int, str, list[str]]: The parsed LLM response based on the provided examples.
+                If both `json_format_instructions` and `pydantic_type_schema` are provided, the response will be
+                returned as an instance of the provided Pydantic class.
         """
         full_prompt = f"{instructions}\n{prompt}"
         if full_prompt in self.llm_cache:
@@ -307,7 +242,8 @@ class OntologyInstantiator:
             print("Using cached LLM response #####")
             return self.llm_cache[full_prompt]
         try:
-            response = query_llm(self.ann_config_name, full_prompt)
+            # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
+            response = query_llm(self.ann_config_name, full_prompt, json_format_instructions, pydantic_type_schema)
 
             self.logger.info(f"LLM query: {full_prompt}")
             self.logger.info(f"LLM query response: {response}")
@@ -1170,8 +1106,25 @@ class OntologyInstantiator:
                 "If the learning_rate_decay_epochs value is not available, you may return None.\n\n"
             )
 
-            training_single_response = self._query_llm("", training_single_prompt, training_single_json_format_prompt)
+            # Training Single Response should be in pydantic format
+            training_single_response = self._query_llm("", training_single_prompt, training_single_json_format_prompt, pydantic_type_schema=TrainingSingleResponse)
 
+            training_single_details = training_single_response.answer
+            training_single_instance.batch_size = [training_single_details.batch_size]
+            training_single_instance.learning_rate_decay = [training_single_details.learning_rate_decay]
+            training_single_instance.number_of_epochs = [training_single_details.number_of_epochs]
+
+            # Learning rate is optional
+            if training_single_details.learning_rate_decay_epochs is not None:
+                training_single_instance.learning_rate_decay_epochs = [training_single_details.learning_rate_decay_epochs]
+
+            print(f"Training Single Details: {training_single_details}")
+            print(f"Training Single Instance: {training_single_instance}")
+            print(f"Training Single Instance Batch Size: {training_single_instance.batch_size}")
+            print(f"Training Single Instance Learning Rate Decay: {training_single_instance.learning_rate_decay}")
+            print(f"Training Single Instance Number of Epochs: {training_single_instance.number_of_epochs}")
+            print(f"Training Single Instance Learning Rate Decay Epochs: {training_single_instance.learning_rate_decay_epochs}")
+        
             """TODO: REMOVE UNDER"""
 
             # Process TrainingSingle data properties:
