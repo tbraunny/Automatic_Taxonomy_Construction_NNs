@@ -1,4 +1,4 @@
-import instantiate_annetto as inst_ann
+import tests.papers_rag.instantiate_annetto as inst_ann
 import  utils.llm_service as llm_service
 
 from owlready2 import *
@@ -9,15 +9,13 @@ def test_num_tokens_from_string():
     assert inst_ann.num_tokens_from_string("a b c") == 3
 
 def test_query_llm():
-    model_name = "testnet"
-    network_instance_name = "convolutional network" # Test json assumes convolutional network
-
+    model_name = "alexnet"
+    network_instance_name = "convolutional network"
     try:
-        llm_service.init_engine(model_name, f"tests/papers_rag/doc_test_llm_service.json") # Use test json data
+        llm_service.init_engine(model_name, f"data/{model_name}/doc_{model_name}.json")
     except Exception as e:
         raise Exception(f"Error initializing the LLM engine: {e}")
 
-    # Test for integer response
     try:
         int_prompt = (
             f"What is the number of input parameters in the {network_instance_name} network architecture?\n"
@@ -35,10 +33,8 @@ def test_query_llm():
         assert type(llm_service.query_llm(model_name,int_prompt)) == int
     except Exception as e:
         raise Exception(f"LLM Service failed to response with a propert integer json format: {e}")
-    
-    # Test for string response
+
     try:
-        
         str_prompt = (
             f"Goal:\Name the first layer used in the {network_instance_name} network.\n\n"
             "Return Format:\nRespond with the layer name in JSON format using the key 'answer'. If there is no activation function or it's unknown, return an empty list [].\n"
@@ -53,9 +49,8 @@ def test_query_llm():
     except Exception as e:
         raise Exception(f"LLM Service failed to response with a propert string json format: {e}")
 
-    # Test for dictionary response
+    # Process Activation Layers
     try:
-        
         dict_prompt = (
             f"Extract the number of instances of convolutional layers and fully-connected (dense) layers in the {network_instance_name} architecture. "
             'Please provide the output in JSON format using the key "answer", where the value is a dictionary '
@@ -81,15 +76,6 @@ def test_query_llm():
         raise Exception(f"LLM Service failed to response with a propert dictionary json format: {e}")
     
     try:
-        meow_test = [
-        {
-            "page_content": "The first two layers used in the convolutional network architecture are Convolutional and MaxPooling.",
-            "metadata": {
-                "section_header": "Abstract",
-                "title": "ImageNet Classification with Deep Convolutional Neural Networks",
-                "type": "paper"
-            }
-        }]
         list_of_any_prompt = (
             f"List the first two layers used in the {network_instance_name} network architecture.\n\n"
             "Return Format:\nRespond with a list of activation function names in JSON format using the key 'answer'.\n"

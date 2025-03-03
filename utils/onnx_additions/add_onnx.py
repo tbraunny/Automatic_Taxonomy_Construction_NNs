@@ -77,7 +77,7 @@ class OnnxAddition:
         Returns lists of all layers & all models
         """
         with self.engine.connect() as conn:
-            layer = conn.execute(text("SELECT layer_name , known_type , model_id , attributes FROM layer"))
+            layer = conn.execute(text("SELECT layer_name , known_type , model_id , attributes FROM layer WHERE model_id IN (191 , 198 , 206)")) # modified for demo, should grab ALL networks
             model = conn.execute(text("SELECT model_id , model_name FROM model"))
             self.layer_list:List = layer.fetchall()
             self.model_list:Union[str , List[str] , int , List[int]] = model.fetchall()
@@ -89,7 +89,7 @@ def instantiate_onnx_annetto():
     onto_path="tests/onnx_additions/annetto-o-test.owl"
     inst = OnnxAddition()
     inst.init_engine()
-    inst.init_onto(onto_path)
+    #inst.init_onto(onto_path)
     inst.fetch_layers()
     
 

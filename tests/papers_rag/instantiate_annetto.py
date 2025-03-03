@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime
 import time
 from typing import Dict, Any, Union, List, Optional
+from utils.onnx_additions.add_onnx import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from rapidfuzz import process, fuzz
@@ -448,6 +449,63 @@ class OntologyInstantiator:
             self.logger.error(
                 f"Error processing objective functions: {e}", exc_info=True
             )
+
+    def _process_layers(self, network_instance: Thing) -> None:
+        """
+        Process the different layers (input, output, activation, noise, and modification) of it's network instance.
+        """
+        try:
+            # fetch info from database
+            onn = OnnxAddition()
+            onn.init_engine()
+            layer_list , model_list = onn.fetch_layers()
+            num_models = len(model_list)
+            prev_model = None
+            subclasses:List[ThingClass] = get_all_subclasses(self.ontology.Layer)
+
+
+            for name in layer_list:
+                layer_name , model_type , model_id , attributes = name
+
+                model_str = str(model_id) # for cls instantiation compatibility
+                #ann_config = self._instantiate_cls(self.ontology.ANNConfiguration, model_str)
+
+                # if not hasattr(self.ontology.Network , model_str): # prevent duplicate networks
+                #     network_instance = self._instantiate_cls(self.ontology.Network , model_str)
+
+                #odd mismatch that is owlready2's fault, not mine
+                if model_type == "Softmax":
+                    model_type = "SoftMax"
+                if model_type == "ReLU": # apprently owl is very case sensitive
+                    model_type = "Relu"
+
+                #self._link_instances(ann_config , network_instance , self.ontology.hasNetwork)
+                #print(subclasses)
+                best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 70)
+
+                #print("best match: " , best_subclass_match)
+
+                if not best_subclass_match: # create subclass if layer type not found in ontology
+                    #print(f"subclass created {model_type}")
+                    best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)
+                    #print("mark")
+                    subclasses.append(best_subclass_match)
+                
+                #Debugging
+                if model_id != prev_model:
+                    print(f"Processing model {model_id} / {num_models}" , end='\r')
+                    #self.logger.info(f"Model ID: " , model_id , "\nSubclass: " , best_subclass_match , "\nModel Type: " , model_type , "\n Match Type: " , type(best_subclass_match))
+                    # if isinstance(best_subclass_match, Thing):
+                    #     self.logger.info(f"{best_subclass_match} is an instance of Thing.")
+                    # else:
+                    #     self.logger.info(f"{best_subclass_match} is not an instance of Thing.") 
+
+                layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
+                self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+
+            self.logger.info("Finished processing layers")
+        except Exception as e:
+            self.logger.error(f"Error in _process_layers for {model_type}: {e}",exc_info=True)
 
     def _old_process_layers(self, network_instance: str) -> None:
         """
@@ -897,7 +955,6 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"Error processing task characerization for network instance '{network_instance_name}': {e}",exc_info=True)
 
-
     def _process_network(self, ann_config_instance: Thing) -> None:
         """
         Process the network class and it's components.
@@ -931,9 +988,9 @@ class OntologyInstantiator:
                 self._link_instances(
                     ann_config_instance, network_instance, self.ontology.hasNetwork
                 )
-                # self._process_layers(network_instance) # May be processed by onnx
-                self._process_objective_functions(network_instance)
-                self._process_task_characterization(network_instance)
+                self._process_layers(network_instance) # May be processed by onnx
+                #self._process_objective_functions(network_instance)
+                #self._process_task_characterization(network_instance)
         except Exception as e:
             self.logger.error(
                 f"Error processing the '{ann_config_instance}' networks: {e}",
@@ -1018,10 +1075,10 @@ if __name__ == "__main__":
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
 
     for model_name in [
-        "alexnet",
-        # "resnet",
-        # "vgg16",
-        # "gan", # Assume we can model name from user or something
+        "alexnet", # id = 191
+        "resnet", # id = 198
+        "vgg16", # id = 206
+        #"gan", # Assume we can model name from user or something
     ]:
         try:
             code_files = glob.glob(f"data/{model_name}/*.py")

@@ -342,18 +342,15 @@ def create_class(
     """
     try:
         # Check if the class already exists
-        existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
-        if existing_class is not None:
-            warnings.warn(f"Class '{class_name}' already exists.")
+        ontology_classes:List[ThingClass] = list_owl_classes(ontology)
+        existing_class = next((cls for cls in ontology_classes if cls.name == class_name), None)
+        if existing_class:
+            warnings.warn(f"Class {class_name} already exists.")
             return existing_class
 
         # Set base class to Thing if no base_class is provided
         if base_class is None:
             base_class = ontology.Thing 
-
-        if hasattr(ontology , class_name):
-            print(f"Class {class_name} already exists.")
-            return None
 
         # Dynamically create the new class using `type()`
         new_class = type(class_name, (base_class,), {"namespace": ontology})
@@ -383,9 +380,6 @@ def create_subclass(
         warnings.warn(f"No base class defined for subclass '{class_name}'.")
         return None
 
-    if hasattr(ontology, class_name):
-        print(f"Subclass {class_name} already exists in ontology")
-        return None
     # Create class with base_class
     return create_class(ontology=ontology, class_name=class_name, base_class=base_class)
 
@@ -638,9 +632,11 @@ def link_data_property_to_instance(instance: Thing, data_property: DataPropertyC
 
 def list_owl_classes(onto: Ontology):
     # List all classes
-    print("Classes in the ontology:")
-    for cls in onto.classes():
-        print(f"- {cls.name}")
+    #print("Classes in the ontology:")
+    #for cls in onto.classes():
+        #print(f"- {cls.name}")
+
+    return [cls for cls in onto.classes()]
 
 
 def list_owl_object_properties(onto: Ontology):

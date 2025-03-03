@@ -427,15 +427,15 @@ class OntologyInstantiator:
                     regularizer_function_name, known_loss_functions, 90
                 )
 
-                    if not best_match_reg_class:
-                        best_match_class = create_subclass(self.ontology.RegularizerFunction, reg_name)
-                    
-                    reg_instance = self._instantiate_cls(
-                        best_match_class, reg_name
-                    )
-                    self._link_instances(
-                        cost_function_instance, reg_instance, self.ontology.hasRegularizer
-                    )
+                if not best_match_reg_class:
+                    best_match_class = create_subclass(self.ontology.RegularizerFunction, reg_name)
+                
+                reg_instance = self._instantiate_cls(
+                    best_match_class, reg_name
+                )
+                self._link_instances(
+                    cost_function_instance, reg_instance, self.ontology.hasRegularizer
+                )
         except Exception as e:
             self.logger.error(f"Error processing objective functions: {e}")
 
