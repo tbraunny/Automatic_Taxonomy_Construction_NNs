@@ -196,7 +196,16 @@ def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
     """
     return list(cls.subclasses())
 
-def get_all_subclasses(cls: ThingClass) -> List[ThingClass]:
+
+#################################################################
+"""
+Modifications to get_all_subclasses
+- Issue: circular recursion, max depth reached upon function call
+- Remedy: set tracking visited nodes, do not visit same node twice
+- Original code commented out below
+"""
+#################################################################
+def get_all_subclasses(cls: ThingClass , visited=None) -> List[ThingClass]:
     """
     # Recursively retrieves all unique subclasses of a given class.
 
@@ -204,16 +213,28 @@ def get_all_subclasses(cls: ThingClass) -> List[ThingClass]:
     #     cls (ThingClass): The class for which to find its subclasses.
     #     visited: Set of visited nodes
 
-    Returns:
-        List[ThingClass]: A list of all subclasses of the given class, including nested ones.
-    """
-    subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
-    for subclass in subclasses.copy():  # Iterate over a copy to modify safely
-        subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
+    # Returns:
+    #     List[ThingClass]: A list of all subclasses of the given class, including nested ones.
+    # """
+
+    if visited is None: #initial
+        visited = set()
+
+    if cls in visited: # if node has been visited, skip
+        return []
+
+    visited.add(cls)  # mark as visited
+    subclasses = set(get_immediate_subclasses(cls))
+
+    for subclass in list(subclasses): 
+        subclasses.update(get_all_subclasses(subclass, visited)) # find all subclasses thru RECURSION
+
     return list(subclasses)
-
-
-
+    
+    # subclasses = set(get_immediate_subclasses(cls))  # Get direct subclasses
+    # for subclass in subclasses.copy():  # Iterate over a copy to modify safely
+    #     subclasses.update(get_all_subclasses(subclass))  # Recursively get nested subclasses
+    # return list(subclasses)
 
 
 def get_class_properties(ontology: Ontology, onto_class: ThingClass) -> List[Property]:
@@ -319,23 +340,33 @@ def create_class(
     Returns:
         ThingClass: The newly created class or the existing class if it already exists.
     """
-    # Check if the class already exists
-    existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
-    if existing_class is not None:
-        warnings.warn(f"Class '{class_name}' already exists.")
-        return existing_class
+    try:
+        # Check if the class already exists
+        existing_class = getattr(ontology, class_name) #has_attr behavior working incorrectly
+        if existing_class is not None:
+            warnings.warn(f"Class '{class_name}' already exists.")
+            return existing_class
 
-    # Set base class to Thing if no base_class is provided
-    if base_class is None:
-        base_class = ontology.Thing 
+        # Set base class to Thing if no base_class is provided
+        if base_class is None:
+            base_class = ontology.Thing 
 
-    # Dynamically create the new class using `type()`
-    new_class = type(class_name, (base_class,), {"namespace": ontology})
-    setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
-    # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
-    return new_class
+        if hasattr(ontology , class_name):
+            print(f"Class {class_name} already exists.")
+            return None
 
-def create_subclass(ontology: Ontology, class_name: str, base_class: ThingClass) -> ThingClass:
+        # Dynamically create the new class using `type()`
+        new_class = type(class_name, (base_class,), {"namespace": ontology})
+        setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
+        # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
+        return new_class
+    except Exception as e:
+        raise e
+
+
+def create_subclass(
+    ontology: Ontology, class_name: str, base_class: ThingClass
+) -> ThingClass:
     """
     Dynamically creates a subclass in the ontology if it does not already exist.
 
@@ -533,8 +564,8 @@ def create_cls_instance(
     :param properties: (Optional) Additional properties to set (as keyword arguments).
     :return: The created instance.
     """
-    if not issubclass(onto_class, Thing):
-        raise ValueError("The provided class must be a subclass of owlready2.Thing")
+    # if not issubclass(onto_class, Thing):
+    #     raise ValueError("The provided class must be a subclass of owlready2.Thing")
     
     if not instance_name:
         print(f"Warning: {onto_class} can't be instantiated without a name.")
