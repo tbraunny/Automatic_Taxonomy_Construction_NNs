@@ -190,7 +190,7 @@ def get_immediate_subclasses(cls: ThingClass) -> List[ThingClass]:
 """
 Modifications to get_all_subclasses
 - Issue: circular recursion, max depth reached upon function call
-- Remedy: list tracking visited nodes, do not visit same node twice
+- Remedy: set tracking visited nodes, do not visit same node twice
 - Original code commented out below
 """
 #################################################################
@@ -523,8 +523,8 @@ def create_cls_instance(onto_class: ThingClass, instance_name:str, **properties)
     :param properties: (Optional) Additional properties to set (as keyword arguments).
     :return: The created instance.
     """
-    if not issubclass(onto_class, Thing):
-        raise ValueError("The provided class must be a subclass of owlready2.Thing")
+    # if not issubclass(onto_class, Thing):
+    #     raise ValueError("The provided class must be a subclass of owlready2.Thing")
     
     if not instance_name:
         print(f"Warning: {onto_class} can't be instantiated without a name.")

@@ -1,6 +1,8 @@
 from re import sub, fullmatch
 from owlready2 import ThingClass
-from typing import List, Union
+from typing import List, Union , Optional
+from rapidfuzz import process, fuzz
+
 
 def int_to_ordinal(n):
 
@@ -61,3 +63,26 @@ def make_thing_classes_readable(things:List[ThingClass]) -> str:
     :return: Human-readable string
     """
     return comma_separate(split_camel_case(thingclass_names_to_str(things)))
+
+def fuzzy_match_class(
+        self, instance_name: str, classes: List[ThingClass], threshold: int = 80
+    ) -> Optional[ThingClass]:
+        """
+        Perform fuzzy matching to find the best match for an instance to a known class.
+
+        :param instance_name: The instance name.
+        :param classes: A list of ThingClass objects to match with.
+        :param threshold: The minimum score required for a match.
+        :return: The best-matching ThingClass object or None if no good match is found.
+        """
+        if not instance_name or not classes:
+            return None
+
+        # Convert classes to a dictionary for lookup
+        class_name_map = {cls.name: cls for cls in classes}
+
+        match, score, _ = process.extractOne(
+            instance_name, class_name_map.keys(), scorer=fuzz.ratio
+        )
+
+        return class_name_map[match] if score >= threshold else None

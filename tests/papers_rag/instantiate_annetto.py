@@ -16,6 +16,10 @@ from utils.owl_utils import (
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.llm_service import init_engine, query_llm
 from rapidfuzz import process, fuzz
+from utils.onnx_additions.add_onnx import OnnxAddition
+from utils.annetto_utils import fuzzy_match_class
+
+# TOMS VERSION
 
 try:
     import tiktoken
@@ -153,6 +157,9 @@ class OntologyInstantiator:
         :param threshold: The minimum score required for a match.
         :return: The best-matching ThingClass object or None if no good match is found.
         """
+        # for cls in classes:
+        #     print(f"Class: {cls}, Name: {cls.name}, IRI: {cls.iri}")
+
         if not instance_name or not classes:
             return None
 
@@ -570,356 +577,54 @@ class OntologyInstantiator:
         #             cost_function_instance, reg_instance, self.ontology.hasRegularizer
         #         )
 
-    def _process_layers(self, network_instance: str) -> None:
+    def process_layers(self, network_instance: str) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
-        network_instance_name = self._unhash_and_format_instance_name(network_instance.name)
+        # fetch info from database
+        onn = OnnxAddition()
+        onn.init_engine()
+        layer_list , model_list = onn.fetch_layers()
+        num_models = len(model_list)
+        prev_model = None
 
-        # Process Input Layer
-        input_layer_prompt = (
-            f"Extract the input size information for the input layer of the {network_instance_name} architecture. "
-            "If the network accepts image data, the input size will be specified by its dimensions in the format 'WidthxHeightxChannels' (e.g., '64x64x1', '128x128x3', '512x512x3'). "
-            "In this case, return the input dimensions as a string exactly in that format. "
-            "If the network is not image-based, determine the total number of input units (neurons or nodes) and return that number as an integer. "
-            "Your answer must be provided in JSON format with the key 'answer'.\n\n"
-            "Examples:\n"
-            "1. For an image-based network (e.g., a SVM) with input dimensions of 128x128x3:\n"
-            '{"answer": "128x128x3"}\n\n'
-            "2. For a network (e.g., a Generator) that takes a 100-dimensional vector as input:\n"
-            '{"answer": 100}\n\n'
-            "3. For a network (e.g., a Linear Regression model) with a single input feature:\n"
-            '{"answer": 1}\n\n'
-            f"Now, for the following network:\nNetwork: {network_instance_name}\n"
-            '{"answer": "<Your Answer Here>"}'
-        )
+        for name in layer_list:
+            layer_name , model_type , model_id , attributes = name
 
-        input_units = self._query_llm("", input_layer_prompt)
-        if not input_units:
-            self.logger.info("No response for input layer units.")
-        else:
-            input_layer_instance = self._instantiate_cls(
-                self.ontology.InputLayer, "Input Layer"
-            )
-            input_layer_instance.layer_num_units = [input_units]
-            self._link_instances(
-                network_instance, input_layer_instance, self.ontology.hasLayer
-            )
+            model_str = str(model_id) # for cls instantiation compatibility
+            ann_config = self._instantiate_cls(self.ontology.ANNConfiguration, model_str)
 
-        # Process Output Layer
-        output_layer_prompt = (
-            f"Extract the number of units in the output layer of the {network_instance_name} architecture. "
-            "The number of units refers to the number of neurons or nodes in the output layer. "
-            "Return the result as an integer in JSON format with the key 'answer'.\n\n"
-            "Examples:\n"
-            "1. Network: Discriminator\n"
-            '{"answer": 1}\n\n'
-            "2. Network: Generator\n"
-            '{"answer": 784}\n\n'
-            "3. Network: Linear Regression\n"
-            '{"answer": 1}\n\n'
-            f"Now, for the following network:\nNetwork: {network_instance_name}\n"
-            '{"answer": "<Your Answer Here>"}'
-        )
-        output_units = self._query_llm("", output_layer_prompt)
-        if not output_units:
-            self.logger.info("No response for output layer units.")
-        else:
-            output_layer_instance = self._instantiate_cls(
-                self.ontology.OutputLayer, "Output Layer"
-            )
-            output_layer_instance.layer_num_units = [output_units]
-            self._link_instances(
-                network_instance, output_layer_instance, self.ontology.hasLayer
-            )
+            if not hasattr(self.ontology.Network , model_str): # prevent duplicate networks
+                network_instance = self._instantiate_cls(self.ontology.Network , model_str)
 
-        # Process Activation Layers
-        activation_layer_prompt = (
-            f"Extract the number of instances of each core layer type in the {network_instance_name} architecture. "
-            "Only count layers that represent essential network operations such as convolutional layers, "
-            "fully connected (dense) layers, and attention layers.\n"
-            "Do NOT count layers that serve as noise layers (i.e. guassian, normal, etc), "
-            "activation functions (e.g., ReLU, Sigmoid), or modification layers (e.g., dropout, batch normalization), "
-            "or pooling layers (e.g. max pool, average pool).\n\n"
-            'Please provide the output in JSON format using the key "answer", where the value is a dictionary '
-            "mapping the layer type names to their counts.\n\n"
-            "Examples:\n\n"
-            "1. Network Architecture Description:\n"
-            "- 3 Convolutional layers\n"
-            "- 2 Fully Connected layers\n"
-            "- 2 Recurrent layers\n"
-            "- 1 Attention layer\n"
-            "- 3 Transformer Encoder layers\n"
-            "Expected JSON Output:\n"
-            "{\n"
-            '  "answer": {\n'
-            '    "Convolutional": 3,\n'
-            '    "Fully Connected": 2,\n'
-            '    "Recurrent": 2,\n'
-            '    "Attention": 1,\n'
-            '    "Transformer Encoder": 3\n'
-            "  }\n"
-            "}\n\n"
-            "2. Network Architecture Description:\n"
-            "- 3 Convolutional layers\n"
-            "- 2 Fully Connected layer\n"
-            "- 2 Recurrent layer\n"
-            "- 1 Attention layers\n"
-            "- 3 Transformer Encoder layers\n"
-            "Expected JSON Output:\n"
-            "{\n"
-            '  "answer": {\n'
-            '    "Convolutional": 4,\n'
-            '    "FullyConnected": 1,\n'
-            '    "Recurrent": 2,\n'
-            '    "Attention": 1,\n'
-            '    "Transformer Encoder": 3\n'
-            "  }\n"
-            "}\n\n"
-            "Now, for the following network:\n"
-            f"Network: {network_instance_name}\n"
-            "Expected JSON Output:\n"
-            "{\n"
-            '  "answer": "<Your Answer Here>"\n'
-            "}\n"
-        )
-        activation_layer_counts = self._query_llm("", activation_layer_prompt)
-        if not activation_layer_counts:
-            self.logger.info("No response for activation layer classes.")
-        else:
-            for layer_type, layer_count in activation_layer_counts.items():
-                for i in range(layer_count):
-                    activation_layer_instance = self._instantiate_cls(
-                        self.ontology.ActivationLayer, f"{layer_type} {i + 1}"
-                    )
-                    activation_layer_instance_name = self._unhash_and_format_instance_name(
-                        activation_layer_instance.name
-                    )
-                    self._link_instances(
-                        network_instance,
-                        activation_layer_instance,
-                        self.ontology.hasLayer,
-                    )
-                    # Process bias for activation layer
-                    layer_ordinal = int_to_ordinal(i + 1)
-                    bias_prompt = (
-                        f"Does the {layer_ordinal} {activation_layer_instance_name} layer include a bias term? "
-                        "Please respond with either 'true', 'false', or an empty list [] if unknown, in JSON format using the key 'answer'.\n\n"
-                        "Clarification:\n"
-                        "- A layer has a bias term if it adds a constant (bias) to the weighted sum before applying the activation function.\n"
-                        "- Examples of layers that often include bias: Fully Connected (Dense) layers, Convolutional layers.\n"
-                        "- Some layers like Batch Normalization typically omit bias.\n\n"
-                        "Examples:\n"
-                        "1. Layer: Fully-Connected\n"
-                        '{"answer": "true"}\n\n'
-                        "2. Layer: Convolutional\n"
-                        '{"answer": "true"}\n\n'
-                        "3. Layer: Attention\n"
-                        '{"answer": "false"}\n\n'
-                        "4. Layer: UnknownLayerType\n"
-                        '{"answer": []}\n\n'
-                        f"Now, for the following layer:\nLayer: {layer_ordinal} {activation_layer_instance_name}\n"
-                        '{"answer": "<Your Answer Here>"}'
-                    )
-                    has_bias_response = self._query_llm("", bias_prompt)
-                    if has_bias_response:
-                        if has_bias_response.lower() == "true":
-                            activation_layer_instance.has_bias = [True]
-                        elif has_bias_response.lower() == "false":
-                            activation_layer_instance.has_bias = [False]
-                        self.logger.info(
-                            f"Set bias term for {layer_ordinal} {activation_layer_instance_name} to {activation_layer_instance.has_bias}."
-                        )
+            # odd mismatch that is owlready2's fault, not mine
+            if model_type == "Softmax":
+                model_type = "SoftMax"
+            if model_type == "ReLU": # apprently owl is very case sensitive
+                model_type = "Relu"
 
-                    # Process activation function for activation layer
-                    activation_function_prompt = (
-                        f"Goal:\nIdentify the activation function used in the {layer_ordinal} {activation_layer_instance_name} layer, if any.\n\n"
-                        "Return Format:\nRespond with the activation function name in JSON format using the key 'answer'. If there is no activation function or it's unknown, return an empty list [].\n"
-                        "Examples:\n"
-                        '{"answer": "ReLU"}\n'
-                        '{"answer": "Sigmoid"}\n'
-                        '{"answer": []}\n\n'
-                        f"Now, for the following layer:\nLayer: {layer_ordinal} {activation_layer_instance_name}\n"
-                        '{"answer": "<Your Answer Here>"}'
-                    )
-                    activation_function_response = self._query_llm(
-                        "", activation_function_prompt
-                    )
-                    if activation_function_response:
-                        if activation_function_response != "[]":
-                            activation_function_instance = self._instantiate_cls(
-                                self.ontology.ActivationFunction,
-                                activation_function_response,
-                            )
-                            self._link_instances(
-                                activation_layer_instance,
-                                activation_function_instance,
-                                self.ontology.hasActivationFunction,
-                            )
-                        else:
-                            self.logger.info(
-                                f"No activation function associated with {layer_ordinal} {activation_layer_instance_name}."
-                            )
+            self._link_instances(ann_config , network_instance , self.ontology.hasNetwork)
 
-        # Process Noise Layers
-        noise_layer_prompt = (
-            f"Does the {network_instance_name} architecture include any noise layers? "
-            "Noise layers are layers that introduce randomness or noise into the network. "
-            "Examples include Dropout, Gaussian Noise, and Batch Normalization. "
-            "Please respond with either 'true' or 'false' in JSON format using the key 'answer'.\n\n"
-            "Examples:\n"
-            "1. Network: Discriminator\n"
-            '{"answer": "true"}\n\n'
-            "2. Network: Generator\n"
-            '{"answer": "false"}\n\n'
-            "3. Network: Linear Regression\n"
-            '{"answer": "true"}\n\n'
-            f"Now, for the following network:\nNetwork: {network_instance_name}\n"
-            '{"answer": "<Your Answer Here>"}'
-        )
-        noise_layer_response = self._query_llm("", noise_layer_prompt)
-        if not noise_layer_response:
-            self.logger.info("No response for noise layer classes.")
-        elif noise_layer_response.lower() == "true":
-            noise_layer_pdf_prompt = (
-                f"Extract the probability distribution function (PDF) and its associated hyperparameters for the noise layers in the {network_instance_name} architecture. "
-                "Noise layers introduce randomness or noise into the network. "
-                "Examples include Dropout, Gaussian Noise, and Batch Normalization. "
-                "Return the result in JSON format with the key 'answer'.\n\n"
-                "Examples:\n"
-                "1. Network: Discriminator\n"
-                '{"answer": {"Dropout": {"rate": 0.5}}}\n\n'
-                "2. Network: Generator\n"
-                '{"answer": {"Gaussian Noise": {"mean": 0, "stddev": 1}}}\n\n'
-                "3. Network: Linear Regression\n"
-                '{"answer": {"Dropout": {"rate": 0.3}}}\n\n'
-                f"Now, for the following network:\nNetwork: {network_instance_name}\n"
-                '{"answer": "<Your Answer Here>"}'
-            )
-            noise_layer_pdf = self._query_llm("", noise_layer_pdf_prompt)
-            if not noise_layer_pdf:
-                self.logger.info("No response for noise layer PDF.")
-            else:
-                try:
-                    if isinstance(noise_layer_pdf, dict):
-                        for (
-                            noise_name,
-                            noise_params,
-                        ) in (
-                            noise_layer_pdf.items()
-                        ):  # Not sure if this is the correct way to iterate over the dictionary.
-                            noise_layer_instance = self._instantiate_cls(
-                                self.ontology.NoiseLayer, noise_name
-                            )
-                            self._link_instances(
-                                network_instance,
-                                noise_layer_instance,
-                                self.ontology.hasLayer,
-                            )
-                            for (
-                                param_name,
-                                param_value,
-                            ) in (
-                                noise_params.items()
-                            ):  # Not sure if this is the correct way to assign unknown data properties, filler for now.
-                                setattr(noise_layer_instance, param_name, [param_value])
-                except Exception as e:
-                    self.logger.error(f"Error processing noise layer: {e}")
+            subclasses = get_all_subclasses(self.ontology.Layer)
+            best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 95)
 
-            # Process Modification Layers
-            modification_layer_prompt = (
-                f"Extract the number of instances of each modification layer type in the {network_instance_name} architecture. "
-                "Modification layers include layers that alter the input data or introduce noise, such as Dropout, Batch Normalization, and Layer Normalization. "
-                "Exclude noise layers (e.g., Gaussian Noise, Dropout) and activation layers (e.g., ReLU, Sigmoid) from your count.\n"
-                'Please provide the output in JSON format using the key "answer", where the value is a dictionary '
-                "mapping the layer type names to their counts.\n\n"
-                "Examples:\n\n"
-                "1. Network Architecture Description:\n"
-                "- 3 Dropout layers\n"
-                "- 2 Batch Normalization layers\n"
-                "- 1 Layer Normalization layer\n"
-                "Expected JSON Output:\n"
-                "{\n"
-                '  "answer": {\n'
-                '    "Dropout": 3,\n'
-                '    "Batch Normalization": 2,\n'
-                '    "Layer Normalization": 1\n'
-                "  }\n"
-                "}\n\n"
-                "2. Network Architecture Description:\n"
-                "- 3 Dropout layers\n"
-                "- 2 Batch Normalization layers\n"
-                "- 1 Layer Normalization layer\n"
-                "Expected JSON Output:\n"
-                "{\n"
-                '  "answer": {\n'
-                '    "Dropout": 3,\n'
-                '    "Batch Normalization": 2,\n'
-                '    "Layer Normalization": 1\n'
-                "  }\n"
-                "}\n\n"
-                "Now, for the following network:\n"
-                f"Network: {network_instance_name}\n"
-                "Expected JSON Output:\n"
-                "{\n"
-                '  "answer": "<Your Answer Here>"\n'
-                "}\n"
-            )
-            modification_layer_counts = self._query_llm("", modification_layer_prompt)
-            if not modification_layer_counts:
-                self.logger.info("No response for modification layer classes.")
-            else:
-                dropout_match = next(
-                    (
-                        s
-                        for s in modification_layer_counts
-                        if fuzz.token_set_ratio("dropout", s) >= 85
-                    ),
-                    None,
-                )
-                dropout_layer_rate = None
-                if dropout_match:
-                    dropout_rate_prompt = (
-                        f"Extract the dropout rate for the Dropout layers in the {network_instance_name} architecture. "
-                        "The dropout rate is the fraction of input units to drop during training. "
-                        "Return the result as a float in JSON format with the key 'answer'.\n\n"
-                        "Examples:\n"
-                        "1. Network: Discriminator\n"
-                        '{"answer": 0.5}\n\n'
-                        "2. Network: Generator\n"
-                        '{"answer": 0.3}\n\n'
-                        "3. Network: Linear Regression\n"
-                        '{"answer": 0.2}\n\n'
-                        f"Now, for the following network:\nNetwork: {network_instance_name}\n"
-                        '{"answer": "<Your Answer Here>"}'
-                    )
-                    dropout_layer_rate = self._query_llm("", dropout_rate_prompt)
-                    if not dropout_layer_rate:
-                        self.logger.info("No response for dropout layer rate.")
-                for layer_type, layer_count in modification_layer_counts.items():
-                    for i in range(layer_count):
-                        if dropout_match and layer_type == dropout_match:
-                            dropout_layer_instance = self._instantiate_cls(
-                                self.ontology.DropoutLayer, f"{layer_type} {i + 1}"
-                            )
-                            if dropout_layer_rate:
-                                dropout_layer_instance.dropout_rate = [
-                                    dropout_layer_rate
-                                ]
-                            self._link_instances(
-                                network_instance,
-                                dropout_layer_instance,
-                                self.ontology.hasLayer,
-                            )
-                        else:
-                            modification_layer_instance = self._instantiate_cls(
-                                self.ontology.ModificationLayer, f"{layer_type} {i + 1}"
-                            )
-                            self._link_instances(
-                                network_instance,
-                                modification_layer_instance,
-                                self.ontology.hasLayer,
-                            )
+            if not best_subclass_match: # create subclass if layer type not found in ontology
+                best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)
+            
+            #Debugging
+            if model_id != prev_model:
+                print(f"Processing model {model_id} / {num_models}" , end='\r')
+                #self.logger.info(f"Model ID: " , model_id , "\nSubclass: " , best_subclass_match , "\nModel Type: " , model_type , "\n Match Type: " , type(best_subclass_match))
+                # if isinstance(best_subclass_match, Thing):
+                #     self.logger.info(f"{best_subclass_match} is an instance of Thing.")
+                # else:
+                #     self.logger.info(f"{best_subclass_match} is not an instance of Thing.") 
+
+            layer_instance = self._instantiate_cls(best_subclass_match , layer_name)
+            self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+
+        self.logger.info("Finished processing layers")
+            
 
     def _process_task_characterization(self, network_instance: Thing) -> None:
         """
@@ -1104,19 +809,28 @@ if __name__ == "__main__":
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
     ontology = get_ontology(ontology_path).load()
 
-    for model_name in ["alexnet", "resnet", "vgg16", "gan"]:
-        with ontology:
-            try:
-                instantiator = OntologyInstantiator(
-                    ontology, f"data/{model_name}/doc_{model_name}.json", model_name
-                )
-                instantiator.run()
-            except Exception as e:
-                logging.error(f"Error instantiating the {model_name} ontology: {e}")
-                continue
+    # LLM based stuff
+    # for model_name in ["alexnet", "resnet", "vgg16", "gan"]:
+    #     with ontology:
+    #         try:
+    #             instantiator = OntologyInstantiator(
+    #                 ontology, f"data/{model_name}/doc_{model_name}.json", model_name
+    #             )
+    #             instantiator.run()
+    #         except Exception as e:
+    #             logging.error(f"Error instantiating the {model_name} ontology: {e}")
+    #             continue
+
+    # new_file_path = "tests/papers_rag/annett-o-test(2).owl"  # Assume test file for now.
+    # ontology.save(file=new_file_path, format="rdfxml")
+    # logging.info(f"Ontology saved to {new_file_path}")
+
+    # code for graphdb extraction & instantation
+    inst = OntologyInstantiator(ontology , f"data/alexnet/alexnet_code0.json")
+    inst.process_layers(network_instance=0)
 
     # Move saving outside the loop to ensure all networks are stored in the final ontology
-    new_file_path = "tests/papers_rag/annett-o-test.owl"  # Assume test file for now.
+    new_file_path = "tests/papers_rag/annett-o-test(2).owl"  # Assume test file for now.
     ontology.save(file=new_file_path, format="rdfxml")
     logging.info(f"Ontology saved to {new_file_path}")
 
