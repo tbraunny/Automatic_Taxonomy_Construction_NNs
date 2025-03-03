@@ -10,7 +10,7 @@ def display_graph():
     </a>
     """
 
-    st.markdown("Click below to view the Graph")
+    st.markdown("Click below to view the Graph!")
     components.html(animation_html, height=400)
     
 
