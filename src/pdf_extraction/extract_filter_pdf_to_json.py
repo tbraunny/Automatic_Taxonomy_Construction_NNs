@@ -21,7 +21,7 @@ import argparse
 import logging
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
-from src.pdf_extraction.docling_pdf_loader import DoclingPDFLoader
+from src.pdf_extraction.utils.docling_pdf_loader import DoclingPDFLoader
 from utils.document_json_utils import save_documents_to_json
 
 ### Utils for debugging

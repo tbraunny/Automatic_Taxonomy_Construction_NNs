@@ -49,7 +49,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
 class OntologyInstantiator:
     """
     A class to instantiate an annett-o ontology by processing each main component separately and linking them together.
@@ -146,8 +145,14 @@ class OntologyInstantiator:
         :param threshold: The minimum score required for a match.
         :return: The best-matching ThingClass object or None if no good match is found.
         """
-        if not instance_name or not classes:
-            return None
+        if not isinstance(instance_name, str):
+            raise TypeError("Expected instance_name to be a string.")
+        if not all(isinstance(cls, ThingClass) for cls in classes):
+            raise TypeError("Expected classes to be a list of ThingClass objects.")
+        if not all(isinstance(cls.name, str) for cls in classes):
+            raise TypeError("Expected classes to have string names. ######")
+        if not isinstance(threshold, int):
+            raise TypeError("Expected threshold to be an integer.")
 
         # Convert classes to a dictionary for lookup
         class_name_map = {cls.name: cls for cls in classes}
@@ -177,7 +182,7 @@ class OntologyInstantiator:
         
     def _query_llm(self, instructions: str, prompt: str, json_format_instructions: Optional[str], pydantic_type_schema: Optional[type[BaseModel]]) -> Union[Dict[str, Any], int, str, List[str]]:
         """
-            Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
+            Queries the LLM with a structured prompt to obtain a response in a specific format.
 
             The prompt should include few-shot examples demonstrating the expected structure of the output.
             The LLM is expected to return a JSON object where the primary key is "answer", and the value 
@@ -253,8 +258,156 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"LLM query error: {e}")
             return ""
-
+        
     def _process_objective_functions(self, network_instance: Thing) -> None:
+        """
+        Process loss and regularizer functions, and link them to it's network instance.
+        """
+        if not isinstance(network_instance, Thing):
+                self.logger.error("Network instance not provided.")
+                raise TypeError("Expected an instance of 'Thing' for Network in _process_objective_function.")
+            
+        if not hasattr(self.ontology, "ObjectiveFunction") or not isinstance(self.ontology.ObjectiveFunction, ThingClass):
+            self.logger.error("ObjectiveFunction class not found in ontology.")
+            raise AttributeError("The ontology must have a valid ObjectiveFunction class of type ThingClass.")
+        
+        # TODO: Assumes a network has only one loss function and regularizer function.
+
+        try:
+            
+            # Get the name of the network instance
+            network_instance_name = self._unhash_and_format_instance_name(
+                network_instance.name
+            )
+
+            # Gets a list of all subclasses of LossFunction in a readable format, used for few shot exampling.
+            known_loss_function_subclass_names = make_thing_classes_readable(
+                get_all_subclasses(self.ontology.LossFunction)
+
+            )
+
+            general_network_header_prompt = (
+                "You are an expert in neural network architectures with deep knowledge of various models, including CNNs, RNNs, Transformers, and other advanced architectures. Your goal is to extract and provide accurate, detailed, and context-specific information about a given neural network architecture from the provided context.\n\n"
+            )
+
+            objective_function_prompt = (
+                f"Extract the loss function and regularizer function details used in only the {network_instance_name}."
+            )
+            objective_function_prompt = general_network_header_prompt + objective_function_prompt
+
+            objective_function_json_format_prompt = (
+                f"- loss function: a string representing the type of loss function used in the {network_instance_name} network.\n"
+                "- regularizer function: a string representing the type of regularizer function used in along with the loss function.\n"
+                "- objective function: a string representing whether the loss function function is set to 'minimize' or 'maximize', where minimization reduces prediction errors (e.g., in regression and classification tasks) and maximization enhances desired outcomes (e.g., in reinforcement learning or adversarial training).\n\n"
+
+                "For example, if the loss function is 'Mean Squared Error', the regularizer function is 'L1', and the objective function is set to 'maximize', the output should look like:\n"
+                "{\n"
+                '  "cost_function": {\n'
+                '    "lossFunction": "Mean Squared Error",\n'
+                '    "regularFunction": "L1"\n'
+                '  },\n'
+                '  "objectiveFunction": "maximize"\n'
+                "}\n"
+                "If the regularizer function is not available, you may return None.\n"
+            )
+
+            objective_function_response = self._query_llm("", objective_function_prompt, objective_function_json_format_prompt, pydantic_type_schema=ObjectiveFunctionResponse)
+
+
+            if not objective_function_response:
+                self.logger.warning(
+                    f"No response for objective functions in network {network_instance_name}."
+                )
+                return
+            
+            # Extract the loss function and regularizer function details
+            loss_function_name = str(objective_function_response.answer.cost_function.lossFunction)
+            regularizer_function_name = str(objective_function_response.answer.cost_function.regularFunction)
+            objective_function_type = str(objective_function_response.answer.objectiveFunction)
+
+            # Instantiate the objective function based on the objective type
+            if objective_function_type.lower() == "minimize":
+                objective_function_instance = self._instantiate_and_format_class(
+                    self.ontology.MinObjectiveFunction, "Min Objective Function"
+                )
+            elif objective_function_type.lower() == "maximize":
+                objective_function_instance = self._instantiate_and_format_class(
+                    self.ontology.MaxObjectiveFunction, f"Max Objective Function"
+                )
+            else:
+                self.logger.warning(
+                    f"Invalid response for loss function objective type for {loss_function_name}, using minimzie as default."
+                )
+                objective_function_instance = self._instantiate_and_format_class(
+                    self.ontology.MinObjectiveFunction, "Min Objective Function"
+                ) # Default to minimize if no response
+            
+            # Get all known loss functions for the loss function
+            known_loss_functions = get_all_subclasses(self.ontology.LossFunction)
+
+            if not known_loss_functions :
+                self.logger.warning(f"No known loss functions found in the ontology, created subclass for {loss_function_name} in the {network_instance_name}.")
+                best_match_loss_class = create_subclass(
+                    self.ontology, loss_function_name, self.ontology.LossFunction
+                )
+            else:
+                # Check if the loss function name matches any known loss function
+                best_match_loss_class = self._fuzzy_match_class(
+                    loss_function_name, known_loss_functions, 90
+                )
+                if not best_match_loss_class:
+                    best_match_loss_class = create_subclass(
+                        self.ontology, loss_function_name, self.ontology.LossFunction
+                    )
+            
+            # Instantiate the cost function and loss function
+            cost_function_instance = self._instantiate_and_format_class(
+                self.ontology.CostFunction, "cost function"
+            )
+            loss_function_instance = self._instantiate_and_format_class(
+                best_match_loss_class, loss_function_name
+            )
+
+            # Link the objective function to the cost function and the cost function to the loss function
+            self._link_instances(
+                objective_function_instance,
+                cost_function_instance,
+                self.ontology.hasCost,
+            )
+            self._link_instances(
+                cost_function_instance,
+                loss_function_instance,
+                self.ontology.hasLoss,
+            )
+
+            # Instantiate the regularizer function if provided
+            if regularizer_function_name:
+                best_match_reg_class = self._fuzzy_match_class(
+                    regularizer_function_name, known_loss_functions, 90
+                )
+
+                if not best_match_reg_class:
+                    best_match_reg_class = create_subclass(
+                        self.ontology, regularizer_function_name, self.ontology.RegularizerFunction
+                    )
+
+                reg_instance = self._instantiate_and_format_class(best_match_reg_class, regularizer_function_name)
+                self._link_instances(
+                    cost_function_instance,
+                    reg_instance,
+                    self.ontology.hasRegularizer,
+                )
+
+            self.logger.info(
+                f"Processed objective functions for {network_instance_name}: Loss Function: {loss_function_name}, Regularizer Function: {regularizer_function_name}, Objective Function Type: {objective_function_type}"
+            )
+
+        except Exception as e:
+            self.logger.error(f"Error processing objective functions: {e}",exc_info=True)
+            raise e
+
+
+    def _old_process_objective_functions(self, network_instance: Thing) -> None:
         """
         Process loss and regularizer functions, and link them to it's network instance.
         """
@@ -941,9 +1094,105 @@ class OntologyInstantiator:
         """
         Process the task characterization of a network instance.
         """
-        if not network_instance:
-            raise ValueError("No network instance found in the full context.")
+        try:
+            if not isinstance(network_instance, Thing):
+                self.logger.error("Expected an instance of Thing for Network in _process_task_characterization.")
+                raise ValueError("Expected an instance of Thing for Network in _process_task_characterization.")
+            if not hasattr(self.ontology, "TaskCharacterization") or not isinstance(self.ontology.TaskCharacterization, ThingClass):
+                self.logger.error("The ontology must have a valid TaskCharacterization class of type ThingClass..")
 
+            # TODO: Dynmaically provide tasks in prompt considering known task types.
+            # TODO: Assumes only ones task per network, may need to change to multiple tasks.
+
+            # Get the name of the network instance
+            network_instance_name = self._unhash_and_format_instance_name(
+                network_instance.name
+            )
+
+            # TODO: Find better place to put this
+            general_network_header_prompt = (
+                    "You are an expert in neural network architectures with deep knowledge of various models, including CNNs, RNNs, Transformers, and other advanced architectures. Your goal is to extract and provide accurate, detailed, and context-specific information about a given neural network architecture from the provided context.\n\n"
+                )
+            task_characterization_prompt = (
+                f"Extract the primary task that the {network_instance_name} is designed to perform. "
+            )
+            task_characterization_prompt = general_network_header_prompt + task_characterization_prompt # TEMP
+
+            task_characterization_json_format_prompt = (
+                "The primary task is the most important or central objective of the network. "
+                "Return the task name in JSON format with the key 'answer'.\n\n"
+                # "Examples of types of tasks include:\n"
+                # "- **Adversarial**: The task of generating adversarial examples or countering another network’s predictions, often used in adversarial training or GANs. \n"
+                # "  Example: A model that generates images to fool a classifier.\n\n"
+                # "- **Self-Supervised Classification**: The task of learning useful representations without explicit labels, often using contrastive or predictive learning techniques. \n"
+                # "  Example: A network pre-trained using contrastive learning and later fine-tuned for classification.\n\n"
+                # "- **Semi-Supervised Classification**: A classification task where the network is trained on a mix of labeled and unlabeled data. \n"
+                # "  Example: A model trained with a small set of labeled images and a large set of unlabeled ones for better generalization.\n\n"
+                # "- **Supervised Classification**: The task of assigning input data to predefined categories using fully labeled data. \n"
+                # "  Example: A CNN trained on labeled medical images to classify diseases.\n\n"
+                # "- **Unsupervised Classification (Clustering)**: The task of grouping similar data points into clusters without predefined labels. \n"
+                # "  Example: A model that clusters news articles into topics based on similarity.\n\n"
+                # "- **Discrimination**: The task of distinguishing between different types of data distributions, often used in adversarial training. \n"
+                # "  Example: A discriminator in a GAN that differentiates between real and generated images.\n\n"
+                # "- **Generation**: The task of producing new data that resembles a given distribution. \n"
+                # "  Example: A generative model that creates realistic human faces from random noise.\n\n"
+                # "- **Reconstruction**: The task of reconstructing input data, often used in denoising or autoencoders. \n"
+                # "  Example: A model that removes noise from images to restore the original content.\n\n"
+                # "- **Regression**: The task of predicting continuous values rather than categorical labels. \n"
+                # "  Example: A neural network that predicts house prices based on features like size and location.\n\n"
+                # "If the network's primary task does not fit any of the above categories, provide a conciece description of the task instead using at maximum a few words.\n\n"
+                "For example, if the network is designed to classify images of handwritten digits, the task would be 'Supervised Classification'.\n\n"
+                "{\n"
+                    '"answer": {\n'
+                        '"task_type": "Supervised Classification"\n'
+                    "}\n"
+                "}\n"
+            )
+
+            task_characterization_response = self._query_llm("", task_characterization_prompt, task_characterization_json_format_prompt, pydantic_type_schema=TaskCharacterizationResponse)
+
+            if not task_characterization_response:
+                self.logger.warning(f"No response for task characterization for network instance '{network_instance_name}'.")
+                return
+            
+            # Extract the task type from the response
+            task_type_name = str(task_characterization_response.answer.task_type)
+
+            # Get all known task types for TaskCharacterization
+            known_task_types = get_all_subclasses(self.ontology.TaskCharacterization)
+
+            if not known_task_types:
+                self.logger.warning(f"No known task types found in the ontology, creating a new task type for {task_type_name} in the {network_instance_name}.")
+                best_match_task_type = create_subclass(self.ontology, task_type_name, self.ontology.TaskCharacterization)
+            else:
+                # Check if the task type matches any known task types
+                best_match_task_type = self._fuzzy_match_class(task_type_name, known_task_types, 90)
+                if not best_match_task_type:
+                    best_match_task_type = create_subclass(self.ontology, task_type_name, self.ontology.TaskCharacterization)
+
+            # Instantiate and link the task characterization instance with the network instance
+            task_type_instance = self._instantiate_and_format_class(best_match_task_type, task_type_name)
+            self.logger.info(f"Processed task characterization '{task_type_name}', linked to network instance '{network_instance_name}.")
+
+            self._link_instances(network_instance, task_type_instance, self.ontology.hasTaskType)
+        except Exception as e:
+            self.logger.error(f"Error processing task characerization for network instance '{network_instance_name}': {e}",exc_info=True)
+
+        
+    def _old_process_task_characterization(self, network_instance: Thing) -> None:
+        """
+        Process the task characterization of a network instance.
+        """
+        if not isinstance(network_instance, Thing):
+            self.logger.error("Expected an instance of Thing for Network in _process_task_characterization.")
+            raise ValueError("Expected an instance of Thing for Network in _process_task_characterization.")
+        if not hasattr(self.ontology, "TaskCharacterization") or not isinstance(self.ontology.TaskCharacterization, ThingClass):
+            self.logger.error("The ontology must have a valid TaskCharacterization class of type ThingClass..")
+
+        # TODO: Dynmaically provide tasks in prompt considering known task types.
+        # TODO: Assumes only ones task per network, may need to change to multiple tasks.
+
+        # Get the name of the network instance
         network_instance_name = self._unhash_and_format_instance_name(
             network_instance.name
         )
@@ -1020,46 +1269,28 @@ class OntologyInstantiator:
             logger.error("No ANN Configuration instance in the ontology.")
             raise ValueError("No ANN Configuration instance in the ontology.")
 
-        if hasattr(self.ontology, "Network"):
+        if not hasattr(self.ontology, "Network"):
+            logger.error("No Network class in the ontology.")
+            raise ValueError("No Network class in the ontology.")
 
-            network_instances = []
+        network_instances = [] # List of network instances
 
-            if (
-                self._unhash_and_format_instance_name(ann_config_instance.name) == "gan"
-            ):  # Temp for gan & multi network
-                network_instances.append(
-                    self._instantiate_and_format_class(self.ontology.Network, "Generator Network")
-                )
-                network_instances.append(
-                    self._instantiate_and_format_class(
-                        self.ontology.Network, "Discriminator Network"
-                    )
-                )
+        # Here is where logic for processing the network instance would go.
+        network_instances.append(
+            self._instantiate_and_format_class(
+                self.ontology.Network, "Convolutional Network"
+            )
+        )  # assumes network is convolutional for cnn
 
-                # Process the components of the network instance.
-                for network_instance in network_instances:
-                    self._link_instances(
-                        ann_config_instance, network_instance, self.ontology.hasNetwork
-                    )
-                    # self._process_layers(network_instance) # May be processed by onnx
-                    self._process_objective_functions(network_instance)
-                    # self._process_task_characterization(network_instance)
-            else:
-                # Here is where logic for processing the network instance would go.
-                network_instances.append(
-                    self._instantiate_and_format_class(
-                        self.ontology.Network, "Convolutional Network"
-                    )
-                )  # assumes network is convolutional for cnn
-
-                # Process the components of the network instance.
-                for network_instance in network_instances:
-                    self._link_instances(
-                        ann_config_instance, network_instance, self.ontology.hasNetwork
-                    )
-                    # self._process_layers(network_instance) # May be processed by onnx
-                    self._process_objective_functions(network_instance)
-                    # self._process_task_characterization(network_instance)
+        # Process the components of the network instance.
+        for network_instance in network_instances:
+            # Link the network instance to the ANN Configuration instance,
+            self._link_instances(
+                ann_config_instance, network_instance, self.ontology.hasNetwork
+            )
+            # self._process_layers(network_instance) # May be processed by onnx
+            # self._process_objective_functions(network_instance)
+            self._process_task_characterization(network_instance)
                     
     def _process_training_strategy(self, ann_config_instance: Thing) -> None:
         """
@@ -1431,10 +1662,10 @@ class OntologyInstantiator:
                 )
 
                 # Process the network class and it's components.
-                # self._process_network(ann_config_instance)
+                self._process_network(ann_config_instance)
 
                 # Process TrainingStrategy and it's components.
-                self._process_training_strategy(ann_config_instance)
+                # self._process_training_strategy(ann_config_instance)
 
                 # Log time taken to instantiate the ontology.
                 minutes, seconds = divmod(time.time() - start_time, 60)
@@ -1460,8 +1691,10 @@ if __name__ == "__main__":
 
     for model_name in [
         "alexnet",
-        "resnet",
-    ]:  # , "vgg16"]#, "gan"]: # Assume we can model name from user or something
+        # "resnet",
+        # "vgg16",
+        # "gan", # Assume we can model name from user or something
+    ]:
         try:
             code_files = glob.glob(f"data/{model_name}/*.py")
             pdf_file = f"data/{model_name}/{model_name}.pdf"
@@ -1475,6 +1708,7 @@ if __name__ == "__main__":
                 ontology_path, list_json_doc_paths, model_name
             )
             instantiator.run()
+            instantiator.save_ontology()
         except Exception as e:
             print(f"Error instantiating the {model_name} ontology in __name__: {e}")
             continue

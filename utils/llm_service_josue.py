@@ -58,6 +58,7 @@ CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "neuroexpert:latest")
 SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
 
 
@@ -508,7 +509,7 @@ class LLMQueryEngine:
             
             # Extract and clean the generated text from the LLM response.
             generated_text = response.get("response", "No response generated.").strip()
-            print(f"Generated text: {generated_text}\n\n of type {type(generated_text)}\n\n")
+            print(f"ç: {generated_text}\n\n of type {type(generated_text)}\n\n")
             self.logger.info("Raw generated response: %s", generated_text)
             
             # Parse the generated text into a structured model using Pydantic's validation.
