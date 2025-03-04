@@ -499,22 +499,21 @@ class LLMQueryEngine:
         
         self.logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
-            # Debug prints to verify types and values of key parameters.
-            print(f"Query: {query},\n\n json_format_instructions: {json_format_instructions},\n\n cls_schema: {cls_schema}\n\n")
-            print(f" Query Type: {type(query)},\n\n json_format_instructions Type: {type(json_format_instructions)},\n\n cls_schema Type: {type(cls_schema)}\n\n")
-            
+            self.logger.info("Query: %s", query)
+            self.logger.info("json_format_instructions: %s", json_format_instructions)
+            self.logger.info("cls_schema: %s", cls_schema)
+
             # Call the LLM with the full prompt and specify the expected JSON schema as a format hint.
             response = ollama.generate(model=self.generation_model, prompt=full_prompt, format=cls_schema.model_json_schema())
-            print(f"Response: {response}\n\n, of type {type(response)}\n\n")
+            self.logger.info("Raw generated response: %s", response)
             
             # Extract and clean the generated text from the LLM response.
             generated_text = response.get("response", "No response generated.").strip()
-            print(f"ç: {generated_text}\n\n of type {type(generated_text)}\n\n")
             self.logger.info("Raw generated response: %s", generated_text)
             
             # Parse the generated text into a structured model using Pydantic's validation.
             parsed = cls_schema.model_validate_json(generated_text)
-            print(f"Parsed: {parsed}, of type {type(parsed)}\n\n")
+            self.logger.info("Parsed response: %s", parsed)
             
             # Log token usage for instrumentation.
             num_input_tokens = num_tokens_from_string(full_prompt)
