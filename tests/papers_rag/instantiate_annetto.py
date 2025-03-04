@@ -936,6 +936,7 @@ class OntologyInstantiator:
                 exc_info=True,
             )
             raise e
+            
 
     def __addclasses(self) -> None:
         """Adds new predefined classes to the ontology."""
