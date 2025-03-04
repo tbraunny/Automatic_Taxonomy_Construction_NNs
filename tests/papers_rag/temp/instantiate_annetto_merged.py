@@ -1525,6 +1525,7 @@ class OntologyInstantiator:
         if best_data_type_match:
             print(f"Best Data Type Match: {best_data_type_match}")
             data_type_instance = self._instantiate_and_format_class(best_data_type_match, "Data Type")
+            self._link_instances(dataset_instance, data_type_instance, self.ontology.hasDataType)
         else:
             print(f"Unknown Data Type: {dataset_details.dataType.subclass}")
 
