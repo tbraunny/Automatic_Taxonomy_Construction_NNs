@@ -1,0 +1,3 @@
+sqlalchemy
+pgvector
+psycopg2-binary
