@@ -490,6 +490,9 @@ class OntologyInstantiator:
             # fetch layer list of relevant model
             layer_list = onn.fetch_layers(best_model_name)
 
+            print("Model: " , best_model_name)
+            print("Layer_list: " , layer_list)
+
             for name in layer_list:
                 layer_name , model_type , model_id , model_name = name
 
@@ -1088,8 +1091,8 @@ if __name__ == "__main__":
 
     for model_name in [
         "alexnet", # id = 191
-        "resnet", # id = 198
-        "vgg16", # id = 206
+        # "resnet", # id = 198
+        # "vgg16", # id = 206
         #"gan", # Assume we can model name from user or something
     ]:
         try:
