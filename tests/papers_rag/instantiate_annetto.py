@@ -490,9 +490,6 @@ class OntologyInstantiator:
             # fetch layer list of relevant model
             layer_list = onn.fetch_layers(best_model_name)
 
-            print("Model: " , best_model_name)
-            print("Layer_list: " , layer_list)
-
             for name in layer_list:
                 layer_name , model_type , model_id , model_name = name
 
