@@ -378,7 +378,7 @@ class OntologyInstantiator:
             self._link_instances(
                 network_instance,
                 objective_function_instance,
-                self.ontology.hasObjectiveFunction,
+                self.ontology.hasObjective,
             )
 
             # Get all known loss functions for the loss function
