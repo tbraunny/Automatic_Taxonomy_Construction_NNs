@@ -11,13 +11,14 @@ from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 
-from utils.constants import Constants as C
 from utils.owl_utils import (
     create_cls_instance,
     assign_object_property_relationship,
     create_subclass,
     get_all_subclasses,
 )
+from utils.constants import Constants as C
+
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.onnx_additions.add_onnx import OnnxAddition
 
@@ -100,13 +101,17 @@ class OntologyInstantiator:
         Instantiate a given ontology class with the specified instance name.
         Uses the ANN configuration hash as a prefix for uniqueness.
         """
-        unique_instance_name = self._hash_and_format_instance_name(instance_name)
-        instance = create_cls_instance(cls, unique_instance_name)
-        self.logger.info(
-            f"Instantiated {cls.name} with name: {self._unhash_and_format_instance_name(unique_instance_name)}."
-        )
-        return instance
-
+        try:
+            unique_instance_name = self._hash_and_format_instance_name(instance_name)
+            instance = create_cls_instance(cls, unique_instance_name)
+            self.logger.info(
+                f"Instantiated {cls.name} with name: {self._unhash_and_format_instance_name(unique_instance_name)}."
+            )
+            return instance
+        except Exception as e:
+            self.logger.error(
+                f"Error instantiating {cls.name} with name {instance_name}: {e}"
+            )
     def _hash_and_format_instance_name(self, instance_name: str) -> str:
         """
         Generate a unique instance name using the hash of the ANN config name.
