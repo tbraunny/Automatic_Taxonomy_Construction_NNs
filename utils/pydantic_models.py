@@ -45,32 +45,7 @@ class TrainingOptimizerResponse(LLMResponse[TrainingOptimizerDetails]):
     pass
 
 
-"""Define Dataset Models"""
-# Define a model to represent the dataset details.
 
-class DataTypeDetails(BaseModel):
-    # Datatype Subclass
-    subclass: Literal[
-        "Image",
-        "MultiDimensionalCube",
-        "Text",
-        "Video"] = Field(..., description="The type of data present in the dataset.")
-    
-class DatasetDetails(BaseModel):
-    # Data Properties
-    data_description: str = Field(..., description="A brief description of the dataset.")
-    data_doi: Optional[str] = Field(None, description="The DOI of the dataset, if available.")
-    data_location: Optional[str] = Field(None, description="The physical or digital location of the dataset.")
-    data_sample_dimensionality: Optional[str] = Field(None, description="The dimensionality (or shape) of a single data sample.")
-    data_sample_features: Optional[str] = Field(None, description="The features or attributes present in each data sample.")
-    data_samples: Optional[int] = Field(None, description="The total number of data samples in the dataset.")
-    is_transient_dataset: Optional[bool] = Field(None, description="Whether the dataset is transient (temporary) or persistent.")
-    # Connected classes
-    dataType: DataTypeDetails
-
-# Create a specialized response model for dataset processing.
-class DatasetResponse(LLMResponse[DatasetDetails]):
-    pass
 
 """Define Dataset Models"""
 # Define a model to represent the dataset details.
@@ -141,15 +116,14 @@ class ObjectiveFunctionResponse(LLMResponse[ObjectiveFunctionDetails]):
 """Define Process Task Characterization"""
 class TaskCharacterizationDetails(BaseModel):
     task_type: Literal[
+        "Classification",
         "Adversarial",
-        "Self-Supervised Classification",
-        "Semi-Supervised Classification",
-        "Supervised Classification",
-        "Unsupervised Classification",
+        "Clustering",
         "Discrimination",
         "Generation",
         "Clustering",
         "Regression",
+        "Unknown"
     ] = Field(..., description="The type of task that the model is being trained to perform.")
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
