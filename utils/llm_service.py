@@ -36,6 +36,10 @@ import ollama
 import faiss
 from typing import Union
 
+# may switch to utils import
+from tests.papers_rag import paper_embeddings as pe
+
+
 embedding_cache = {}  # In-memory only
 
 #logging.basicConfig(level=logging.INFO) # for verbose logging
