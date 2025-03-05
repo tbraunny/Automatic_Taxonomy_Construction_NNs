@@ -1449,8 +1449,24 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Unknown">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+<owl:Class rdf:about="Sequential">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AlexNet">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Conv2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaptiveAvgPool2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
 <owl:NamedIndividual rdf:about="AAE">
@@ -3261,15 +3277,126 @@
 
 <owl:NamedIndividual rdf:about="709942bd_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="709942bd_unknown"/>
+  <hasLayer rdf:resource="709942bd_classifier"/>
+  <hasLayer rdf:resource="709942bd_"/>
+  <hasLayer rdf:resource="709942bd_features"/>
+  <hasLayer rdf:resource="709942bd_features.0"/>
+  <hasLayer rdf:resource="709942bd_features.1"/>
+  <hasLayer rdf:resource="709942bd_features.2"/>
+  <hasLayer rdf:resource="709942bd_features.3"/>
+  <hasLayer rdf:resource="709942bd_features.4"/>
+  <hasLayer rdf:resource="709942bd_features.5"/>
+  <hasLayer rdf:resource="709942bd_features.6"/>
+  <hasLayer rdf:resource="709942bd_features.7"/>
+  <hasLayer rdf:resource="709942bd_features.8"/>
+  <hasLayer rdf:resource="709942bd_features.9"/>
+  <hasLayer rdf:resource="709942bd_features.10"/>
+  <hasLayer rdf:resource="709942bd_features.11"/>
+  <hasLayer rdf:resource="709942bd_features.12"/>
+  <hasLayer rdf:resource="709942bd_avgpool"/>
+  <hasLayer rdf:resource="709942bd_classifier.0"/>
+  <hasLayer rdf:resource="709942bd_classifier.1"/>
+  <hasLayer rdf:resource="709942bd_classifier.2"/>
+  <hasLayer rdf:resource="709942bd_classifier.3"/>
+  <hasLayer rdf:resource="709942bd_classifier.4"/>
+  <hasLayer rdf:resource="709942bd_classifier.5"/>
+  <hasLayer rdf:resource="709942bd_classifier.6"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_min-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
+<owl:NamedIndividual rdf:about="709942bd_classifier">
+  <rdf:type rdf:resource="Sequential"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_unknown">
-  <rdf:type rdf:resource="Unknown"/>
+<owl:NamedIndividual rdf:about="709942bd_">
+  <rdf:type rdf:resource="AlexNet"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.1">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.2">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.3">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.4">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.5">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.6">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.7">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.8">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.9">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.10">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.11">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.12">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.0">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.2">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.3">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.4">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.5">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.6">
+  <rdf:type rdf:resource="Linear"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
