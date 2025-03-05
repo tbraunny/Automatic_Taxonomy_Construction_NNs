@@ -143,6 +143,11 @@ class OntologyInstantiator:
         stripped_name = parts[-1]  # Extract the actual instance name (without hash)
         return stripped_name.replace("-", " ")  # Convert dashes back to spaces
 
+    ###### NOTE
+    """
+    Changed fuzzy match to be case insensitive 
+    (was returning scores of 50 for identical strings w differing capitalization)
+    """
     def _fuzzy_match_class(
         self, instance_name: str, classes: List[ThingClass], threshold: int = 80
     ) -> Optional[ThingClass]:
@@ -164,10 +169,10 @@ class OntologyInstantiator:
             raise TypeError("Expected threshold to be an integer.")
 
         # Convert classes to a dictionary for lookup
-        class_name_map = {cls.name: cls for cls in classes}
+        class_name_map = {cls.name.lower(): cls for cls in classes}
 
         match, score, _ = process.extractOne(
-            instance_name, class_name_map.keys(), scorer=fuzz.ratio
+            instance_name.lower(), class_name_map.keys(), scorer=fuzz.ratio
         )
 
         return class_name_map[match] if score >= threshold else None
@@ -471,6 +476,9 @@ class OntologyInstantiator:
     def _process_layers(self, network_instance: Thing) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
+
+        :param network_instance: the network instance
+        :return None
         """
         try:
             # fetch info from database
@@ -480,6 +488,11 @@ class OntologyInstantiator:
             num_models = len(models_list)
             prev_model = None
             subclasses:List[ThingClass] = get_all_subclasses(self.ontology.Layer)
+
+            #### NOTE
+            # accounts for undetailed ontology wherein activation functions
+            # are treated as layers (prevents duplication)
+            subclasses.extend(get_all_subclasses(self.ontology.ActivationFunction))
 
             # fetch ann config name, find relevant model in database
             best_model_name = self._fuzzy_match_list(models_list)
@@ -491,18 +504,17 @@ class OntologyInstantiator:
             layer_list = onn.fetch_layers(best_model_name)
 
             for name in layer_list:
-                layer_name , model_type , model_id , model_name = name
+                layer_name , layer_type , model_id , model_name = name
 
-                #odd mismatch that is owlready2's fault, not mine
-                if model_type == "Softmax":
-                    model_type = "SoftMax"
-                if model_type == "ReLU": # apprently owl is very case sensitive
-                    model_type = "Relu"
+                # #odd mismatch that is owlready2's fault, not mine
+                # if layer_type == "Softmax":
+                #     layer_type = "SoftMax"
+                # if layer_type == "ReLU": # apprently owl is very case sensitive
+                #     layer_type = "Relu"
 
-                best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 70)
-
+                best_subclass_match = self._fuzzy_match_class(layer_type , subclasses , 70)
                 if not best_subclass_match: # create subclass if layer type not found in ontology
-                    best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)
+                    best_subclass_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
                     subclasses.append(best_subclass_match) # track subclasses, ensure no duplicates
                 
                 #Debugging
