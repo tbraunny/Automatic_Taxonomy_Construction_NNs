@@ -23,7 +23,7 @@ from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.onnx_additions.add_onnx import OnnxAddition
 
 # from utils.llm_service import init_engine, query_llm
-from utils.llm_service_josue import init_engine, query_llm
+from utils.llm_service_josue import init_engine, query_llm # TODO
 from utils.pydantic_models import *
 
 # Set up logging
@@ -1349,7 +1349,8 @@ class OntologyInstantiator:
 if __name__ == "__main__":
     import glob
 
-    ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
+    ontology_path = f"{C.ONTOLOGY.FILENAME}"
+    output_ontology_filePath = "data/owl/annett-o-test.owl"
 
     for model_name in [
         "alexnet",
@@ -1367,7 +1368,7 @@ if __name__ == "__main__":
             list_json_doc_paths = glob.glob(f"data/{model_name}/*.json")
 
             instantiator = OntologyInstantiator(
-                ontology_path, list_json_doc_paths, model_name
+                ontology_path, list_json_doc_paths, model_name, output_ontology_filePath
             )
             instantiator.run()
             instantiator.save_ontology()
