@@ -34,7 +34,7 @@ from functools import wraps
 import numpy as np
 import ollama
 import faiss
-from typing import Union
+from typing import Union, List
 
 # may switch to utils import
 #from tests.papers_rag import paper_embeddings as pe
@@ -332,6 +332,29 @@ class LLMQueryEngine:
         return semantically_chunk_documents(
             documents, ollama_model=self.embedding_model
         )
+
+    def get_paper_representation(self , paper: str):
+        """
+        Fetch the average embeddings for all sections within a given paper
+
+        :param paper: Name of the paper to get representation of
+        :return vector of average embeddings by section
+        """
+        paper_vector: List[np.ndarray] = []
+
+        for idx , mapping in enumerate(self.dense_mapping):
+            if mapping["metadata"].get("type") == "paper":
+                try:
+                    embedding_vector = self.faiss_index.reconstruct(idx) # reconstruct flattened index
+                    paper_vector.append(embedding_vector)
+                except Exception as e:
+                    self.logger.error(f"Error retrieving FAISS index for {idx} for {paper}: {e}")
+
+        paper_vector_np: List[float] = np.array(paper_vector)
+        avg_representation = np.mean(paper_vector_np , axis=0)
+
+        return avg_representation # len 1024
+        
 
     def _update_faiss_index(self, documents: list):
         """Incrementally update the FAISS index with new embeddings."""
