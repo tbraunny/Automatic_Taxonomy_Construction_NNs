@@ -19,14 +19,14 @@ json_path = glob.glob(f"data/{ann_name}/*.json")
 # call llm service
 for count , j in enumerate(json_path):
     print(j)
-    init_engine(j)
+    init_engine(ann_name , j)
 
 print("Query reached")
 
 test_query1 = "Name each layer of this neural network sequentially, do not generalize internal layers and include modification and activation layers. Follow the JSON format that will be specified to you"
 test_query2 = "Explain how AlexNet prevents overfitting from the technical details listed in the academic paper & the structure of the model given in python functions & code-related inputs."
 
-query_llm(query=test_query2)
+query_llm(ann_name , query=test_query2)
 
 ###################################
 """

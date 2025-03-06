@@ -37,7 +37,7 @@ import faiss
 from typing import Union
 
 # may switch to utils import
-from tests.papers_rag import paper_embeddings as pe
+#from tests.papers_rag import paper_embeddings as pe
 
 
 embedding_cache = {}  # In-memory only
@@ -231,13 +231,14 @@ def _get_embedding(text: str, model: str) -> list:
 
 
 class FAISSIndexManager:
-    """Manages a persistent FAISS index to avoid reinitializing the vector db"""
+    """Manages a cached FAISS index to avoid reinitializing the vector db"""
 
-    def __init__(self, embedding_dim: int):
+    def __init__(self, embedding_dim: int = 768):
         self.embedding_dim = embedding_dim
         self.index = faiss.IndexFlatIP(embedding_dim)
         self.embeddings = []
         self.mapping = []  # stores metadata corresponding to embeddings
+        self.docs = 0
 
     def add_embeddings(self, new_embeddings: list, new_mapping: list):
         """Add new embeddings and their mappings to the index."""
@@ -251,6 +252,15 @@ class FAISSIndexManager:
         self.index.add(new_embeddings)
         self.embeddings.extend(new_embeddings)
         self.mapping.extend(new_mapping)
+
+    def compute_avg(self):
+        paper_embeddings = []
+
+        for i , metadata in enumerate(self.mapping):
+            print(metadata)
+
+        print(type(paper_embeddings))
+        print(paper_embeddings)
 
     def get_index(self):
         """Return the FAISS index instance."""
@@ -359,6 +369,8 @@ class LLMQueryEngine:
         self.faiss_index.add(new_embeddings_np)
         self.dense_mapping.extend(new_mappings)
         logger.info("Added %d new vectors to FAISS index.", len(new_embeddings_np))
+
+    
 
     # def _build_faiss_index(self, documents: list):
     #     """
