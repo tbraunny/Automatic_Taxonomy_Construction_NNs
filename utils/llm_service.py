@@ -312,20 +312,20 @@ class LLMQueryEngine:
         self._update_faiss_index(self.chunked_docs)
 
         # Build BM25 index for sparse retrieval.
-        self.bm25_corpus = [doc.page_content for doc in self.chunked_docs]
-        self.bm25_tokens = [
-            doc.page_content.lower().split() for doc in self.chunked_docs
-        ]
-        self.bm25_index = BM25Okapi(self.bm25_tokens)
-        self.logger.info(
-            "Built BM25 index for %d document chunks.", len(self.chunked_docs)
-        )
+        #self.bm25_corpus = [doc.page_content for doc in self.chunked_docs]
+        #self.bm25_tokens = [
+            #doc.page_content.lower().split() for doc in self.chunked_docs
+        #]
+        #self.bm25_index = BM25Okapi(self.bm25_tokens)
+        #self.logger.info(
+            #"Built BM25 index for %d document chunks.", len(self.chunked_docs)
+        #)
 
         # Build a simple graph index using networkx.
-        self.graph = self.build_graph_index(self.chunked_docs)
-        self.logger.info(
-            "Built graph index with %d nodes.", self.graph.number_of_nodes()
-        )
+        #self.graph = self.build_graph_index(self.chunked_docs)
+        #self.logger.info(
+            #"Built graph index with %d nodes.", self.graph.number_of_nodes()
+        #)
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""
@@ -333,7 +333,7 @@ class LLMQueryEngine:
             documents, ollama_model=self.embedding_model
         )
 
-    def get_paper_representation(self , paper: str):
+    def get_paper_representation(self , paper: str = None):
         """
         Fetch the average embeddings for all sections within a given paper
 
@@ -774,6 +774,11 @@ def query_llm(
     engine = _engine_instances[model_name]
     return engine.query(query, max_chunks=max_chunks, token_budget=token_budget)
 
+
+def generate_embeddings(docs):
+    llm = object.__new__(LLMQueryEngine)
+    llm._chunk_documents(docs)
+    llm._update_faiss_index(docs)
 
 # For standalone testing
 if __name__ == "__main__":

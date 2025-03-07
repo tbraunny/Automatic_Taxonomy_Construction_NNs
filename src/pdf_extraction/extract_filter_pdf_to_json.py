@@ -16,6 +16,7 @@ Required dependencies:
     - langchain_core
 """
 
+import os
 import re
 import argparse
 import logging
@@ -126,7 +127,7 @@ def write_list_to_txt(documents: list, output_path: str) -> None:
         for doc in documents:
             f.write(doc.page_content + "\n---\n")
 
-def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
+def extract_filter_pdf_to_json(pdf_path: str, output_path: str = None) -> None:
     """
     Loads a PDF, extracts and filters its text into sections, and saves the results as a JSON file.
     
@@ -137,13 +138,19 @@ def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
     loader = DoclingPDFLoader(file_path=pdf_path)
     docs = loader.load()
 
-    output_path = pdf_path.replace(".pdf" , "_doc.json")
+    if output_path == None:
+        output_path = pdf_path.replace(".pdf" , "_doc.json")
     
     logger.info("Filtering sections from extracted documents...")
     filtered_docs = filter_sections_from_documents(docs, EXCLUDED_SECTIONS)
     
     logger.info(f"Saving filtered documents to JSON: {output_path}")
-    save_documents_to_json(filtered_docs, output_path)
+
+    try:
+        save_documents_to_json(filtered_docs, f"{output_path}/{os.path.basename(pdf_path)}.json")
+    except Exception as e:
+        print("ERROR")
+        print(f"Error saving extracted pdf to json at {output_path}: {e}")
 
     logger.info("Processing complete.")
 
