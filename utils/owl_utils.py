@@ -469,7 +469,22 @@ def get_instantiated_properties(instance: Thing) -> List[Property]:
     return instantiated_properties
 
 
-def get_instantiated_property_values(instance: Thing) -> dict:
+# def get_instantiated_property_values(instance: Thing, property:) -> list:
+#     pass
+def get_instance_property_values(instance: Thing, property_name: str) -> list:
+    """
+    Retrieves the values of a specified property for the given instance.
+
+    Args:
+        instance (Thing): The instance for which to retrieve property values.
+        property_name (str): The name of the property for which to retrieve values.
+
+    Returns:
+        list: A list of values set for the specified property.
+    """
+    return instance.__getattr__(property_name)
+
+def get_all_property_values_for_instance(instance: Thing) -> dict:
     """
     Retrieves a dictionary of instantiated properties and their values for the specified instance.
 
@@ -483,7 +498,6 @@ def get_instantiated_property_values(instance: Thing) -> dict:
     for prop in get_instantiated_properties(instance):
         property_values[prop.name] = instance.__getattr__(prop.name)
     return property_values
-
 
 def get_object_properties_for_class(ontology: Ontology, cls: ThingClass):
     """
