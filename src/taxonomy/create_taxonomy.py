@@ -39,7 +39,7 @@ class TaxonomyCreator:
                     # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
                     logger.info(f"{" " * 7}Layer: {layer}, type: {type(layer)}")
                     logger.info(f"{" " * 7}Layer: {layer}, type: {layer.is_a}")
-                    layer_type = get_instance_property_values(layer, self.ontology.hasLayerType.name)
+                    layer_type = get_instance_property_values(layer, self.ontology.hasLayer.name)
                     logger.info(f"{" " * 7}Layer Type: {layer_type}, type: {type(layer_type)}")
 
                 for task_characterization in task_characterizations:
