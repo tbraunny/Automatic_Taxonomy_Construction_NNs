@@ -15,7 +15,7 @@ data:
 params:
   block_size: 2048
   model_max_length: 4096
-  epochs: 1
+  epochs: 3
   batch_size: 1
   lr: 1e-5
   peft: true
