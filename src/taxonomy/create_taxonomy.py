@@ -39,15 +39,18 @@ class TaxonomyCreator:
                     # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
                     logger.info(f"{" " * 7}Layer: {layer}, type: {type(layer)}")
                     logger.info(f"{" " * 7}Layer: {layer}, type: {layer.is_a}")
-                    layer_type = get_instance_property_values(layer, self.ontology.hasLayer.name)
-                    logger.info(f"{" " * 7}Layer Type: {layer_type}, type: {type(layer_type)}")
+
+                    subclass = layer.is_a[0]
+                    logger.info(f"{" " * 9}Subclass: {subclass}, type: {type(subclass)}")
+
+                logger.info('\n')
 
                 for task_characterization in task_characterizations:
                     logger.info(f"{" " * 7}Task Characterization: {task_characterization}, type: {type(task_characterization)}")
                     logger.info(f"{" " * 7}Task Characterization: {task_characterization}, type: {task_characterization.is_a}")
 
                     subclass = task_characterization.is_a[0]
-                    logger.info(f"{" " * 7}Subclass: {subclass}, type: {type(subclass)}")
+                    logger.info(f"{" " * 9}Subclass: {subclass}, type: {type(subclass)}")
 
 
 def main():
