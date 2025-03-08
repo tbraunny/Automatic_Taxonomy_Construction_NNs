@@ -9,5 +9,5 @@ logs
 tests/papers_rag/annett-o-test(2).owl
 .venv/
 data/annett-o-test.owl
-data/paper_embeddings
+data/
 *.owl
