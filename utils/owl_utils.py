@@ -384,6 +384,23 @@ def get_class_instances(cls: ThingClass) -> list:
     """
     return cls.instances()
 
+def find_instance_properties(instance, properties=[], found=[],visited=None):
+    if visited is None:
+        visited = set()
+    if instance in visited:
+        return found
+    visited.add(instance)
+    for prop in instance.get_properties():
+        for value in prop[instance]:
+            try: 
+                if isinstance(value, Thing):
+                    for i in properties: 
+                        found += get_instance_property_values(instance,i) 
+                    find_instance_properties(value, properties, found=found,visited=visited)
+            except: 
+                print('broken')
+    found = set(found)
+    return found
 
 def explore_instance(instance, depth=0, visited=None):
     """

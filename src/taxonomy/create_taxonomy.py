@@ -1,6 +1,8 @@
 from utils.owl_utils import *
 from utils.annetto_utils import make_thing_classes_readable
 from utils.constants import Constants as C
+from typing import Optional
+from criteria import *
 from pathlib import Path
 import logging
 
@@ -9,48 +11,107 @@ import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
+def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
+    
+    found = {}
+    for ann_config in annConfigs:
+        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, properties=has, found=[])]
+        subclasses = set([ item['subclass'][0].name for item in items ])
+        hashvalue = ''.join( item +',' for item in subclasses )
+        if not hashvalue in found:
+            found[hashvalue] = { ann_config : items }
+        else:
+            found[hashvalue][ann_config] = items
+    return found
+
+class TaxonomyNode(BaseModel):
+    name: str
+    splitProperties: Optional[List|Dict] = []
+    criteria: Criteria|None
+    children: Optional[List] = []
+    def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}):
+        super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties)
+    def add_children(self, child):
+        self.children.append(children)
+
 class TaxonomyCreator:
-    def __init__(self, ontology: Ontology):
+
+    levels: List[Criteria]
+    
+    def __init__(self, ontology: Ontology, criteria: [Criteria] = []):
+
         self.ontology = ontology # Load ontology as Ontology object
         self.taxonomy = None
+        self.levels = criteria
     
     def create_taxonomy(self):
+        annconfignodes = []
         # Get all ANNConfiguration Objects
         logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
 
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
-
+        splits = [ann_configurations]
+        topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None)
+        nodes = [topnode]
+        for level_index, level in enumerate(self.levels):
+            newsplits = []
+            newnodes = []
+            for index,split in enumerate(splits):
+                print('current_split',split)
+                #input()
+                for crit in level.criteria:
+                    found = SplitOnCriteria(self.ontology, split, has=crit.has)
+                
+                    # TODO -- handle merging -- several different criteria
+                    for key in found:
+                        
+                        split = list(found[key].keys())
+                        childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key])
+                        nodes[index].children.append(childnode)
+                        newnodes.append(childnode)
+                        newsplits.append(split)
+                        print(split)
+                        #input()
+                    
+            splits = newsplits
+            nodes = newnodes
+            print(nodes)
+            #input()
+        print(topnode)
+        input()
         for ann_config in ann_configurations:
-            logger.info(f"{" " * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
+            annconfignodes.append(TaxonomyNode(ann_config.name))
+            logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
             # NOTE: ontology.hasNetwork is an ObjectProperty -> returns annett-o-0.1.hasNetwork of type: <class 'owlready2.prop.ObjectPropertyClass'>
             networks = get_instance_property_values(ann_config, self.ontology.hasNetwork.name)
 
             for network in networks:
-                logger.info(f"{" " * 5}Network: {network}, type: {type(network)}")
-
+                logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
+                
                 task_characterizations = get_instance_property_values(network, self.ontology.hasTaskType.name)
-                logger.info(f"{" " * 5}Task Characterizations: {task_characterizations}, type: {type(task_characterizations)}")
+                logger.info(f"{' ' * 5}Task Characterizations: {task_characterizations}, type: {type(task_characterizations)}")
 
                 layers = get_instance_property_values(network, self.ontology.hasLayer.name)
-                logger.info(f"{" " * 5}Layers: {layers}, type: {type(layers)}")
+                logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
 
                 for layer in layers:
                     # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
-                    logger.info(f"{" " * 7}Layer: {layer}, type: {type(layer)}")
-                    logger.info(f"{" " * 7}Layer: {layer}, type: {layer.is_a}")
+                    logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
+                    logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
 
                     subclass = layer.is_a[0]
-                    logger.info(f"{" " * 9}Subclass: {subclass}, type: {type(subclass)}")
+                    logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
 
                 logger.info('\n')
 
                 for task_characterization in task_characterizations:
-                    logger.info(f"{" " * 7}Task Characterization: {task_characterization}, type: {type(task_characterization)}")
-                    logger.info(f"{" " * 7}Task Characterization: {task_characterization}, type: {task_characterization.is_a}")
+                    logger.info(f"{' ' * 7}Task Characterization: {task_characterization}, type: {type(task_characterization)}")
+                    logger.info(f"{' ' * 7}Task Characterization: {task_characterization}, type: {task_characterization.is_a}")
 
                     subclass = task_characterization.is_a[0]
-                    logger.info(f"{" " * 9}Subclass: {subclass}, type: {type(subclass)}")
+                    logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
 
 
 def main():
@@ -59,11 +120,26 @@ def main():
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
     # ontology_path = f"./data/owl/annett-o-test.owl"
 
+    # Example Criteria...
+    op = SearchOperator(has= [HasTaskType] )
+    criteria = Criteria()
+    criteria.add(op)
+
+    op2 = SearchOperator(has=[HasLayer] )
+    criteria2 = Criteria()
+    criteria2.add(op2)
+    
+    op3 = SearchOperator(has=[HasLoss] )
+    criteria3 = Criteria()
+    criteria3.add(op3)
+    
+    criterias = [criteria,criteria2,criteria3]
+
     ontology = load_ontology(ontology_path=ontology_path)
     logger.info("Ontology loaded.")
 
     logger.info("Creating taxonomy from Annetto annotations.")
-    taxonomy_creator = TaxonomyCreator(ontology)
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
     taxonomy_creator.create_taxonomy()
     logger.info("Finished creating taxonomy.")
 
