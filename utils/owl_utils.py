@@ -384,7 +384,7 @@ def get_class_instances(cls: ThingClass) -> list:
     """
     return cls.instances()
 
-def find_instance_properties(instance, has_property=[], found=[], visited=None):
+def find_instance_properties(instance, has_property=[], equals=[], found=[], visited=None):
     '''
     Finds all properties based on passed in has_properties
     
@@ -400,15 +400,40 @@ def find_instance_properties(instance, has_property=[], found=[], visited=None):
         return found
     visited.add(instance)
     for prop in instance.get_properties():
+        print('property',prop.name)
+
         for value in prop[instance]:
+            
+            print('value',value,type(value))
+            for eq in equals:
+                #print(eq, value.name, eq['value'])
+                #input()
+                if isinstance(value,Thing) and eq['type'] == 'name' and eq['value'] == value.name:
+                    found += prop[instance]
+                if type(value) == int and eq['type'] == 'value'and eq['value'] < value and eq['op'] == 'less' and eq['name'] == value.name:
+                    found += prop[instance]
+
+                if type(value) == int and eq['type'] == 'value'and eq['value'] > value and eq['op'] == 'greater' and eq['name'] == value.name:
+                    found += prop[instance]
+                
+                if type(value) == int and eq['type'] == 'value'and eq['value'] <= value and eq['op'] == 'leq' and eq['name'] == value.name:
+                    found += prop[instance]
+                
+                if type(value) == int and eq['type'] == 'value'and eq['value'] >= value and eq['op'] == 'geq' and eq['name'] == value.name:
+                    found += prop[instance]
+                
+                if type(value) == int and eq['type'] == 'value'and eq['value'] == value and eq['op'] == 'equals' and eq['name'] == value.name:
+                    found += prop[instance]
             try: 
                 if isinstance(value, Thing):
                     for i in has_property: 
                         found += get_instance_property_values(instance,i) 
-                    find_instance_properties(value, has_property, found=found,visited=visited)
+                    find_instance_properties(value, has_property, found=found,visited=visited,equals=equals)
             except: 
                 print('broken')
     found = set(found)
+    print(found)
+    #input()
     return found
 
 def explore_instance(instance, depth=0, visited=None):

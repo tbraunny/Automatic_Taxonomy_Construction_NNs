@@ -22,7 +22,7 @@ def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
     '''
     found = {}
     for ann_config in annConfigs:
-        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, has_property=has, found=[])]
+        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, has_property=has, equals=equals, found=[])]
         subclasses = set([ item['subclass'][0].name for item in items ])
         hashvalue = ''.join( item +',' for item in subclasses )
         if not hashvalue in found:
@@ -114,8 +114,9 @@ class TaxonomyCreator:
                 print('current_split',split)
                 #input()
                 for crit in level.criteria:
-                    found = SplitOnCriteria(self.ontology, split, has=crit.has) # only supporting has properties right now
-                
+                    found = SplitOnCriteria(self.ontology, split, has=crit.has, equals=crit.equals) # only supporting has properties right now
+                    print('found',found)
+                    input()
                     # TODO -- handle merging -- several different criteria -- don't handle logic or or logic ands
                     for key in found:
                         
@@ -129,6 +130,7 @@ class TaxonomyCreator:
             nodes = newnodes
             print(nodes)
         print(topnode.to_graphml())
+        #input()
         for ann_config in ann_configurations:
             annconfignodes.append(TaxonomyNode(ann_config.name))
             logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
@@ -169,7 +171,7 @@ def main():
     # ontology_path = f"./data/owl/annett-o-test.owl"
 
     # Example Criteria...
-    op = SearchOperator(has= [HasTaskType] )
+    op = SearchOperator(has= [HasTaskType] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
     criteria = Criteria()
     criteria.add(op)
 
@@ -181,7 +183,7 @@ def main():
     criteria3 = Criteria()
     criteria3.add(op3)
     
-    criterias = [criteria,criteria2,criteria3]
+    criterias = [criteria]#,criteria2,criteria3]
 
     ontology = load_ontology(ontology_path=ontology_path)
     logger.info("Ontology loaded.")
