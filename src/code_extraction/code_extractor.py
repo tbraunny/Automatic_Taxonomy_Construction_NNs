@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 import os
 
-# extra libraries for loading pytorch code into memory
+# extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
 import torch.nn as nn
 import torchvision
@@ -83,15 +83,15 @@ class CodeProcessor(ast.NodeVisitor):
         Also checks for class that instantiates PyTorch model
         """
         for base in node.bases:
-            if base.attr == "Module" and base.value.id == "nn":
-                mappings = {}
-                class_code = self.extract_code_lines(node.lineno , node.end_lineno) # grab code associated w class
-                exec("\n".join(class_code) , globals() , mappings)
+            if base.attr == "Module" and base.value.id == "nn": # check for nn.Module base class
+                mappings: dict = {}
 
+                class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
+                exec("\n".join(class_code) , globals() , mappings) # load code into memory
                 model_class = mappings.get(node.name)
-
                 model = model_class()
-                model = tmodels.get_model(node.name , weights='DEFAULT')
+                model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
+
                 self.pytorch_graph = extract_graph(model)                
         
         class_section = {
@@ -156,6 +156,7 @@ class CodeProcessor(ast.NodeVisitor):
 
 def check_pytorch(tree: ast.Module) -> bool:
     """
+    DEPRECATED
     Check if code file utilizes pytorch. If so, flag true
     
     :param tree: tree returned from ast.parse
@@ -176,22 +177,12 @@ def check_pytorch(tree: ast.Module) -> bool:
         logger.error(f"Check for PyTorch failed, {e}")
         return False
 
-def fetch_pytorch_instance(tree):
-    code_lines = []
-
-    for node in ast.walk(tree):
-        if isinstance(node , ast.ClassDef):
-            for base in node.bases:
-                if base.attr == "Module" and base.value.id == "nn":
-                    return code_lines[node.lineno - 1:node.end_lineno]
-    
-    return None
-
 def process_code_file(files):
     """
     Traverse abstract syntax tree & dump relevant code into JSON
 
     :param files: Directory in which code files may be present (data/ann_name/*.py)
+    :return None: JSON files saved to same directory given
     """
     try:
         for count , file in enumerate(files):
@@ -206,17 +197,14 @@ def process_code_file(files):
             
             processor = CodeProcessor(code)
             processor.visit(tree)
-            output = 0
+            output: dict = {}
 
-            if processor.pytorch_graph:
+            if processor.pytorch_graph: # symbolic graph dictionary
                 output = processor.pytorch_graph
-                #print(output)
                 output_file = file.replace(".py", f"_code_torch_{count}.json")
-
-                with open(output_file , "w") as json_file: # write out symbolic graph
-                    json.dump(output , json_file , indent=3)
-            else:
+            else: # regular code dictionary
                 output = processor.parse_code()
+
             with open(output_file, "w") as json_file:
                 json.dump(output , json_file , indent=3)
             
