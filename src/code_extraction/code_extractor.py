@@ -1,14 +1,38 @@
 import ast
 import json
 import glob
+from pytorchgraphextraction import extract_graph
+import logging
+from datetime import datetime
 import os
+import importlib.util
+import torch
+import sys
+import torch.nn as nn
 
 """
 Extract code from python files & convert into a JSON for langchain embeddings
 
 Follows same format as PDF embeddings with 'page_content' & 'metadata' containing
 all relevant information about the code.
+
+NOTE: if pytorch code detected, code file is passed to Chase's symbolic extraction
 """
+
+log_dir = "logs"
+log_file = os.path.join(log_dir , f"code_extraction_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+os.makedirs(log_dir , exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_file),  # Write to file
+    ],
+    force=True,
+)
+logger = logging.getLogger(__name__)
+
 class CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
         self.code_lines = code.split("\n")
@@ -53,11 +77,21 @@ class CodeProcessor(ast.NodeVisitor):
     def visit_ClassDef(self, node):
         """
         Visits nodes that are a class traversing down tree from given node
+        Also checks for class that instantiates PyTorch model
         """
+        for base in node.bases:
+            if base.attr == "Module" and base.value.id == "nn":
+                mappings = {}
+                class_code = self.extract_code_lines(node.lineno , node.end_lineno) # grab code associated w class
+                exec("\n".join(class_code) , globals() , mappings)
 
-        #class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+                model_class = mappings.get(node.name)
+
+                model = model_class()
+                # works, how to return?
+        
         class_section = {
-            #"page_content": "\n".join(self.clean_code_lines(class_code)) , 
+            #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
             "page_content" : "Functions: " + (", ".join([f"{func.name}" for func in node.body if isinstance(func , ast.FunctionDef)])) , 
             "metadata": {
                 "section_header": node.name , 
@@ -107,7 +141,6 @@ class CodeProcessor(ast.NodeVisitor):
         Currently keeps comments in when extracting lines, could be useful, could be changed later
         """
         return self.code_lines[start - 1:end]  # line counts start at 1, adjust from 0
-    
 
 
     def parse_code(self):
@@ -117,28 +150,69 @@ class CodeProcessor(ast.NodeVisitor):
         return self.sections
 
 
+def check_pytorch(tree: ast.Module) -> bool:
+    """
+    Check if code file utilizes pytorch. If so, flag true
+    
+    :param tree: tree returned from ast.parse
+    :return True if file contains torch-related imports
+    """
+    try:
+        for node in ast.walk(tree):
+            if isinstance(node , ast.Import) or isinstance(node , ast.ImportFrom):
+                for alias in node.names:
+                    if alias.name == "torch":
+                        logger.info(f"Detected PyTorch input from 'import', {alias}")
+                        return True
+                    elif node.module and node.module.startswith("torch"):
+                        logger.info(f"Detected PyTorch input from 'from', {alias}")
+                        return True
+        return False
+    except Exception as e:
+        logger.error(f"Check for PyTorch failed, {e}")
+        return False
+
+def fetch_pytorch_instance(tree):
+    code_lines = []
+
+    for node in ast.walk(tree):
+        if isinstance(node , ast.ClassDef):
+            for base in node.bases:
+                if base.attr == "Module" and base.value.id == "nn":
+                    return code_lines[node.lineno - 1:node.end_lineno]
+    
+    return None
+
 def process_code_file(files):
     """
     Traverse abstract syntax tree & dump relevant code into JSON
+
+    :param files: Directory in which code files may be present (data/ann_name/*.py)
     """
-    for count , file in enumerate(files):
-        with open(file , "r") as f:
-            code = f.read()
+    try:
+        for count , file in enumerate(files):
+            with open(file , "r") as f:
+                code = f.read()
+            tree = ast.parse(code)
+            output_file = file.replace(".py", f"_code_{count}.json")
 
-        tree = ast.parse(code)
+            # model = fetch_pytorch_instance(tree)
+            # print(model)
 
-        # for node in ast.walk(tree):
-        #     for child in ast.iter_child_nodes(node):
-        #         child.parent = node  # set reference nodes (ex. node.parent)
-        
-        processor = CodeProcessor(code)
-        processor.visit(tree)
+            # for node in ast.walk(tree): # track nodes
+            #     for child in ast.iter_child_nodes(node):
+            #         child.parent = node  # set reference nodes (ex. node.parent)
+            
+            processor = CodeProcessor(code)
+            processor.visit(tree)
 
-        output_file = file.replace(".py", f"_code{count}.json")
-        with open(output_file, "w") as json_file:
-            json.dump(processor.parse_code() , json_file , indent=3)
-        
-        print(f"JSONified code saved to {output_file}")
+            with open(output_file, "w") as json_file:
+                json.dump(processor.parse_code() , json_file , indent=3)
+            
+            print(f"JSONified code saved to {output_file}")
+            logger.info(f"JSON successfully saved to {output_file}")
+    except Exception as e:
+        logger.error(f"Error processing code files, {e}")
 
 
 def main():
