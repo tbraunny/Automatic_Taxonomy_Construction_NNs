@@ -5,10 +5,12 @@ from pytorchgraphextraction import extract_graph
 import logging
 from datetime import datetime
 import os
-import importlib.util
+
+# extra libraries for loading pytorch code into memory
 import torch
-import sys
 import torch.nn as nn
+import torchvision
+from torchvision import models as tmodels
 
 """
 Extract code from python files & convert into a JSON for langchain embeddings
@@ -37,6 +39,7 @@ class CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
         self.code_lines = code.split("\n")
         self.sections = [] # classes / functions / global vars
+        self.pytorch_graph = []
 
     def visit_Module(self, node):
         """
@@ -88,7 +91,8 @@ class CodeProcessor(ast.NodeVisitor):
                 model_class = mappings.get(node.name)
 
                 model = model_class()
-                # works, how to return?
+                model = tmodels.get_model(node.name , weights='DEFAULT')
+                self.pytorch_graph = extract_graph(model)                
         
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
@@ -196,18 +200,25 @@ def process_code_file(files):
             tree = ast.parse(code)
             output_file = file.replace(".py", f"_code_{count}.json")
 
-            # model = fetch_pytorch_instance(tree)
-            # print(model)
-
             # for node in ast.walk(tree): # track nodes
             #     for child in ast.iter_child_nodes(node):
             #         child.parent = node  # set reference nodes (ex. node.parent)
             
             processor = CodeProcessor(code)
             processor.visit(tree)
+            output = 0
 
+            if processor.pytorch_graph:
+                output = processor.pytorch_graph
+                #print(output)
+                output_file = file.replace(".py", f"_code_torch_{count}.json")
+
+                with open(output_file , "w") as json_file: # write out symbolic graph
+                    json.dump(output , json_file , indent=3)
+            else:
+                output = processor.parse_code()
             with open(output_file, "w") as json_file:
-                json.dump(processor.parse_code() , json_file , indent=3)
+                json.dump(output , json_file , indent=3)
             
             print(f"JSONified code saved to {output_file}")
             logger.info(f"JSON successfully saved to {output_file}")
