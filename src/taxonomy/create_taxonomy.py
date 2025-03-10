@@ -5,18 +5,24 @@ from typing import Optional
 from criteria import *
 from pathlib import Path
 import logging
+import json
 
-
+import networkx as nx
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
 def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
-    
+    '''
+    Name: SplitOnCriteria
+    Description: splits on a given set criteria. 
+    Has is for any has properties in the ontology.
+    Equals is for properties. 
+    '''
     found = {}
     for ann_config in annConfigs:
-        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, properties=has, found=[])]
+        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, has_property=has, found=[])]
         subclasses = set([ item['subclass'][0].name for item in items ])
         hashvalue = ''.join( item +',' for item in subclasses )
         if not hashvalue in found:
@@ -24,6 +30,32 @@ def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
         else:
             found[hashvalue][ann_config] = items
     return found
+
+
+def serialize(obj):
+    if isinstance(obj, Thing):
+        return obj.iri
+    elif isinstance(obj, ThingClass):
+        return obj.name
+    elif isinstance(obj, Criteria):
+        return obj.model_dump()
+    elif isinstance(obj, TaxonomyNode):
+        return {
+            "name": obj.name,
+            "splitProperties": serialize(obj.splitProperties),
+            "criteria": serialize(obj.criteria),
+            "children": [serialize(c) for c in obj.children]
+        }
+    elif isinstance(obj, list):
+        return [serialize(i) for i in obj]
+    elif isinstance(obj, dict):
+        outdict = {}
+        for k,v in obj.items():
+            #print(type(k))
+            k= serialize(k)
+            outdict[k] = serialize(v)
+        return outdict
+    return obj
 
 class TaxonomyNode(BaseModel):
     name: str
@@ -34,6 +66,26 @@ class TaxonomyNode(BaseModel):
         super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties)
     def add_children(self, child):
         self.children.append(children)
+    def to_json(self):
+        return json.dumps(serialize(self)) #self.model_dump_json(indent=2, serialize_as_any=True)
+    
+    def to_graphml(self):
+        G = nx.DiGraph()
+        def add_nodes_edges(node, parent_id=None):
+            node_id = id(node)
+            node_data = {"name": node.name}
+            node_data['criteria'] = json.dumps(serialize(node.criteria))
+            node_data['splitProperties'] = json.dumps(serialize(node.splitProperties))
+            G.add_node(node_id, **node_data)
+
+            if parent_id:
+                G.add_edge(parent_id, node_id)
+
+            for child in node.children:
+                add_nodes_edges(child, node_id)
+
+        add_nodes_edges(self)
+        return '\n'.join(nx.generate_graphml(G))
 
 class TaxonomyCreator:
 
@@ -62,9 +114,9 @@ class TaxonomyCreator:
                 print('current_split',split)
                 #input()
                 for crit in level.criteria:
-                    found = SplitOnCriteria(self.ontology, split, has=crit.has)
+                    found = SplitOnCriteria(self.ontology, split, has=crit.has) # only supporting has properties right now
                 
-                    # TODO -- handle merging -- several different criteria
+                    # TODO -- handle merging -- several different criteria -- don't handle logic or or logic ands
                     for key in found:
                         
                         split = list(found[key].keys())
@@ -72,15 +124,11 @@ class TaxonomyCreator:
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
                         newsplits.append(split)
-                        print(split)
-                        #input()
                     
             splits = newsplits
             nodes = newnodes
             print(nodes)
-            #input()
-        print(topnode)
-        input()
+        print(topnode.to_graphml())
         for ann_config in ann_configurations:
             annconfignodes.append(TaxonomyNode(ann_config.name))
             logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")

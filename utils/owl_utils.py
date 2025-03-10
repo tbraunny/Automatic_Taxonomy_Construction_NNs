@@ -384,7 +384,16 @@ def get_class_instances(cls: ThingClass) -> list:
     """
     return cls.instances()
 
-def find_instance_properties(instance, properties=[], found=[],visited=None):
+def find_instance_properties(instance, has_property=[], found=[], visited=None):
+    '''
+    Finds all properties based on passed in has_properties
+    
+    Args:
+        instance (ThingClass): the class for which is an instance
+        has_property: the has properties we are looking for. This is typically edge properties
+        found: a list of found elements associate to has_property
+        visisted: all nodes that have been visisted
+    '''
     if visited is None:
         visited = set()
     if instance in visited:
@@ -394,9 +403,9 @@ def find_instance_properties(instance, properties=[], found=[],visited=None):
         for value in prop[instance]:
             try: 
                 if isinstance(value, Thing):
-                    for i in properties: 
+                    for i in has_property: 
                         found += get_instance_property_values(instance,i) 
-                    find_instance_properties(value, properties, found=found,visited=visited)
+                    find_instance_properties(value, has_property, found=found,visited=visited)
             except: 
                 print('broken')
     found = set(found)
