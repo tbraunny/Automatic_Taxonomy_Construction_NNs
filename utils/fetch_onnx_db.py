@@ -8,25 +8,12 @@ NOTE:
 - put following in bash terminal:
     ssh -L 5433:172.20.199.232:5432 netid@nxlogin.engr.unr.edu
 """
-from typing import List, Union, Dict
+from typing import List
 
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from utils.owl_utils import (
-    create_cls_instance ,
-    assign_object_property_relationship ,
-    create_subclass ,
-    print_instantiated_classes_and_properties ,
-    get_object_properties_with_domain_and_range ,
-    get_all_subclasses
-)
-#from tables import Model , Layer , Parameter , Base
-from utils.constants import Constants as C
-from owlready2 import Ontology , ThingClass , Thing , ObjectProperty , get_ontology
 import logging
-import utils.annetto_utils as ann
-
 
 class OnnxAddition:
     """
@@ -45,7 +32,6 @@ class OnnxAddition:
         """
         Initialize connection to the database
         """
-        #print(Model())
         self.engine = db.create_engine('postgresql://postgres:postgres@localhost:5433/graphdb')
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
@@ -80,13 +66,14 @@ class OnnxAddition:
 
         return self.model_list
 
-def instantiate_onnx_annetto():
+def fetch_db_info():
     # testing
-    onto_path="tests/onnx_additions/annetto-o-test.owl"
+    ann_name = "alexnet"
     inst = OnnxAddition()
     inst.init_engine()
-    inst.fetch_layers(network="alexnet")
+    print(inst.fetch_layers(network=ann_name))
+    print(inst.fetch_models())
     
 
 if __name__ == '__main__':
-    instantiate_onnx_annetto()
+    fetch_db_info()

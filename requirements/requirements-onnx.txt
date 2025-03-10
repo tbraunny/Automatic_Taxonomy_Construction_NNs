@@ -1,2 +1,4 @@
+onnx
+fire
 sqlalchemy
 pgvector

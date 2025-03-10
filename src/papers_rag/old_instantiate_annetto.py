@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime
 import time
 from typing import Dict, Any, Union, List, Optional
-from utils.onnx_additions.add_onnx import OnnxAddition
+from utils.fetch_onnx_db import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from rapidfuzz import process, fuzz
@@ -519,7 +519,7 @@ class OntologyInstantiator:
                 layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
                 self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
-            self.logger.info(f"All layers of {model_name} successfully processed")
+            self.logger.info(f"All layers of {model_name} processed")
 
         except Exception as e:
             print("ERROR")
