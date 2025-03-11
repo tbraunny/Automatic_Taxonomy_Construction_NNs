@@ -37,7 +37,7 @@ CHECKPOINT_DIR = OUTPUT_DIR + '/models'  # model checkpoints
 os.makedirs(CHECKPOINT_DIR, exist_ok=True)
 
 
-class AlexNet(nn.Module):
+class AlexNet(torch.nn.Module):
     """
     Neural network model consisting of layers propsed by AlexNet paper.
     """

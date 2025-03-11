@@ -5,6 +5,8 @@ from pytorchgraphextraction import extract_graph
 import logging
 from datetime import datetime
 import os
+from utils.fetch_onnx_db import OnnxAddition
+from tests.papers_rag.instantiate_annetto import OntologyInstantiator
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -40,6 +42,7 @@ class CodeProcessor(ast.NodeVisitor):
         self.code_lines = code.split("\n")
         self.sections = [] # classes / functions / global vars
         self.pytorch_graph = []
+        self.model_name: str = ""
 
     def visit_Module(self, node):
         """
@@ -83,7 +86,9 @@ class CodeProcessor(ast.NodeVisitor):
         Also checks for class that instantiates PyTorch model
         """
         for base in node.bases:
-            if base.attr == "Module" and base.value.id == "nn": # check for nn.Module base class
+            if base.attr == "Module" and ( # check for nn.Module base class
+                    (hasattr(base.value , "id") and base.value.id == "nn") or 
+                    (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
                 mappings: dict = {}
 
                 class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
@@ -91,8 +96,9 @@ class CodeProcessor(ast.NodeVisitor):
                 model_class = mappings.get(node.name)
                 model = model_class()
                 model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
+                model_name = node.name
 
-                self.pytorch_graph = extract_graph(model)                
+                self.pytorch_graph = json.loads(extract_graph(model)) # extract_graph returns json.dumps                
         
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
@@ -198,10 +204,18 @@ def process_code_file(files):
             processor = CodeProcessor(code)
             processor.visit(tree)
             output: dict = {}
+            onn = OnnxAddition()
+            model_list = onn.fetch_models()
 
             if processor.pytorch_graph: # symbolic graph dictionary
                 output = processor.pytorch_graph
                 output_file = file.replace(".py", f"_code_torch_{count}.json")
+            # check for model in onnx
+            elif any(processor.model_name , model_list):
+                # run the onnx stuff
+                
+                logger.info("Model name found within ONNX database")
+
             else: # regular code dictionary
                 output = processor.parse_code()
 
@@ -211,6 +225,7 @@ def process_code_file(files):
             print(f"JSONified code saved to {output_file}")
             logger.info(f"JSON successfully saved to {output_file}")
     except Exception as e:
+        print(e)
         logger.error(f"Error processing code files, {e}")
 
 

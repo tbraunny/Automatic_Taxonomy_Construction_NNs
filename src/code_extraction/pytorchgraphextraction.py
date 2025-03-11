@@ -40,7 +40,6 @@ def extract_graph(model):
     # Convert to JSON and return
     return json.dumps(computeGraph, indent=4)
 
-
 if __name__ == "__main__":
     # Define a simple model with skip connection
     class SimpleSkipConnectionModel(nn.Module):

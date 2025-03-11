@@ -13,7 +13,9 @@ from typing import List
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
+from rapidfuzz import process , fuzz
 import logging
+from typing import Optional
 
 class OnnxAddition:
     """
@@ -65,6 +67,37 @@ class OnnxAddition:
 
 
         return self.model_list
+    
+    def _fuzzy_match_list(self , class_names: List[str], instance=None , threshold: int = 80) -> Optional[str]:
+        """
+        Perform fuzzy matching to find the best match for an instance in a list of strings.
+
+        :param instance_name: The instance name.
+        :param class_names: A list of string names to match with.
+        :param threshold: The minimum score required for a match.
+        :return: The best-matching string or None if no good match is found.
+        """
+        if not instance:
+            print("WHAT THE FUCK")
+
+        if not all(isinstance(name, str) for name in class_names):
+            raise TypeError("Expected class_names to be a list of strings.")
+        if not isinstance(threshold, int):
+            raise TypeError("Expected threshold to be an integer.")
+
+        match, score, _ = process.extractOne(self.ann_config_name, class_names, scorer=fuzz.ratio)
+
+        return match if score >= threshold else None
+
+    def check_onnx(self , model_name):
+        try:
+            onn = OnnxAddition()
+            onn.init_engine()
+            models_list = onn.fetch_models()
+            best_model_match = self._fuzzy_match_list(models_list , model_name)
+            return best_model_match
+        except Exception as e:
+            raise e
 
 def fetch_db_info():
     # testing

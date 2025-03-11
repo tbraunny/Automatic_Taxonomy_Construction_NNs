@@ -7,7 +7,7 @@ from typing import Dict, Any, Union, List, Optional
 from utils.fetch_onnx_db import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
-from rapidfuzz import process, fuzz
+from rapidfuzz import process , fuzz
 from pydantic import BaseModel
 import warnings
 from utils.constants import Constants as C
@@ -177,15 +177,18 @@ class OntologyInstantiator:
 
         return class_name_map[match] if score >= threshold else None
 
-    def _fuzzy_match_list(self , class_names: List[str], threshold: int = 80) -> Optional[str]:
+    def _fuzzy_match_list(self , class_names: List[str] , instance=None , threshold: int = 80) -> Optional[str]:
         """
         Perform fuzzy matching to find the best match for an instance in a list of strings.
 
-        :param instance_name: The instance name.
         :param class_names: A list of string names to match with.
+        :param instance_name: The instance name.
         :param threshold: The minimum score required for a match.
         :return: The best-matching string or None if no good match is found.
         """
+        if not instance:
+            instance = self.ann_config_name
+
         if not all(isinstance(name, str) for name in class_names):
             raise TypeError("Expected class_names to be a list of strings.")
         if not isinstance(threshold, int):
@@ -498,7 +501,8 @@ class OntologyInstantiator:
             best_model_name = self._fuzzy_match_list(models_list)
             if not best_model_name:
                 warnings.warn(f"Model name {best_model_name} not found in database")
-                pass # throw to josue's script for llm instantiation
+                self._llm_process_layers(network_instance) # for now...
+                # throw to josue's script for llm instantiation
 
             # fetch layer list of relevant model
             layer_list = onn.fetch_layers(best_model_name)
@@ -525,7 +529,7 @@ class OntologyInstantiator:
             print("ERROR")
             self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
 
-    def _old_process_layers(self, network_instance: str) -> None:
+    def _llm_process_layers(self, network_instance: str) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
@@ -1084,6 +1088,9 @@ class OntologyInstantiator:
                 exc_info=True,
             )
             raise e
+
+def test_run_layers():
+    pass
 
 
 # For standalone testing
