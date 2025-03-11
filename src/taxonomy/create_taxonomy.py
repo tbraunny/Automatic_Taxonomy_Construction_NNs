@@ -99,6 +99,49 @@ class TaxonomyNode(BaseModel):
         add_nodes_edges(self)
         return '\n'.join(nx.generate_graphml(G))
 
+
+
+
+def query_instance_properties(instance, query):
+    found = []
+    for prop in instance.get_properties():
+        print('property',prop.name)
+
+        for value in prop[instance]:
+
+            print('value',value,type(value))
+            eq = query
+
+            if eq.Op == 'sequal' and isinstance(value,Thing) and eq.Value == value.name:
+                insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'less' and type(value) == int and eq.Value > value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'greater' and etype(value) == int and eq.Value < value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'leq' and type(value) == int and eq.Value >= value and eq.Name == prop.name:
+                found = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'geq' and type(value) == int and  eq.Value <= value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'equal' and type(value) == int and eq.Value == value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+            if eq.Op == 'range' and type(value) == int and eq.Value[0] < value and eq.Value[1] > value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+    return found
+
 class TaxonomyCreator:
 
     levels: List[Criteria]
@@ -108,67 +151,72 @@ class TaxonomyCreator:
         self.ontology = ontology # Load ontology as Ontology object
         self.taxonomy = None
         self.levels = criteria
-    
-    def create_taxonomy(self):
-        annconfignodes = []
-        # Get all ANNConfiguration Objects
-        logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
+    def create_level(self, ann_configurations, criteria):
+        hashmap = {}
 
-        ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
-        logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
-        splits = [ann_configurations]
-        topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None, annConfigs = [annconfig.name for annconfig in ann_configurations])
-        nodes = [topnode]
-        for level_index, level in enumerate(self.levels):
-            newsplits = []
-            newnodes = []
-            for index,split in enumerate(splits):
-                print('current_split',split)
-                #input()
-                for crit in level.criteria:
-                    found = SplitOnCriteria(self.ontology, split, has=crit.has, equals=crit.equals) # only supporting has properties right now
-                    print('found',found)
-                    input()
-                    #nodes[index].splitProperties
-                    # TODO -- handle merging -- several different criteria -- don't handle logic or or logic ands
-                    for key in found:
-                        
-                        split = list(found[key].keys())
-                        childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], annConfigs = found[key].keys())
-                        nodes[index].children.append(childnode)
-                        newnodes.append(childnode)
-                        newsplits.append(split)
-                    
-            splits = newsplits
-            nodes = newnodes
-            print(nodes)
-        print(topnode.to_graphml())
-        input()
-        #input()
-        
+        hasTypes = [crit.HasType  for crit in criteria]
         for ann_config in ann_configurations:
-            annconfignodes.append(TaxonomyNode(ann_config.name))
-            logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
-            # NOTE: ontology.hasNetwork is an ObjectProperty -> returns annett-o-0.1.hasNetwork of type: <class 'owlready2.prop.ObjectPropertyClass'>
+            found = []
             networks = get_instance_property_values(ann_config, self.ontology.hasNetwork.name)
+            
 
+            logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
+            
+            # NOTE: ontology.hasNetwork is an ObjectProperty -> returns annett-o-0.1.hasNetwork of type: <class 'owlready2.prop.ObjectPropertyClass'>
+            
+            # iterate over network
             for network in networks:
+
+                #print(criteria.has)
+                #for crit in criteria:
+                #    print(has)
+                #    found += get_instance_property_values(ann_config, has)
+
                 logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
-                
-                task_characterizations = get_instance_property_values(network, self.ontology.hasTaskType.name)
-                logger.info(f"{' ' * 5}Task Characterizations: {task_characterizations}, type: {type(task_characterizations)}")
 
                 layers = get_instance_property_values(network, self.ontology.hasLayer.name)
                 logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
 
-                for layer in layers:
-                    # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
-                    logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
-                    logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
+                for crit in criteria:
+                    items = []
+                    if crit.HasType != '':
 
-                    subclass = layer.is_a[0]
-                    logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
+                        # BFS search for has properties 
+                        items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
 
+                    if crit.Type != '':
+                        searchType = crit.Type
+                        if searchType == 'layer_num_units' or searchType == 'layer':
+                            #query_instance_properties(network, crit)
+                            
+                            for layer in layers:
+                                items += query_instance_properties(layer, crit)
+                                # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
+                                logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
+                                logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
+
+                                subclass = layer.is_a[0]
+                                logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
+                    for item in items:
+                        item['hash'] = item[crit.HashOn]
+
+                    found += items
+            print('found',found)
+            for index, data in enumerate(found): 
+                found[index]['annconfig'] = ann_config
+            
+            hashvalue = set([item['hash'] for item in found])
+            hashvalue = hashvalue = ' '.join( str(hash) for hash in hashvalue)
+            if not hashvalue in hashmap:
+                hashmap[hashvalue] = { ann_config : found }
+            else:
+                hashmap[hashvalue][ann_config] = found
+
+            #annconfignodes.append(TaxonomyNode(ann_config.name))
+
+            for network in networks:
+                
+                task_characterizations = get_instance_property_values(network, self.ontology.hasTaskType.name)
                 logger.info('\n')
 
                 for task_characterization in task_characterizations:
@@ -177,7 +225,39 @@ class TaxonomyCreator:
 
                     subclass = task_characterization.is_a[0]
                     logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
+        logger.info('done')
+        return hashmap
+    def create_taxonomy(self,format='json'):
+        annconfignodes = []
+        # Get all ANNConfiguration Objects
+        logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
 
+        ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
+
+        logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
+        splits = [ann_configurations]
+        topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None, annConfigs = [annconfig.name for annconfig in ann_configurations])
+        nodes = [topnode]
+        for level_index, level in enumerate(self.levels):
+            newsplits = []
+            newnodes = []
+            for index,split in enumerate(splits):
+                found = self.create_level(split, level.criteria) # only supporting has properties right now
+                for key in found:
+                    
+                    split = list(found[key].keys())
+                    childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], annConfigs = found[key].keys())
+                    nodes[index].children.append(childnode)
+                    newnodes.append(childnode)
+                    newsplits.append(split)
+                    
+            splits = newsplits
+            nodes = newnodes
+            print(nodes)
+            if format == 'json':
+                return topnode.to_json()
+            else:
+                return topnode.to_graphml()
 
 def main():
 
@@ -186,21 +266,22 @@ def main():
     # ontology_path = f"./data/owl/annett-o-test.owl"
 
     # Example Criteria...
-    op = SearchOperator(has= [HasTaskType]) #, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
     criteria = Criteria()
     criteria.add(op)
 
-    op2 = SearchOperator(has=[HasLayer] )
-    criteria2 = Criteria()
-    criteria2.add(op2)
+    #op2 = SearchOperator(has=[HasLoss] )
+    #criteria2 = Criteria()
+    #criteria2.add(op2)
     
-    op3 = SearchOperator(has=[HasLoss] )
-    criteria3 = Criteria()
-    criteria3.add(op3)
+    #op3 = SearchOperator(has=[HasLoss] )
+    #criteria3 = Criteria()
+    #criteria3.add(op3)
     
-    criterias = [criteria2]#,criteria2,criteria3]
+    criterias = [criteria]#,criteria2,criteria3]
 
     ontology = load_ontology(ontology_path=ontology_path)
     logger.info("Ontology loaded.")

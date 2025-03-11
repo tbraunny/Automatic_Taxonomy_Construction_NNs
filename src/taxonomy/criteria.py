@@ -4,22 +4,30 @@ from typing import List, Optional, Dict
 
 AND = 'and'
 OR = 'or'
-LESS = '<'
-GREATOR = '>'
-LESS_EQUAL = '<='
-GREATER_EQUAL = '>='
-EQUAL = '=='
-
+LESS = 'less'
+GREATeR = 'greater'
+LESS_EQUAL = 'leq'
+GREATER_EQUAL = 'geq'
+EQUAL = 'equal'
+SCOMP = 'scomp'
+RANGE = 'range'
 HasTaskType = 'hasTaskType'
 HasLayer = 'hasLayer'
 HasLoss = 'hasLoss'
+
 class SearchOperator(BaseModel):
     '''
     Name: SearchOperator
     Description: Has is for the edge properties like hasNetwork, hasLayer. Equals is for matching to specific names.
     '''
-    has: Optional [ List ] = []
-    equals: Optional[ List ] = []
+    HasType: Optional[str] = ""
+    Type: Optional[str] = ""
+    Name: Optional[str] = ""
+    Op: Optional[str] = "" 
+    Value: Optional[str | int | float | list ] = ""
+    HashOn: Optional[str] = "type"
+    #has: Optional [ List ] = []
+    #equals: Optional[ List ] = []
 
 class Criteria(BaseModel):
     '''

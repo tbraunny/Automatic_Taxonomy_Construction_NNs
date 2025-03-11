@@ -404,7 +404,7 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
         print('property',prop.name)
 
         for value in prop[instance]:
-            
+                
             print('value',value,type(value))
             print(equals)
             for eq in equals:
@@ -434,11 +434,8 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
                         found.append(insert)
             try: 
                 if isinstance(value, Thing): # TODO: this is super redudant and could probably be covered with the above...
-                    for i in has_property: 
-                        inserts = get_instance_property_values(instance,i)
-                        #if len(insert) > 0:
-                        #    print('ffffff',insert)
-                        #    input()
+                    for has in has_property: 
+                        inserts = get_instance_property_values(instance,has)
                         for insert in inserts:
                             insert = {'type': insert.is_a[0].name, 'name': insert.name} 
                             if not insert in found:
