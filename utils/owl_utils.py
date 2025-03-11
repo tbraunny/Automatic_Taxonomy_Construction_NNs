@@ -391,6 +391,7 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
     Args:
         instance (ThingClass): the class for which is an instance
         has_property: the has properties we are looking for. This is typically edge properties
+        equals: a set of dictionary that define some comparison operations
         found: a list of found elements associate to has_property
         visisted: all nodes that have been visisted
     '''
@@ -405,35 +406,46 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
         for value in prop[instance]:
             
             print('value',value,type(value))
+            print(equals)
             for eq in equals:
-                #print(eq, value.name, eq['value'])
-                #input()
                 if isinstance(value,Thing) and eq['type'] == 'name' and eq['value'] == value.name:
-                    found += prop[instance]
-                if type(value) == int and eq['type'] == 'value'and eq['value'] < value and eq['op'] == 'less' and eq['name'] == value.name:
-                    found += prop[instance]
-
-                if type(value) == int and eq['type'] == 'value'and eq['value'] > value and eq['op'] == 'greater' and eq['name'] == value.name:
-                    found += prop[instance]
-                
-                if type(value) == int and eq['type'] == 'value'and eq['value'] <= value and eq['op'] == 'leq' and eq['name'] == value.name:
-                    found += prop[instance]
-                
-                if type(value) == int and eq['type'] == 'value'and eq['value'] >= value and eq['op'] == 'geq' and eq['name'] == value.name:
-                    found += prop[instance]
-                
-                if type(value) == int and eq['type'] == 'value'and eq['value'] == value and eq['op'] == 'equals' and eq['name'] == value.name:
-                    found += prop[instance]
+                    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                if type(value) == int and eq['type'] == 'value'and eq['value'] > value and eq['op'] == 'less' and eq['name'] == prop.name:
+                    insert = {'type': 'int', 'value': value, 'name': prop.name}  
+                    if not insert in found:
+                        found.append(insert)
+                if type(value) == int and eq['type'] == 'value'and eq['value'] < value and eq['op'] == 'greater' and eq['name'] == prop.name:
+                    insert = {'type': 'int', 'value': value, 'name': prop.name}  
+                    if not insert in found:
+                        found.append(insert)
+                if type(value) == int and eq['type'] == 'value'and eq['value'] >= value and eq['op'] == 'leq' and eq['name'] == prop.name:
+                    found = {'type': 'int', 'value': value, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                if type(value) == int and eq['type'] == 'value'and eq['value'] <= value and eq['op'] == 'geq' and eq['name'] == prop.name:
+                    insert = {'type': 'int', 'value': value, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                if type(value) == int and eq['type'] == 'value'and eq['value'] == value and eq['op'] == 'equals' and eq['name'] == prop.name:
+                    insert = {'type': 'int', 'value': value, 'name': prop.name}
+                    if not insert in found:
+                        found.append(insert)
             try: 
-                if isinstance(value, Thing):
+                if isinstance(value, Thing): # TODO: this is super redudant and could probably be covered with the above...
                     for i in has_property: 
-                        found += get_instance_property_values(instance,i) 
-                    find_instance_properties(value, has_property, found=found,visited=visited,equals=equals)
+                        inserts = get_instance_property_values(instance,i)
+                        #if len(insert) > 0:
+                        #    print('ffffff',insert)
+                        #    input()
+                        for insert in inserts:
+                            insert = {'type': insert.is_a[0].name, 'name': insert.name} 
+                            if not insert in found:
+                                found.append(insert)
+                    find_instance_properties(value, has_property=has_property, found=found,visited=visited,equals=equals)
             except: 
                 print('broken')
-    found = set(found)
-    print(found)
-    #input()
     return found
 
 def explore_instance(instance, depth=0, visited=None):

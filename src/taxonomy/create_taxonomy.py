@@ -22,9 +22,18 @@ def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
     '''
     found = {}
     for ann_config in annConfigs:
-        items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, has_property=has, equals=equals, found=[])]
-        subclasses = set([ item['subclass'][0].name for item in items ])
-        hashvalue = ''.join( item +',' for item in subclasses )
+        items = []
+        for item in find_instance_properties(ann_config, has_property=has, equals=equals, found=[]):
+            if type(item) == int:
+                items.append( {'name': str(item), 'subclass': 'int' } )
+            elif type(item) == dict:
+                item['subclass'] = item['type']
+                items.append( item )
+            else:
+                items.append( {'name': item.name, 'subclass': item.is_a[0].name } )
+        #items = [{'name':item, 'subclass':item.is_a} for item in find_instance_properties(ann_config, has_property=has, equals=equals, found=[])]
+        subclasses = set([ item['subclass'] for item in items]) #+ '~' + item['name'] for item in items ])
+        hashvalue = ' '.join( item +',' for item in subclasses )
         if not hashvalue in found:
             found[hashvalue] = { ann_config : items }
         else:
@@ -43,6 +52,7 @@ def serialize(obj):
         return {
             "name": obj.name,
             "splitProperties": serialize(obj.splitProperties),
+            "annConfigs": serialize(obj.annConfigs),
             "criteria": serialize(obj.criteria),
             "children": [serialize(c) for c in obj.children]
         }
@@ -59,11 +69,12 @@ def serialize(obj):
 
 class TaxonomyNode(BaseModel):
     name: str
+    annConfigs: Optional[List] = []
     splitProperties: Optional[List|Dict] = []
     criteria: Criteria|None
     children: Optional[List] = []
-    def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}):
-        super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties)
+    def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}, annConfigs = []):
+        super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs)
     def add_children(self, child):
         self.children.append(children)
     def to_json(self):
@@ -76,6 +87,7 @@ class TaxonomyNode(BaseModel):
             node_data = {"name": node.name}
             node_data['criteria'] = json.dumps(serialize(node.criteria))
             node_data['splitProperties'] = json.dumps(serialize(node.splitProperties))
+            node_data['annConfigs'] = json.dumps(serialize(node.annConfigs))
             G.add_node(node_id, **node_data)
 
             if parent_id:
@@ -105,7 +117,7 @@ class TaxonomyCreator:
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
         splits = [ann_configurations]
-        topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None)
+        topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None, annConfigs = [annconfig.name for annconfig in ann_configurations])
         nodes = [topnode]
         for level_index, level in enumerate(self.levels):
             newsplits = []
@@ -117,11 +129,12 @@ class TaxonomyCreator:
                     found = SplitOnCriteria(self.ontology, split, has=crit.has, equals=crit.equals) # only supporting has properties right now
                     print('found',found)
                     input()
+                    #nodes[index].splitProperties
                     # TODO -- handle merging -- several different criteria -- don't handle logic or or logic ands
                     for key in found:
                         
                         split = list(found[key].keys())
-                        childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key])
+                        childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], annConfigs = found[key].keys())
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
                         newsplits.append(split)
@@ -130,7 +143,9 @@ class TaxonomyCreator:
             nodes = newnodes
             print(nodes)
         print(topnode.to_graphml())
+        input()
         #input()
+        
         for ann_config in ann_configurations:
             annconfignodes.append(TaxonomyNode(ann_config.name))
             logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
@@ -171,7 +186,9 @@ def main():
     # ontology_path = f"./data/owl/annett-o-test.owl"
 
     # Example Criteria...
-    op = SearchOperator(has= [HasTaskType] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(has= [HasTaskType]) #, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
     criteria = Criteria()
     criteria.add(op)
 
@@ -183,7 +200,7 @@ def main():
     criteria3 = Criteria()
     criteria3.add(op3)
     
-    criterias = [criteria]#,criteria2,criteria3]
+    criterias = [criteria2]#,criteria2,criteria3]
 
     ontology = load_ontology(ontology_path=ontology_path)
     logger.info("Ontology loaded.")
