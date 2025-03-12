@@ -1,5 +1,5 @@
 import instantiate_annetto as inst_ann
-import  utils.llm_service as llm_service
+import  utils.llm_service_with_code as llm_service_with_code
 
 from owlready2 import *
 from utils.constants import Constants as C
@@ -13,7 +13,7 @@ def test_query_llm():
     network_instance_name = "convolutional network" # Test json assumes convolutional network
 
     try:
-        llm_service.init_engine(model_name, f"tests/papers_rag/doc_test_llm_service.json") # Use test json data
+        llm_service_with_code.init_engine(model_name, f"tests/papers_rag/doc_test_llm_service.json") # Use test json data
     except Exception as e:
         raise Exception(f"Error initializing the LLM engine: {e}")
 
@@ -32,7 +32,7 @@ def test_query_llm():
             f"Now, for the following network:\nNetwork: {network_instance_name}\n"
             '{"answer": "<Your Answer Here>"}'
             )
-        assert type(llm_service.query_llm(model_name,int_prompt)) == int
+        assert type(llm_service_with_code.query_llm(model_name,int_prompt)) == int
     except Exception as e:
         raise Exception(f"LLM Service failed to response with a propert integer json format: {e}")
     
@@ -49,7 +49,7 @@ def test_query_llm():
             f"Now, for the following network:\Network: {network_instance_name}\n"
             '{"answer": "<Your Answer Here>"}'
         )
-        assert type(llm_service.query_llm(model_name,str_prompt)) == str
+        assert type(llm_service_with_code.query_llm(model_name,str_prompt)) == str
     except Exception as e:
         raise Exception(f"LLM Service failed to response with a propert string json format: {e}")
 
@@ -75,7 +75,7 @@ def test_query_llm():
             '  "answer": "<Your Answer Here>"\n'
             "}\n"
         )
-        respose =  llm_service.query_llm(model_name,dict_prompt)
+        respose =  llm_service_with_code.query_llm(model_name,dict_prompt)
         assert isinstance(respose, dict) and all(isinstance(k, str) and isinstance(v, any) for k, v in respose.items())
     except Exception as e:
         raise Exception(f"LLM Service failed to response with a propert dictionary json format: {e}")
@@ -100,7 +100,7 @@ def test_query_llm():
             f"Now, for the following network:\nNetwork: {network_instance_name}\n"
             '{"answer": "<Your Answer Here>"}'
         )
-        response = llm_service.query_llm(model_name,list_of_any_prompt)
+        response = llm_service_with_code.query_llm(model_name,list_of_any_prompt)
 
         assert isinstance(response, list) and all(isinstance(i, any) for i in response)
     except Exception as e:

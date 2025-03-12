@@ -22,7 +22,7 @@ from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.onnx_additions.add_onnx import OnnxAddition
 
 # from utils.llm_service import init_engine, query_llm
-from utils.llm_service_josue import init_engine, query_llm
+from utils.llm_service import init_engine, query_llm
 from utils.pydantic_models import *
 
 # Set up logging
@@ -337,8 +337,8 @@ class OntologyInstantiator:
             objective_function_json_format_prompt = (
                 "Return the task name in JSON format with the key 'answer'.\n\n"
                 "The output should be structured as follows:\n"
-                f"- loss function: a string representing the type of loss function used in the {network_instance_name} network.\n"
-                "- regularizer function: a string representing the type of regularizer function used in along with the loss function.\n"
+                f"- loss function: the loss function used in the {network_instance_name} network.\n"
+                "- regularizer function: a penalty term added to the loss function to improve a network's generalization ability.\n"
                 "- objective function: a string representing whether the loss function function is set to 'minimize' or 'maximize', where minimization reduces prediction errors (e.g., in regression and classification tasks) and maximization enhances desired outcomes (e.g., in reinforcement learning or adversarial training).\n\n"
                 "For example, if the loss function is 'Mean Squared Error', the regularizer function is 'L1', and the objective function is set to 'maximize', the output should look like:\n"
                 "{\n"
@@ -1307,7 +1307,7 @@ class OntologyInstantiator:
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
                 for count, j in enumerate(self.list_json_doc_paths):
-                    init_engine(self.ann_config_name, j)
+                    init_engine(self.ann_config_name, j, self.logger)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
 
@@ -1346,6 +1346,8 @@ if __name__ == "__main__":
 
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
 
+    time_start = time.time()
+
     for model_name in [
         "alexnet",
         "resnet",
@@ -1369,3 +1371,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error instantiating the {model_name} ontology in __name__: {e}")
             continue
+    
+    time_end = time.time()
+    minutes, seconds = divmod(time_end - time_start, 60)
+    print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds.")

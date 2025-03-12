@@ -22,7 +22,7 @@ from pydantic import BaseModel
 from typing import Union, List, Dict, Any, Type
 
 #TODO UPDATE THIS
-from utils.llm_service_josue import init_engine, query_llm 
+from utils.llm_service import init_engine, query_llm 
 
 OMIT_CLASSES = {
     "DataCharacterization",
