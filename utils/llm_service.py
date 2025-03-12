@@ -302,7 +302,7 @@ class LLMQueryEngine:
         self.dense_mapping = []
 
         # Load and process documents.
-        docs = load_documents_from_json(json_file_path)
+        #docs = load_documents_from_json(json_file_path)
         self.logger.info("Loaded %d documents from %s", len(docs), json_file_path)
 
         self.chunked_docs = self._chunk_documents(docs)
@@ -326,6 +326,10 @@ class LLMQueryEngine:
         #self.logger.info(
             #"Built graph index with %d nodes.", self.graph.number_of_nodes()
         #)
+    
+    @classmethod
+    def load_docs(cls, json_file_path: str):
+        return load_documents_from_json(json_file_path)
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""

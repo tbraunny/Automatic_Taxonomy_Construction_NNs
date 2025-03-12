@@ -11,3 +11,4 @@ tests/papers_rag/annett-o-test(2).owl
 data/annett-o-test.owl
 data/
 *.owl
+utils/llm_service_paper_embeddings.py

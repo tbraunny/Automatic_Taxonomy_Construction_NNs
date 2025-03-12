@@ -1,3 +1,4 @@
 matplotlib
 scikit-learn
 umap-learn
+mmcv-full # was throwing cuda-related errors till I installed this library
