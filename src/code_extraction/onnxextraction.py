@@ -9,7 +9,8 @@ import fire
 from collections import OrderedDict
 from google.protobuf.json_format import MessageToJson
 
-
+# DEPRECATED?
+# utils/onnx_extractor.py contains exact same function?
 class ONNXProgram:
     def compute_graph_extraction(self,onnx_file,outfile,savePath=''):
    

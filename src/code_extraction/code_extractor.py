@@ -5,7 +5,7 @@ from pytorchgraphextraction import extract_graph
 import logging
 from datetime import datetime
 import os
-from utils.fetch_onnx_db import OnnxAddition
+from utils.onnx_db import check_onnx
 from tests.papers_rag.instantiate_annetto import OntologyInstantiator
 import os
 
@@ -191,15 +191,18 @@ def save_json(output_file: str , content: dict):
             
     logger.info(f"JSON successfully saved to {output_file}")
 
-def process_code_file(files):
+def process_code_file(file_path):
     """
     Traverse abstract syntax tree & dump relevant code into JSON
 
-    :param files: Directory in which code files may be present (data/ann_name/*.py)
+    :param file_path: Directory in which code files may be present (eg. data/{ann_name})
     :return None: JSON files saved to same directory given
     """
     try:
-        for count , file in enumerate(files):
+        py_files = glob.glob(f"{file_path}/*.py")
+        onnx_files = glob.glob(f"{file_path}/*.onnx")
+
+        for count , file in enumerate(file_path):
             with open(file , "r") as f:
                 code = f.read()
             tree = ast.parse(code)
@@ -211,18 +214,18 @@ def process_code_file(files):
             
             processor = CodeProcessor(code)
             processor.visit(tree)
-            onn = OnnxAddition()
 
             if not processor.model_name:
                 base = os.path.basename(file)
                 processor.model_name = os.path.splitext(base)[0]
-            onnx_model = onn.check_onnx(processor.model_name) # check for onnx model
+            onnx_model = check_onnx(processor.model_name) # check for onnx model
 
             if processor.pytorch_graph: # symbolic graph dictionary
                 content = processor.pytorch_graph
                 save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
             elif onnx_model: # check for model in onnx
                 logger.info(f"Model name '{onnx_model}' found within ONNX database")
+                # instantiate it
             else:
                 logger.info(f"Model name '{processor.model_name}' is not PyTorch or an instance in the ONNX database")
 

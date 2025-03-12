@@ -24,8 +24,7 @@ class OnnxAddition:
     """
 
     def __init__(self):
-        self.engine = 0
-        self.session = 0
+        self.engine , self.session = self.init_engine()
         self.layer_list = []
         self.model_list = []
         self.onto = 0
@@ -45,6 +44,8 @@ class OnnxAddition:
             except Exception as e:
                 logging.exception(f"Failed to connect to database: {e}")
 
+        return self.engine , self.session
+
     def fetch_layers(self , network):
         """
         Fetch all relevant layer information from graph db
@@ -63,10 +64,19 @@ class OnnxAddition:
         with self.engine.connect() as conn:
             models = conn.execute(text("SELECT model_name FROM model"))
             #self.model_list:Union[int , List[int] , str , List[str]] = models.fetchall()
-            self.model_list: List[str] = [row[0] for row in models.fetchall()]  # Extract the first column
-
+            self.model_list: List[str] = [row[0] for row in models.fetchall()]  # Extract the first column, model_id
 
         return self.model_list
+    
+    def insert_papers(self , paper_name: str , contents: str):
+        with self.engine.connect() as conn:
+            conn.execute(text(f"INSERT INTO paper (paper_name , contents) VALUES ({paper_name} , {contents})"))
+            self.session.commit()
+
+            X = 0
+            paper_id = conn.execute(text(f"SELECT paper_id FROM paper WHERE paper_name = {paper_name}"))
+            conn.execute(text(f"INSERT INTO paper_model (paper_id , model_id) VALUES ({paper_id} , {X})")) # reflect change in paper_models
+            self.session.commit()
     
     def fuzzy_match(self , class_names: List[str], instance=None , threshold: int = 80) -> Optional[str]:
         """
@@ -90,15 +100,14 @@ class OnnxAddition:
 
         return match if score >= threshold else None
 
-    def check_onnx(self , model_name):
-        try:
-            onn = OnnxAddition()
-            onn.init_engine()
-            models_list = onn.fetch_models()
-            best_model_match = self.fuzzy_match(models_list , model_name)
-            return best_model_match
-        except Exception as e:
-            raise e
+def check_onnx(model_name: str): # runner
+    try:
+        onn = OnnxAddition()
+        models_list = onn.fetch_models()
+        best_model_match = onn.fuzzy_match(models_list , model_name)
+        return best_model_match
+    except Exception as e:
+        raise e
 
 def fetch_db_info():
     # testing
