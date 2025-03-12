@@ -76,7 +76,10 @@ class OntologyInstantiator:
             self.logger.error("Expected a string for output OWL path.")
             raise TypeError("Expected a string for output OWL path.")
         
-        self.ontology = get_ontology(ontology_path).load()
+        if not ontology_path:
+            self.ontology = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
+        else:
+            self.ontology = get_ontology(ontology_path).load()
         self.list_json_doc_paths = list_json_doc_paths
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
@@ -193,8 +196,9 @@ class OntologyInstantiator:
             raise TypeError("Expected class_names to be a list of strings.")
         if not isinstance(threshold, int):
             raise TypeError("Expected threshold to be an integer.")
-
-        match, score, _ = process.extractOne(self.ann_config_name, class_names, scorer=fuzz.ratio)
+        
+        class_names_lower = [name.lower() for name in class_names]
+        match, score, _ = process.extractOne(self.ann_config_name.lower(), class_names_lower, scorer=fuzz.ratio)
 
         return match if score >= threshold else None
 
@@ -502,7 +506,7 @@ class OntologyInstantiator:
             if not best_model_name:
                 warnings.warn(f"Model name {best_model_name} not found in database")
                 self._llm_process_layers(network_instance) # for now...
-                # throw to josue's script for llm instantiation
+                # throw to josue's script for llm instantiation?
 
             # fetch layer list of relevant model
             layer_list = onn.fetch_layers(best_model_name)

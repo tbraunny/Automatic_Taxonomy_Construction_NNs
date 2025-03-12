@@ -68,7 +68,7 @@ class OnnxAddition:
 
         return self.model_list
     
-    def _fuzzy_match_list(self , class_names: List[str], instance=None , threshold: int = 80) -> Optional[str]:
+    def fuzzy_match(self , class_names: List[str], instance=None , threshold: int = 80) -> Optional[str]:
         """
         Perform fuzzy matching to find the best match for an instance in a list of strings.
 
@@ -78,14 +78,15 @@ class OnnxAddition:
         :return: The best-matching string or None if no good match is found.
         """
         if not instance:
-            print("WHAT THE FUCK")
+            raise ValueError
 
         if not all(isinstance(name, str) for name in class_names):
             raise TypeError("Expected class_names to be a list of strings.")
         if not isinstance(threshold, int):
             raise TypeError("Expected threshold to be an integer.")
 
-        match, score, _ = process.extractOne(self.ann_config_name, class_names, scorer=fuzz.ratio)
+        class_names_lower = [name.lower() for name in class_names]
+        match, score, _ = process.extractOne(instance.lower() , class_names_lower, scorer=fuzz.ratio)
 
         return match if score >= threshold else None
 
@@ -94,7 +95,7 @@ class OnnxAddition:
             onn = OnnxAddition()
             onn.init_engine()
             models_list = onn.fetch_models()
-            best_model_match = self._fuzzy_match_list(models_list , model_name)
+            best_model_match = self.fuzzy_match(models_list , model_name)
             return best_model_match
         except Exception as e:
             raise e

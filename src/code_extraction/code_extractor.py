@@ -7,6 +7,7 @@ from datetime import datetime
 import os
 from utils.fetch_onnx_db import OnnxAddition
 from tests.papers_rag.instantiate_annetto import OntologyInstantiator
+import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -42,7 +43,7 @@ class CodeProcessor(ast.NodeVisitor):
         self.code_lines = code.split("\n")
         self.sections = [] # classes / functions / global vars
         self.pytorch_graph = []
-        self.model_name: str = ""
+        self.model_name: str = None
 
     def visit_Module(self, node):
         """
@@ -96,7 +97,7 @@ class CodeProcessor(ast.NodeVisitor):
                 model_class = mappings.get(node.name)
                 model = model_class()
                 model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
-                model_name = node.name
+                self.model_name = node.name
 
                 self.pytorch_graph = json.loads(extract_graph(model)) # extract_graph returns json.dumps                
         
@@ -183,6 +184,13 @@ def check_pytorch(tree: ast.Module) -> bool:
         logger.error(f"Check for PyTorch failed, {e}")
         return False
 
+
+def save_json(output_file: str , content: dict):
+    with open(output_file, "w") as json_file:
+        json.dump(content , json_file , indent=3)
+            
+    logger.info(f"JSON successfully saved to {output_file}")
+
 def process_code_file(files):
     """
     Traverse abstract syntax tree & dump relevant code into JSON
@@ -203,36 +211,33 @@ def process_code_file(files):
             
             processor = CodeProcessor(code)
             processor.visit(tree)
-            output: dict = {}
             onn = OnnxAddition()
-            model_list = onn.fetch_models()
+
+            if not processor.model_name:
+                base = os.path.basename(file)
+                processor.model_name = os.path.splitext(base)[0]
+            onnx_model = onn.check_onnx(processor.model_name) # check for onnx model
 
             if processor.pytorch_graph: # symbolic graph dictionary
-                output = processor.pytorch_graph
-                output_file = file.replace(".py", f"_code_torch_{count}.json")
-            # check for model in onnx
-            elif any(processor.model_name , model_list):
-                # run the onnx stuff
-                
-                logger.info("Model name found within ONNX database")
+                content = processor.pytorch_graph
+                save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
+            elif onnx_model: # check for model in onnx
+                logger.info(f"Model name '{onnx_model}' found within ONNX database")
+            else:
+                logger.info(f"Model name '{processor.model_name}' is not PyTorch or an instance in the ONNX database")
 
-            else: # regular code dictionary
-                output = processor.parse_code()
-
-            with open(output_file, "w") as json_file:
-                json.dump(output , json_file , indent=3)
+            # regular code dictionary for RAG
+            output = processor.parse_code()
+            save_json(output_file , output)
             
-            print(f"JSONified code saved to {output_file}")
-            logger.info(f"JSON successfully saved to {output_file}")
     except Exception as e:
-        print(e)
         logger.error(f"Error processing code files, {e}")
 
 
 def main():
     ann_name = "alexnet"
     files = glob.glob(f"data/{ann_name}/*.py")
-    print("File(s) found: " , files)
+    logger.info(f"File(s) found: {files}")
 
     process_code_file(files)
 
