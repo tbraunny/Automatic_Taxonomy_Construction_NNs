@@ -17,7 +17,7 @@ import umap
 Leverage the embeddings from a given paper to discover possible
 clustering techniques for taxonomy splits
 
-Testing phase, check notes of each function for details on performance
+Testing phase, check notes of each function for details on performance & results
 """
 
 pdf_path = glob.glob("data/**/*.pdf" , recursive=True)
@@ -41,7 +41,6 @@ def json_new_papers():
 
     if new_pdfs:
         for pdf in new_pdfs:
-            print("Entered")
             extract_filter_pdf_to_json(pdf, json_output)
             processed_pdfs.add(pdf)
 
@@ -66,8 +65,15 @@ def fetch_section_avg(docs: List):
 
     return vector_array , paper_names
 
+def fetch_docs():
+    for file in json_path:
+        print(file)
+        docs = LLMQueryEngine.load_docs(file) # use @classmethod to fetch without instantiation
+    return docs
+
 def semantic_chunker(docs: List):
     chunked_docs = semantically_chunk_documents(docs)
+    return chunked_docs
 
 def plot_data(vector_2d , labels , title , num_clusters=8):
     plt.figure(figsize=(10, 6), dpi=300)  # High DPI for clarity
@@ -111,10 +117,8 @@ def kmeans_umap(vector_array , paper_names):
 
     plot_data(vector_2d , labels , "umap_kmeans")
 
-for file in json_path:
-    print(file)
-    docs = LLMQueryEngine.load_docs(file) # use @classmethod to fetch without instantiation
-json_new_papers()
+json_new_papers() # check for new pdfs
+docs = fetch_docs()
 semantic_chunker(docs)
 vector_array , paper_names = fetch_section_avg(docs) # refactor
 #kmeans_pca(vector_array , paper_names)
