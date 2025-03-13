@@ -1,3 +1,4 @@
+import re
 from langchain_ollama import ChatOllama
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.output_parsers import JsonOutputParser
@@ -178,6 +179,7 @@ To create a taxonomy with the top layer representing loss and the bottom layer r
 -----------------------------------------------------------
 
 Replace the example properties and values as needed based on the specific query. Your output must be a structured list of Criteria objects using the defined DSL.
+Return only the format with no ``` ```
 '''
 
 
@@ -189,29 +191,50 @@ print(criteriaprompt)
 #conservative_model = OllamaLLM(model="llama3.2",temperature=0)
 #conservative_model = ChatOllama(model="neuralexpert:latest",temperature=0)
 #conservative_model = ChatOllama(model="qwq:32b",temperature=0)
-conservative_model = ChatOllama(model="llama3.2",temperature=0)
+llama_model = ChatOllama(model="llama3.2",temperature=0.1)
+conservative_model = ChatOllama(model="deepseek-r1:32b-qwen-distill-q4_K_M",temperature=0.1)
+#conservative_model = ChatOllama(model="neuralexpert",temperature=0.2)
 
-#fixparser = OutputFixingParser.from_llm(parser=parser, llm=conservative_model)
+fixparser = OutputFixingParser.from_llm(parser=parser, llm=conservative_model)
 
-conservative_model = conservative_model.bind_tools([OutputCriteria])
 
+streaming=True
+if not streaming:
+    conservative_model = conservative_model.bind_tools([OutputCriteria])
+
+
+conservative_model.with_structured_output(OutputCriteria)
 chain = criteriaprompt | conservative_model
-
-output = chain.invoke({'user_input': 'How would you construct a taxonomy that splits on layers between 100 and 300?','oc': oc})
-#print(output)
-if len(output.tool_calls):
-    print('never gonna give you up :). It was successful')
-    print(output.tool_calls[0]['args'])
-    thecriteria = OutputCriteria(**output.tool_calls[0]['args'])
 
 ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
 ontology = load_ontology(ontology_path=ontology_path)
 
-taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-print(taxonomy_creator.create_taxonomy(format='graphml'))
-print(thecriteria)
-#    print(thecriteria)
-streaming=False
+if not streaming:
+    output = chain.invoke({'user_input': 'Construct a taxonomy that splits on 10 to 100 neurons.','oc': oc})
+    #print(output)
+    if len(output.tool_calls):
+        print('never gonna give you up :). It was successful')
+        print(output.tool_calls[0]['args'])
+        thecriteria = OutputCriteria(**output.tool_calls[0]['args'])
+
+
+
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
+    print(taxonomy_creator.create_taxonomy(format='graphml'))
+    print(thecriteria)
+
 if streaming:
-    for chunk in chain.stream( {'user_input':'How would you construct a taxonomy for cnns and transformers?','oc':oc}):
-        print(chunk,end='')
+
+    output = chain.invoke({'user_input': 'Give me a taxonomy that splits on loss and then splits on layer type?','oc': oc}).content
+    output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
+    thecriteria = output = fixparser.parse(output)
+    print(type(output))
+    #output = json.loads(output)
+
+    #thecriteria = OutputCriteria(**output)
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
+    print(taxonomy_creator.create_taxonomy(format='graphml'))
+    print(thecriteria)
+    #print(test)
+    #for chunk in chain.stream( {'user_input':'How would you construct a taxonomy for cnns and transformers?','oc':oc}):
+    #    print(chunk,end='')
