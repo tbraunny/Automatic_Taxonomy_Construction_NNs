@@ -437,7 +437,7 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
                     for has in has_property: 
                         inserts = get_instance_property_values(instance,has)
                         for insert in inserts:
-                            insert = {'type': insert.is_a[0].name, 'name': insert.name} 
+                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True} 
                             if not insert in found:
                                 found.append(insert)
                     find_instance_properties(value, has_property=has_property, found=found,visited=visited,equals=equals)

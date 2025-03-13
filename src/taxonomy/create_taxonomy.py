@@ -242,7 +242,7 @@ class TaxonomyCreator:
             newsplits = []
             newnodes = []
             for index,split in enumerate(splits):
-                found = self.create_level(split, level.criteria) # only supporting has properties right now
+                found = self.create_level(split, level.Searchs) # only supporting has properties right now
                 for key in found:
                     
                     split = list(found[key].keys())
