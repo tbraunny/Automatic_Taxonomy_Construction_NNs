@@ -241,6 +241,7 @@ class TaxonomyCreator:
         for level_index, level in enumerate(self.levels):
             newsplits = []
             newnodes = []
+
             for index,split in enumerate(splits):
                 found = self.create_level(split, level.Searchs) # only supporting has properties right now
                 for key in found:
@@ -254,10 +255,10 @@ class TaxonomyCreator:
             splits = newsplits
             nodes = newnodes
             print(nodes)
-            if format == 'json':
-                return topnode.to_json()
-            else:
-                return topnode.to_graphml()
+        if format == 'json':
+            return topnode.to_json()
+        else:
+            return topnode.to_graphml()
 
 def main():
 
@@ -267,28 +268,28 @@ def main():
 
     # Example Criteria...
     op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    #op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
     criteria = Criteria()
     criteria.add(op)
 
-    #op2 = SearchOperator(has=[HasLoss] )
-    #criteria2 = Criteria()
+    op2 = SearchOperator(HasType=HasTaskType )
+    criteria2 = Criteria()
     #criteria2.add(op2)
     
     #op3 = SearchOperator(has=[HasLoss] )
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria]#,criteria2,criteria3]
+    criterias = [criteria,criteria2]#,criteria2,criteria3]
 
     ontology = load_ontology(ontology_path=ontology_path)
     logger.info("Ontology loaded.")
 
     logger.info("Creating taxonomy from Annetto annotations.")
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    taxonomy_creator.create_taxonomy()
+    print(taxonomy_creator.create_taxonomy(format='aaa'))
     logger.info("Finished creating taxonomy.")
 
 
