@@ -8,6 +8,7 @@ import logging
 import json
 
 import networkx as nx
+
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -54,7 +55,8 @@ def serialize(obj):
             "splitProperties": serialize(obj.splitProperties),
             "annConfigs": serialize(obj.annConfigs),
             "criteria": serialize(obj.criteria),
-            "children": [serialize(c) for c in obj.children]
+            "children": [serialize(c) for c in obj.children],
+            "splitKey": serialize(obj.splitKey)
         }
     elif isinstance(obj, list):
         return [serialize(i) for i in obj]
@@ -73,8 +75,9 @@ class TaxonomyNode(BaseModel):
     splitProperties: Optional[List|Dict] = []
     criteria: Criteria|None
     children: Optional[List] = []
-    def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}, annConfigs = []):
-        super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs)
+    splitKey: Optional[str] = "Empty"
+    def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}, annConfigs = [], splitKey = ""):
+        super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs, splitKey=splitKey)
     def add_children(self, child):
         self.children.append(children)
     def to_json(self):
@@ -88,6 +91,7 @@ class TaxonomyNode(BaseModel):
             node_data['criteria'] = json.dumps(serialize(node.criteria))
             node_data['splitProperties'] = json.dumps(serialize(node.splitProperties))
             node_data['annConfigs'] = json.dumps(serialize(node.annConfigs))
+            node_data['splitKey'] = json.dumps(serialize(node.splitKey))
             G.add_node(node_id, **node_data)
 
             if parent_id:
@@ -125,7 +129,7 @@ def query_instance_properties(instance, query):
                 if not insert in found:
                     found.append(insert)
             if eq.Op == 'leq' and type(value) == int and eq.Value >= value and eq.Name == prop.name:
-                found = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                 if not insert in found:
                     found.append(insert)
             if eq.Op == 'geq' and type(value) == int and  eq.Value <= value and eq.Name == prop.name:
@@ -207,6 +211,8 @@ class TaxonomyCreator:
             
             hashvalue = set([item['hash'] for item in found])
             hashvalue = hashvalue = ' '.join( str(hash) for hash in hashvalue)
+            print('hash: ', hashvalue)
+            #input()
             if not hashvalue in hashmap:
                 hashmap[hashvalue] = { ann_config : found }
             else:
@@ -247,10 +253,15 @@ class TaxonomyCreator:
                 for key in found:
                     
                     split = list(found[key].keys())
-                    childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], annConfigs = found[key].keys())
-                    nodes[index].children.append(childnode)
-                    newnodes.append(childnode)
-                    newsplits.append(split)
+
+                    childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
+
+                    print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
+                    #input()
+                    if not (len(key) == 0 and len(found[key]) == 1): # don't expand leafs
+                        nodes[index].children.append(childnode)
+                        newnodes.append(childnode)
+                        newsplits.append(split)
                     
             splits = newsplits
             nodes = newnodes
@@ -263,7 +274,7 @@ class TaxonomyCreator:
 def main():
 
     logger.info("Loading ontology.")
-    ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
+    #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
     # ontology_path = f"./data/owl/annett-o-test.owl"
 
     # Example Criteria...

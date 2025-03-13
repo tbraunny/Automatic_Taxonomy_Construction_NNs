@@ -22,6 +22,8 @@ from typing import List
 from pydantic import BaseModel, Field
 from langchain.output_parsers import OutputFixingParser
 from create_taxonomy import *
+from visualizeutils import visualizeTaxonomy
+
 class OutputCriteria(BaseModel):
     """Always use this tool to structure your response to the user."""
     criteriagroup: List[Criteria] = Field(description='The levels of the taxonomy as written by the criteria in each element of this list.')
@@ -206,10 +208,10 @@ if not streaming:
 conservative_model.with_structured_output(OutputCriteria)
 chain = criteriaprompt | conservative_model
 
-ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
+ontology_path = f"./data/owl/annett-o-test.owl" 
 ontology = load_ontology(ontology_path=ontology_path)
 
-if not streaming:
+'''if not streaming:
     output = chain.invoke({'user_input': 'Construct a taxonomy that splits on 10 to 100 neurons.','oc': oc})
     #print(output)
     if len(output.tool_calls):
@@ -222,10 +224,10 @@ if not streaming:
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
     print(taxonomy_creator.create_taxonomy(format='graphml'))
     print(thecriteria)
-
+'''
 if streaming:
 
-    output = chain.invoke({'user_input': 'Give me a taxonomy that splits on loss and then splits on layer type?','oc': oc}).content
+    output = chain.invoke({'user_input': 'Give me a taxonomy that splits on small networks and layer type?','oc': oc}).content
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
     thecriteria = output = fixparser.parse(output)
     print(type(output))
@@ -233,8 +235,10 @@ if streaming:
 
     #thecriteria = OutputCriteria(**output)
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-    print(taxonomy_creator.create_taxonomy(format='graphml'))
+    output = taxonomy_creator.create_taxonomy(format='graphml')
     print(thecriteria)
+    print(output)
+    visualizeTaxonomy(output)
     #print(test)
     #for chunk in chain.stream( {'user_input':'How would you construct a taxonomy for cnns and transformers?','oc':oc}):
     #    print(chunk,end='')
