@@ -1,4 +1,0 @@
-onnx
-fire
-sqlalchemy
-pgvector
