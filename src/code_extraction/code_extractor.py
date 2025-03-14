@@ -1,12 +1,13 @@
 import ast
 import json
 import glob
-from pytorchgraphextraction import extract_graph
+from utils.pytorch_extractor import extract_graph
 import logging
 from datetime import datetime
 import os
 from utils.onnx_db import check_onnx
-from tests.papers_rag.instantiate_annetto import OntologyInstantiator
+from utils.pb_extractor import PBExtractor
+from utils.onnx_extractor import ONNXProgram
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
@@ -201,6 +202,20 @@ def process_code_file(file_path):
     try:
         py_files = glob.glob(f"{file_path}/*.py")
         onnx_files = glob.glob(f"{file_path}/*.onnx")
+        pb_files = glob.glob(f"{file_path}/*.pb")
+
+        if onnx_files:
+            logger.info(f"ONNX files detected: {onnx_files}")
+            for count , file in enumerate(onnx_files):
+                output_json = file.replace(".onnx" , f"onnx_{count}.json")
+                # figure out how to run onnx extractor
+        if pb_files:
+            logger.info(f"TensorFlow files detected: {pb_files}")
+            for count , file in enumerate(pb_files):
+                output_json = file.replace(".pb" , f"_pbcode_{count}.json")
+                PBExtractor.extract_compute_graph(file , output_json)
+        if not py_files:
+            logger.info("No Python files found in directory")
 
         for count , file in enumerate(file_path):
             with open(file , "r") as f:

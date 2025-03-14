@@ -1,11 +1,15 @@
 import tensorflow as tf
 import json
 
-class PBProgram:
+class PBExtractor:
     def extract_compute_graph(pb_file: str , output_json: str):
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
         NOTE: needs work, kinda just threw this together, do NOT try to instantiate
+
+        :param pb_file: input tensorflow file
+        :param output_json: output path for parsed JSON
+        :return None
         """
         with tf.io.gfile.GFile(pb_file, "rb") as f:
             graph_def = tf.compat.v1.GraphDef()
@@ -48,4 +52,4 @@ class PBProgram:
 
 if __name__ == "__main__":
     pb_file_path = "data/pb_testing/inception.pb" 
-    PBProgram.extract_compute_graph(pb_file_path, "data/pb_testing/pb_inception_architecture.json")
+    PBExtractor.extract_compute_graph(pb_file_path, "data/pb_testing/pb_inception_architecture.json")
