@@ -2,9 +2,8 @@
 
 class Constants:
     class ONTOLOGY:
-        FILENAME = "data/owl/annett-o-0.1.owl"
-        NAMESPACE = "http://w3id.org/annett-o/"
-    
-    class TESTING_ONTOLOGY:
-        FILENAME = "data/owl/annett-o-test.owl"
+        STABLE_ONTOLOGY_PATH = "data/owl/annett-o.owl"
+        TEST_ONTOLOGY_PATH = "data/owl/annett-o-test.owl"
+        DEV_ONTOLOGY_PATH = "data/owl/annett-o-dev.owl"
+        BASE_ONTOLOGY_PATH = "data/owl/annett-o-0.1.owl"
         NAMESPACE = "http://w3id.org/annett-o/"

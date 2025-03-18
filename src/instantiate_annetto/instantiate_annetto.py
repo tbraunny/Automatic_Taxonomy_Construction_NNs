@@ -7,7 +7,7 @@ from typing import Dict, Any, Union, List, Optional
 import warnings
 
 
-from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
+from owlready2 import Ontology, ThingClass, Thing, ObjectProperty
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 
@@ -19,7 +19,7 @@ from utils.owl_utils import (
 )
 from utils.constants import Constants as C
 
-from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
+from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable, load_annetto_ontology
 from utils.onnx_additions.add_onnx import OnnxAddition
 
 # from utils.llm_service import init_engine, query_llm

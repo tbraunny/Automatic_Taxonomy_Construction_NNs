@@ -1,10 +1,10 @@
 from owlready2 import *
 from unittest.mock import MagicMock, patch
 
-import instantiate_annetto as inst_ann
+import src.instantiate_annetto.instantiate_annetto as inst_ann
 from utils.constants import Constants as C
 import traceback
-from instantiate_annetto import OntologyInstantiator
+from src.instantiate_annetto.instantiate_annetto import OntologyInstantiator
 
 
 def test_num_tokens_from_string():
