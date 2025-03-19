@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 import hashlib
 from datetime import datetime
 import time
@@ -480,6 +481,68 @@ class OntologyInstantiator:
                 f"Error processing objective functions: {e}", exc_info=True
             )
 
+    def _extract_network_data(self) -> list:
+        """
+        Extract name & type for each layer found within relevant parsed code
+
+        :return List of dictionaries containing name & type per layer
+        """
+        network_json_path = glob.glob(f"data/{self.ann_config_name}/*.json")
+        extracted_data: list = []
+
+        for file in network_json_path:
+            with open(file , "r") as f:
+                try:
+                    data: dict = json.load(f)
+
+                    if 'network' in data and isinstance(data['network'] , list):
+                        for layer in data['network']:
+                            if 'name' in layer and 'type' in layer and layer['type'] is not None:
+                                extracted_data.append({'name': layer['name'] , 'type': layer['type']})
+                except Exception as e:
+                    self.logger.exception(f"Error extracting JSON network data in {file} {e}" , exc_info=True)
+        
+        return extracted_data
+    
+    def _process_parsed_code(self , network_instance: Thing) -> None:
+        """
+        Process code that has been parsed into specific JSON structure to instantiate
+        an ontology for the network associated with the code
+
+        NOTE: cleanup & modularization needed w db layer processing
+
+        :param network_instance: the network instance
+        :return None
+        """
+        try:
+            network_data: dict = self._extract_network_data()
+            if network_data is None:
+                warnings.warn("No parsed code available for given network")
+
+            layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
+            actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
+            layer_subclasses.extend(actfunc_subclasses)
+
+            for layer in network_data:
+                layer_name = layer['name']
+                layer_type = layer['type']
+
+                best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
+                #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
+
+                if not best_layer_match: # create subclass if layer type not found
+                    best_layer_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
+                    layer_subclasses.append(best_layer_match)
+
+                # deal with activation functions later (how do we know uninstantiated layer is an activation layer?)
+
+                layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
+                self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+
+            self.logger.info(f"All layers of {self.ann_config_name} processed")
+        except Exception as e:
+            self.logger.error(f"Error processing parsed code {e}" , exc_info=True)
+
     def _process_layers(self, network_instance: Thing) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
@@ -513,6 +576,12 @@ class OntologyInstantiator:
 
             for name in layer_list:
                 layer_name , layer_type , model_id , model_name = name
+
+                # Trying to be robust to weird db situations
+                if layer_name is None:
+                    continue
+                if layer_name.lower() == self.ann_config_name.lower():
+                    continue
 
                 best_subclass_match = self._fuzzy_match_class(layer_type , subclasses , 70)
                 if not best_subclass_match: # create subclass if layer type not found in ontology
@@ -1071,7 +1140,8 @@ class OntologyInstantiator:
                 )
 
                 # Process the network class and it's components.
-                self._process_network(ann_config_instance)
+                #self._process_network(ann_config_instance)
+                self._process_parsed_code(ann_config_instance) # network name?
 
                 # Process TrainingStrategy and it's components.
                 # self._process_training_strategy(ann_config_instance)

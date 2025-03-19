@@ -218,9 +218,11 @@ def process_code_file(file_path):
                 output_json = file.replace(".pb" , f"_pbcode_{count}.json")
                 PBExtractor.extract_compute_graph(file , output_json)
         if not py_files:
+            print(file_path)
+            print(py_files)
             logger.info("No Python files found in directory")
 
-        for count , file in enumerate(file_path):
+        for count , file in enumerate(py_files):
             logger.info(f"Parsing python file {file}...")
             with open(file , "r") as f:
                 code = f.read()
@@ -237,15 +239,15 @@ def process_code_file(file_path):
             if not processor.model_name:
                 base = os.path.basename(file)
                 processor.model_name = os.path.splitext(base)[0]
-            onnx_model = check_onnx(processor.model_name) # check for onnx model
+            #onnx_model = check_onnx(processor.model_name) # check for onnx model
 
             if processor.pytorch_graph: # symbolic graph dictionary
                 logger.info(f"PyTorch code found within file {file}")
                 content = processor.pytorch_graph
                 save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
-            elif onnx_model: # check for model in onnx
-                logger.info(f"Model name '{onnx_model}' found within ONNX database")
-                # instantiate it
+            # elif onnx_model: # check for model in onnx
+            #     logger.info(f"Model name '{onnx_model}' found within ONNX database")
+            #     # instantiate it
             else:
                 logger.info(f"Model name '{processor.model_name}' is not PyTorch or an instance in the ONNX database")
 
@@ -254,13 +256,14 @@ def process_code_file(file_path):
             save_json(output_file , output)
             
     except Exception as e:
+        print(e)
         logger.error(f"Error processing code files, {e}")
 
 
 def main():
     ann_name = "alexnet"
-    filepath = glob.glob(f"data/{ann_name}")
-    logger.info(f"File(s) found: {filepath}")
+    filepath = f"data/{ann_name}"
+    #logger.info(f"File(s) found: {filepath}")
 
     # simply provide the file path that may contain the related network code files
     process_code_file(filepath)
