@@ -22,7 +22,7 @@ Extract code from python files & convert into a JSON for langchain embeddings
 Follows same format as PDF embeddings with 'page_content' & 'metadata' containing
 all relevant information about the code.
 
-NOTE: if pytorch code detected, code file is passed to Chase's symbolic extraction
+NOTE: for how to run, see main()
 """
 
 log_dir = "logs"
@@ -91,6 +91,7 @@ class CodeProcessor(ast.NodeVisitor):
             if base.attr == "Module" and ( # check for nn.Module base class
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
+                logging.info("PyTorch instantiation found")
                 mappings: dict = {}
 
                 class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
@@ -207,17 +208,20 @@ def process_code_file(file_path):
         if onnx_files:
             logger.info(f"ONNX files detected: {onnx_files}")
             for count , file in enumerate(onnx_files):
+                logger.info(f"Parsing ONNX file {file}...")
                 output_json = file.replace(".onnx" , f"onnx_{count}.json")
-                # figure out how to run onnx extractor
+                ONNXProgram().compute_graph_extraction(file) # how should we run the onnx extractor
         if pb_files:
             logger.info(f"TensorFlow files detected: {pb_files}")
             for count , file in enumerate(pb_files):
+                logger.info(f"Parsing TensorFlow file {file}...")
                 output_json = file.replace(".pb" , f"_pbcode_{count}.json")
                 PBExtractor.extract_compute_graph(file , output_json)
         if not py_files:
             logger.info("No Python files found in directory")
 
         for count , file in enumerate(file_path):
+            logger.info(f"Parsing python file {file}...")
             with open(file , "r") as f:
                 code = f.read()
             tree = ast.parse(code)
@@ -236,6 +240,7 @@ def process_code_file(file_path):
             onnx_model = check_onnx(processor.model_name) # check for onnx model
 
             if processor.pytorch_graph: # symbolic graph dictionary
+                logger.info(f"PyTorch code found within file {file}")
                 content = processor.pytorch_graph
                 save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
             elif onnx_model: # check for model in onnx
@@ -254,10 +259,11 @@ def process_code_file(file_path):
 
 def main():
     ann_name = "alexnet"
-    files = glob.glob(f"data/{ann_name}/*.py")
-    logger.info(f"File(s) found: {files}")
+    filepath = glob.glob(f"data/{ann_name}")
+    logger.info(f"File(s) found: {filepath}")
 
-    process_code_file(files)
+    # simply provide the file path that may contain the related network code files
+    process_code_file(filepath)
 
 
 if __name__ == '__main__':

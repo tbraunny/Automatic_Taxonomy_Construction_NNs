@@ -53,6 +53,12 @@ layer_mapping = {
     "Concat": "Concatenate"
 }
 
+class NumpyJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()  # Convert ndarray to list
+        return super().default(obj)
+
 def parse_onnx_attributes(node,onlytensorsize=True):
     # Extract attributes as parameters in a dict
     parameters = {}
@@ -114,7 +120,10 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
     for node in graph.node:
         layer = {}
         layer['name'] = node.name or '<unnamed>'
-        layer['type'] = node.op_type
+        if node.op_type == "ConstantOfShape":
+            continue
+        else:
+            layer['type'] = node.op_type
         layer['parameters'] = {}
         layer['attribute'] = {}
         node_info = {}
@@ -135,9 +144,9 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
                 try: 
                     interpolator = interpolate.interp1d(np.linspace(0,1,weight_data.shape[0]), weight_data ,kind='linear')
                     weight_data = interpolator(interpolate_space)
-                    parameter['interpolated_vector'] =  weight_data.tolist()
+                    #parameter['interpolated_vector'] =  weight_data.tolist()
                 except:
-                    parameter['interpolated_vector'] = np.zeros((256))
+                    #parameter['interpolated_vector'] = np.zeros((256))
                     print('WARNING!: something went wrong in interpolation',inp)
             if 'interpolated_vector' in parameter:
                 layer['parameters'].append(parameter)
@@ -167,7 +176,7 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         outdata['parameter_in_order_files'] = parameters
         outdata['layers'] = layers
     outjson['network'] = layers
-    outjson['graph'] = outdata
+    #outjson['graph'] = outdata
 
     if writeFile:
         handle = open(f'{savePath}/{model_name}.json','w')
@@ -180,9 +189,9 @@ class ONNXProgram:
     def extract_properties(self,filepath,savePath='./outdata/',model_name='',parameters=False):
         
         #files = glob.glob(filepath+'*.onnx',recursive=True)
-        for path in Path(filepath).rglob('*.onnx'):
-            extract_compute_graph_taxonomy_style(path,savePath=savePath,parameters=parameters)
-            print(path)
+        out = extract_compute_graph_taxonomy_style(filepath,savePath=savePath,parameters=parameters)
+        with open("data/onnx_testing/resnet50_test.json" , "w") as f:
+            json.dump(out , f , cls=NumpyJSONEncoder , indent=3 , )
     
     def inference_extraction(self,filename,model_type,model_name,savePath='./outdata'):
         # https://github.com/microsoft/onnxruntime/issues/1455
@@ -219,22 +228,27 @@ class ONNXProgram:
         ort_outs = ort_session.run(outputs, input_data_dict)
         ort_outs = OrderedDict(zip(outputs, ort_outs))
 
-    def compute_graph_extraction(self,onnx_file,outfile,savePath=''):
+    def compute_graph_extraction(self,onnx_file,outfile=None,savePath=''):
    
         # Load ONNX model
         model = onnx.load(onnx_file)
         # not including the raw data of the initializers
         model.graph.ClearField("initializer")    
-        model_json = MessageToJson(model, including_default_value_fields=False)
+        #model_json = MessageToJson(model, including_default_value_fields=False)
+        model_json = MessageToJson(model)
 
         # Save as JSON
         #with open(f"{model_name}.json", "w") as f:
         #    json.dump(model_dict, f, indent=4)
         if savePath == '':
             savePath = '.'
-        with open(f"{savePath}/{outfile}", "w") as f:
+        # with open(f"{savePath}/{outfile}", "w") as f:
+        #     f.write(model_json)
+        outfile = onnx_file.replace(".onnx" , "_parsed.json")
+        with open(outfile , "w") as f:
             f.write(model_json)
 
 if __name__ == '__main__':
     #extract_properties('adv_inception_v3_Opset16.onnx',model_type="cnn",model_name="inception")
-    fire.Fire(ONNXProgram)
+    #fire.Fire(ONNXProgram)
+    ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx")

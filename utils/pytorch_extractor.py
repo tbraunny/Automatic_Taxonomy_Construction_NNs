@@ -7,7 +7,7 @@ from torchvision import models as tmodels
 
 def extract_graph(model):
     traced = symbolic_trace(model)
-    computeGraph = {"nodes": []}
+    computeGraph = {"network": []}
     for node in traced.graph.nodes:
         node_info = {
             "op": node.op,
@@ -35,7 +35,7 @@ def extract_graph(model):
             else:
                 func_name = str(node.target)  # Fallback for complex functions
             node_info['type'] = f"{func_name}"
-        computeGraph['nodes'].append(node_info)
+        computeGraph['network'].append(node_info)
 
     # Convert to JSON and return
     return json.dumps(computeGraph, indent=4)

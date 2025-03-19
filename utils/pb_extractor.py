@@ -26,7 +26,7 @@ class PBExtractor:
 
             node_info: dict = {
                 "name": "",
-                "op": node.op,
+                "type": node.op,
                 "target": node.name,
                 "input": list(node.input),
                 "parameters": {} # for later (if needed)
@@ -45,7 +45,7 @@ class PBExtractor:
             minimal_graph.append(node_info)
 
         with open(output_json, "w") as json_file:
-            json.dump({"nodes": minimal_graph}, json_file, indent=2)
+            json.dump({"network": minimal_graph}, json_file, indent=3)
         
         print(f"Graph extracted and saved to {output_json}")
 
