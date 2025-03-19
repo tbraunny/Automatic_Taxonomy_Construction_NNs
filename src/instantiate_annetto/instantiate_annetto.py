@@ -1344,6 +1344,22 @@ class OntologyInstantiator:
             )
             raise e
 
+def instantiate_annetto(ann_name: str, ann_path: str, ontology_path:str, ontology_output_path:str) -> None:
+    """
+    Instantiates an ANN ontology from the provided ANN Configuration filepath.
+    Papers and Code must be extracted to the proper JSON format beforehand.
+
+    :param: ann_name: The name of the ANN Configuration.
+    :param: ann_path: The path to the ANN Configuration JSON files.
+    """
+    list_json_doc_paths = glob.glob(f"{ann_path}/*.json")
+
+    instantiator = OntologyInstantiator(
+        ontology_path, list_json_doc_paths, ann_name, ontology_output_path
+    )
+    instantiator.run()
+    instantiator.save_ontology()
+
 
 # For standalone testing
 if __name__ == "__main__":
@@ -1354,6 +1370,8 @@ if __name__ == "__main__":
 
     time_start = time.time()
 
+    from utils.annetto_utils import load_annetto_ontology
+
     for model_name in [
         "alexnet",
         "resnet",
@@ -1361,19 +1379,7 @@ if __name__ == "__main__":
         # "gan", # Assume we can model name from user or something
     ]:
         try:
-            code_files = glob.glob(f"data/{model_name}/*.py")
-            pdf_file = f"data/{model_name}/{model_name}.pdf"
-
-            # Here these paths will each need to be extracted from the PDF and code files to json_docs.json
-
-            # Now we have JSON files for both the papers and code files respectively.
-            list_json_doc_paths = glob.glob(f"data/{model_name}/*.json")
-
-            instantiator = OntologyInstantiator(
-                ontology_path, list_json_doc_paths, model_name, output_ontology_filePath
-            )
-            instantiator.run()
-            instantiator.save_ontology()
+            instantiate_annetto(model_name, f"data/{model_name}", load_annetto_ontology("base"), load_annetto_ontology("test"))
         except Exception as e:
             print(f"Error instantiating the {model_name} ontology in __name__: {e}")
             continue

@@ -145,15 +145,12 @@ def extract_filter_pdf_to_json(pdf_path: str, output_path: str, debug: bool = Fa
 
     logger.info("Processing complete.")
 
-def main():
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract, filter, and convert PDF content to JSON."
     )
     parser.add_argument("pdf_path", type=str, help="Path to the input PDF file.")
     parser.add_argument("output_path", type=str, help="Path to save the output JSON file.")
     args = parser.parse_args()
-    
-    extract_filter_pdf_to_json(args.pdf_path, args.output_path)
 
-if __name__ == "__main__":
-    main()
+    extract_filter_pdf_to_json(args.pdf_path, args.output_path)
