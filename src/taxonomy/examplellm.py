@@ -200,17 +200,31 @@ conservative_model = ChatOllama(model="deepseek-r1:32b-qwen-distill-q4_K_M",temp
 fixparser = OutputFixingParser.from_llm(parser=parser, llm=conservative_model)
 
 
-streaming=True
-if not streaming:
-    conservative_model = conservative_model.bind_tools([OutputCriteria])
+#if not streaming:
+#    conservative_model = conservative_model.bind_tools([OutputCriteria])
 
 
 conservative_model.with_structured_output(OutputCriteria)
 chain = criteriaprompt | conservative_model
 
 ontology_path = f"./data/owl/annett-o-test.owl" 
+#ontology_path = f"./data/owl/annett-o.owl" 
 ontology = load_ontology(ontology_path=ontology_path)
 
+
+#output = chain.invoke({'user_input': 'Give me a taxonomy that splits small networks use the range operator.','oc': oc}).content
+output = chain.invoke({'user_input': 'Give me a taxonomy that splits on layers.','oc': oc}).content
+output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
+thecriteria = output = fixparser.parse(output)
+print(type(output))
+
+taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
+output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
+
+print(output)
+visualizeTaxonomy(output)
+print(thecriteria)
+    
 '''if not streaming:
     output = chain.invoke({'user_input': 'Construct a taxonomy that splits on 10 to 100 neurons.','oc': oc})
     #print(output)
@@ -225,20 +239,3 @@ ontology = load_ontology(ontology_path=ontology_path)
     print(taxonomy_creator.create_taxonomy(format='graphml'))
     print(thecriteria)
 '''
-if streaming:
-
-    output = chain.invoke({'user_input': 'Give me a taxonomy that splits on small networks and layer type?','oc': oc}).content
-    output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
-    thecriteria = output = fixparser.parse(output)
-    print(type(output))
-    #output = json.loads(output)
-
-    #thecriteria = OutputCriteria(**output)
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-    output = taxonomy_creator.create_taxonomy(format='graphml')
-    print(thecriteria)
-    print(output)
-    visualizeTaxonomy(output)
-    #print(test)
-    #for chunk in chain.stream( {'user_input':'How would you construct a taxonomy for cnns and transformers?','oc':oc}):
-    #    print(chunk,end='')

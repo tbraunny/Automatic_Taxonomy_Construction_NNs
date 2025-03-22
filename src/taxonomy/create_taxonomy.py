@@ -8,7 +8,7 @@ import logging
 import json
 
 import networkx as nx
-
+from visualizeutils import visualizeTaxonomy
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -217,7 +217,7 @@ class TaxonomyCreator:
                 hashmap[hashvalue] = { ann_config : found }
             else:
                 hashmap[hashvalue][ann_config] = found
-
+            #print(hashmap)
             #annconfignodes.append(TaxonomyNode(ann_config.name))
 
             for network in networks:
@@ -233,16 +233,24 @@ class TaxonomyCreator:
                     logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
         logger.info('done')
         return hashmap
-    def create_taxonomy(self,format='json'):
+
+    def create_taxonomy(self,format='json',faceted=False):
         annconfignodes = []
         # Get all ANNConfiguration Objects
         logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
-
+        
+        #self.ontology.load()
+        print('test',self.ontology.ANNConfiguration)
+        print(list(self.ontology.classes()))
+        #input()
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
 
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
         splits = [ann_configurations]
         topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None, annConfigs = [annconfig.name for annconfig in ann_configurations])
+        
+        # construct a category for eac
+        facetedTaxonomy = { f'level_{index}' : {} for index, level in enumerate(self.levels)  }
         nodes = [topnode]
         for level_index, level in enumerate(self.levels):
             newsplits = []
@@ -255,10 +263,16 @@ class TaxonomyCreator:
                     split = list(found[key].keys())
 
                     childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
+                    print(level_index,key,found[key].keys())
+                    #input()
+                    inserting = f'level_{level_index}'
+                    if not key in facetedTaxonomy[inserting]:
+                        facetedTaxonomy[inserting][key] = list(found[key].keys())
+                    else:
+                        facetedTaxonomy[inserting][key] += list(found[key].keys())
 
                     print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
-                    #input()
-                    if not (len(key) == 0 and len(found[key]) == 1): # don't expand leafs
+                    if not (len(key) == 0 and len(found[key]) == 1) or faceted: # don't expand leafs
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
                         newsplits.append(split)
@@ -266,6 +280,8 @@ class TaxonomyCreator:
             splits = newsplits
             nodes = newnodes
             print(nodes)
+        print(facetedTaxonomy)
+        input()
         if format == 'json':
             return topnode.to_json()
         else:
@@ -275,11 +291,12 @@ def main():
 
     logger.info("Loading ontology.")
     #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
-    # ontology_path = f"./data/owl/annett-o-test.owl"
+    ontology_path = f"./data/owl/annett-o-test.owl"
 
+    ontology_path = f"./data/owl/annett-o.owl" 
     # Example Criteria...
     op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    #op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
     criteria = Criteria()
@@ -293,14 +310,21 @@ def main():
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria,criteria2]#,criteria2,criteria3]
-
+    criterias = [criteria]#,criteria2,criteria3]
+    print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
+
+    #print(ontology.load())
+    logger.info(ontology.instances)
+    #input()
     logger.info("Ontology loaded.")
 
     logger.info("Creating taxonomy from Annetto annotations.")
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    print(taxonomy_creator.create_taxonomy(format='aaa'))
+
+    output = taxonomy_creator.create_taxonomy(format='aaa')
+    visualizeTaxonomy(output)
+    print(output)
     logger.info("Finished creating taxonomy.")
 
 
