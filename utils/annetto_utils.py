@@ -86,3 +86,22 @@ def fuzzy_match_class(
         )
 
         return class_name_map[match] if score >= threshold else None
+    
+def _unhash_and_format_instance_name(self, instance_name: str) -> str:
+        """
+        Remove the ANN config hash prefix from the instance name and restore readability.
+
+        This method extracts the actual instance name by stripping out the
+        prefixed hash and replacing dashes with spaces.
+
+        Example: Input: "abcd1234_convolutional-layer" Output: "Convolutional Layer"
+
+        Args:
+            instance_name (str): The unique instance name with the hash prefix.
+
+        Returns:
+            str: The original readable instance name.
+        """
+        parts = instance_name.split("_", 1)  # Split at the first underscore
+        stripped_name = parts[-1]  # Extract the actual instance name (without hash)
+        return stripped_name.replace("-", " ")  # Convert dashes back to spaces
