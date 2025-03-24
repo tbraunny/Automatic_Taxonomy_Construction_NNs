@@ -162,8 +162,24 @@ mapping = {
     "https://w3id.org/nno/ontology#EmbeddingLayer": None,      # No direct match
     "https://w3id.org/nno/ontology#NormalizationLayer": None,  # Could approximate as "BatchNormLayer" or "ModificationLayer"
     "https://w3id.org/nno/ontology#PoolingLayer": "http://w3id.org/annett-o/PoolingLayer",
+
+
+
 }
 
+
+optimizer_mapping = {
+
+    # Optimizer
+    "https://w3id.org/nno/ontology#adam": "http://w3id.org/annett-o/Adam",
+    "https://w3id.org/nno/ontology#rmsprop": "http://w3id.org/annett-o/RMSProp",
+    "https://w3id.org/nno/ontology#sgd": "http://w3id.org/annett-o/GradientDescent",
+    "https://w3id.org/nno/ontology#adadelta": "http://w3id.org/annett-o/AdaDelta",
+    "https://w3id.org/nno/ontology#adagrad": "http://w3id.org/annett-o/AdaGrad",
+
+    "https://w3id.org/nno/ontology#nadam": "http://w3id.org/annett-o/RMSProp", #add nadam to annetto
+    "https://w3id.org/nno/ontology#adamax": "http://w3id.org/annett-o/Adam", #add adamax to annetto
+}
 
 
 def map_uri(uri):
@@ -238,6 +254,7 @@ for s, p, o in fairnet_graph:
     if FAIR.hasLayerSequence == p:
         continue
 
+
     new_s = URIRef(str(new_s).replace(str(FAIRDATA), str(ANN))) if str(new_s).startswith(str(FAIRDATA)) else new_s
     new_p = URIRef(str(new_p).replace(str(FAIRDATA), str(ANN))) if str(new_p).startswith(str(FAIRDATA)) else new_p
     new_o = URIRef(str(new_o).replace(str(FAIRDATA), str(ANN))) if isinstance(new_o, URIRef) and str(new_o).startswith(str(FAIRDATA)) else new_o
@@ -286,6 +303,39 @@ for model in fairnet_graph.subjects(RDF.type, FAIR.Model):
 
         annett_graph.add((model,ANN.hasObjective,new_objective))
         #input()
+
+    optimizer = fairnet_graph.value(omodel, FAIR.hasOptimizer)
+    parent_ann = list(annett_graph.triples((None,ANN.hasNetwork,model)))
+    print(parent_ann)
+    #input('test')
+    parent_ann = str(parent_ann[0][0]) # there are problems if this breaks
+    if optimizer != None:
+        strategy_iri = URIRef(str(parent_ann)+'_strategy')
+        session_iri = URIRef(str(parent_ann)+'_session')
+        step_iri = URIRef(str(model)+'_traionstep')
+        annett_graph.add((URIRef(parent_ann), ANN.hasTrainingStrategy, strategy_iri))
+        # create these if don't already exist
+        if not (strategy_iri, RDF.type, ANN.TrainingStrategy) in annett_graph:
+            annett_graph.add((strategy_iri, RDF.type, ANN.TrainingStrategy))
+            annett_graph.add((strategy_iri, ANN.hasTrainingSession, session_iri))
+
+            annett_graph.add((session_iri, RDF.type, ANN.TrainingStrategy))
+                
+        annett_graph.add((session_iri, ANN.hasTrainingStep, step_iri))
+
+        annett_graph.add((step_iri, RDF.type, ANN.TrainingSingle))
+        
+        #optim_local  = optimizer.split('#')[-1] if '#' in optimizer else optimizer.split('/')[-1]
+        mapped_optim = URIRef(optimizer_mapping[str(optimizer)])
+        new_optim_iri = URIRef(str(model)+"_optimizer")
+        annett_graph.add((new_optim_iri, ANN.type, mapped_optim))
+
+
+        annett_graph.add((step_iri, ANN.hasTrainingOptimizer, new_optim_iri))
+        annett_graph.add((step_iri, ANN.trainsNetwork, model))
+
+        # still need to add next training step and other stuff
+
 
     ordering = []
 
