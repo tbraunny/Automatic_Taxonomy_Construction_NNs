@@ -1449,23 +1449,55 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Sequential">
+<owl:Class rdf:about="DecodeJpeg">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
-<owl:Class rdf:about="AlexNet">
+<owl:Class rdf:about="Cast">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
-<owl:Class rdf:about="Conv2d">
+<owl:Class rdf:about="ExpandDims">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
-<owl:Class rdf:about="MaxPool2d">
+<owl:Class rdf:about="ResizeBilinear">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
-<owl:Class rdf:about="AdaptiveAvgPool2d">
+<owl:Class rdf:about="Sub">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Mul">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Conv2D">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="BatchNormWithGlobalNormalization">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="CheckNumerics">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Reshape">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MatMul">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="BiasAdd">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
@@ -3270,133 +3302,98 @@
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_alexnet">
+<owl:NamedIndividual rdf:about="db390f91_pb_testing">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
+  <hasLayer rdf:resource="db390f91_decodejpeg"/>
+  <hasLayer rdf:resource="db390f91_cast"/>
+  <hasLayer rdf:resource="db390f91_expanddims"/>
+  <hasLayer rdf:resource="db390f91_resizebilinear"/>
+  <hasLayer rdf:resource="db390f91_sub"/>
+  <hasLayer rdf:resource="db390f91_mul"/>
+  <hasLayer rdf:resource="db390f91_conv2d"/>
+  <hasLayer rdf:resource="db390f91_batchnormwithglobalnormalization"/>
+  <hasLayer rdf:resource="db390f91_checknumerics"/>
+  <hasLayer rdf:resource="db390f91_identity"/>
+  <hasLayer rdf:resource="db390f91_relu"/>
+  <hasLayer rdf:resource="db390f91_maxpool2d"/>
+  <hasLayer rdf:resource="db390f91_avgpool"/>
+  <hasLayer rdf:resource="db390f91_concat"/>
+  <hasLayer rdf:resource="db390f91_reshape"/>
+  <hasLayer rdf:resource="db390f91_linear"/>
+  <hasLayer rdf:resource="db390f91_bias"/>
+  <hasLayer rdf:resource="db390f91_softmax"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasLayer rdf:resource="709942bd_classifier"/>
-  <hasLayer rdf:resource="709942bd_"/>
-  <hasLayer rdf:resource="709942bd_features"/>
-  <hasLayer rdf:resource="709942bd_features.0"/>
-  <hasLayer rdf:resource="709942bd_features.1"/>
-  <hasLayer rdf:resource="709942bd_features.2"/>
-  <hasLayer rdf:resource="709942bd_features.3"/>
-  <hasLayer rdf:resource="709942bd_features.4"/>
-  <hasLayer rdf:resource="709942bd_features.5"/>
-  <hasLayer rdf:resource="709942bd_features.6"/>
-  <hasLayer rdf:resource="709942bd_features.7"/>
-  <hasLayer rdf:resource="709942bd_features.8"/>
-  <hasLayer rdf:resource="709942bd_features.9"/>
-  <hasLayer rdf:resource="709942bd_features.10"/>
-  <hasLayer rdf:resource="709942bd_features.11"/>
-  <hasLayer rdf:resource="709942bd_features.12"/>
-  <hasLayer rdf:resource="709942bd_avgpool"/>
-  <hasLayer rdf:resource="709942bd_classifier.0"/>
-  <hasLayer rdf:resource="709942bd_classifier.1"/>
-  <hasLayer rdf:resource="709942bd_classifier.2"/>
-  <hasLayer rdf:resource="709942bd_classifier.3"/>
-  <hasLayer rdf:resource="709942bd_classifier.4"/>
-  <hasLayer rdf:resource="709942bd_classifier.5"/>
-  <hasLayer rdf:resource="709942bd_classifier.6"/>
+<owl:NamedIndividual rdf:about="db390f91_decodejpeg">
+  <rdf:type rdf:resource="DecodeJpeg"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_classifier">
-  <rdf:type rdf:resource="Sequential"/>
+<owl:NamedIndividual rdf:about="db390f91_cast">
+  <rdf:type rdf:resource="Cast"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_">
-  <rdf:type rdf:resource="AlexNet"/>
+<owl:NamedIndividual rdf:about="db390f91_expanddims">
+  <rdf:type rdf:resource="ExpandDims"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features">
-  <rdf:type rdf:resource="Sequential"/>
+<owl:NamedIndividual rdf:about="db390f91_resizebilinear">
+  <rdf:type rdf:resource="ResizeBilinear"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.0">
-  <rdf:type rdf:resource="Conv2d"/>
+<owl:NamedIndividual rdf:about="db390f91_sub">
+  <rdf:type rdf:resource="Sub"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.1">
+<owl:NamedIndividual rdf:about="db390f91_mul">
+  <rdf:type rdf:resource="Mul"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="db390f91_conv2d">
+  <rdf:type rdf:resource="Conv2D"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="db390f91_batchnormwithglobalnormalization">
+  <rdf:type rdf:resource="BatchNormWithGlobalNormalization"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="db390f91_checknumerics">
+  <rdf:type rdf:resource="CheckNumerics"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="db390f91_identity">
+  <rdf:type rdf:resource="Identity"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="db390f91_relu">
   <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.2">
-  <rdf:type rdf:resource="MaxPool2d"/>
+<owl:NamedIndividual rdf:about="db390f91_maxpool2d">
+  <rdf:type rdf:resource="MaxPool"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.3">
-  <rdf:type rdf:resource="Conv2d"/>
+<owl:NamedIndividual rdf:about="db390f91_avgpool">
+  <rdf:type rdf:resource="MaxPool"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.4">
-  <rdf:type rdf:resource="Relu"/>
+<owl:NamedIndividual rdf:about="db390f91_concat">
+  <rdf:type rdf:resource="ConcatLayer"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.5">
-  <rdf:type rdf:resource="MaxPool2d"/>
+<owl:NamedIndividual rdf:about="db390f91_reshape">
+  <rdf:type rdf:resource="Reshape"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.6">
-  <rdf:type rdf:resource="Conv2d"/>
+<owl:NamedIndividual rdf:about="db390f91_linear">
+  <rdf:type rdf:resource="MatMul"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.7">
-  <rdf:type rdf:resource="Relu"/>
+<owl:NamedIndividual rdf:about="db390f91_bias">
+  <rdf:type rdf:resource="BiasAdd"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_features.8">
-  <rdf:type rdf:resource="Conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_features.9">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_features.10">
-  <rdf:type rdf:resource="Conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_features.11">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_features.12">
-  <rdf:type rdf:resource="MaxPool2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_avgpool">
-  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.0">
-  <rdf:type rdf:resource="DropoutLayer"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.1">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.2">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.3">
-  <rdf:type rdf:resource="DropoutLayer"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.4">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.5">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_classifier.6">
-  <rdf:type rdf:resource="Linear"/>
+<owl:NamedIndividual rdf:about="db390f91_softmax">
+  <rdf:type rdf:resource="SoftMax"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

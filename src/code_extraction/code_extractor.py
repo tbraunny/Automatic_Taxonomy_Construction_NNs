@@ -195,7 +195,9 @@ def save_json(output_file: str , content: dict):
 
 def process_code_file(file_path):
     """
-    Traverse abstract syntax tree & dump relevant code into JSON
+    Traverse abstract syntax tree & dump relevant code into JSON. Given model directory,
+    automatically detects pytorch & handles both ONNX & TensorFlow files with ANNETT-O
+    instantiation.
 
     :param file_path: Directory in which code files may be present (eg. data/{ann_name})
     :return None: JSON files saved to same directory given
@@ -210,7 +212,8 @@ def process_code_file(file_path):
             for count , file in enumerate(onnx_files):
                 logger.info(f"Parsing ONNX file {file}...")
                 output_json = file.replace(".onnx" , f"onnx_{count}.json")
-                ONNXProgram().compute_graph_extraction(file) # how should we run the onnx extractor
+                ONNXProgram().extract_properties(file , savePath=output_json) # how should we run the onnx extractor
+                print("ONNX file parsed & saved to: " , output_json)
         if pb_files:
             logger.info(f"TensorFlow files detected: {pb_files}")
             for count , file in enumerate(pb_files):
@@ -262,7 +265,7 @@ def process_code_file(file_path):
 
 def main():
     ann_name = "alexnet"
-    filepath = f"data/{ann_name}"
+    filepath = f"data/onnx_testing"
     #logger.info(f"File(s) found: {filepath}")
 
     # simply provide the file path that may contain the related network code files

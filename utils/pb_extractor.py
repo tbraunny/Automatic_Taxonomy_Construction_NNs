@@ -30,7 +30,7 @@ class PBExtractor:
                 "type": None, # for flagging in instantation (layers without a type)
                 "target": node.name,
                 "input": list(node.input),
-                "parameters": {} # for later (if needed)
+                "parameters": {} # for later (very much needed)
             }
 
             # like Chase's PyTorch-ONNX mapping, but for tensorflow to pytorch (INCOMPLETE)

@@ -509,7 +509,11 @@ class OntologyInstantiator:
         Process code that has been parsed into specific JSON structure to instantiate
         an ontology for the network associated with the code
 
-        NOTE: cleanup & modularization needed w db layer processing
+        NOTE: modularize w onnx db parsing
+        - include parameter counts per layer (allow to compute model total)
+        - differentiate between layer & activation function (for known activations)
+        - include prev & next layers in instantiation
+        - insert new models into the onnx database? (still somewhat unsure about this, how to best accomplish it)
 
         :param network_instance: the network instance
         :return None
