@@ -1,6 +1,8 @@
 from owlready2 import *
 from typing import List, Union, Optional, Any
 import warnings
+from builtins import TypeError
+import traceback
 
 from utils.annetto_utils import load_annetto_ontology
 
@@ -52,7 +54,9 @@ def get_class_parents(cls: ThingClass) -> List[ThingClass]:
     return [parent for parent in cls.is_a if isinstance(parent, ThingClass)]
 
 
-def get_domain_class(ontology: Ontology, object_property: ObjectProperty) -> ThingClass:
+def get_domain_class(
+    ontology: Ontology, object_property: ObjectPropertyClass
+) -> ThingClass:
     """
     Retrieves the domain class of a specified object property in an ontology.
 
@@ -60,9 +64,9 @@ def get_domain_class(ontology: Ontology, object_property: ObjectProperty) -> Thi
     :param: object_property : The name of the property whose domain class is to be retrieved.
     :returns: ThingClass: The domain class of the specified property if it exists, otherwise `None`.
     """
-    if not isinstance(object_property, ObjectProperty):
+    if not isinstance(object_property, ObjectPropertyClass):
         raise TypeError(
-            f"The provided property '{object_property}' is not an ObjectProperty."
+            f"The provided property '{object_property}' is not an ObjectPropertyClass."
         )
     if not isinstance(ontology, Ontology):
         raise TypeError(f"The provided ontology '{ontology}' is not an Ontology.")
@@ -129,7 +133,7 @@ def get_object_properties_with_domain_and_range(
     ontology: Ontology,
     domain_class: Union[ThingClass, Thing],
     range_class: Union[ThingClass, Thing],
-) -> Optional[ObjectProperty]:
+) -> Optional[ObjectPropertyClass]:
     """
     Returns the object properties in the ontology that have the specified domain and range classes.
 
@@ -175,7 +179,7 @@ def get_connected_classes(
     :param: ontology: The ontology containing the classes.
     :return: A list of connected classes, or None if no connections are found.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
     if not isinstance(ontology, Ontology):
         raise TypeError(f"Invalid ontology type '{ontology}'.")
@@ -205,7 +209,7 @@ def get_immediate_subclasses(
     :param: cls: The class for which to find it's subclasses.
     :return: A list of subclasses to the given class if any, else return None.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
 
     return list(cls.subclasses()) if cls.subclasses() else None
@@ -220,31 +224,32 @@ def get_all_subclasses(
     :param: cls: The class for which to find its subclasses.
     :return: A list of all subclasses of the given class, including nested ones, if any, else, return None.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
 
     if visited is None:  # initial
         visited = set()
-
     if cls in visited:  # if node has been visited, skip
         return []
-
     visited.add(cls)  # mark as visited
+
     subclasses = set(get_immediate_subclasses(cls))
+
+    if not subclasses:
+        return []
 
     for subclass in list(subclasses):
         subclasses.update(
             get_all_subclasses(subclass, visited)
         )  # find all subclasses thru RECURSION
-    if not subclasses:
-        return None
+
     else:
         return list(subclasses)
 
 
 def get_class_data_properties(
     ontology: Ontology, cls: Union[ThingClass, Thing]
-) -> Optional[List[DataProperty]]:
+) -> Optional[List[DataPropertyClass]]:
     """
     Retrieves all data properties in the given ontology that have the specified class as their domain.
 
@@ -252,7 +257,7 @@ def get_class_data_properties(
     :param: cls: The class for which to find properties with this domain.
     :return: A list of data properties that have the specified class as their domain if any, else return None.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
     if not isinstance(ontology, Ontology):
         raise TypeError(f"Invalid ontology type '{ontology}'.")
@@ -262,7 +267,7 @@ def get_class_data_properties(
 
 def get_class_object_properties(
     ontology: Ontology, cls: Union[ThingClass, Thing]
-) -> Optional[List[ObjectProperty]]:
+) -> Optional[List[ObjectPropertyClass]]:
     """
     Retrieves all object properties in the given ontology that have the specified class as their domain.
 
@@ -270,7 +275,7 @@ def get_class_object_properties(
     :param: cls: The class for which to find properties with this domain.
     :return: A list of object properties that have the specified class as their domain if any, else None.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
     if not isinstance(ontology, Ontology):
         raise TypeError(f"Invalid ontology type '{ontology}'.")
@@ -289,7 +294,7 @@ def get_class_restrictions(
     :param: cls: The class for which to retrieve restrictions.
     :return: A list of restrictions applied to the class.
     """
-    if not isinstance(cls, ThingClass) or not isinstance(cls, Thing):
+    if not isinstance(cls, (Thing, ThingClass)):
         raise TypeError(f"Invalid class type '{cls}'.")
     return [
         restriction if isinstance(restriction, Restriction) else None
@@ -356,7 +361,7 @@ def create_subclass(
         )
     if not isinstance(parent_class, ThingClass):
         raise TypeError(
-            f"Parent class '{parent_class}' must be ThingClass or Thing.",
+            f"Parent class '{parent_class}' must be ThingClass.",
             exec_info=True,
         )
     if not isinstance(ontology, Ontology):
@@ -436,7 +441,9 @@ def get_instantiated_property_values(instance: Thing) -> dict:
     return property_values
 
 
-def create_cls_instance(cls: ThingClass, instance_name: str, **properties) -> Thing:
+def create_cls_instance(
+    ontology: Ontology, cls: ThingClass, instance_name: str, **properties
+) -> Thing:
     """
     Creates an instance of a given class.
 
@@ -451,21 +458,29 @@ def create_cls_instance(cls: ThingClass, instance_name: str, **properties) -> Th
         raise TypeError(f"The provided class {cls} is not a valid ThingClass.")
 
     # Check if the class already exists
-    existing_class = getattr(ontology, subclass_name, None)
+    existing_class = getattr(ontology, instance_name, None)
 
     if existing_class:
         if existing_class in cls.instances():
-            warnings.warn(f"Instance '{subclass_name}' already exists, reusing it.")
+            warnings.warn(f"Instance '{instance_name}' already exists, reusing it.")
             return existing_class
         else:
-            new_instance_name = f"{subclass_name}_sub"
+            new_instance_name = f"{instance_name}_inst"
             warnings.warn(
-                f"Name conflict: '{subclass_name}' exists but is not an instance of {cls}. Renaming to '{new_instance_name}'."
+                f"Name conflict: '{instance_name}' exists but is not an instance of {cls}. Renaming to '{new_instance_name}'."
             )
-            subclass_name = new_instance_name
+            instance_name = new_instance_name
 
     # Create instance with name
-    instance = cls(instance_name)
+    instance = cls(instance_name, namespace=ontology)
+
+    # Assert that the instance is of the correct class
+    if not isinstance(instance, cls):
+        raise TypeError(
+            f"Failed to create instance '{instance_name}' of class '{cls}'."
+        )
+    if not isinstance(instance, Thing):
+        raise TypeError(f"Failed to create instance '{instance_name}' of type Thing.")
 
     # Assign additional properties if provided
     # TODO: Not sure if this is the correct way to set properties
@@ -500,27 +515,27 @@ def get_instance_class(instance: Thing) -> ThingClass:
 def assign_object_property_relationship(
     domain: Union[ThingClass, Thing],
     range: Union[ThingClass, Thing],
-    object_property: ObjectProperty,
+    object_property: ObjectPropertyClass,
 ):
     """
-    Connect two classes via a specified ObjectProperty.
+    Connect two classes via a specified ObjectPropertyClass.
 
     :param domain: The Thing instance representing the domain.
     :param range: The Thing instance representing the range.
-    :param object_property: The ObjectProperty to connect the instances.
+    :param object_property: The ObjectPropertyClass to connect the instances.
     """
     # Check if domain and ranges are instances of Thing
-    if not isinstance(domain, Thing) or not isinstance(domain, ThingClass):
+    if not isinstance(domain, (Thing, ThingClass)):
         raise TypeError(
-            f"The 'domain' argument '{domain}' must be an instance of Thing or ThingClass."
+            f"The 'domain' argument '{domain}' '{type(domain)} must be an instance of Thing or ThingClass."
         )
-    if not isinstance(range, Thing) or not isinstance(range, ThingClass):
+    if not isinstance(range, (Thing, ThingClass)):
         raise TypeError(
             f"The 'range' argument '{domain}' must be an instance of Thing or ThingClass."
         )
-    if not isinstance(object_property, ObjectProperty):
+    if not isinstance(object_property, ObjectPropertyClass):
         raise TypeError(
-            f"The 'object_property' argument '{object_property}' must of type ObjectProperty."
+            f"The 'object_property' argument '{object_property}' '{type(object_property)}' must of type ObjectPropertyClass."
         )
     # Connect the two Thing instances
     object_property[domain].append(range)
@@ -534,22 +549,22 @@ def assign_object_property_relationship(
 
 
 def link_data_property_to_instance(
-    instance: Thing, data_property: DataProperty, value: Any
+    instance: Thing, data_property: DataPropertyClass, value: Any
 ):
     """
     Links a data property to a Thing instance with a specified value.
 
     :param instance: The Thing instance to link the data property to.
-    :param data_property: The DataProperty to link to the instance.
+    :param data_property: The DataPropertyClass to link to the instance.
     :param value: The value to set for the data property.
     """
     # Check if instance is an instance of Thing
     if not isinstance(instance, Thing):
         raise TypeError("The 'instance' argument must be an instance of Thing.")
-    # Check if data_property is a valid DataProperty
-    if not isinstance(data_property, DataProperty):
+    # Check if data_property is a valid DataPropertyClass
+    if not isinstance(data_property, DataPropertyClass):
         raise TypeError(
-            "The 'data_property' argument must be an instance of DataProperty."
+            "The 'data_property' argument must be an instance of DataPropertyClass."
         )
     # Set the data property value for the instance
     instance.data_property = [value]
@@ -559,6 +574,47 @@ def link_data_property_to_instance(
         raise ValueError(
             f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
         )
+
+
+def create_class_data_property(
+    ontology: Ontology,
+    property_name: str,
+    domain_class: Union[ThingClass, Thing],
+    range_type,
+    functional=False,
+) -> DataPropertyClass:
+    """
+    Dynamically creates a DataProperty for a class.
+    Must still assign the value of the property to an instance of the domain class.
+    A functional property is one where each individual has at most one value for the property.
+
+    :param ontology: The ontology
+    :param property_name: Name of the DataProperty to be created
+    :param domain_class: Class that serves as the domain
+    :param range_type: Data type (int, float, str, bool) of the property
+    :param functional: Boolean flag to set the property as functional
+    :return: Created DataProperty class
+    """
+    valid_range_types = {int, float, str, bool}
+    if range_type not in valid_range_types:
+        raise ValueError(
+            f"Invalid range_type: {range_type}. Must be one of {valid_range_types}"
+        )
+
+    if functional:
+        NewDataProperty = type(
+            property_name,
+            (DataProperty, FunctionalProperty),
+            {"namespace": ontology, "domain": [domain_class], "range": [range_type]},
+        )
+    else:
+        NewDataProperty = type(
+            property_name,
+            (DataProperty,),
+            {"namespace": ontology, "domain": [domain_class], "range": [range_type]},
+        )
+
+    return NewDataProperty
 
 
 def list_owl_classes(onto: Ontology) -> List[ThingClass]:

@@ -569,6 +569,18 @@
   <rdfs:range rdf:resource="http://www.dmg.org/PMML-4_3#Array"/>
 </owl:DatatypeProperty>
 
+<owl:DatatypeProperty rdf:about="hasTitle">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="ANNConfiguration"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="hasPaperPath">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="ANNConfiguration"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
 <owl:Class rdf:about="Dataset">
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dataset used as input or output during the evaluation or the training of a network. A dataset may be transient, in case of complex training procedures.</rdfs:comment>
 </owl:Class>
@@ -1441,8 +1453,20 @@
   <rdfs:subClassOf rdf:resource="Constant"/>
 </owl:Class>
 
-<owl:Class rdf:about="AlexNet">
-  <rdfs:subClassOf rdf:resource="ANNConfiguration"/>
+<owl:Class rdf:about="Self-Supervised Classification">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
+
+<owl:Class rdf:about="Unsupervised Classification">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
+
+<owl:Class rdf:about="type='cross entropy'">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="type='l2'">
+  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
 <owl:NamedIndividual rdf:about="AAE">
@@ -3244,6 +3268,37 @@
 
 <owl:NamedIndividual rdf:about="simple_classification_type">
   <rdf:type rdf:resource="SupervisedClassification"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_resnet">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="d53410e0_convolutional-network"/>
+  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deep Residual Learning for Image Recognition</hasTitle>
+  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/resnet/resnet.pdf</hasPaperPath>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="d53410e0_minimize-objective-function"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="d53410e0_cost-function"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="d53410e0_type='cross-entropy'"/>
+  <hasRegularizer rdf:resource="d53410e0_type='l2'"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_type='cross-entropy'">
+  <rdf:type rdf:resource="type='cross entropy'"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_type='l2'">
+  <rdf:type rdf:resource="type='l2'"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

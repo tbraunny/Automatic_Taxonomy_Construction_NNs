@@ -2,8 +2,7 @@ import os
 import glob
 
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_text_from_pdf
-from src.code_extraction.pytorchgraphextraction import extract_code_from_pdf
-
+from src.code_extraction.code_extractor import process_code_file
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
 
 from utils.annetto_utils import load_annetto_ontology
@@ -47,11 +46,8 @@ def main(ann_name: str, ann_path:str) -> str:
         for pdf_file in ann_pdf_files:
             extract_text_from_pdf(pdf_file, ann_path)
     
-    # TODO: This is where the code extraction will happen
-    # Extract code
-    # Check if Pytorch code is present
-    # Check if Tensorflow code is present
-    # Check if onnx files blah
+    # Extract code (give file path, glob is processed in the function)
+    process_code_file(ann_path)
 
     # Instantiate Annett-o
     input_ontology_path = load_annetto_ontology("base")
