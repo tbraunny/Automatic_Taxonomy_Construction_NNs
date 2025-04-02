@@ -25,7 +25,7 @@ from utils.annetto_utils import int_to_ordinal, load_annetto_ontology
 # from utils.onnx_db import OnnxAddition
 from src.instantiate_annetto.prompt_builder import PromptBuilder
 
-from utils.llm_service import init_engine, query_llm
+from utils.llm_service_simple_test import init_engine, query_llm
 from utils.pydantic_models import *
 
 # Set up logging
@@ -245,12 +245,12 @@ class OntologyInstantiator:
         self.logger.info(
             f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
         )
+    def build_prompt(self, task: str, query: str, instructions: str, examples: str, extra_instructions: str = "") -> str:
+        return f"{task}\n{instructions}\n{examples}\n{extra_instructions}\nNow, for the following:\n{query}\nAnswer: "
 
     def _query_llm(
         self,
-        instructions: str,
         prompt: str,
-        json_format_instructions: Optional[str],
         pydantic_type_schema: Optional[type[BaseModel]],
     ) -> Union[Dict[str, Any], int, str, List[str]]:
         """
@@ -313,30 +313,162 @@ class OntologyInstantiator:
             If both `json_format_instructions` and `pydantic_type_schema` are provided, the response will be
             returned as an instance of the provided Pydantic class.
         """
-        full_prompt = f"{instructions}\n{prompt}"
-        if full_prompt in self.llm_cache:
-            self.logger.info(f"Using cached LLM response for prompt: {full_prompt}")
-            print("Using cached LLM response #####")
-            return self.llm_cache[full_prompt]
+        if prompt in self.llm_cache:
+            self.logger.info(f"Using cached LLM response for prompt: {prompt}")
+            print("Using cached LLM response WOOT #####")
+            return self.llm_cache[prompt]
         try:
             # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
             response = query_llm(
                 self.ann_config_name,
-                full_prompt,
-                json_format_instructions,
+                prompt,
                 pydantic_type_schema,
             )
 
-            self.logger.info(f"LLM query: {full_prompt}")
+            self.logger.info(f"LLM query: {prompt}")
             self.logger.info(f"LLM query response: {response}")
-            self.llm_cache[full_prompt] = response
+            self.llm_cache[prompt] = response
 
             return response
         except Exception as e:
             self.logger.error(f"LLM query error: {e}", exc_info=True)
             return ""
-
+        
     def _process_objective_functions(self, network_instance: Thing) -> None:
+        network_name = self._unformat_instance_name(network_instance.name)
+
+        # examples = (
+        #     "Examples:\n"
+        #     "Network: Discriminator\n"
+        #     '''{"answer": {"loss": "Power-Outlet Loss", "regularizer": "Electric Regularization", "objective": "minimize"}}\n\n'''
+
+        #     "Network: Generator\n"
+        #     '''{"answer": {"loss": "Power-Outlet Loss", "regularizer": null, "objective": "maximize"}}\n'''
+        # )
+
+        # Define examples using defintions
+        examples = (
+            "Examples:\n"
+            "Network: Discriminator\n"
+            '''{"answer": {
+                "loss": {
+                    "name": "Power-Outlet Loss",
+                    "definition": "Measures energy imbalance between predicted and real outputs."
+                },
+                "regularizer": {
+                    "name": "Electric Regularization",
+                    "definition": "Penalizes current surges to stabilize the model."
+                },
+                "objective": "minimize"
+            }}\n\n'''
+
+            "Network: Generator\n"
+            '''{"answer": {
+                "loss": {
+                    "name": "Power-Outlet Loss",
+                    "definition": "Measures energy imbalance between predicted and real outputs."
+                },
+                "regularizer": null,
+                "objective": "maximize"
+            }}\n'''
+        )
+
+
+        # Define the task directly
+        task = "Extract the loss function, regularizer, and objective type for a network.\n"
+        instructions = (
+            "Return the response in JSON format with the key 'answer'.\n"
+            "If the loss function or regularizer is not explicitly named, infer the most likely standard name based on its description (e.g., 'maximize the log-likelihood of correct class' may correspond to a well-known loss function).\n"
+        )
+        query = f"Network: {network_name}"
+        extra_instructions = (
+            "Objective type must be 'minimize' or 'maximize'. "
+            "Regularizer can be null if not specified."
+        )
+
+        # prompt = (
+        #     f"Extract the loss function, regularizer, and objective type for a network.\n"
+        #     f"{examples}\n"
+        #     f"Now, for the following network:\n"
+        #     f"Network: {network_name}\n"
+        #     "Objective type must be 'minimize' or 'maximize'. Regularizer can be null if not specified."
+        # )
+
+        # # Define JSON format instructions manually
+        # json_format = (
+        #     "Return the response in JSON format with the key 'answer'. The value should be an object with:\n"
+        #     "- 'loss': The loss function name (string)\n"
+        #     "- 'regularizer': The regularizer function name (string or null)\n"
+        #     "- 'objective': The objective type ('minimize' or 'maximize')\n"
+        #     "Example:\n"
+        #     '{"answer": {"loss": "MSE", "regularizer": "L1", "objective": "maximize"}}'
+        # )
+
+        prompt = self.build_prompt(task, query, instructions, examples, extra_instructions)
+
+        # Query LLM
+        response = self._query_llm(prompt, ObjectiveFunctionResponse)
+        if not response:
+            self.logger.warning(f"No response for objective functions in network {network_name}.")
+            return
+
+        # Rest of the method remains unchanged
+        # loss_name = str(response.answer.cost_function.lossFunction)
+        # if response.answer.cost_function.regularFunction:
+        #     reg_name = str(response.answer.cost_function.regularFunction)
+        # obj_type = str(response.answer.objectiveFunction)
+        loss_name = str(response.loss.name)
+        loss_def= str(response.loss.definition)
+
+        reg_name = None
+        if response.regularizer:
+            reg_name = str(response.regularFunction.name)
+            reg_def = str(response.regularFunction.defintion)
+
+        obj_type = str(response.objective)
+
+
+
+        # Instantiate and link (rest of your logic remains similar)
+        obj_cls = (
+            self.ontology.MinObjectiveFunction
+            if obj_type.lower().strip() == "minimize"
+            else self.ontology.MaxObjectiveFunction
+        )
+        obj_instance = self._instantiate_and_format_class(
+            obj_cls, f"{obj_type} Objective Function"
+        )
+        self._link_instances(network_instance, obj_instance, self.ontology.hasObjective)
+
+        # Loss function handling
+        known_losses = get_all_subclasses(self.ontology.LossFunction)
+        best_loss_match = self._fuzzy_match_class(
+            loss_name, known_losses, 90
+        ) or create_subclass(self.ontology, loss_name, self.ontology.LossFunction)
+        cost_instance = self._instantiate_and_format_class(
+            self.ontology.CostFunction, "cost function"
+        )
+        loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name)
+        self._link_instances(obj_instance, cost_instance, self.ontology.hasCost)
+        self._link_instances(cost_instance, loss_instance, self.ontology.hasLoss)
+
+        # Regularizer handling
+        if reg_name:
+            best_reg_match = self._fuzzy_match_class(
+                reg_name, known_losses, 90
+            ) or create_subclass(
+                self.ontology, reg_name, self.ontology.RegularizerFunction
+            )
+            reg_instance = self._instantiate_and_format_class(best_reg_match, reg_name)
+            self._link_instances(
+                cost_instance, reg_instance, self.ontology.hasRegularizer
+            )
+
+        self.logger.info(
+            f"Processed objective functions for {network_name}: Loss: {loss_name}, Regularizer: {reg_name}, Objective: {obj_type}."
+        )
+
+    def _old_process_objective_functions(self, network_instance: Thing) -> None:
         if not isinstance(network_instance, Thing):
             self.logger.error(
                 "Network instance not provided in process_objective_functions."
@@ -1311,7 +1443,7 @@ class OntologyInstantiator:
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
                 for count, j in enumerate(self.list_json_doc_paths):
-                    init_engine(self.ann_config_name, j, self.logger)
+                    init_engine(self.ann_config_name, j)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
 

@@ -35,7 +35,7 @@ import numpy as np
 import ollama
 import faiss
 from typing import Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Type, Any
 
 embedding_cache = {}  # In-memory only
@@ -747,11 +747,11 @@ if __name__ == "__main__":
 
     # Example for testing purposes
     class Layer(BaseModel):
-        type: str
-        size: int
+        type: str = Field(default=..., description="The type of the layer.")
+        size: int = Field(default=..., description="The size of the layer.")
 
     class NeuralNetworkDetails(BaseModel):
-        layers: list[Layer]
+        layers: list[Layer] = Field(default=..., description="A list of layers and their types.")
 
 
     json_file_path = "data/alexnet/doc_alexnet.json"
