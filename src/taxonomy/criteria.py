@@ -26,6 +26,7 @@ class SearchOperator(BaseModel):
     Op: Optional[str] = Field("") 
     Value: Optional[str | int | float | list ] = Field("")
     HashOn: Optional[str] = Field("type")
+
     #has: Optional [ List ] = []
     #equals: Optional[ List ] = []
 
@@ -36,6 +37,7 @@ class Criteria(BaseModel):
     '''
     Searchs: List[SearchOperator] = [] #= []
     
+    Name: Optional[str] = Field("level")
     def add(self, operator:SearchOperator):
         self.Searchs.append(operator)
 

@@ -12,7 +12,7 @@ from visualizeutils import visualizeTaxonomy
 
 from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
-
+from clustering import kmeans_clustering
 
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
