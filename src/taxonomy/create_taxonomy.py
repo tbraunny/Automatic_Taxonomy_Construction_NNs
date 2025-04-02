@@ -9,6 +9,11 @@ import json
 
 import networkx as nx
 from visualizeutils import visualizeTaxonomy
+
+from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
+from rdflib.namespace import RDFS, XSD
+
+
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -70,16 +75,19 @@ def serialize(obj):
     return obj
 
 class TaxonomyNode(BaseModel):
-    name: str
+    name: str # the taxonomy node will take on the name of the criteria if not defined
     annConfigs: Optional[List] = []
     splitProperties: Optional[List|Dict] = []
     criteria: Criteria|None
     children: Optional[List] = []
     splitKey: Optional[str] = "Empty"
+    
     def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}, annConfigs = [], splitKey = ""):
         super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs, splitKey=splitKey)
+    
     def add_children(self, child):
         self.children.append(children)
+
     def to_json(self):
         return json.dumps(serialize(self)) #self.model_dump_json(indent=2, serialize_as_any=True)
     
@@ -102,20 +110,103 @@ class TaxonomyNode(BaseModel):
 
         add_nodes_edges(self)
         return '\n'.join(nx.generate_graphml(G))
+    
+    def to_rdf(self,format='xml'):
+        """
+        Creates an RDF representation (in Turtle) of this node, 
+        including its criteria and recursive children.
+        """
+        # Create an RDF graph
+        g = Graph()
 
+        # Define a custom namespace
+        MYNS = Namespace("http://example.org/taxonomy#")
+        g.bind("myns", MYNS)
 
+        def add_node(node: "TaxonomyNode", graph: Graph):
+            """
+            Recursively adds the node (and its children) to the graph,
+            returning the URIRef for the current node.
+            """
+            # Convert the node name to a safe URI fragment
+            node_uri = URIRef(MYNS + node.name.replace(" ", "_"))
+
+            # Declare this node as a TaxonomyNode
+            graph.add((node_uri, RDF.type, MYNS.TaxonomyNode))
+
+            # Add label (the node's name)
+            graph.add((node_uri, RDFS.label, Literal(node.name, datatype=XSD.string)))
+
+            # Add splitKey if it exists
+            if node.splitKey:
+                graph.add((node_uri, MYNS.splitKey,
+                           Literal(node.splitKey, datatype=XSD.string)))
+
+            # Add annConfigs
+            if node.annConfigs:
+                # Serialize list/dict as JSON and store as literal
+                graph.add((node_uri, MYNS.annConfigs,
+                           Literal(json.dumps(serialize(node.annConfigs)),
+                                   datatype=XSD.string)))
+
+            # Add splitProperties
+            if node.splitProperties:
+                graph.add((node_uri, MYNS.splitProperties,
+                           Literal(json.dumps(serialize(node.splitProperties)),
+                                   datatype=XSD.string)))
+
+            # Add Criteria if present
+            if node.criteria:
+                criteria_bnode = BNode()
+                graph.add((node_uri, MYNS.hasCriteria, criteria_bnode))
+                graph.add( (criteria_bnode, MYNS.Name, Literal(node.criteria, datatype=XSD.string)  ) )
+                # Each SearchOperator in .criteria.Searchs can be a separate BNode
+                for op in node.criteria.Searchs:
+                    op_bnode = BNode()
+                    graph.add((criteria_bnode, MYNS.hasSearchOperator, op_bnode))
+
+                    # Add all fields of the SearchOperator
+                    if op.HasType:
+                        graph.add((op_bnode, MYNS.HasType,
+                                   Literal(op.HasType, datatype=XSD.string)))
+                    if op.Type:
+                        graph.add((op_bnode, MYNS.Type,
+                                   Literal(op.Type, datatype=XSD.string)))
+                    if op.Name:
+                        graph.add((op_bnode, MYNS.Name,
+                                   Literal(op.Name, datatype=XSD.string)))
+                    if op.Op:
+                        graph.add((op_bnode, MYNS.Op,
+                                   Literal(op.Op, datatype=XSD.string)))
+                    if op.Value is not None:
+                        # Convert to string for simplicity; could refine based on type
+                        graph.add((op_bnode, MYNS.Value,
+                                   Literal(str(op.Value), datatype=XSD.string)))
+                    if op.HashOn:
+                        graph.add((op_bnode, MYNS.HashOn,
+                                   Literal(op.HashOn, datatype=XSD.string)))
+
+            # Recursively handle children
+            for child in node.children:
+                child_uri = add_node(child, graph)
+                graph.add((node_uri, MYNS.hasChild, child_uri))
+
+            return node_uri
+
+        # Start recursion with `self`
+        add_node(self, g)
+
+        # Return Turtle serialization (could switch to "xml", "json-ld", etc.)
+        return g.serialize(format=format)
 
 
 def query_instance_properties(instance, query):
     found = []
     for prop in instance.get_properties():
         print('property',prop.name)
-
         for value in prop[instance]:
-
             print('value',value,type(value))
             eq = query
-
             if eq.Op == 'sequal' and isinstance(value,Thing) and eq.Value == value.name:
                 insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
                 if not insert in found:
@@ -145,6 +236,28 @@ def query_instance_properties(instance, query):
                 if not insert in found:
                     found.append(insert)
     return found
+
+def createFacetedTaxonomy(topNode: TaxonomyNode):
+    searching = [topnode]
+    fctaxo = {}
+    count = 0
+    while len(searching) > 0:
+        currentlevel = [j for i in searching for j in i.children]
+        print(currentlevel)
+        nameoflevel = ''
+        if len(currentlevel) > 0:
+            nameoflevel = currentlevel[0].name+ f'_level_{count}'
+            fctaxo[nameoflevel] = {}
+            fctaxo[nameoflevel]['criteria'] = currentlevel[0].criteria
+        for node in currentlevel:
+            if not node.splitKey in fctaxo[nameoflevel]:
+                fctaxo[nameoflevel][node.splitKey] = node.annConfigs
+            else:
+                fctaxo[nameoflevel][node.splitKey] += node.annConfigs
+        searching = currentlevel
+        count += 1
+    return fctaxo
+
 
 class TaxonomyCreator:
 
@@ -212,7 +325,7 @@ class TaxonomyCreator:
             hashvalue = set([item['hash'] for item in found])
             hashvalue = hashvalue = ' '.join( str(hash) for hash in hashvalue)
             print('hash: ', hashvalue)
-            #input()
+            
             if not hashvalue in hashmap:
                 hashmap[hashvalue] = { ann_config : found }
             else:
@@ -242,7 +355,6 @@ class TaxonomyCreator:
         #self.ontology.load()
         print('test',self.ontology.ANNConfiguration)
         print(list(self.ontology.classes()))
-        #input()
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
 
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
@@ -250,7 +362,7 @@ class TaxonomyCreator:
         topnode = TaxonomyNode(name='Top of Taxonomy',criteria=None, annConfigs = [annconfig.name for annconfig in ann_configurations])
         
         # construct a category for eac
-        facetedTaxonomy = { f'level_{index}' : {} for index, level in enumerate(self.levels)  }
+        facetedTaxonomy = { level.Name+f'_level_{index}' : {} for index, level in enumerate(self.levels)  }
         nodes = [topnode]
         for level_index, level in enumerate(self.levels):
             newsplits = []
@@ -262,17 +374,18 @@ class TaxonomyCreator:
                     
                     split = list(found[key].keys())
 
-                    childnode = TaxonomyNode(f'{level_index}',  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
+                    childnode = TaxonomyNode(level.Name,  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
                     print(level_index,key,found[key].keys())
-                    #input()
-                    inserting = f'level_{level_index}'
+                    inserting = level.Name + f'_level_{level_index}'
+                    facetedTaxonomy[inserting]['criteria'] = level
+
                     if not key in facetedTaxonomy[inserting]:
                         facetedTaxonomy[inserting][key] = list(found[key].keys())
                     else:
                         facetedTaxonomy[inserting][key] += list(found[key].keys())
-
+                    
                     print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
-                    if not (len(key) == 0 and len(found[key]) == 1) or faceted: # don't expand leafs
+                    if not (len(key) == 0 and len(found[key]) == 1) or faceted: # don't expand leafs -- expanded if faceted 
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
                         newsplits.append(split)
@@ -280,37 +393,38 @@ class TaxonomyCreator:
             splits = newsplits
             nodes = newnodes
             print(nodes)
-        print(facetedTaxonomy)
-        input()
-        if format == 'json':
-            return topnode.to_json()
-        else:
-            return topnode.to_graphml()
 
+        if format == 'json':
+            output = topnode.to_json()
+        elif format == 'graphml':
+            output = topnode.to_graphml()
+        else:
+            output = topnode.to_rdf()
+        return topnode, facetedTaxonomy, output
 def main():
 
     logger.info("Loading ontology.")
     #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
     ontology_path = f"./data/owl/annett-o-test.owl"
 
-    ontology_path = f"./data/owl/annett-o.owl" 
+    #ontology_path = f"./data/owl/annett-o.owl" 
     # Example Criteria...
     op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
     #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
-    criteria = Criteria()
+    criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
     op2 = SearchOperator(HasType=HasTaskType )
-    criteria2 = Criteria()
-    #criteria2.add(op2)
+    criteria2 = Criteria(Name='HasTaskType')
+    criteria2.add(op2)
     
     #op3 = SearchOperator(has=[HasLoss] )
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria]#,criteria2,criteria3]
+    criterias = [criteria,criteria2]#,criteria2,criteria3]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
 
@@ -322,9 +436,21 @@ def main():
     logger.info("Creating taxonomy from Annetto annotations.")
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
 
-    output = taxonomy_creator.create_taxonomy(format='aaa')
-    visualizeTaxonomy(output)
+    format='ontology'
+
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='ontology',faceted=True)
+
+
+
+
+
     print(output)
+    with open('test.xml','w') as handle:
+        handle.write(output)
+
+    if format == 'graphml':
+        visualizeTaxonomy(output)
+        print(output)
     logger.info("Finished creating taxonomy.")
 
 

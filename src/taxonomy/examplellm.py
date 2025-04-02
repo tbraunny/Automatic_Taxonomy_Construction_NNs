@@ -34,10 +34,10 @@ op2 = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='la
 #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
 #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
 
-criteria1 = Criteria()
+criteria1 = Criteria(Name='Has Loss Criteria')
 criteria1.add(op)
 
-criteria2 = Criteria()
+criteria2 = Criteria(Name='Layer Num Units')
 criteria2.add(op2)
 
 oc = OutputCriteria(criteriagroup=[criteria1,criteria2], description="A taxonomy of loss at the top and a range of number of units").model_dump_json()
@@ -207,24 +207,29 @@ fixparser = OutputFixingParser.from_llm(parser=parser, llm=conservative_model)
 conservative_model.with_structured_output(OutputCriteria)
 chain = criteriaprompt | conservative_model
 
-ontology_path = f"./data/owl/annett-o-test.owl" 
-#ontology_path = f"./data/owl/annett-o.owl" 
+#ontology_path = f"./data/owl/annett-o-test.owl" 
+ontology_path = f"./data/owl/annett-o.owl" 
 ontology = load_ontology(ontology_path=ontology_path)
 
 
 #output = chain.invoke({'user_input': 'Give me a taxonomy that splits small networks use the range operator.','oc': oc}).content
-output = chain.invoke({'user_input': 'Give me a taxonomy that splits on layers.','oc': oc}).content
+output = chain.invoke({'user_input': 'Give me a taxonomy that categorizes based on types of layers, optimizer, and loss function.','oc': oc}).content
 output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
 thecriteria = output = fixparser.parse(output)
 print(type(output))
-
+print(thecriteria)
+input()
 taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
+topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
 
 print(output)
 visualizeTaxonomy(output)
 print(thecriteria)
-    
+print(faceted)
+
+with open('test.json', 'w') as handle:
+    handle.write(json.dumps(serialize(faceted)))
+
 '''if not streaming:
     output = chain.invoke({'user_input': 'Construct a taxonomy that splits on 10 to 100 neurons.','oc': oc})
     #print(output)
