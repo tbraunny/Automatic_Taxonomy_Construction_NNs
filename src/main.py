@@ -36,7 +36,7 @@ def main(ann_name: str, ann_path:str) -> str:
     """
     
     # Make a directory for the ANN # TEMP
-    ann_path = create_ann_dir(ann_name)
+    # ann_path = create_ann_dir(ann_name)
 
     # TODO: This is where front-end will put user files
 

@@ -1461,7 +1461,7 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Cross Entropy Loss">
+<owl:Class rdf:about="categorical crossentropy">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
@@ -3285,11 +3285,11 @@
 
 <owl:NamedIndividual rdf:about="d53410e0_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="d53410e0_cross-entropy-loss"/>
+  <hasLoss rdf:resource="d53410e0_categorical-crossentropy"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_cross-entropy-loss">
-  <rdf:type rdf:resource="Cross Entropy Loss"/>
+<owl:NamedIndividual rdf:about="d53410e0_categorical-crossentropy">
+  <rdf:type rdf:resource="categorical crossentropy"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
