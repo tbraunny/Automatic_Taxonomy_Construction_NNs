@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Literal, Optional
+from typing import TypeVar, Generic, Literal, Optional, List
 from pydantic import BaseModel, Field, field_validator
 
 # Define a generic response model for structured LLM output.
@@ -158,19 +158,13 @@ class ObjectiveFunctionDetails(BaseModel):
 class ObjectiveFunctionResponse(ObjectiveFunctionDetails):  
     pass
 
+class TermAndDefinition(BaseModel):
+    name: str = Field(..., description="The name of the function or component.")
+    definition: Optional[str] = Field(None, description="A brief, succinct definition of this term.")
+
 """Define Process Task Characterization"""
 class TaskCharacterizationDetails(BaseModel):
-    task_type: Literal[
-        "Adversarial",
-        "Self-Supervised Classification",
-        "Semi-Supervised Classification",
-        "Supervised Classification",
-        "Unsupervised Classification",
-        "Discrimination",
-        "Generation",
-        "Clustering",
-        "Regression",
-    ] = Field(..., description="The type of task that the model is being trained to perform.")
+    task_type: TermDefinition = Field(..., description="Details about the training task type used.")
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
     pass

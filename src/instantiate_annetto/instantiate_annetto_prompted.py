@@ -16,7 +16,7 @@ from utils.owl_utils import (
     assign_object_property_relationship,
     create_subclass,
     get_all_subclasses,
-    create_class_data_property
+    create_class_data_property,
 )
 from utils.constants import Constants as C
 
@@ -67,16 +67,28 @@ class OntologyInstantiator:
             output_owl_path (str): The path to save the output OWL file.
         """
         if not isinstance(ann_config_name, str):
-            self.logger.error("Expected a string for ANN Configuration name.", exc_info=True)
-            raise TypeError("Expected a string for ANN Configuration name.", exc_info=True)
+            self.logger.error(
+                "Expected a string for ANN Configuration name.", exc_info=True
+            )
+            raise TypeError(
+                "Expected a string for ANN Configuration name.", exc_info=True
+            )
         if not isinstance(ontology, Ontology):
-            self.logger.error("Expected a Owlready2 Ontology type for ontology.", exc_info=True)
-            raise TypeError("Expected a Owlready2 Ontology type for ontology.", exc_info=True)
+            self.logger.error(
+                "Expected a Owlready2 Ontology type for ontology.", exc_info=True
+            )
+            raise TypeError(
+                "Expected a Owlready2 Ontology type for ontology.", exc_info=True
+            )
         if not isinstance(list_json_doc_paths, list) and all(
             isinstance(path, str) for path in list_json_doc_paths
         ):
-            self.logger.error("Expected a list of strings for JSON doc paths.", exc_info=True)
-            raise TypeError("Expected a list of strings for JSON doc paths.", exc_info=True)
+            self.logger.error(
+                "Expected a list of strings for JSON doc paths.", exc_info=True
+            )
+            raise TypeError(
+                "Expected a list of strings for JSON doc paths.", exc_info=True
+            )
         if not isinstance(output_owl_path, str):
             self.logger.error("Expected a string for output OWL path.", exc_info=True)
             raise TypeError("Expected a string for output OWL path.", exc_info=True)
@@ -138,7 +150,8 @@ class OntologyInstantiator:
             return instance
         except Exception as e:
             self.logger.error(
-                f"Error instantiating {cls.name} with name {instance_name}: {e}", exc_info=True
+                f"Error instantiating {cls.name} with name {instance_name}: {e}",
+                exc_info=True,
             )
 
     def _format_instance_name(self, instance_name: str) -> str:
@@ -193,9 +206,13 @@ class OntologyInstantiator:
         if not isinstance(instance_name, str):
             raise TypeError("Expected instance_name to be a string.", exc_info=True)
         if not all(isinstance(cls, ThingClass) for cls in classes):
-            raise TypeError("Expected classes to be a list of ThingClass objects.", exc_info=True)
+            raise TypeError(
+                "Expected classes to be a list of ThingClass objects.", exc_info=True
+            )
         if not all(isinstance(cls.name, str) for cls in classes):
-            raise TypeError("Expected classes to have string names. ######", exc_info=True)
+            raise TypeError(
+                "Expected classes to have string names. ######", exc_info=True
+            )
         if not isinstance(threshold, int):
             raise TypeError("Expected threshold to be an integer.", exc_info=True)
 
@@ -220,7 +237,9 @@ class OntologyInstantiator:
         :return: The best-matching string or None if no good match is found.
         """
         if not all(isinstance(name, str) for name in class_names):
-            raise TypeError("Expected class_names to be a list of strings.", exc_info=True)
+            raise TypeError(
+                "Expected class_names to be a list of strings.", exc_info=True
+            )
         if not isinstance(threshold, int):
             raise TypeError("Expected threshold to be an integer.", exc_info=True)
 
@@ -245,7 +264,15 @@ class OntologyInstantiator:
         self.logger.info(
             f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
         )
-    def build_prompt(self, task: str, query: str, instructions: str, examples: str, extra_instructions: str = "") -> str:
+
+    def build_prompt(
+        self,
+        task: str,
+        query: str,
+        instructions: str,
+        examples: str,
+        extra_instructions: str = "",
+    ) -> str:
         return f"{task}\n{instructions}\n{examples}\n{extra_instructions}\nNow, for the following:\n{query}\nAnswer: "
 
     def _query_llm(
@@ -270,37 +297,6 @@ class OntologyInstantiator:
 
         The function checks for cached responses before querying the LLM.
         If an error occurs, it logs the error and returns an empty response.
-
-        Example prompt structure:
-
-        Examples:
-        Loss Function: Discriminator Loss
-        1. Network: Discriminator
-        {"answer": 784}
-
-        2. Network: Generator
-        {"answer": 100}
-
-        3. Network: Linear Regression
-        {"answer": 1}
-
-        Now, for the following network:
-        Network: {network_thing_name}
-        Expected JSON Output:
-        {"answer": "<Your Answer Here>"}
-
-        Loss Function: Generator Loss
-        {"answer": ["L2 Regularization", "Elastic Net"]}
-
-        Loss Function: Cross-Entropy Loss
-        {"answer": []}
-
-        Loss Function: Binary Cross-Entropy Loss
-        {"answer": ["L2 Regularization"]}
-
-        Now, for the following loss function:
-        Loss Function: {loss_name}
-        {"answer": "<Your Answer Here>"}
 
         Args:
             instructions (str): Additional guidance for formatting the response.
@@ -333,24 +329,15 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"LLM query error: {e}", exc_info=True)
             return ""
-        
+
     def _process_objective_functions(self, network_instance: Thing) -> None:
         network_name = self._unformat_instance_name(network_instance.name)
-
-        # examples = (
-        #     "Examples:\n"
-        #     "Network: Discriminator\n"
-        #     '''{"answer": {"loss": "Power-Outlet Loss", "regularizer": "Electric Regularization", "objective": "minimize"}}\n\n'''
-
-        #     "Network: Generator\n"
-        #     '''{"answer": {"loss": "Power-Outlet Loss", "regularizer": null, "objective": "maximize"}}\n'''
-        # )
 
         # Define examples using defintions
         examples = (
             "Examples:\n"
             "Network: Discriminator\n"
-            '''{"answer": {
+            """{"answer": {
                 "loss": {
                     "name": "Power-Outlet Loss",
                     "definition": "Measures energy imbalance between predicted and real outputs."
@@ -360,21 +347,18 @@ class OntologyInstantiator:
                     "definition": "Penalizes current surges to stabilize the model."
                 },
                 "objective": "minimize"
-            }}\n\n'''
-
+            }}\n\n"""
             "Network: Generator\n"
-            '''{"answer": {
+            """{"answer": {
                 "loss": {
                     "name": "Power-Outlet Loss",
                     "definition": "Measures energy imbalance between predicted and real outputs."
                 },
                 "regularizer": null,
                 "objective": "maximize"
-            }}\n'''
+            }}\n"""
         )
 
-
-        # Define the task directly
         task = "Extract the loss function, regularizer, and objective type for a network.\n"
         instructions = (
             "Return the response in JSON format with the key 'answer'.\n"
@@ -386,50 +370,25 @@ class OntologyInstantiator:
             "Regularizer can be null if not specified."
         )
 
-        # prompt = (
-        #     f"Extract the loss function, regularizer, and objective type for a network.\n"
-        #     f"{examples}\n"
-        #     f"Now, for the following network:\n"
-        #     f"Network: {network_name}\n"
-        #     "Objective type must be 'minimize' or 'maximize'. Regularizer can be null if not specified."
-        # )
+        prompt = self.build_prompt(
+            task, query, instructions, examples, extra_instructions
+        )
 
-        # # Define JSON format instructions manually
-        # json_format = (
-        #     "Return the response in JSON format with the key 'answer'. The value should be an object with:\n"
-        #     "- 'loss': The loss function name (string)\n"
-        #     "- 'regularizer': The regularizer function name (string or null)\n"
-        #     "- 'objective': The objective type ('minimize' or 'maximize')\n"
-        #     "Example:\n"
-        #     '{"answer": {"loss": "MSE", "regularizer": "L1", "objective": "maximize"}}'
-        # )
-
-        prompt = self.build_prompt(task, query, instructions, examples, extra_instructions)
-
-        # Query LLM
         response = self._query_llm(prompt, ObjectiveFunctionResponse)
         if not response:
-            self.logger.warning(f"No response for objective functions in network {network_name}.")
+            self.logger.warning(
+                f"No response for objective functions in network {network_name}."
+            )
             return
 
-        # Rest of the method remains unchanged
-        # loss_name = str(response.answer.cost_function.lossFunction)
-        # if response.answer.cost_function.regularFunction:
-        #     reg_name = str(response.answer.cost_function.regularFunction)
-        # obj_type = str(response.answer.objectiveFunction)
         loss_name = str(response.loss.name)
-        loss_def= str(response.loss.definition)
-
+        loss_def = str(response.loss.definition)
         reg_name = None
         if response.regularizer:
             reg_name = str(response.regularFunction.name)
             reg_def = str(response.regularFunction.defintion)
-
         obj_type = str(response.objective)
 
-
-
-        # Instantiate and link (rest of your logic remains similar)
         obj_cls = (
             self.ontology.MinObjectiveFunction
             if obj_type.lower().strip() == "minimize"
@@ -473,7 +432,9 @@ class OntologyInstantiator:
             self.logger.error(
                 "Network instance not provided in process_objective_functions."
             )
-            raise TypeError("Expected an instance of 'Thing' for Network.", exc_info=True)
+            raise TypeError(
+                "Expected an instance of 'Thing' for Network.", exc_info=True
+            )
 
         network_name = self._unformat_instance_name(network_instance.name)
 
@@ -979,13 +940,144 @@ class OntologyInstantiator:
                             )
 
     def _process_task_characterization(self, network_instance: Thing) -> None:
+        network_name = self._unformat_instance_name(network_instance.name)
+
+        try:
+            if not isinstance(network_instance, Thing):
+                self.logger.error(
+                    "Expected an instance of Thing for Network in _process_task_characterization.",
+                    exc_info=True,
+                )
+                raise ValueError(
+                    "Expected an instance of Thing for Network in _process_task_characterization."
+                )
+
+            if not hasattr(self.ontology, "TaskCharacterization") or not isinstance(
+                self.ontology.TaskCharacterization, ThingClass
+            ):
+                self.logger.error(
+                    "The ontology must have a valid TaskCharacterization class of type ThingClass.",
+                    exc_info=True,
+                )
+                return
+
+            task = "Identify the machine learning *training task type* that this network is primarily designed to perform."
+
+            query = f"Network: {network_name}"
+
+            instructions = (
+                "Return the response in JSON format with the key 'answer'.\n"
+                "The 'task_type' field should be a list of objects, each with a 'name' (e.g., 'Generation') "
+                "and an optional 'definition' (a succinct explanation of the term).\n"
+                "The task type should reflect the machine learning training paradigm, not the specific application.\n"
+            )
+
+            examples = (
+                "Examples:\n"
+                "Network: GAN\n"
+                """{
+                    "answer": {
+                        "task_type": [
+                            {
+                                "name": "Adversarial",
+                                "definition": "A training paradigm where two networks compete, typically a generator and a discriminator."
+                            }
+                        ]
+                    }
+                }\n\n"""
+                "Network: GPT-2\n"
+                """{
+                    "answer": {
+                        "task_type": [
+                            {
+                                "name": "Generation",
+                                "definition": "The task of producing coherent output sequences, such as text, from learned representations."
+                            }
+                        ]
+                    }
+                }\n\n"""
+                "Network: SimCLR\n"
+                """{
+                    "answer": {
+                        "task_type": [
+                            {
+                                "name": "Self-Supervised Classification",
+                                "definition": "A learning approach using pretext tasks to learn useful representations without labeled data."
+                            }
+                        ]
+                    }
+                }\n"""
+            )
+
+            extra_instructions = (
+                "Choose the most appropriate task from this list:\n"
+                "- Adversarial\n"
+                "- Self-Supervised Classification\n"
+                "- Semi-Supervised Classification\n"
+                "- Supervised Classification\n"
+                "- Unsupervised Classification (Clustering)\n"
+                "- Discrimination\n"
+                "- Generation\n"
+                "- Clustering\n"
+                "- Regression\n"
+                "If none of these apply, use a concise custom name (as close to one or few words as possible)."
+            )
+
+            prompt = self.build_prompt(
+                task, query, instructions, examples, extra_instructions
+            )
+
+            response = self._query_llm(prompt, TaskCharacterizationResponse)
+            if not response:
+                self.logger.warning(
+                    f"No response for task characterization in network {network_name}."
+                )
+                return
+
+            task_type_name = str(response.answer.task_type)
+
+            known_task_types = get_all_subclasses(self.ontology.TaskCharacterization)
+            if not known_task_types:
+                self.logger.warning(
+                    f"No known task types found in the ontology. Creating new task type '{task_type_name}'."
+                )
+                best_match_task_type = create_subclass(
+                    self.ontology, task_type_name, self.ontology.TaskCharacterization
+                )
+            else:
+                best_match_task_type = self._fuzzy_match_class(
+                    task_type_name, known_task_types, 90
+                ) or create_subclass(
+                    self.ontology, task_type_name, self.ontology.TaskCharacterization
+                )
+
+            task_type_instance = self._instantiate_and_format_class(
+                best_match_task_type, task_type_name
+            )
+
+            self._link_instances(
+                network_instance, task_type_instance, self.ontology.hasTaskType
+            )
+
+            self.logger.info(
+                f"Processed task characterization for {network_name}: Task Type: {task_type_name}."
+            )
+
+        except Exception as e:
+            self.logger.error(
+                f"Error processing task characterization for network '{network_name}': {e}",
+                exc_info=True,
+            )
+
+    def _old_process_task_characterization(self, network_instance: Thing) -> None:
         """
         Process the task characterization of a network instance.
         """
         try:
             if not isinstance(network_instance, Thing):
                 self.logger.error(
-                    "Expected an instance of Thing for Network in _process_task_characterization."
+                    "Expected an instance of Thing for Network in _process_task_characterization.",
+                    exc_info=True,
                 )
                 raise ValueError(
                     "Expected an instance of Thing for Network in _process_task_characterization."
@@ -994,13 +1086,13 @@ class OntologyInstantiator:
                 self.ontology.TaskCharacterization, ThingClass
             ):
                 self.logger.error(
-                    "The ontology must have a valid TaskCharacterization class of type ThingClass.."
+                    "The ontology must have a valid TaskCharacterization class of type ThingClass..",
+                    exc_info=True,
                 )
 
             # TODO: Dynmaically provide tasks in prompt considering known task types.
             # TODO: Assumes only ones task per network, may need to change to multiple tasks.
 
-            # Get the name of the network instance
             network_instance_name = self._unformat_instance_name(network_instance.name)
 
             # TODO: Find better place to put this
@@ -1104,7 +1196,9 @@ class OntologyInstantiator:
             if not hasattr(self.ontology, "Network") or not isinstance(
                 self.ontology.Network, ThingClass
             ):
-                logger.error("Invalid or missing Network class in the ontology.", exc_info=True)
+                logger.error(
+                    "Invalid or missing Network class in the ontology.", exc_info=True
+                )
                 raise AttributeError(
                     "The ontology must have a valid 'Network' class of type ThingClass."
                 )
@@ -1125,7 +1219,7 @@ class OntologyInstantiator:
                 )
                 # self._process_layers(network_instance) # May be processed by onnx
                 self._process_objective_functions(network_instance)
-                # self._process_task_characterization(network_instance)
+                self._process_task_characterization(network_instance)
         except Exception as e:
             self.logger.error(
                 f"Error processing the '{ann_config_instance}' networks: {e}",
@@ -1149,6 +1243,196 @@ class OntologyInstantiator:
                 )
 
     def _process_dataset(self, dataset_pipe_instance: Thing) -> None:
+        try:
+            if not dataset_pipe_instance:
+                self.logger.error("No DatasetPipe instance provided.",exc_info=True)
+                raise ValueError("Missing DatasetPipe instance.")
+
+            self.logger.info("Starting dataset processing.")
+            dataset_instance = self._instantiate_and_format_class(
+                self.ontology.Dataset, "Dataset"
+            )
+            self._link_instances(
+                dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
+            )
+
+            # Prompts for LLM query
+            task = "Extract and describe the dataset details used in the paper.\n"
+            examples = (
+                "Example:\n"
+                """{"answer": {
+                    "data_description": "The MNIST database of handwritten digits, containing 60,000 training and 10,000 test examples.",
+                    "data_doi": "10.1234/mnist",
+                    "data_location": "http://yann.lecun.com/exdb/mnist/",
+                    "data_sample_dimensionality": "28x28",
+                    "data_sample_features": "Grayscale pixel values",
+                    "data_samples": 70000,
+                    "is_transient_dataset": false,
+                    "dataType": {"subclass": "Image"}
+                }}"""
+            )
+            instructions = (
+                "Your answer should include:\n"
+                "- data_description (Required)\n"
+                "- data_doi, data_location, data_sample_dimensionality, "
+                "data_sample_features, data_samples, is_transient_dataset (Optional)\n"
+                "- dataType: must be an object with key 'subclass' as one of "
+                "'Image', 'MultiDimensionalCube', 'Text', 'Video'.\n"
+                "Return a JSON response under key 'answer'.\n"
+            )
+            extra_instructions = (
+                "If any optional field is not available, you may omit it or return None."
+            )
+            prompt = self.build_prompt(task, "", instructions, examples, extra_instructions=extra_instructions)
+
+            dataset_response = self._query_llm(
+                prompt, pydantic_type_schema=DatasetResponse
+            )
+            if not dataset_response:
+                self.logger.warning("No dataset response received.")
+                return
+
+            details = dataset_response.answer
+            dataset_instance.data_description = [details.data_description]
+
+            # Set optional fields
+            optional_fields = [
+                "data_doi", "data_location", "data_sample_dimensionality",
+                "data_sample_features", "data_samples", "is_transient_dataset"
+            ]
+            for field in optional_fields:
+                value = getattr(details, field, None)
+                if value is not None:
+                    setattr(dataset_instance, field, [value])
+
+            # Handle dataType
+            data_type_subclass = details.dataType.subclass
+            best_match = self._fuzzy_match_class(
+                data_type_subclass,
+                get_all_subclasses(self.ontology.DataType)
+            )
+            if best_match:
+                self.logger.info(f"Matched DataType subclass: {best_match}")
+                data_type_instance = self._instantiate_and_format_class(
+                    best_match, "Data Type"
+                )
+                self._link_instances(
+                    dataset_instance, data_type_instance, self.ontology.hasDataType
+                )
+            else:
+                self.logger.info(f"Unrecognized DataType subclass: {data_type_subclass}")
+
+            self.logger.info("Completed dataset processing.")
+
+        except Exception as e:
+            self.logger.error(f"Error while processing dataset: {e}", exc_info=True)
+            raise
+    def _process_training_strategy(self, ann_config_instance: Thing) -> None:
+        if not ann_config_instance:
+            self.logger.error("No ANN Configuration instance provided.")
+            raise ValueError("No ANN Configuration instance in the ontology.")
+
+        if not hasattr(self.ontology, "TrainingStrategy"):
+            self.logger.error("TrainingStrategy class not found in the ontology.")
+            raise AttributeError("TrainingStrategy class not found in the ontology.")
+
+        try:
+            strategy_instance = self._instantiate_and_format_class(
+                self.ontology.TrainingStrategy, "Training Strategy"
+            )
+            self._link_instances(
+                ann_config_instance,
+                strategy_instance,
+                self.ontology.hasPrimaryTrainingSession,
+            )
+
+            session_instance = self._instantiate_and_format_class(
+                self.ontology.TrainingSession, "Training Session"
+            )
+            self._link_instances(
+                strategy_instance,
+                session_instance,
+                self.ontology.hasPrimaryTrainingSession,
+            )
+
+            training_step_instance = self._instantiate_and_format_class(
+                self.ontology.TrainingSingle, "Training Single"
+            )
+            self._link_instances(
+                session_instance,
+                training_step_instance,
+                self.ontology.hasPrimaryTrainingStep,
+            )
+
+            task = "Extract the training details used in the network-specific training step."
+            instructions = (
+                "Return a JSON object with key 'answer', containing:\n"
+                "- batch_size: int\n"
+                "- learning_rate_decay: float\n"
+                "- number_of_epochs: int\n"
+                "- learning_rate_decay_epochs (optional): int or null"
+            )
+            query = ""
+            examples = ( "{\n"
+                    '  "answer": {\n'
+                    '    "batch_size": 32,\n'
+                    '    "learning_rate_decay": 0.01,\n'
+                    '    "number_of_epochs": 10,\n'
+                    '    "learning_rate_decay_epochs": 5\n'
+                    "  }\n"
+                    "}\n"
+                    "If the learning_rate_decay_epochs value is not available, you may return None.\n\n" )
+            extra_instructions = "If the learning_rate_decay_epochs value is not available, you may return None."
+            prompt = self.build_prompt(
+                task, query, instructions, examples, extra_instructions
+            )
+
+            response = self._query_llm(
+                prompt,
+                TrainingSingleResponse,
+            )
+
+            if not response:
+                self.logger.warning("No training detail response received.")
+                return
+
+            details = response.answer
+            training_step_instance.batch_size = [details.batch_size]
+            training_step_instance.learning_rate_decay = [details.learning_rate_decay]
+            training_step_instance.number_of_epochs = [details.number_of_epochs]
+
+            if details.learning_rate_decay_epochs is not None:
+                training_step_instance.learning_rate_decay_epochs = [
+                    details.learning_rate_decay_epochs
+                ]
+
+            dataset_pipe = self._instantiate_and_format_class(
+                self.ontology.DatasetPipe, "Dataset Pipe"
+            )
+            self._link_instances(
+                training_step_instance,
+                dataset_pipe,
+                self.ontology.trainingSingleHasIOPipe,
+            )
+
+            dataset_instance = self._instantiate_and_format_class(
+                self.ontology.Dataset, "Dataset"
+            )
+            self._link_instances(
+                dataset_pipe,
+                dataset_instance,
+                self.ontology.joinsDataSet,
+            )
+
+            self._process_dataset(dataset_pipe)
+
+            self.logger.info("Successfully processed training strategy.")
+
+        except Exception as e:
+            self.logger.error(f"Error in _process_training_strategy: {e}", exc_info=True)
+            raise
+
+    def _old_process_dataset(self, dataset_pipe_instance: Thing) -> None:
         """
         Process the dataset class and it's components.
         """
@@ -1275,7 +1559,7 @@ class OntologyInstantiator:
             self.logger.error(f"Error in _process_dataset: {e}", exc_info=True)
             raise e
 
-    def _process_training_strategy(self, ann_config_instance: Thing) -> None:
+    def _old_process_training_strategy(self, ann_config_instance: Thing) -> None:
         """
         Process training strategy for an Ann Configuration instance.
         """
@@ -1403,7 +1687,7 @@ class OntologyInstantiator:
                     "TrainingStrategy class not found in the ontology."
                 )
 
-        except:
+        except Exception as e:
             self.logger.error(
                 f"Error in _process_training_strategy: {e}", exc_info=True
             )
@@ -1416,7 +1700,7 @@ class OntologyInstantiator:
         self.ontology.save(file=self.output_owl_path, format="rdfxml")
         self.logger.info(f"Ontology saved to {self.output_owl_path}")
 
-    def run(self, ann_path:List[str]) -> None:
+    def run(self, ann_path: List[str]) -> None:
         """
         Main method to run the ontology instantiation process.
         """
@@ -1426,20 +1710,22 @@ class OntologyInstantiator:
 
                 if not hasattr(self.ontology, "ANNConfiguration"):
                     raise AttributeError(
-                        "Error: Class 'ANNConfiguration' not found in ontology.", exc_info=True
+                        "Error: Class 'ANNConfiguration' not found in ontology.",
+                        exc_info=True,
                     )
-                
+
                 def grab_titles():
                     unique_titles = set()
                     import json
+
                     # Loop through each file and extract titles
                     for file in self.list_json_doc_paths:
                         with open(file, "r", encoding="utf-8") as f:
                             data = json.load(f)
                             for entry in data:
                                 if "metadata" in entry and "title" in entry["metadata"]:
-                                    unique_titles.add(entry["metadata"]["title"])  
-                    return list(unique_titles)           
+                                    unique_titles.add(entry["metadata"]["title"])
+                    return list(unique_titles)
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
                 for count, j in enumerate(self.list_json_doc_paths):
@@ -1452,19 +1738,26 @@ class OntologyInstantiator:
                     self.ontology.ANNConfiguration, self.ann_config_name
                 )
 
-                create_class_data_property(self.ontology, "hasTitle", self.ontology.ANNConfiguration, str, True)
+                create_class_data_property(
+                    self.ontology, "hasTitle", self.ontology.ANNConfiguration, str, True
+                )
                 for title in grab_titles():
                     ann_config_instance.hasTitle = title
-                create_class_data_property(self.ontology, "hasPaperPath", self.ontology.ANNConfiguration, str, True)
+                create_class_data_property(
+                    self.ontology,
+                    "hasPaperPath",
+                    self.ontology.ANNConfiguration,
+                    str,
+                    True,
+                )
                 for path in ann_path:
                     ann_config_instance.hasPaperPath = path
 
-
                 # Process the network class and it's components.
-                self._process_network(ann_config_instance)
+                # self._process_network(ann_config_instance)
 
                 # Process TrainingStrategy and it's components.
-                # self._process_training_strategy(ann_config_instance)
+                self._process_training_strategy(ann_config_instance)
 
                 # Log time taken to instantiate the ANN ontology instance.
                 minutes, seconds = divmod(time.time() - start_time, 60)
@@ -1496,33 +1789,41 @@ def instantiate_annetto(
     :param: ontology: The ontology to instantiate.
     :param: ontology_output_path: The path to save the ontology.
     """
-    list_json_doc_paths = glob.glob(f"{ann_path}/*.json") # TODO: Lazy to just glob all json files in the directory
+    list_json_doc_paths = glob.glob(
+        f"{ann_path}/*.json"
+    )  # TODO: Lazy to just glob all json files in the directory
     list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
     instantiator = OntologyInstantiator(
-        list_json_doc_paths, ann_name, ontology=ontology, output_owl_path=ontology_output_path
+        list_json_doc_paths,
+        ann_name,
+        ontology=ontology,
+        output_owl_path=ontology_output_path,
     )
     instantiator.run(list(list_pdf_paths))
     instantiator.save_ontology()
-    print(f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_path}.")
+    print(
+        f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_path}."
+    )
 
 
 # For standalone testing
 if __name__ == "__main__":
     import glob
+
     time_start = time.time()
 
     for model_name in [
         # "alexnet",
-        "resnet",
+        # "resnet",
         # "vgg16",
-        # "gan", # Assume we can model name from user or something
+        "gan", # Assume we can model name from user or something
     ]:
         instantiate_annetto(
-                model_name,
-                f"data/{model_name}",
-                load_annetto_ontology("base"),
-                C.ONTOLOGY.TEST_ONTOLOGY_PATH,
-            )
+            model_name,
+            f"data/{model_name}",
+            load_annetto_ontology("base"),
+            C.ONTOLOGY.TEST_ONTOLOGY_PATH,
+        )
         # try:
         #     instantiate_annetto(
         #         model_name,
@@ -1533,7 +1834,7 @@ if __name__ == "__main__":
         # except Exception as e:
         #     print(f"Error instantiating the {model_name} ontology in __name__: {e}")
         #     continu
-        
+
     time_end = time.time()
     minutes, seconds = divmod(time_end - time_start, 60)
     print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds.")

@@ -4,12 +4,15 @@ import time
 import numpy as np
 import faiss
 import ollama
-from typing import Type, Any
+import asyncio
+from typing import Type, Any, TypeVar
 from pydantic import BaseModel
 from langchain_ollama import ChatOllama
 from rank_bm25 import BM25Okapi
 from utils.doc_chunker import semantically_chunk_documents
 from utils.document_json_utils import load_documents_from_json
+
+T = TypeVar("T", bound=BaseModel)
 
 from utils.pydantic_models import *
 
@@ -20,11 +23,11 @@ embedding_cache = {}
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
-GENERATION_MODEL = os.environ.get(
-    "GENERATION_MODEL", "neuroexpert:latest"
-)
+# GENERATION_MODEL = os.environ.get(
+#     "GENERATION_MODEL", "neuroexpert:latest"
+# )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 
 
@@ -45,6 +48,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# async (wrappers for blocking API calls)
+async def async_embedding(model: str, prompt: str):
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, lambda: ollama.embeddings(model=model, prompt=prompt))
 
 def compute_hash(text: str) -> str:
     """Compute a SHA256 hash for a given text."""
@@ -58,6 +65,8 @@ def get_embedding(text: str, model: str) -> list:
     key = compute_hash(text)
     if key in embedding_cache:
         return embedding_cache[key]
+    
+
     response = ollama.embeddings(model=model, prompt=text)
     embedding = response.get("embedding")
     if embedding:
@@ -116,9 +125,8 @@ class LLMQueryEngine:
         self.generation_model = generation_model
         self.logger = logger
 
-        # Initialize ChatOllama
         self.llm = ChatOllama(
-            base_url="http://localhost:11434",
+            # base_url="http://localhost:11434",
             model=self.generation_model,
             temperature=0.2,
             seed=42,
@@ -220,8 +228,8 @@ class LLMQueryEngine:
         return candidates
 
     def merge_candidates(
-        self, dense_candidates: list, bm25_candidates: list
-    ) -> list:  # NOTE: Fixed duplicate chunk issue
+        self, dense_candidates: List, bm25_candidates: List
+    ) -> List:
         """Merge dense and BM25 candidates with weighted scoring."""
         merged = {}
         for candidate in dense_candidates:
@@ -279,6 +287,7 @@ class LLMQueryEngine:
             len(seen_content),
         )
         return context.strip()
+    
 
     def query_json(
         self,
@@ -286,7 +295,7 @@ class LLMQueryEngine:
         cls_schema: Type[BaseModel],
         max_chunks: int = 10,
         token_budget: int = 3000,
-    ) -> Any:
+    ) -> T:
         """Query the LLM with structured output using ChatOllama."""
         start_time = time.time()
         candidates = self.retrieve_chunks(query, max_chunks)
