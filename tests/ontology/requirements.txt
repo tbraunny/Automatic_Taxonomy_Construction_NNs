@@ -1,4 +1,0 @@
-
-# For OWL Parsing
-rdflib
-owlready2

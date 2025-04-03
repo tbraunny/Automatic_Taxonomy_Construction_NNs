@@ -101,54 +101,75 @@ class DatasetResponse(LLMResponse[DatasetDetails]):
 
 """Define Process Objective Function"""
 
-# Example
-ACCEPTABLE_LOSS_FUNCTIONS = ["CrossEntropy", "MSE"]
-ACCEPTABLE_REGULARIZERS = ["L1Regularization", "L2Regularization", "L1L2Regularization"]
+class TermDefinition(BaseModel):
+    name: str = Field(..., description="The name of the function or component.")
+    definition: Optional[str] = Field(None, description="A brief, succinct definition of this term.")
 
-class LossFunctionDetails(BaseModel):
-    type: str = Field(..., description="Name of the loss function used in training.")
 
-    @field_validator("type")
-    def validate_loss_function(cls, value):
-        if value not in ACCEPTABLE_LOSS_FUNCTIONS:
-            print(f"Warning: '{value}' is not in the predefined list but will be allowed.")  
-        return value
+# # Example
+# ACCEPTABLE_LOSS_FUNCTIONS = ["CrossEntropy", "MSE"]
+# ACCEPTABLE_REGULARIZERS = ["L1Regularization", "L2Regularization", "L1L2Regularization"]
 
-class RegularFunctionDetails(BaseModel):
-    type: str = Field(..., description="Name of the regularization function used in training.")
+# class LossFunctionDetails(BaseModel):
+#     type: str = Field(..., description="Name of the loss function associated with the given network.")
 
-    @field_validator("type")
-    def validate_regular_function(cls, value):
-        if value not in ACCEPTABLE_REGULARIZERS:
-            print(f"Warning: '{value}' is not in the predefined list but will be allowed.")  
-        return value
+#     @field_validator("type")
+#     def validate_loss_function(cls, value):
+#         if value not in ACCEPTABLE_LOSS_FUNCTIONS:
+#             print(f"Warning: '{value}' is not in the predefined list but will be allowed.")  
+#         return value
 
-class CostFunctionDetails(BaseModel):
-    lossFunction: LossFunctionDetails
-    regularFunction: RegularFunctionDetails
+# class RegularFunctionDetails(BaseModel):
+#     type: Optional[str] = Field(None, description="The regularizer function name associated with the given objective function.")
 
+#     @field_validator("type")
+#     def validate_regular_function(cls, value):
+#         if value not in ACCEPTABLE_REGULARIZERS:
+#             print(f"Warning: '{value}' is not in the predefined list but will be allowed.")  
+#         return value
+
+# class CostFunctionDetails(BaseModel):
+#     lossFunction: LossFunctionDetails
+#     regularFunction: RegularFunctionDetails
+
+# class ObjectiveFunctionDetails(BaseModel):
+#     cost_function: CostFunctionDetails
+#     objectiveFunction: Literal[
+#         "minimize",
+#         "maximize"
+#     ] = Field(..., description="The objective type ('minimize' or 'maximize')")
+
+
+# class ObjectiveFunctionResponse(LLMResponse[ObjectiveFunctionDetails]):
+#     pass
+
+# includes defintion of loss and regularizer
 class ObjectiveFunctionDetails(BaseModel):
-    cost_function: CostFunctionDetails
-    objectiveFunction: Literal[
-        "minimize",
-        "maximize"
-    ] = Field(..., description="The objective of the loss function. The loss function is either minimized or maximized.")
+    loss: TermDefinition = Field(..., description="Details about the loss function used.")
+    regularizer: Optional[TermDefinition] = Field(None, description="Details about the regularizer used, if any.")
+    objective: Literal["minimize", "maximize"] = Field(..., description="The optimization direction ('minimize' or 'maximize').")
 
 
-class ObjectiveFunctionResponse(LLMResponse[ObjectiveFunctionDetails]):
+# class ObjectiveFunctionDetails(BaseModel):
+#     loss: str = Field(..., description="Name of the loss function associated with the given network.")
+#     regularizer: Optional[str] = Field( default=None, description="The regularizer function name associated with the loss function you provide, if any.")
+#     objective: Literal["minimize", "maximize"] = Field(..., description="The objective type of the loss function ('minimize' or 'maximize')")
+
+class ObjectiveFunctionResponse(ObjectiveFunctionDetails):  
     pass
 
 """Define Process Task Characterization"""
 class TaskCharacterizationDetails(BaseModel):
     task_type: Literal[
-        "Classification",
         "Adversarial",
-        "Clustering",
+        "Self-Supervised Classification",
+        "Semi-Supervised Classification",
+        "Supervised Classification",
+        "Unsupervised Classification",
         "Discrimination",
         "Generation",
         "Clustering",
         "Regression",
-        "Unknown"
     ] = Field(..., description="The type of task that the model is being trained to perform.")
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):

@@ -569,6 +569,18 @@
   <rdfs:range rdf:resource="http://www.dmg.org/PMML-4_3#Array"/>
 </owl:DatatypeProperty>
 
+<owl:DatatypeProperty rdf:about="hasTitle">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="ANNConfiguration"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="hasPaperPath">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+  <rdfs:domain rdf:resource="ANNConfiguration"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
 <owl:Class rdf:about="Dataset">
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dataset used as input or output during the evaluation or the training of a network. A dataset may be transient, in case of complex training procedures.</rdfs:comment>
 </owl:Class>
@@ -1449,8 +1461,8 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Unknown">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+<owl:Class rdf:about="categorical crossentropy">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
 <owl:NamedIndividual rdf:about="AAE">
@@ -3254,22 +3266,30 @@
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_alexnet">
+<owl:NamedIndividual rdf:about="d53410e0_resnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
+  <hasNetwork rdf:resource="d53410e0_convolutional-network"/>
+  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deep Residual Learning for Image Recognition</hasTitle>
+  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/resnet/resnet.pdf</hasPaperPath>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
+<owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasTaskType rdf:resource="709942bd_unknown"/>
+  <hasObjective rdf:resource="d53410e0_minimize-objective-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_min-objective-function">
+<owl:NamedIndividual rdf:about="d53410e0_minimize-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="d53410e0_cost-function"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_unknown">
-  <rdf:type rdf:resource="Unknown"/>
+<owl:NamedIndividual rdf:about="d53410e0_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="d53410e0_categorical-crossentropy"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_categorical-crossentropy">
+  <rdf:type rdf:resource="categorical crossentropy"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
