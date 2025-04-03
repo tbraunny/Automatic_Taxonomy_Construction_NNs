@@ -1461,10 +1461,6 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="categorical crossentropy">
-  <rdfs:subClassOf rdf:resource="LossFunction"/>
-</owl:Class>
-
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -3266,30 +3262,46 @@
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_resnet">
+<owl:NamedIndividual rdf:about="f1253bc7_gan">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="d53410e0_convolutional-network"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deep Residual Learning for Image Recognition</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/resnet/resnet.pdf</hasPaperPath>
+  <hasPrimaryTrainingSession rdf:resource="f1253bc7_training-strategy"/>
+  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Generative Adversarial Nets</hasTitle>
+  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/gan/gan.pdf</hasPaperPath>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="d53410e0_minimize-objective-function"/>
+<owl:NamedIndividual rdf:about="f1253bc7_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="f1253bc7_training-session"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_minimize-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="d53410e0_cost-function"/>
+<owl:NamedIndividual rdf:about="f1253bc7_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="f1253bc7_training-single"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_cost-function">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="d53410e0_categorical-crossentropy"/>
+<owl:NamedIndividual rdf:about="f1253bc7_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="f1253bc7_dataset-pipe"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_categorical-crossentropy">
-  <rdf:type rdf:resource="categorical crossentropy"/>
+<owl:NamedIndividual rdf:about="f1253bc7_dataset-pipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="f1253bc7_dataset"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="f1253bc7_dataset">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasDataType rdf:resource="f1253bc7_data-type"/>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The experiments were conducted using a range of datasets including MNIST, Toronto Face Database (TFD), and CIFAR-10.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</is_transient_dataset>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="f1253bc7_data-type">
+  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

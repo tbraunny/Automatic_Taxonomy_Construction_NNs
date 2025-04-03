@@ -18,6 +18,7 @@ def load_annetto_ontology(release_type:str)->Ontology:
         "test": C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         "base": C.ONTOLOGY.BASE_ONTOLOGY_PATH,
         "stable": C.ONTOLOGY.STABLE_ONTOLOGY_PATH
+        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH
     }
 
     if release_type not in releases:
