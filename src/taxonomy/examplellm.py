@@ -129,9 +129,10 @@ When you receive a request—such as classifying small vs. large neural networks
 
 2. SearchOperator Definition
    - Use the HasType field to specify the ontology property to filter on (e.g., hasLayer, hasEvaluation).
+   - Use the HasType to search across all has types, but note that it doesn't support the Op field.
    - Use the Op field to specify the comparison operator. Supported operators are: less, greater, leq, geq, equal, scomp, and range.
    - Use the Value field to define the target value or range.
-   - Use the HasType to search across all has types, but note that it doesn't support the Op field.
+
 3. Supported HasType Values:
    - Network Structure:
      - hasNetwork

@@ -13,16 +13,115 @@ from visualizeutils import visualizeTaxonomy
 from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
 from clustering import kmeans_clustering
+import re
+
 
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+def parse_function(text):
+    pattern = r"(\w+)\(([^)]*)\)"
+    matches = re.findall(pattern, text)
 
-def get_property_from_ann(annconfig, value, vectorize=True):
+    args = []
+    for match in matches:
+        function_name = match[0]
+        arguments = match[1].split(',') if match[1] else []
+    return function_name, arguments
+
+
+
+def find_instance_properties_new(instance, query=[], found=None, visited=None):
+    '''
+    Finds all properties based on passed in has_properties
+    
+    Args:
+        instance (ThingClass): the class for which is an instance
+        has_property: the has properties we are looking for. This is typically edge properties
+        equals: a set of dictionary that define some comparison operations
+        found: a list of found elements associate to has_property
+        visisted: all nodes that have been visisted
+    '''
+    if visited is None:
+        visited = set()
+    if instance in visited:
+        return found
+    visited.add(instance)
+    for prop in instance.get_properties():
+        print('property',prop.name)
+
+        for value in prop[instance]:
+                
+            print('value',value,type(value))
+            
+            eq = query
+            values = eq.Value
+            if type(values) != list:
+                values = [values]
+            
+            # single searches
+            for searchValue in values:
+                if searchValue == prop.name:
+                    insert = {'type': type(value), 'value': value, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                elif isinstance(value,Thing) and eq.Type == 'name' and searchValue == value.name:
+                    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'sequal' and isinstance(value,Thing) and searchValue == value.name:
+                    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'less' and type(value) == int and searchValue > value and eq.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'greater' and etype(value) == int and searchValue < value and eq.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'leq' and type(value) == int and searchValue >= value and eq.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'geq' and type(value) == int and  searchValue <= value and eq.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+                if eq.Op == 'equal' and type(value) == int and searchValue == value and eq.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found.append(insert)
+            
+            # range searches
+            if eq.Op == 'range' and type(value) == int and eq.Value[0] < value and eq.Value[1] > value and eq.Name == prop.name:
+                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                if not insert in found:
+                    found.append(insert)
+
+            try: 
+                if isinstance(value, Thing): # TODO: this is super redudant and could probably be covered with the above...
+                    if eq.HasType != '':
+                        has = eq.HasType
+                        inserts = get_instance_property_values(instance,has)
+                        for insert in inserts:
+                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True} 
+                            if not insert in found:
+                                found.append(insert)
+                    find_instance_properties_new(value, query=query, found=found,visited=visited)
+            except: 
+                print('broken')
+    return found
+
+
+
+def get_property_from_ann(annconfig, value, query, vectorize=True):
     items = []
     #find_instance_properties(ann_config, has_property=hs)
-    items += find_instance_properties(annconfig, has_property=[], equals=[{'type':'name','value':value}], found=[])
+    #items += find_instance_properties(annconfig, has_property=[], equals=[{'type':'name','value':value}], found=[])
+    items += find_instance_properties_new(annconfig, query, found=[])
     
     if vectorize:
         items = [ item['value'] for item in items]
@@ -300,15 +399,22 @@ class TaxonomyCreator:
             clustervecs = []
             length = -1
             for ann_config in ann_configurations:
-                vector = get_property_from_ann(ann_config,clusterop.Value[0], vectorize=True)
+                vector = get_property_from_ann(ann_config,clusterop.Value[0], clusterop, vectorize=True)
                 length = max(length,len(vector))
                 clustervecs.append(vector)
                 print(clusterop,ann_config,vector)
             if length != 0: # only do clustering if we have some sort of vector returned
                 # fill in values that have nothing with a negative one
                 clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
-                if clusterop.Type == 'kmeans':
-                    centers = kmeans_clustering(clustervecs)
+                if 'kmeans' in clusterop.Type:
+                    fname, arguments = parse_function(clusterop.Type)
+                    #print(arguments)
+                    #input()
+                    centroids=10
+                    if len(arguments) > 0:
+                        centroids = int(arguments[0])
+
+                    centers = kmeans_clustering(clustervecs, centroids=centroids )
                     for index, center in enumerate(centers):
                         hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
                         if not ann_configurations[index] in prefind:
@@ -341,10 +447,11 @@ class TaxonomyCreator:
 
                 for crit in criteria:
                     items = []
-                    if crit.HasType != '':
+                    items += find_instance_properties_new(network, query=crit, found=[])
+                    '''if crit.HasType != '':
 
                         # BFS search for has properties 
-                        items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
+                        #items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
 
                     if crit.Type != '':
                         searchType = crit.Type
@@ -360,7 +467,7 @@ class TaxonomyCreator:
                                 logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
 
                                 subclass = layer.is_a[0]
-                                logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
+                                logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")'''
                     for item in items:
                         item['hash'] = item[crit.HashOn]
 
@@ -473,7 +580,7 @@ def main():
     criteria2 = Criteria(Name='HasTaskType')
     criteria2.add(op2)
    
-    op3 = SearchOperator(Op='cluster',Type='kmeans', Value=['layer_num_units'])
+    op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'])
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
 
@@ -481,7 +588,7 @@ def main():
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria,criteria3]
+    criterias = [criteria,criteria2,criteria3]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
 
