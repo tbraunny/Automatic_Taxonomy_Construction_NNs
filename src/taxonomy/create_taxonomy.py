@@ -19,6 +19,15 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+def get_property_from_ann(annconfig, value, vectorize=True):
+    items = []
+    #find_instance_properties(ann_config, has_property=hs)
+    items += find_instance_properties(annconfig, has_property=[], equals=[{'type':'name','value':value}], found=[])
+    
+    if vectorize:
+        items = [ item['value'] for item in items]
+    return items
+
 def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
     '''
     Name: SplitOnCriteria
@@ -270,8 +279,44 @@ class TaxonomyCreator:
         self.levels = criteria
     def create_level(self, ann_configurations, criteria):
         hashmap = {}
+        criteria = list(criteria) # copy search operators
 
-        hasTypes = [crit.HasType  for crit in criteria]
+        #hasTypes = [crit.HasType  for crit in criteria]
+        
+        otherlist = []
+        clusterlist = []
+
+        # seperate out cluster criteria and other things that are not clustering
+        for searchop in criteria:
+            if 'cluster' in searchop.Op:
+                clusterlist.append(searchop)
+            else:
+                otherlist.append(searchop)
+
+        # do cluster operations
+        prefind = {}
+        for clusterop in clusterlist:
+            print(clusterop)
+            clustervecs = []
+            length = -1
+            for ann_config in ann_configurations:
+                vector = get_property_from_ann(ann_config,clusterop.Value[0], vectorize=True)
+                length = max(length,len(vector))
+                clustervecs.append(vector)
+                print(clusterop,ann_config,vector)
+            if length != 0: # only do clustering if we have some sort of vector returned
+                # fill in values that have nothing with a negative one
+                clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
+                if clusterop.Type == 'kmeans':
+                    centers = kmeans_clustering(clustervecs)
+                    for index, center in enumerate(centers):
+                        hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
+                        if not ann_configurations[index] in prefind:
+                            prefind[ann_configurations[index]] = {hashcenter : center}
+                        else:
+                            prefind[ann_configurations[index]][hashcenter] = center
+        criteria = otherlist
+        
         for ann_config in ann_configurations:
             found = []
             networks = get_instance_property_values(ann_config, self.ontology.hasNetwork.name)
@@ -303,6 +348,8 @@ class TaxonomyCreator:
 
                     if crit.Type != '':
                         searchType = crit.Type
+
+                        # need to implement more search types ......
                         if searchType == 'layer_num_units' or searchType == 'layer':
                             #query_instance_properties(network, crit)
                             
@@ -321,11 +368,13 @@ class TaxonomyCreator:
             print('found',found)
             for index, data in enumerate(found): 
                 found[index]['annconfig'] = ann_config
-            
+            if ann_config in prefind:
+                for pkey in prefind[ann_config]:
+                    found.append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
             hashvalue = set([item['hash'] for item in found])
             hashvalue = hashvalue = ' '.join( str(hash) for hash in hashvalue)
             print('hash: ', hashvalue)
-            
+ 
             if not hashvalue in hashmap:
                 hashmap[hashvalue] = { ann_config : found }
             else:
@@ -385,11 +434,15 @@ class TaxonomyCreator:
                         facetedTaxonomy[inserting][key] += list(found[key].keys())
                     
                     print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
-                    if not (len(key) == 0 and len(found[key]) == 1) or faceted: # don't expand leafs -- expanded if faceted 
+                    if faceted: # alway expand if faceted -- bring them to other grouping
+                        nodes[index].children.append(childnode)
+                        newnodes.append(childnode)
+                        newsplits = [ann_configurations]
+                    elif not (len(key) == 0 and len(found[key]) == 1): # don't expand leafs -- when not faceted
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
                         newsplits.append(split)
-                    
+
             splits = newsplits
             nodes = newnodes
             print(nodes)
@@ -419,12 +472,16 @@ def main():
     op2 = SearchOperator(HasType=HasTaskType )
     criteria2 = Criteria(Name='HasTaskType')
     criteria2.add(op2)
-    
+   
+    op3 = SearchOperator(Op='cluster',Type='kmeans', Value=['layer_num_units'])
+    criteria3 = Criteria(Name='KMeans Clustering')
+    criteria3.add(op3)
+
     #op3 = SearchOperator(has=[HasLoss] )
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria,criteria2]#,criteria2,criteria3]
+    criterias = [criteria,criteria3]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
 
@@ -442,7 +499,8 @@ def main():
 
 
 
-
+    print (json.dumps(serialize(facetedTaxonomy)))
+    input()
 
     print(output)
     with open('test.xml','w') as handle:
