@@ -177,7 +177,10 @@ class OntologyInstantiator:
         """
         parts = instance_name.split("_", 1)  # Split at the first underscore
         stripped_name = parts[-1]  # Extract the actual instance name (without hash)
-        return stripped_name.replace("-", " ")  # Convert dashes back to spaces
+        stripped_name = stripped_name.replace("-", " ")  # Convert dashes back to spaces
+        # capitalize the first letter of each word
+        stripped_name = " ".join(word.capitalize() for word in stripped_name.split())
+        return stripped_name
 
     def _fuzzy_match_class(
         self, instance_name: str, classes: List[ThingClass], threshold: int = 80
