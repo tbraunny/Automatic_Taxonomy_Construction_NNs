@@ -2,7 +2,6 @@ from owlready2 import *
 from typing import List, Union, Optional, Any
 import warnings
 from builtins import TypeError
-import traceback
 
 from utils.annetto_utils import load_annetto_ontology
 
@@ -574,6 +573,7 @@ def link_data_property_to_instance(
         raise ValueError(
             f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
         )
+    # 
 
 
 def create_class_data_property(

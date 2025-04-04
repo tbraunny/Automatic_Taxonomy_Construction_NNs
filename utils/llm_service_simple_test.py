@@ -87,6 +87,13 @@ class DebugCallbackHandler(BaseCallbackHandler):
 
     def on_llm_end(self, output, **kwargs):
         print("LLM End:", output)
+        logger.info(f"LLM End: {output}")
+        print("\n\n\n")
+
+    def on_text(self, text, **kwargs):
+        print("LLM Text:", text)
+        print("\n\n\n")
+        logger.info(f"LLM Text: {text}")
         print("\n\n\n")
 
     def on_llm_error(self, error, **kwargs):
@@ -95,6 +102,7 @@ class DebugCallbackHandler(BaseCallbackHandler):
 
     def on_tool_start(self, serialized, **kwargs):
         print("Tool Start:", serialized)
+        print("\n\n\n")
 
     def on_tool_end(self, output, **kwargs):
         print("Tool End:", output)
@@ -107,7 +115,6 @@ class DebugCallbackHandler(BaseCallbackHandler):
     def on_rety(self, retry_state, **kwargs):
         print("Retry:", retry_state)
         print("\n\n\n")
-
 
 class LLMQueryEngine:
 
@@ -132,7 +139,7 @@ class LLMQueryEngine:
             seed=42,
             num_ctx=10000,
             verbose=True,
-            # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
+            callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
 
         # Load and chunk documents

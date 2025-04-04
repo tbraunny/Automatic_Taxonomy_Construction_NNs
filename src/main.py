@@ -1,7 +1,7 @@
 import os
 import glob
 
-from src.pdf_extraction.extract_filter_pdf_to_json import extract_text_from_pdf
+from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 from src.code_extraction.code_extractor import process_code_file
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
 

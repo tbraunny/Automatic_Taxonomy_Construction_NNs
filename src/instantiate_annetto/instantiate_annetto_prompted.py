@@ -7,7 +7,7 @@ from typing import Dict, Any, Union, List, Optional
 import warnings
 from builtins import TypeError
 
-from owlready2 import Ontology, ThingClass, Thing, ObjectProperty
+from owlready2 import Ontology, ThingClass, Thing, ObjectPropertyClass, DataPropertyClass
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 
@@ -17,6 +17,7 @@ from utils.owl_utils import (
     create_subclass,
     get_all_subclasses,
     create_class_data_property,
+    link_data_property_to_instance
 )
 from utils.constants import Constants as C
 
@@ -102,27 +103,6 @@ class OntologyInstantiator:
         self.logger = logger
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
         self.prompt_builder = PromptBuilder()
-        self._setup_prompt_examples()
-
-    def _setup_prompt_examples(self):
-        """Populate PromptBuilder with common examples."""
-        # Objective Functions
-        self.prompt_builder.add_example(
-            "objective_function",
-            'Network: Discriminator\n{"answer": {"loss": "Power-Outlet Loss", "regularizer": "Electric Regularization", "objective": "minimize"}}',
-        )
-        self.prompt_builder.add_example(
-            "objective_function",
-            'Network: Generator\n{"answer": {"loss": "Power-Outlet Loss", "regularizer": null, "objective": "maximize"}}',
-        )
-
-        # Input Layer
-        self.prompt_builder.add_example(
-            "input_layer", 'Network: SVM\n{"answer": "128x128x3"}'
-        )
-        self.prompt_builder.add_example(
-            "input_layer", 'Network: Generator\n{"answer": 100}'
-        )
 
     def _generate_hash(self, str: str) -> str:
         """
@@ -253,7 +233,7 @@ class OntologyInstantiator:
         self,
         parent_instance: Thing,
         child_instance: Thing,
-        object_property: ObjectProperty,
+        object_property: ObjectPropertyClass,
     ) -> None:
         """
         Link two instances via an object property.
@@ -263,6 +243,14 @@ class OntologyInstantiator:
         )
         self.logger.info(
             f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
+        )
+    def _link_data_property(self, instance: Thing, data_property: DataPropertyClass, value: Any) -> None:
+        """
+        Link a data property to an instance.
+        """
+        link_data_property_to_instance(instance, data_property, value)
+        self.logger.info(
+            f"Linked {self._unformat_instance_name(instance.name)} with data property {data_property.name}."
         )
 
     def build_prompt(
@@ -1245,88 +1233,127 @@ class OntologyInstantiator:
     def _process_dataset(self, dataset_pipe_instance: Thing) -> None:
         try:
             if not dataset_pipe_instance:
-                self.logger.error("No DatasetPipe instance provided.",exc_info=True)
+                self.logger.error("No DatasetPipe instance provided.", exc_info=True)
                 raise ValueError("Missing DatasetPipe instance.")
 
-            self.logger.info("Starting dataset processing.")
-            dataset_instance = self._instantiate_and_format_class(
-                self.ontology.Dataset, "Dataset"
-            )
-            self._link_instances(
-                dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
+            task = "Extract and describe all datasets used in the paper."
+
+            extra_instructions = (
+                "Each dataset must be described as an object with the following keys:\n\n"
+                "Required:\n"
+                "- data_description\n"
+                "- data_type\n\n"
+                "Optional:\n"
+                "- dataset_name\n"
+                "- data_doi\n"
+                "- data_sample_dimensionality\n"
+                "- data_samples\n"
+                "- number_of_classes\n\n"
+                "For 'data_type', suggested values include 'Image', 'MultiDimensionalCube', 'Text', and 'Video'. "
+                "However, you may use other appropriate types if relevant."
             )
 
-            # Prompts for LLM query
-            task = "Extract and describe the dataset details used in the paper.\n"
+            extra_instructions = ""
+
+            instructions = (
+                "Return the response as a JSON object with a single key 'answer', "
+                "which is a list of dataset objects matching the following format. "
+                "Only include fields if they are explicitly stated or reasonably inferable. "
+                "Unknown optional fields can be omitted or set to null."
+            )
+
             examples = (
                 "Example:\n"
-                """{"answer": {
-                    "data_description": "The MNIST database of handwritten digits, containing 60,000 training and 10,000 test examples.",
-                    "data_doi": "10.1234/mnist",
-                    "data_location": "http://yann.lecun.com/exdb/mnist/",
-                    "data_sample_dimensionality": "28x28",
-                    "data_sample_features": "Grayscale pixel values",
-                    "data_samples": 70000,
-                    "is_transient_dataset": false,
-                    "dataType": {"subclass": "Image"}
-                }}"""
+                """{
+                "answer": [
+                    {
+                        "data_description": "The MNIST handwritten digit dataset containing 60,000 training and 10,000 test examples.",
+                        "dataset_name": "MNIST",
+                        "data_doi": "10.1109/CVPR.2017.90",
+                        "data_sample_dimensionality": "28x28",
+                        "data_samples": 70000,
+                        "number_of_classes": 10,
+                        "data_type": "Image"
+                    },
+                    {
+                        "data_description": "A synthetic dataset of generated sentences for augmenting training data.",
+                        "data_type": "Text"
+                    }
+                ]
+            }"""
             )
-            instructions = (
-                "Your answer should include:\n"
-                "- data_description (Required)\n"
-                "- data_doi, data_location, data_sample_dimensionality, "
-                "data_sample_features, data_samples, is_transient_dataset (Optional)\n"
-                "- dataType: must be an object with key 'subclass' as one of "
-                "'Image', 'MultiDimensionalCube', 'Text', 'Video'.\n"
-                "Return a JSON response under key 'answer'.\n"
+
+            prompt = self.build_prompt(
+                task, "", instructions, examples, extra_instructions=extra_instructions
             )
-            extra_instructions = (
-                "If any optional field is not available, you may omit it or return None."
-            )
-            prompt = self.build_prompt(task, "", instructions, examples, extra_instructions=extra_instructions)
 
             dataset_response = self._query_llm(
-                prompt, pydantic_type_schema=DatasetResponse
+                prompt, pydantic_type_schema=MultiDatasetResponse
             )
             if not dataset_response:
                 self.logger.warning("No dataset response received.")
                 return
 
-            details = dataset_response.answer
-            dataset_instance.data_description = [details.data_description]
-
-            # Set optional fields
-            optional_fields = [
-                "data_doi", "data_location", "data_sample_dimensionality",
-                "data_sample_features", "data_samples", "is_transient_dataset"
-            ]
-            for field in optional_fields:
-                value = getattr(details, field, None)
-                if value is not None:
-                    setattr(dataset_instance, field, [value])
-
-            # Handle dataType
-            data_type_subclass = details.dataType.subclass
-            best_match = self._fuzzy_match_class(
-                data_type_subclass,
-                get_all_subclasses(self.ontology.DataType)
-            )
-            if best_match:
-                self.logger.info(f"Matched DataType subclass: {best_match}")
-                data_type_instance = self._instantiate_and_format_class(
-                    best_match, "Data Type"
+            for dataset in dataset_response.answer:
+                self.logger.info("Starting dataset processing.")
+                dataset_instance = self._instantiate_and_format_class(
+                    self.ontology.Dataset, "Dataset"
                 )
                 self._link_instances(
-                    dataset_instance, data_type_instance, self.ontology.hasDataType
+                    dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
                 )
-            else:
-                self.logger.info(f"Unrecognized DataType subclass: {data_type_subclass}")
+                
+
+                dataset_instance.data_description = [dataset.data_description]
+
+                if dataset.data_doi:
+                    dataset_instance.data_doi = [dataset.data_doi]
+                if dataset.dataset_name:
+                    dataset_instance.dataset_name = [dataset.dataset_name]
+                if dataset.data_sample_dimensionality:
+                    dataset_instance.data_sample_dimensionality = [
+                        dataset.data_sample_dimensionality
+                    ]
+                if dataset.data_samples:
+                    dataset_instance.data_samples = [dataset.data_samples]
+
+                # Instantiate Label set for labeled data information
+                label_set_instance = self._instantiate_and_format_class(
+                    self.ontology.Labelset, "Label Set"
+                )
+                self._link_instances(
+                    dataset_instance,
+                    label_set_instance,
+                    self.ontology.hasLabels,
+                )
+                # Set number of classes
+                if dataset.number_of_classes:
+                    label_set_instance.labels_count = [dataset.number_of_classes]
+
+                # Handle dataType
+                data_type_subclass = dataset.data_type
+                best_match = self._fuzzy_match_class(
+                    data_type_subclass, get_all_subclasses(self.ontology.DataType)
+                )
+                if best_match:
+                    self.logger.info(f"Matched DataType subclass: {best_match}")
+                    data_type_instance = self._instantiate_and_format_class(
+                        best_match, "Data Type"
+                    )
+                    self._link_instances(
+                        dataset_instance, data_type_instance, self.ontology.hasDataType
+                    )
+                else:
+                    self.logger.info(
+                        f"Unrecognized DataType subclass: {data_type_subclass}"
+                    )
 
             self.logger.info("Completed dataset processing.")
 
         except Exception as e:
             self.logger.error(f"Error while processing dataset: {e}", exc_info=True)
             raise
+
     def _process_training_strategy(self, ann_config_instance: Thing) -> None:
         if not ann_config_instance:
             self.logger.error("No ANN Configuration instance provided.")
@@ -1355,6 +1382,20 @@ class OntologyInstantiator:
                 self.ontology.hasPrimaryTrainingSession,
             )
 
+        except Exception as e:
+            self.logger.error(f"Error in _process_training_single: {e}", exc_info=True)
+            raise
+
+        self._process_training_single(ann_config_instance, session_instance)
+
+    def _process_training_single(
+        self, ann_config_instance: Thing, session_instance: Thing
+    ) -> None:
+        if not hasattr(self.ontology, "TrainingSingle"):
+            self.logger.error("TrainingSingle class not found in the ontology.")
+            raise AttributeError("TrainingSingle class not found in the ontology.")
+
+        try:
             training_step_instance = self._instantiate_and_format_class(
                 self.ontology.TrainingSingle, "Training Single"
             )
@@ -1373,15 +1414,17 @@ class OntologyInstantiator:
                 "- learning_rate_decay_epochs (optional): int or null"
             )
             query = ""
-            examples = ( "{\n"
-                    '  "answer": {\n'
-                    '    "batch_size": 32,\n'
-                    '    "learning_rate_decay": 0.01,\n'
-                    '    "number_of_epochs": 10,\n'
-                    '    "learning_rate_decay_epochs": 5\n'
-                    "  }\n"
-                    "}\n"
-                    "If the learning_rate_decay_epochs value is not available, you may return None.\n\n" )
+            examples = (
+                "{\n"
+                '  "answer": {\n'
+                '    "batch_size": 32,\n'
+                '    "learning_rate_decay": 0.01,\n'
+                '    "number_of_epochs": 10,\n'
+                '    "learning_rate_decay_epochs": 5\n'
+                "  }\n"
+                "}\n"
+                "If the learning_rate_decay_epochs value is not available, you may return None.\n\n"
+            )
             extra_instructions = "If the learning_rate_decay_epochs value is not available, you may return None."
             prompt = self.build_prompt(
                 task, query, instructions, examples, extra_instructions
@@ -1395,17 +1438,47 @@ class OntologyInstantiator:
             if not response:
                 self.logger.warning("No training detail response received.")
                 return
-
+            # Set optional fields
             details = response.answer
-            training_step_instance.batch_size = [details.batch_size]
-            training_step_instance.learning_rate_decay = [details.learning_rate_decay]
-            training_step_instance.number_of_epochs = [details.number_of_epochs]
 
-            if details.learning_rate_decay_epochs is not None:
-                training_step_instance.learning_rate_decay_epochs = [
-                    details.learning_rate_decay_epochs
-                ]
+            # if details.learning_rate_decay:
+            #     training_step_instance.learning_rate_decay = [
+            #         details.learning_rate_decay
+            #     ]
+            # if details.learning_rate_decay_epochs:
+            #     training_step_instance.learning_rate_decay_epochs = [
+            #         details.learning_rate_decay_epochs
+            #     ]
+            # if details.number_of_epochs:
+            #     training_step_instance.number_of_epochs = [
+            #         details.number_of_epochs
+            #     ]
+            # if details.batch_size:
+            #     training_step_instance.batch_size = [details.batch_size]
 
+            # Set data properties
+            if details.learning_rate_decay:
+                # self._link_data_property(dataset_instance,self.ontology.learning_rate_decay, details.learning_rate_decay)
+                self._link_data_property(dataset_instance,self.ontology.learning_rate_decay, 0.000001)
+
+            if details.learning_rate_decay_epochs:
+                self._link_data_property(dataset_instance,self.ontology.learning_rate_decay_epochs, details.learning_rate_decay_epochs)
+            if details.number_of_epochs:
+                self._link_data_property(dataset_instance,self.ontology.number_of_epochs, details.number_of_epochs)
+            if details.batch_size:
+                self._link_data_property(dataset_instance,self.ontology.batch_size, details.batch_size)
+            
+            # Set required fields
+            # training_step_instance.batch_size = [details.batch_size]
+            # training_step_instance.learning_rate_decay = [details.learning_rate_decay]
+            # training_step_instance.number_of_epochs = [details.number_of_epochs]
+
+            # if details.learning_rate_decay_epochs is not None:
+            #     training_step_instance.learning_rate_decay_epochs = [
+            #         details.learning_rate_decay_epochs
+            #     ]
+
+            # Process connected Training Single DataPipe
             dataset_pipe = self._instantiate_and_format_class(
                 self.ontology.DatasetPipe, "Dataset Pipe"
             )
@@ -1424,12 +1497,13 @@ class OntologyInstantiator:
                 self.ontology.joinsDataSet,
             )
 
+            self.logger.info("Successfully processed training single.")
             self._process_dataset(dataset_pipe)
 
-            self.logger.info("Successfully processed training strategy.")
-
         except Exception as e:
-            self.logger.error(f"Error in _process_training_strategy: {e}", exc_info=True)
+            self.logger.error(
+                f"Error in _process_training_strategy: {e}", exc_info=True
+            )
             raise
 
     def _old_process_dataset(self, dataset_pipe_instance: Thing) -> None:
@@ -1813,10 +1887,10 @@ if __name__ == "__main__":
     time_start = time.time()
 
     for model_name in [
-        # "alexnet",
+        "alexnet",
         # "resnet",
         # "vgg16",
-        "gan", # Assume we can model name from user or something
+        # "gan",  # Assume we can model name from user or something
     ]:
         instantiate_annetto(
             model_name,
