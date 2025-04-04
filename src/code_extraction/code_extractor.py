@@ -265,7 +265,7 @@ def process_code_file(file_path):
 
 def main():
     ann_name = "alexnet"
-    filepath = f"data/onnx_testing"
+    filepath = f"data/{ann_name}"
     #logger.info(f"File(s) found: {filepath}")
 
     # simply provide the file path that may contain the related network code files
