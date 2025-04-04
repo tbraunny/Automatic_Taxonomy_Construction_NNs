@@ -408,7 +408,11 @@ def find_instance_properties(instance, has_property=[], equals=[], found=[], vis
             print('value',value,type(value))
             print(equals)
             for eq in equals:
-                if isinstance(value,Thing) and eq['type'] == 'name' and eq['value'] == value.name:
+                if eq['type'] == 'name' and eq['value'] == prop.name:
+                    insert = {'type': type(value), 'value': value, 'name': prop.name} 
+                    if not insert in found:
+                        found.append(insert)
+                elif isinstance(value,Thing) and eq['type'] == 'name' and eq['value'] == value.name:
                     insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
                     if not insert in found:
                         found.append(insert)
