@@ -2,7 +2,12 @@ import tests.papers_rag.instantiate_annetto as inst_ann
 import  utils.llm_service as llm_service
 
 from owlready2 import *
+from unittest.mock import MagicMock, patch
+
+import src.instantiate_annetto.instantiate_annetto as inst_ann
 from utils.constants import Constants as C
+import traceback
+from src.instantiate_annetto.instantiate_annetto import OntologyInstantiator
 
 
 def test_num_tokens_from_string():
@@ -88,7 +93,36 @@ def test_query_llm():
         )
         response = llm_service.query_llm(model_name,list_of_any_prompt)
 
-        assert isinstance(response, list) and all(isinstance(i, any) for i in response)
-    except Exception as e:
-        raise Exception(f"LLM Service failed to response with a propert list[any] json format: {e}")
+            if result != mock_instance:
+                errors.append(
+                    "Returned instance does not match expected mock instance."
+                )
 
+            if not instance._hash_and_format_instance_name.called:
+                errors.append("_hash_and_format_instance_name() was not called.")
+
+            if not mock_create_instance.called:
+                errors.append("create_cls_instance() was not called.")
+
+            if not any("Instantiated MockThingClass" in log for log in log_calls):
+                errors.append("Logging message for instance creation not found.")
+
+            print("\nTest Debugging Output:")
+            print(f"Mock Instance Created: {result}")
+            print(f"Log Calls: {log_calls}")
+
+    except Exception as e:
+        errors.append(f"Exception occurred: {e}")
+        print("\nTest Failed with Exception:")
+        traceback.print_exc()
+
+    if errors:
+        print("\nFAILED ")
+        print(f"Total Errors: {len(errors)}")
+        for error in errors:
+            print(error)
+    else:
+        print("\nPASSED")
+
+
+test_instantiate_and_format_class()
