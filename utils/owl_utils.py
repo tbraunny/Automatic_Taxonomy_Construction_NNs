@@ -5,6 +5,9 @@ from builtins import TypeError
 
 from utils.annetto_utils import load_annetto_ontology
 
+def load_ontology(ontology_path):
+    return get_ontology(ontology_path).load()
+
 """ 1) Class Functions """
 
 

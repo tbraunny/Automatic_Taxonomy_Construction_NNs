@@ -49,11 +49,11 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
         return found
     visited.add(instance)
     for prop in instance.get_properties():
-        print('property',prop.name)
+        #print('property',prop.name)
 
         for value in prop[instance]:
                 
-            print('value',value,type(value))
+            #print('value',value,type(value))
             
             eq = query
             values = eq.Value
@@ -105,14 +105,15 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                 if isinstance(value, Thing): # TODO: this is super redudant and could probably be covered with the above...
                     if eq.HasType != '':
                         has = eq.HasType
-                        inserts = get_instance_property_values(instance,has)
+                        inserts = instance.__getattr__(has)
                         for insert in inserts:
                             insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name} 
                             if not insert in found:
                                 found.append(insert)
                     find_instance_properties_new(value, query=query, found=found,visited=visited)
             except: 
-                print('broken')
+                pass
+                #print('broken')
     return found
 
 
@@ -140,9 +141,10 @@ def get_property_from_ann_for_clustering(annconfig, value, query, vectorize=True
     query.HasType = ''
     
     # going value by value to get properies
-    for value in values:
-        query.Value = [value]
-        items.append(find_instance_properties_new(annconfig, query, found=[]))
+    if value != None and type(value) == list:
+        for value in values:
+            query.Value = [value]
+            items.append(find_instance_properties_new(annconfig, query, found=[]))
     
     # restore original values 
     query.HasType = HasType
@@ -213,11 +215,11 @@ def serialize(obj):
 
 class TaxonomyNode(BaseModel):
     name: str # the taxonomy node will take on the name of the criteria if not defined
-    annConfigs: Optional[List] = []
-    splitProperties: Optional[List|Dict] = []
-    criteria: Criteria|None
-    children: Optional[List] = []
-    splitKey: Optional[str] = "Empty"
+    annConfigs: Optional[List] = Field([])
+    splitProperties: Optional[List|Dict] = Field([])
+    criteria: Criteria|None = Field(None)
+    children: Optional[List] = Field([])
+    splitKey: Optional[str] = Field("Empty")
     
     def __init__(self, name: str, criteria: Optional[Criteria|None]=None,splitProperties={}, annConfigs = [], splitKey = ""):
         super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs, splitKey=splitKey)
@@ -340,9 +342,9 @@ class TaxonomyNode(BaseModel):
 def query_instance_properties(instance, query):
     found = []
     for prop in instance.get_properties():
-        print('property',prop.name)
+        #print('property',prop.name)
         for value in prop[instance]:
-            print('value',value,type(value))
+            #print('value',value,type(value))
             eq = query
             if eq.Op == 'sequal' and isinstance(value,Thing) and eq.Value == value.name:
                 insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
@@ -416,7 +418,7 @@ class TaxonomyCreator:
 
         # seperate out cluster criteria and other things that are not clustering
         for searchop in criteria:
-            if 'cluster' in searchop.Op:
+            if searchop.Op != None and  'cluster' in searchop.Op:
                 clusterlist.append(searchop)
             else:
                 otherlist.append(searchop)
@@ -440,7 +442,7 @@ class TaxonomyCreator:
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 # fill in values that have nothing with a negative one
                 #clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
-                if 'kmeans' in clusterop.Type:
+                if clusterop.Type != None and 'kmeans' in clusterop.Type:
                     fname, arguments = parse_function(clusterop.Type)
                     #print(arguments)
                     #input()
@@ -465,33 +467,39 @@ class TaxonomyCreator:
                                         str_count[vecindex] += 1
                     inputclustervecs = []
                     length = 0
-                    binlength = max([str_count[i] for i in str_count])
-                    for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
-                        vectorlist = []
-                        for vecindex, vecs in enumerate(vector):
-                            if len(vecs) > 0 and type(vecs[0]) == str and whattocast == 'binary':
-                                # create binary vector
-                                bins = [0 for i in range(binlength)]
-                                for vec in vecs:
-                                    bins[str_mapping[vecindex][vec]] = 1
-                                vectorlist += bins
+                    binlength = max([str_count[i] for i in str_count], default=0)
+                    if binlength != 0:
+                        for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
+                            vectorlist = []
+                            for vecindex, vecs in enumerate(vector):
+                                if len(vecs) > 0 and type(vecs[0]) == str and whattocast == 'binary':
+                                    # create binary vector
+                                    bins = [0 for i in range(binlength)]
+                                    for vec in vecs:
+                                        bins[str_mapping[vecindex][vec]] = 1
+                                    vectorlist += bins
+                                else:
+                                    vectorlist += vecs
+                            length = max(length, len(vectorlist))
+                            inputclustervecs.append(vectorlist)
+                        inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
+                        centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                        for index, center in enumerate(centers):
+                            hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
+                            if not ann_configurations[index] in prefind:
+                                prefind[ann_configurations[index]] = {hashcenter : center}
                             else:
-                                vectorlist += vecs
-                        length = max(length, len(vectorlist))
-                        inputclustervecs.append(vectorlist)
-                    inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
-                    centers = kmeans_clustering(inputclustervecs, centroids=centroids )
-                    for index, center in enumerate(centers):
-                        hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
-                        if not ann_configurations[index] in prefind:
-                            prefind[ann_configurations[index]] = {hashcenter : center}
-                        else:
-                            prefind[ann_configurations[index]][hashcenter] = center
+                                prefind[ann_configurations[index]][hashcenter] = center
+                    else:
+                        logging.info('Nothing found so no clusters formulated')
+                        
+                        for ann_config in ann_configurations:
+                            prefind[ann_config] = {"":""}
         criteria = otherlist
         
         for ann_config in ann_configurations:
             found = []
-            networks = get_instance_property_values(ann_config, self.ontology.hasNetwork.name)
+            networks = ann_config.__getattr__(self.ontology.hasNetwork.name)
             
 
             logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
@@ -508,7 +516,7 @@ class TaxonomyCreator:
 
                 logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
 
-                layers = get_instance_property_values(network, self.ontology.hasLayer.name)
+                layers = network.__getattr__(self.ontology.hasLayer.name)
                 logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
 
                 for crit in criteria:
@@ -557,7 +565,7 @@ class TaxonomyCreator:
 
             for network in networks:
                 
-                task_characterizations = get_instance_property_values(network, self.ontology.hasTaskType.name)
+                task_characterizations = network.__getattr__(self.ontology.hasTaskType.name)
                 logger.info('\n')
 
                 for task_characterization in task_characterizations:

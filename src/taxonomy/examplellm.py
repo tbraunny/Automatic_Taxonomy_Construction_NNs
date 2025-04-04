@@ -40,7 +40,12 @@ criteria1.add(op)
 criteria2 = Criteria(Name='Layer Num Units')
 criteria2.add(op2)
 
-oc = OutputCriteria(criteriagroup=[criteria1,criteria2], description="A taxonomy of loss at the top and a range of number of units").model_dump_json()
+op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+criteria3 = Criteria(Name='KMeans Clustering')
+
+
+
+oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
 #print(criteria1.model_dump_json())
 
 
@@ -130,7 +135,8 @@ When you receive a request—such as classifying small vs. large neural networks
 2. SearchOperator Definition
    - Use the HasType field to specify the ontology property to filter on (e.g., hasLayer, hasEvaluation).
    - Use the HasType to search across all has types, but note that it doesn't support the Op field.
-   - Use the Op field to specify the comparison operator. Supported operators are: less, greater, leq, geq, equal, scomp, and range.
+   - Use the Op field to specify the comparison operator. Supported operators are: cluster, less, greater, leq, geq, equal, scomp, and range.
+   - With the cluster Op the Type field is used to specify the type of clustering. The only supported clustering is kmeans. Example: Type: 'kmeans(4,binary)' -- kmeans with four clusters and encoding words to binary. It must be specified this way. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on.
    - Use the Value field to define the target value or range.
 
 3. Supported HasType Values:
@@ -181,6 +187,7 @@ To create a taxonomy with the top layer representing loss and the bottom layer r
 {oc}
 -----------------------------------------------------------
 
+
 Replace the example properties and values as needed based on the specific query. Your output must be a structured list of Criteria objects using the defined DSL.
 Return only the format with no ``` ```
 '''
@@ -214,7 +221,7 @@ ontology = load_ontology(ontology_path=ontology_path)
 
 
 #output = chain.invoke({'user_input': 'Give me a taxonomy that splits small networks use the range operator.','oc': oc}).content
-output = chain.invoke({'user_input': 'Give me a taxonomy that categorizes based on types of layers, optimizer, and loss function.','oc': oc}).content
+output = chain.invoke({'user_input': 'Give me a taxonomy that categorizes based on types of layers, optimizer, and loss function and uses kmeans.','oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
 output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
 thecriteria = output = fixparser.parse(output)
 print(type(output))

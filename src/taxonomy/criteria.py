@@ -35,7 +35,7 @@ class Criteria(BaseModel):
     Name: Criteria
     Description: A class to contain the manual splitting criteria for the taxonomy.
     '''
-    Searchs: List[SearchOperator] = [] #= []
+    Searchs: List[SearchOperator] = Field([]) #= []
     
     Name: Optional[str] = Field("level")
     def add(self, operator:SearchOperator):
