@@ -35,8 +35,6 @@ import numpy as np
 import ollama
 import faiss
 from typing import Union
-from pydantic import BaseModel
-from typing import Type, Any
 
 embedding_cache = {}  # In-memory only
 
@@ -44,8 +42,6 @@ try:
     import tiktoken
 except ImportError:
     tiktoken = None
-
-
 
 from rank_bm25 import BM25Okapi
 import networkx as nx
@@ -57,17 +53,20 @@ from utils.document_json_utils import load_documents_from_json
 CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "neuroexpert:latest")
+GENERATION_MODEL = os.environ.get(
+    "GENERATION_MODEL", "qwq:32b-q4_K_M"
+)
 SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
-
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
 from datetime import datetime
-log_dir = "logs" 
-log_file = os.path.join(log_dir, f"llm_service_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
+
+log_dir = "logs"
+log_file = os.path.join(
+    log_dir, f"llm_service_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
+)
 os.makedirs(log_dir, exist_ok=True)
 
 logging.basicConfig(
@@ -77,9 +76,10 @@ logging.basicConfig(
         logging.FileHandler(log_file),  # Write to file
         # logging.StreamHandler()  # Print to console
     ],
-    force=True
+    force=True,
 )
 logger = logging.getLogger(__name__)
+
 
 # Retry Decorator (with exponential backoff)
 def retry(max_attempts=3, initial_delay=1, backoff=2):
@@ -93,22 +93,38 @@ def retry(max_attempts=3, initial_delay=1, backoff=2):
                     return func(*args, **kwargs)
                 except Exception as e:
                     attempts += 1
-                    logger.warning("Function %s failed with error: %s. Attempt %d/%d",
-                                   func.__name__, e, attempts, max_attempts)
+                    logger.warning(
+                        "Function %s failed with error: %s. Attempt %d/%d",
+                        func.__name__,
+                        e,
+                        attempts,
+                        max_attempts,
+                    )
                     time.sleep(delay)
                     delay *= backoff
-            raise Exception(f"Function {func.__name__} failed after {max_attempts} attempts")
+            raise Exception(
+                f"Function {func.__name__} failed after {max_attempts} attempts"
+            )
+
         return wrapper
+
     return decorator
+
 
 # async (wrappers for blocking API calls)
 async def async_embedding(model: str, prompt: str):
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, lambda: ollama.embeddings(model=model, prompt=prompt))
+    return await loop.run_in_executor(
+        None, lambda: ollama.embeddings(model=model, prompt=prompt)
+    )
+
 
 async def async_generate(model: str, prompt: str):
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, lambda: ollama.generate(model=model, prompt=prompt))
+    return await loop.run_in_executor(
+        None, lambda: ollama.generate(model=model, prompt=prompt)
+    )
+
 
 # Token counting and summarization
 def num_tokens_from_string(text: str) -> int:
@@ -123,6 +139,7 @@ def num_tokens_from_string(text: str) -> int:
         except Exception as e:
             logger.warning("tiktoken error: %s", e)
     return len(text.split())
+
 
 @retry(max_attempts=3)
 def summarize_chunk(chunk_content: str, max_tokens: int) -> str:
@@ -139,6 +156,7 @@ def summarize_chunk(chunk_content: str, max_tokens: int) -> str:
     summary = response.get("response", "").strip()
     return summary if summary else chunk_content
 
+
 # Candidate mergine (weighted averaging and deduplication)
 def merge_candidates(dense_candidates: list, bm25_candidates: list) -> list:
     merged = {}
@@ -151,7 +169,7 @@ def merge_candidates(dense_candidates: list, bm25_candidates: list) -> list:
             "content": candidate["content"],
             "metadata": candidate["metadata"],
             "dense_score": dense_score,
-            "bm25_score": 0
+            "bm25_score": 0,
         }
     # Process BM25 candidates.
     for candidate in bm25_candidates:
@@ -164,7 +182,7 @@ def merge_candidates(dense_candidates: list, bm25_candidates: list) -> list:
                 "content": candidate["content"],
                 "metadata": candidate["metadata"],
                 "dense_score": 0,
-                "bm25_score": bm25_score
+                "bm25_score": bm25_score,
             }
     merged_list = []
     for cand in merged.values():
@@ -182,9 +200,11 @@ def merge_candidates(dense_candidates: list, bm25_candidates: list) -> list:
             seen.add(h)
     return deduped
 
+
 def compute_hash(text: str) -> str:
     """Compute a SHA256 hash for a given text."""
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
 
 @retry(max_attempts=3)
 def _get_embedding(text: str, model: str) -> list:
@@ -203,6 +223,34 @@ def _get_embedding(text: str, model: str) -> list:
         logger.error("Embedding failed for text: %s", text[:30])
         raise ValueError("Embedding failed")
 
+
+class FAISSIndexManager:
+    """Manages a persistent FAISS index to avoid reinitializing the vector db"""
+
+    def __init__(self, embedding_dim: int):
+        self.embedding_dim = embedding_dim
+        self.index = faiss.IndexFlatIP(embedding_dim)
+        self.embeddings = []
+        self.mapping = []  # stores metadata corresponding to embeddings
+
+    def add_embeddings(self, new_embeddings: list, new_mapping: list):
+        """Add new embeddings and their mappings to the index."""
+        if not new_embeddings:
+            return
+
+        new_embeddings = np.array(new_embeddings, dtype="float32")
+        norms = np.linalg.norm(new_embeddings, axis=1, keepdims=True)
+        new_embeddings = new_embeddings / np.maximum(norms, 1e-10)
+
+        self.index.add(new_embeddings)
+        self.embeddings.extend(new_embeddings)
+        self.mapping.extend(new_mapping)
+
+    def get_index(self):
+        """Return the FAISS index instance."""
+        return self.index
+
+
 class LLMQueryEngine:
     """
     A robust LLM engine that implements a multi-stage retrieval-augmented generation pipeline:
@@ -217,19 +265,25 @@ class LLMQueryEngine:
       - Final answer generation using a Fusion-in-Decoder prompt.
     """
 
-    def __init__(self,
-                 json_file_path: str,
-                 chunk_size: int = CHUNK_SIZE,
-                 chunk_overlap: int = CHUNK_OVERLAP,
-                 embedding_model: str = EMBEDDING_MODEL,
-                 generation_model: str = GENERATION_MODEL):
+    def __init__(
+        self,
+        json_file_path: str,
+        chunk_size: int = CHUNK_SIZE,
+        chunk_overlap: int = CHUNK_OVERLAP,
+        embedding_model: str = EMBEDDING_MODEL,
+        generation_model: str = GENERATION_MODEL,
+    ):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_model = embedding_model
         self.generation_model = generation_model
-        self.total_input_tokens:int=0
-        self.total_output_tokens:int=0
+
+        self.total_input_tokens: int = 0
+        self.total_output_tokens: int = 0
         self.logger = logger
+
+        self.faiss_index = None
+        self.dense_mapping = []
 
         # Load and process documents.
         docs = load_documents_from_json(json_file_path)
@@ -239,51 +293,96 @@ class LLMQueryEngine:
         self.logger.info("Chunked documents into %d chunks", len(self.chunked_docs))
 
         # Build in-memory dense retrieval index using FAISS.
-        self._build_faiss_index(self.chunked_docs)
+        self._update_faiss_index(self.chunked_docs)
 
         # Build BM25 index for sparse retrieval.
         self.bm25_corpus = [doc.page_content for doc in self.chunked_docs]
-        self.bm25_tokens = [doc.page_content.lower().split() for doc in self.chunked_docs]
+        self.bm25_tokens = [
+            doc.page_content.lower().split() for doc in self.chunked_docs
+        ]
         self.bm25_index = BM25Okapi(self.bm25_tokens)
-        self.logger.info("Built BM25 index for %d document chunks.", len(self.chunked_docs))
+        self.logger.info(
+            "Built BM25 index for %d document chunks.", len(self.chunked_docs)
+        )
 
         # Build a simple graph index using networkx.
         self.graph = self.build_graph_index(self.chunked_docs)
-        self.logger.info("Built graph index with %d nodes.", self.graph.number_of_nodes())
+        self.logger.info(
+            "Built graph index with %d nodes.", self.graph.number_of_nodes()
+        )
 
     def _chunk_documents(self, documents: list) -> list:
         """Chunk documents while preserving metadata."""
-        return semantically_chunk_documents(documents, ollama_model=self.embedding_model)
+        return semantically_chunk_documents(
+            documents, ollama_model=self.embedding_model
+        )
 
-    def _build_faiss_index(self, documents: list):
-        """
-        Compute embeddings for each document chunk, store them in memory,
-        and build a FAISS index (in-memory only).
-        """
-        self.dense_embeddings = []
-        self.dense_mapping = []  # Mapping from FAISS index to document chunks.
+    def _update_faiss_index(self, documents: list):
+        """Incrementally update the FAISS index with new embeddings."""
+        new_embeddings = []
+        new_mappings = []
+
         for doc in documents:
             try:
                 emb = _get_embedding(doc.page_content, self.embedding_model)
-                self.dense_embeddings.append(emb)
-                self.dense_mapping.append({
-                    "content": doc.page_content,
-                    "metadata": doc.metadata
-                })
+                new_embeddings.append(emb)
+                new_mappings.append(
+                    {"content": doc.page_content, "metadata": doc.metadata}
+                )
             except Exception as e:
-                self.logger.exception("Error computing embedding for a document chunk: %s", str(e))
-        if not self.dense_embeddings:
-            raise ValueError("No embeddings computed.")
-        # Convert to a NumPy array of type float32.
-        dense_np = np.array(self.dense_embeddings).astype("float32")
-        # Normalize for cosine similarity.
-        norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
-        dense_np = dense_np / np.maximum(norms, 1e-10)
-        d = dense_np.shape[1]
-        # Create a FAISS index using inner product (cosine similarity).
-        self.faiss_index = faiss.IndexFlatIP(d)
-        self.faiss_index.add(dense_np)
-        self.logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
+                logger.exception(
+                    "Error computing embedding for a document chunk: %s", str(e)
+                )
+
+        if not new_embeddings:
+            logger.warning("No new embeddings computed.")
+            return
+
+        # Convert to NumPy array of type float32 and normalize
+        new_embeddings_np = np.array(new_embeddings).astype("float32")
+        norms = np.linalg.norm(new_embeddings_np, axis=1, keepdims=True)
+        new_embeddings_np = new_embeddings_np / np.maximum(norms, 1e-10)
+
+        if self.faiss_index is None:
+            # Initialize FAISS index
+            d = new_embeddings_np.shape[1]
+            self.faiss_index = faiss.IndexFlatIP(d)
+            logger.info("Initialized new FAISS index with dimension %d.", d)
+
+        # Add new embeddings
+        self.faiss_index.add(new_embeddings_np)
+        self.dense_mapping.extend(new_mappings)
+        logger.info("Added %d new vectors to FAISS index.", len(new_embeddings_np))
+
+    # def _build_faiss_index(self, documents: list):
+    #     """
+    #     Compute embeddings for each document chunk, store them in memory,
+    #     and build a FAISS index (in-memory only).
+    #     """
+    #     self.dense_embeddings = []
+    #     self.dense_mapping = []  # Mapping from FAISS index to document chunks.
+    #     for doc in documents:
+    #         try:
+    #             emb = _get_embedding(doc.page_content, self.embedding_model)
+    #             self.dense_embeddings.append(emb)
+    #             self.dense_mapping.append({
+    #                 "content": doc.page_content,
+    #                 "metadata": doc.metadata
+    #             })
+    #         except Exception as e:
+    #             self.logger.exception("Error computing embedding for a document chunk: %s", str(e))
+    #     if not self.dense_embeddings:
+    #         raise ValueError("No embeddings computed.")
+    #     # Convert to a NumPy array of type float32.
+    #     dense_np = np.array(self.dense_embeddings).astype("float32")
+    #     # Normalize for cosine similarity.
+    #     norms = np.linalg.norm(dense_np, axis=1, keepdims=True)
+    #     dense_np = dense_np / np.maximum(norms, 1e-10)
+    #     d = dense_np.shape[1]
+    #     # Create a FAISS index using inner product (cosine similarity).
+    #     self.faiss_index = faiss.IndexFlatIP(d)
+    #     self.faiss_index.add(dense_np)
+    #     self.logger.info("Built FAISS index with %d vectors of dimension %d.", dense_np.shape[0], d)
 
     @retry(max_attempts=3)
     def retrieve_initial_chunks(self, query: str, max_chunks: int = 10) -> list:
@@ -302,11 +401,13 @@ class LLMQueryEngine:
             candidate_chunks = []
             for idx, score in zip(I[0], D[0]):
                 # FAISS with inner product returns higher scores for better matches.
-                candidate_chunks.append({
-                    "content": self.dense_mapping[idx]["content"],
-                    "similarity": score,
-                    "metadata": self.dense_mapping[idx]["metadata"]
-                })
+                candidate_chunks.append(
+                    {
+                        "content": self.dense_mapping[idx]["content"],
+                        "similarity": score,
+                        "metadata": self.dense_mapping[idx]["metadata"],
+                    }
+                )
             return candidate_chunks
         except Exception as e:
             self.logger.exception("Error retrieving initial (dense) chunks: %s", str(e))
@@ -318,15 +419,19 @@ class LLMQueryEngine:
         """
         tokens = query.lower().split()
         scores = self.bm25_index.get_scores(tokens)
-        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:max_chunks]
+        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[
+            :max_chunks
+        ]
         candidates = []
         for i in top_indices:
             doc = self.chunked_docs[i]
-            candidates.append({
-                "content": doc.page_content,
-                "bm25_score": scores[i],
-                "metadata": doc.metadata
-            })
+            candidates.append(
+                {
+                    "content": doc.page_content,
+                    "bm25_score": scores[i],
+                    "metadata": doc.metadata,
+                }
+            )
         return candidates
 
     def build_graph_index(self, chunked_docs: list) -> nx.Graph:
@@ -384,7 +489,9 @@ class LLMQueryEngine:
                     total_tokens += candidate_tokens
                 else:
                     remaining_tokens = token_budget - total_tokens
-                    summarized = summarize_chunk(candidate["content"], max_tokens=remaining_tokens)
+                    summarized = summarize_chunk(
+                        candidate["content"], max_tokens=remaining_tokens
+                    )
                     candidate["content"] = summarized
                     context.append(candidate)
                     total_tokens += num_tokens_from_string(summarized)
@@ -393,38 +500,47 @@ class LLMQueryEngine:
         self.logger.info("Assembled context with ~%d tokens.", total_tokens)
         return context
 
-    def iterative_context_expansion(self, query: str, current_context: list, token_budget: int, max_rounds: int = 3) -> list:
+    def iterative_context_expansion(
+        self, query: str, current_context: list, token_budget: int, max_rounds: int = 3
+    ) -> list:
         """
         If the initial context does not fill enough of the token budget,
         iteratively expand it using additional candidate retrieval.
         """
         round_counter = 0
         while round_counter < max_rounds:
-            current_token_count = sum(num_tokens_from_string(chunk["content"]) for chunk in current_context)
+            current_token_count = sum(
+                num_tokens_from_string(chunk["content"]) for chunk in current_context
+            )
             if current_token_count >= 0.7 * token_budget:
                 break
-            current_context_text = "\n\n".join(chunk["content"] for chunk in current_context)
+            current_context_text = "\n\n".join(
+                chunk["content"] for chunk in current_context
+            )
             expansion_prompt = (
-            "Goal:\n"
-            "Identify additional keywords or topics that could provide more relevant information for the query.\n\n"
-            
-            "Return Format:\n"
-            "Return a comma-separated list of keywords (no extra text or disclaimers).\n\n"
-            
-            "Warnings:\n"
-            "- If you are unsure, provide your best guess.\n"
-            "- Only list keywords; do not include phrases like 'I am an AI'.\n\n"
-            
-            "For context:\n"
-            f"{current_context_text}"
-        )
+                "Goal:\n"
+                "Identify additional keywords or topics that could provide more relevant information for the query.\n\n"
+                "Return Format:\n"
+                "Return a comma-separated list of keywords (no extra text or disclaimers).\n\n"
+                "Warnings:\n"
+                "- If you are unsure, provide your best guess.\n"
+                "- Only list keywords; do not include phrases like 'I am an AI'.\n\n"
+                "For context:\n"
+                f"{current_context_text}"
+            )
 
             try:
-                response = ollama.generate(model=self.generation_model, prompt=expansion_prompt)
+                response = ollama.generate(
+                    model=self.generation_model, prompt=expansion_prompt
+                )
                 keywords = response.get("response", "").strip()
-                self.logger.info("Round %d expansion keywords: %s", round_counter + 1, keywords)
+                self.logger.info(
+                    "Round %d expansion keywords: %s", round_counter + 1, keywords
+                )
             except Exception as e:
-                self.logger.exception("Error during iterative context expansion: %s", str(e))
+                self.logger.exception(
+                    "Error during iterative context expansion: %s", str(e)
+                )
                 break
             if not keywords:
                 break
@@ -442,102 +558,13 @@ class LLMQueryEngine:
         return current_context
 
     @retry(max_attempts=3)
-    def generate_structured_response(self, query: str, context_chunks: list, json_format_instructions: str, cls_schema: Type[BaseModel]) -> Any:
-        """
-        Build the final prompt, send it to the LLM via Ollama, and parse the resulting response 
-        into a structured JSON output according to a provided Pydantic model schema.
-
-        This function implements a Fusion-in-Decoder style approach:
-        1. It concatenates the context chunks (each with metadata such as section headers) 
-            into a single "evidence dump".
-        2. It constructs a final prompt that includes:
-            - The goal (to answer the technical query).
-            - The original query.
-            - JSON formatting instructions that describe the expected output.
-            - A warning to avoid additional text beyond the JSON output.
-            - The context dump from the candidate chunks.
-        3. It calls the LLM (via `ollama.generate`) with the full prompt. 
-            The call includes a formatting argument, which is obtained by calling 
-            `cls_schema.model_json_schema()`. This expects that `cls_schema` is a Pydantic model class.
-        4. It then extracts and cleans the generated text, and attempts to parse it using the Pydantic model’s 
-            JSON validation (via `cls_schema.model_validate_json`).
-
-        Args:
-            query (str): The technical query that the LLM needs to answer.
-            context_chunks (list): A list of document chunks with keys such as 'content' and 'metadata' that provide evidence.
-            json_format_instructions (str): Instructions describing the exact JSON output format expected from the LLM.
-            cls_schema (Type[BaseModel]): A Pydantic model class defining the expected structure of the JSON response.
-                                        It must implement the method `model_json_schema()`.
-
-        Returns:
-            Any: The parsed LLM response. This will be an instance of the Pydantic `cls_schema` .
-
-        Raises:
-            Exception: If the LLM fails to generate a valid response after the allowed retry attempts.
-                    Exceptions from JSON parsing or schema validation are logged and re-raised.
-        """
-        # Construct a string with all context evidence, grouping by section header.
-        evidence_blocks = "\n\n".join(
-            f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}"
-            for chunk in context_chunks
-        )
-        
-        # Build the full prompt by combining the query, JSON format instructions, warnings, and the evidence blocks.
-        full_prompt = (
-            "Goal:\n"
-            "Answer the technical query by fusing the evidence from the provided context.\n\n"
-            f"Query: {query}\n\n"
-            "Instructions:\n"
-            f"{json_format_instructions}\n\n"
-            "Ensure that no additional text or keys are returned.\n"
-            "Warnings:\n"
-            "- Do not include extra explanations, greetings, or disclaimers.\n"
-            "- Use only the provided context to answer the question.\n\n"
-            "Context Dump:\n"
-            f"{evidence_blocks}\n\n"
-        )
-        
-        self.logger.info("Final prompt provided to LLM:\n%s", full_prompt)
-        try:
-            # Debug prints to verify types and values of key parameters.
-            print(f"Query: {query},\n\n json_format_instructions: {json_format_instructions},\n\n cls_schema: {cls_schema}\n\n")
-            print(f" Query Type: {type(query)},\n\n json_format_instructions Type: {type(json_format_instructions)},\n\n cls_schema Type: {type(cls_schema)}\n\n")
-            
-            # Call the LLM with the full prompt and specify the expected JSON schema as a format hint.
-            response = ollama.generate(model=self.generation_model, prompt=full_prompt, format=cls_schema.model_json_schema())
-            print(f"Response: {response}\n\n, of type {type(response)}\n\n")
-            
-            # Extract and clean the generated text from the LLM response.
-            generated_text = response.get("response", "No response generated.").strip()
-            print(f"ç: {generated_text}\n\n of type {type(generated_text)}\n\n")
-            self.logger.info("Raw generated response: %s", generated_text)
-            
-            # Parse the generated text into a structured model using Pydantic's validation.
-            parsed = cls_schema.model_validate_json(generated_text)
-            print(f"Parsed: {parsed}, of type {type(parsed)}\n\n")
-            
-            # Log token usage for instrumentation.
-            num_input_tokens = num_tokens_from_string(full_prompt)
-            self.logger.info(f"Input number of tokens on prompt: {num_input_tokens}")
-            num_output_tokens = num_tokens_from_string(generated_text)
-            self.logger.info(f"Output number of tokens on response: {num_output_tokens}")
-            self.total_input_tokens += num_input_tokens
-            self.total_output_tokens += num_output_tokens
-            
-            # Return the parsed response as a dictionary if requested, otherwise return the model instance.
-            return parsed
-            
-        except Exception as e:
-            self.logger.exception("Error generating final response: %s", str(e))
-            raise
-
-
-    @retry(max_attempts=3)
-    def generate_response(self, query: str, context_chunks: list,) -> Union[dict, int, str, list[str]]:
+    def generate_response(
+        self, query: str, context_chunks: list
+    ) -> Union[dict, int, str, list[str]]:
         """
         Generate the final answer using a Fusion-in-Decoder style prompt,
         aggregating all the retrieved evidence.
-        Returns the final answer as a as a dictionary, int, str, list[str], depending 
+        Returns the final answer as a as a dictionary, int, str, list[str], depending
         on the format required for the llm to answer properly.
         """
         evidence_blocks = "\n\n".join(
@@ -547,47 +574,44 @@ class LLMQueryEngine:
         full_prompt = (
             "Goal:\n"
             "Answer the technical query by fusing the evidence from the provided context.\n\n"
-
             f"Query: {query}"
-            
             # "Return Format:\n"
             # "First, provide a short explanation. Then on a new line, output a JSON object with one key 'answer', "
             # "whose value is your final answer. Below are some examples:\n"
             # '{"answer": ["item1","item2"]}\n'
             # '{"answer": "true"}\n\n'
             # '{"answer": []}\n\n'
-
             "Warnings:\n"
             "- Do not disclaim that you are an AI.\n"
             "- Only use the context provided below; do not add outside information.\n\n"
-            
             "Context Dump:\n"
             f"{evidence_blocks}\n\n"
         )
-
-        
 
         self.logger.info("Final prompt provided to LLM:\n%s", full_prompt)
         try:
 
             response = ollama.generate(model=self.generation_model, prompt=full_prompt)
             generated_text = response.get("response", "No response generated.").strip()
-            
+
             self.logger.info("Raw generated response: %s", generated_text)
             start = generated_text.find("{")
             end = generated_text.rfind("}")
             if start != -1 and end != -1:
-                json_str = generated_text[start:end+1]
+                json_str = generated_text[start : end + 1]
                 try:
                     result_obj = json.loads(json_str)
 
                     num_input_tokens = num_tokens_from_string(full_prompt)
-                    self.logger.info(f"Input number of tokens on prompt: {num_input_tokens}")
+                    self.logger.info(
+                        f"Input number of tokens on prompt: {num_input_tokens}"
+                    )
                     num_output_tokens = num_tokens_from_string(generated_text)
-                    self.logger.info(f"Output number of tokens on response: {num_output_tokens}")
+                    self.logger.info(
+                        f"Output number of tokens on response: {num_output_tokens}"
+                    )
                     self.total_input_tokens += num_input_tokens
                     self.total_output_tokens += num_output_tokens
-
 
                     if "answer" in result_obj:
                         return result_obj["answer"]
@@ -599,36 +623,6 @@ class LLMQueryEngine:
             self.logger.exception("Error generating final response: %s", str(e))
             raise
 
-    def query_json(self, query: str, json_format_instructions: str, cls_schema: Type[BaseModel] = None, max_chunks: int = 15, token_budget: int = 1024) -> str:
-        """
-        The high-level query method that ties together:
-          - Candidate retrieval,
-          - Context assembly,
-          - Iterative expansion, and
-          - Final answer generation.
-        """
-        self.logger.info("Querying LLM with structured response format.")
-
-        start_time = time.time()
-        candidates = self.route_query(query, max_chunks=max_chunks)
-        if not candidates:
-            self.logger.warning("No candidate chunks retrieved for query: %s", query)
-            return "No relevant documents found."
-        context_chunks = self.assemble_context(candidates, token_budget)
-        expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
-        answer = self.generate_structured_response(query, expanded_context, json_format_instructions, cls_schema)
-        elapsed_time = time.time() - start_time
-
-        # Log instrumentation data.
-        log_data = {
-            "query": query,
-            "elapsed_time": elapsed_time,
-            "token_usage": sum(num_tokens_from_string(c['content']) for c in expanded_context)
-        }
-        self.logger.info(json.dumps(log_data))
-        return answer
-
-
     def query(self, query: str, max_chunks: int = 15, token_budget: int = 1024) -> str:
         """
         The high-level query method that ties together:
@@ -637,29 +631,33 @@ class LLMQueryEngine:
           - Iterative expansion, and
           - Final answer generation.
         """
-
-        self.logger.info("Querying LLM with unstructured response format.")
         start_time = time.time()
         candidates = self.route_query(query, max_chunks=max_chunks)
         if not candidates:
             self.logger.warning("No candidate chunks retrieved for query: %s", query)
             return "No relevant documents found."
         context_chunks = self.assemble_context(candidates, token_budget)
-        expanded_context = self.iterative_context_expansion(query, context_chunks, token_budget)
-        answer = self.generate_response(query, expanded_context, )
+        expanded_context = self.iterative_context_expansion(
+            query, context_chunks, token_budget
+        )
+        answer = self.generate_response(query, expanded_context)
         elapsed_time = time.time() - start_time
 
         # Log instrumentation data.
         log_data = {
             "query": query,
             "elapsed_time": elapsed_time,
-            "token_usage": sum(num_tokens_from_string(c['content']) for c in expanded_context)
+            "token_usage": sum(
+                num_tokens_from_string(c["content"]) for c in expanded_context
+            ),
         }
         self.logger.info(json.dumps(log_data))
         return answer
 
+
 # Remove the singleton _engine_instance and use a dictionary instead.
 _engine_instances = {}
+
 
 def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     """
@@ -670,13 +668,15 @@ def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryE
     return _engine_instances[model_name]
 
 
-def query_llm(model_name: str, query: str, json_format_instructions: str = None, cls_schema: Type[BaseModel] = None,  max_chunks: int = 10, token_budget: int = 1024) -> Union[dict, int, str, list[str]]:
+def query_llm(
+    model_name: str, query: str, max_chunks: int = 10, token_budget: int = 1024
+) -> Union[dict, int, str, list[str]]:
     """
     Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
 
     The prompt should include few-shot examples demonstrating the expected structure of the output.
-    The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value 
-    can be one of the following types: 
+    The LLM is expected to return a JSON object where the primary key is `"answer"`, and the value
+    can be one of the following types:
     - Integer (e.g., `{"answer": 100}`)
     - String (e.g., `{"answer": "ReLU Activation"}`)
     - List of strings (e.g., `{"answer": ["L1 Regularization", "Dropout"]}`)
@@ -691,13 +691,13 @@ def query_llm(model_name: str, query: str, json_format_instructions: str = None,
     Loss Function: Discriminator Loss
     1. Network: Discriminator
     {"answer": 784}
-    
+
     2. Network: Generator
     {"answer": 100}
-    
+
     3. Network: Linear Regression
     {"answer": 1}
-    
+
     Now, for the following network:
     Network: {network_thing_name}
     Expected JSON Output:
@@ -728,53 +728,91 @@ def query_llm(model_name: str, query: str, json_format_instructions: str = None,
             f"Engine for model '{model_name}' not initialized. Please call init_engine with the appropriate doc_json_file_path first."
         )
     engine = _engine_instances[model_name]
-    # If cls_schema and json_format_instructions are provided, use the structured response method.
-    if cls_schema and json_format_instructions:
-        return engine.query_json(query, json_format_instructions, cls_schema, max_chunks=max_chunks, token_budget=token_budget)
-        
-
     return engine.query(query, max_chunks=max_chunks, token_budget=token_budget)
-
 
 
 # For standalone testing
 if __name__ == "__main__":
+    import glob
 
-    # Example for testing purposes
-    class Layer(BaseModel):
-        type: str
-        size: int
+    model_name = "resnet"
+    network_instance_name = " Convoluational Network"
 
-    class NeuralNetworkDetails(BaseModel):
-        layers: list[Layer]
+    json_doc_paths = glob.glob(f"data/{model_name}/*.json")
 
+    print(type(json_doc_paths), type(json_doc_paths[0]))
 
-    json_file_path = "data/alexnet/doc_alexnet.json"
-    engine = init_engine(
-        model_name=GENERATION_MODEL,
-        doc_json_file_path=json_file_path,
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP
+    for _, j in enumerate(json_doc_paths):
+        print(f"Processing file: {j}")
+        engine = init_engine(model_name, j)
+
+    int_prompt = (
+        f"What is the number of input parameters in the {network_instance_name} network architecture?\n"
+        "Return the result as an integer in JSON format with the key 'answer'.\n\n"
+        "Examples:\n"
+        "1. Network: Discriminator\n"
+        '{"answer": 1}\n\n'
+        "2. Network: Generator\n"
+        '{"answer": 784}\n\n'
+        "3. Network: Linear Regression\n"
+        '{"answer": 1}\n\n'
+        f"Now, for the following network:\nNetwork: {network_instance_name}\n"
+        '{"answer": "<Your Answer Here>"}'
     )
-
-    queries = [
-        # ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers""", 1024),
-        ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers. Do not generalize internal layers and include modification and activation layers. Also, specify the size of each layer (number of neurons or filters).""", 1024),
-    ]
-
-    json_format_instructions = ("Return a JSON object with a key 'layers'. The value should be a list of objects, "
-        "where each object represents one layer in the neural network. Each object must have exactly two keys: "
-        "'type' (a string, e.g., 'Convolution', 'ReLU', 'Pooling', 'FullyConnected', etc.) and "
-        "'size' (an integer representing the number of neurons/filters in that layer).\n"
-        "For example, if the network has 7 layers, the output might look like:\n")
+    activation_layer_prompt = (
+        f"Extract the number of instances of each core layer type in the {network_instance_name} architecture. "
+        "Only count layers that represent essential network operations such as convolutional layers, "
+        "fully connected (dense) layers, and attention layers.\n"
+        "Do NOT count layers that serve as noise layers (i.e. guassian, normal, etc), "
+        "activation functions (e.g., ReLU, Sigmoid), or modification layers (e.g., dropout, batch normalization), "
+        "or pooling layers (e.g. max pool, average pool).\n\n"
+        'Please provide the output in JSON format using the key "answer", where the value is a dictionary '
+        "mapping the layer type names to their counts.\n\n"
+        "Examples:\n\n"
+        "1. Network Architecture Description:\n"
+        "- 3 Convolutional layers\n"
+        "- 2 Fully Connected layers\n"
+        "- 2 Recurrent layers\n"
+        "- 1 Attention layer\n"
+        "- 3 Transformer Encoder layers\n"
+        "Expected JSON Output:\n"
+        "{\n"
+        '  "answer": {\n'
+        '    "Convolutional": 3,\n'
+        '    "Fully Connected": 2,\n'
+        '    "Recurrent": 2,\n'
+        '    "Attention": 1,\n'
+        '    "Transformer Encoder": 3\n'
+        "  }\n"
+        "}\n\n"
+        "2. Network Architecture Description:\n"
+        "- 3 Convolutional layers\n"
+        "- 2 Fully Connected layer\n"
+        "- 2 Recurrent layer\n"
+        "- 1 Attention layers\n"
+        "- 3 Transformer Encoder layers\n"
+        "Expected JSON Output:\n"
+        "{\n"
+        '  "answer": {\n'
+        '    "Convolutional": 4,\n'
+        '    "FullyConnected": 1,\n'
+        '    "Recurrent": 2,\n'
+        '    "Attention": 1,\n'
+        '    "Transformer Encoder": 3\n'
+        "  }\n"
+        "}\n\n"
+        "Now, for the following network:\n"
+        f"Network: {network_instance_name}\n"
+        "Expected JSON Output:\n"
+        "{\n"
+        '  "answer": "<Your Answer Here>"\n'
+        "}\n"
+    )
+    queries = [(int_prompt, 1024), (activation_layer_prompt, 1024)]
 
     for idx, (q, budget) in enumerate(queries, start=1):
         start_time = time.time()
-        answer = query_llm(GENERATION_MODEL, q, json_format_instructions, NeuralNetworkDetails, token_budget=budget)
-        print("\n\nStructured Layer Details:\n")
-        for i, layer in enumerate(answer.layers, start=1):
-            layer = layer.model_dump()
-            print(f"Layer {i}: Type = {layer['type']}, Size = {layer['size']}")
-
-        elapsed = time.time() - start_time
-        print(f"Example {idx}:\nAnswer: {answer}\nTime: {elapsed:.2f} seconds\n")
+        answer = query_llm(model_name, q)
+        print(
+            f"Example {idx}:\nAnswer: {answer}\nTime: {(time.time() - start_time):.2f} seconds\n"
+        )

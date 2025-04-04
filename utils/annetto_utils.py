@@ -1,14 +1,38 @@
 from re import sub, fullmatch
-from owlready2 import ThingClass
+from owlready2 import ThingClass, Ontology, get_ontology
 from typing import List, Union, Optional
 from rapidfuzz import process, fuzz
 
+from utils.constants import Constants as C
 
-def int_to_ordinal(n):
+def load_annetto_ontology(release_type:str)->Ontology:
+    """
+    Loads the Annetto ontology from the file system.
+    Must choose a release type: "development", "test", "base", or "stable".
 
+    :param: release_type: The type of release to load.
+    :return: The Annett-o ontology object.
+    """
+    releases = {
+        "development": C.ONTOLOGY.DEV_ONTOLOGY_PATH,
+        "test": C.ONTOLOGY.TEST_ONTOLOGY_PATH,
+        "base": C.ONTOLOGY.BASE_ONTOLOGY_PATH,
+        "stable": C.ONTOLOGY.STABLE_ONTOLOGY_PATH,
+        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH
+    }
+
+    if release_type not in releases:
+        raise ValueError(f"Invalid release type: {release_type}. Must be one of {list(releases)}")
+
+    return get_ontology(releases[release_type]).load()
+
+def int_to_ordinal(n:int)->str:
     """
     Convert an integer into its ordinal representation.
     For example: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", etc.
+
+    :param n: The integer to convert
+    :return: The ordinal representation
     """
     if 10 <= n % 100 <= 20:
         suffix = 'th'
@@ -17,6 +41,13 @@ def int_to_ordinal(n):
     return f"{n}{suffix}"
 
 def split_camel_case(names:Union[list[str], str]) -> list[str]:
+    """
+    Split camelCase strings or list of strings into separate words.
+    Accounts for acronyms (e.g., "CNNModel" → "CNN Model").
+
+    :param names: A string or list of strings
+    :return: A list of strings with the camelCase strings split into separate words
+    """
 
     if isinstance(names, str):  # If a single string is passed, convert it into a list
         names = [names]
@@ -67,41 +98,25 @@ def make_thing_classes_readable(things:List[ThingClass]) -> str:
 def fuzzy_match_class(
         instance_name: str, classes: List[ThingClass], threshold: int = 80
     ) -> Optional[ThingClass]:
-        """
-        Perform fuzzy matching to find the best match for an instance to a known class.
+    """
+    Perform fuzzy matching to find the best match for an instance to a known class.
 
-        :param instance_name: The instance name.
-        :param classes: A list of ThingClass objects to match with.
-        :param threshold: The minimum score required for a match.
-        :return: The best-matching ThingClass object or None if no good match is found.
-        """
-        if not instance_name or not classes:
-            return None
+    :param instance_name: The instance name.
+    :param classes: A list of ThingClass objects to match with.
+    :param threshold: The minimum score required for a match.
+    :return: The best-matching ThingClass object or None if no good match is found.
+    """
+    if not instance_name or not classes:
+        return None
 
-        # Convert classes to a dictionary for lookup
-        class_name_map = {cls.name: cls for cls in classes}
+    # Convert classes to a dictionary for lookup
+    class_name_map = {cls.name: cls for cls in classes}
 
-        match, score, _ = process.extractOne(
-            instance_name, class_name_map.keys(), scorer=fuzz.ratio
-        )
+    match, score, _ = process.extractOne(
+        instance_name, class_name_map.keys(), scorer=fuzz.ratio
+    )
 
-        return class_name_map[match] if score >= threshold else None
-    
-def _unhash_and_format_instance_name(self, instance_name: str) -> str:
-        """
-        Remove the ANN config hash prefix from the instance name and restore readability.
+    return class_name_map[match] if score >= threshold else None
 
-        This method extracts the actual instance name by stripping out the
-        prefixed hash and replacing dashes with spaces.
-
-        Example: Input: "abcd1234_convolutional-layer" Output: "Convolutional Layer"
-
-        Args:
-            instance_name (str): The unique instance name with the hash prefix.
-
-        Returns:
-            str: The original readable instance name.
-        """
-        parts = instance_name.split("_", 1)  # Split at the first underscore
-        stripped_name = parts[-1]  # Extract the actual instance name (without hash)
-        return stripped_name.replace("-", " ")  # Convert dashes back to spaces
+if __name__ == "__main__":
+    ontology = load_annetto_ontology("meow")
