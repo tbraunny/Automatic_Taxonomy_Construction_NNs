@@ -573,7 +573,7 @@ def link_data_property_to_instance(
         raise ValueError(
             f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
         )
-    # 
+    #
 
 
 def create_class_data_property(

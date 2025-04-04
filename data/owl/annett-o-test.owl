@@ -3281,27 +3281,6 @@
 
 <owl:NamedIndividual rdf:about="709942bd_training-single">
   <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_dataset"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Subsets of ImageNet used in the ILSVRC-2010 and ILSVRC-2012 competitions.</data_description>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_label-set">
-  <rdf:type rdf:resource="Labelset"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_data-type">
-  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

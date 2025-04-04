@@ -27,7 +27,8 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 #     "GENERATION_MODEL", "neuroexpert:latest"
 # )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 
 
@@ -35,17 +36,17 @@ DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
 # Logging setup
-log_dir = "logs"
-log_file = os.path.join(
-    log_dir, f"llm_service_log_{time.strftime('%Y-%m-%d_%H-%M')}.log"
-)
-os.makedirs(log_dir, exist_ok=True)
+# log_dir = "logs"
+# log_file = os.path.join(
+#     log_dir, f"llm_service_log_{time.strftime('%Y-%m-%d_%H-%M')}.log"
+# )
+# os.makedirs(log_dir, exist_ok=True)
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler(log_file)],
-)
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+#     handlers=[logging.FileHandler(log_file)],
+# )
 logger = logging.getLogger(__name__)
 
 # async (wrappers for blocking API calls)
@@ -137,7 +138,7 @@ class LLMQueryEngine:
             model=self.generation_model,
             temperature=0.2,
             seed=42,
-            num_ctx=10000,
+            num_ctx=20000,
             verbose=True,
             callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
@@ -267,21 +268,46 @@ class LLMQueryEngine:
         """Retrieve and merge chunks from FAISS and BM25."""
         dense_candidates = self.retrieve_dense_chunks(query, max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks)
+        if not dense_candidates and not bm25_candidates:
+            self.logger.warning("No candidates found for query: %s", query)
+            return []
+        if not dense_candidates:
+            self.logger.info("No dense candidates found, using BM25 only.")
+            return bm25_candidates
+        if not bm25_candidates:
+            self.logger.info("No BM25 candidates found, using dense only.")
+            return dense_candidates
+        self.logger.info(
+            f"Merging {len(dense_candidates)} dense candidates and {len(bm25_candidates)} BM25 candidates.",
+        )
         return self.merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(
         self, chunks: list, token_budget: int
     ) -> str:  # NOTE: Fixed duplicate chunk issue
         """Assemble context within token budget."""
+        if not chunks:
+            self.logger.error("No chunks to assemble context from.",exc_info=True)
+            raise ValueError("No chunks to assemble context from.")
+        if token_budget <= 0:
+            self.logger.warning("Token budget must be greater than 0.")
+            token_budget = 3000
         context = ""
+        skipped = 0
         total_words = 0
         seen_content = set()  # Track content hashes to avoid duplicates
         for chunk in chunks:
+            if not chunk["content"].strip():
+                self.logger.debug("Skipping empty chunk.")
+                continue
             content_hash = compute_hash(chunk["content"])
             if content_hash in seen_content:
-                self.logger.debug("Skipping duplicate chunk: %s", chunk["content"][:30])
+                self.logger.debug("Skipping duplicate chunk: %s out of total %s", chunk["content"][:30], skipped)
+                skipped += 1
                 continue
             chunk_words = len(chunk["content"].split())
+            print("Chunk words: ", chunk_words) # TEMP
+            print("Total words: ", total_words)
             if total_words + chunk_words <= token_budget:
                 context += f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}\n\n"
                 total_words += chunk_words
@@ -296,23 +322,32 @@ class LLMQueryEngine:
         return context.strip()
     
 
-    def query_json(
+    def query_structured(
         self,
         query: str,
         cls_schema: Type[BaseModel],
-        max_chunks: int = 10,
-        token_budget: int = 3000,
+        token_budget: int,
+        max_chunks: int,
     ) -> T:
         """Query the LLM with structured output using ChatOllama."""
         start_time = time.time()
         candidates = self.retrieve_chunks(query, max_chunks)
+        print ("Length of candidates: ", len(candidates)) # TEMP
+        self.logger.info(
+            f"Retrieved {len(candidates)} candidate chunks for query: {query}"
+        )
         if not candidates:
-            self.logger.warning("No candidate chunks retrieved for query: %s", query)
-            return cls_schema.model_validate_json(
-                '{"answer": "No relevant documents found."}'
-            )
+            self.logger.error(f"No candidate chunks retrieved for query: {query}", exc_info=True)
+            raise ValueError(f"No candidate chunks retrieved for query: {query}")
 
         context = self.assemble_context(candidates, token_budget)
+
+        if not context:
+            self.logger.error("No context assembled for query: %s", query, exc_info=True)
+            raise ValueError("No context assembled for query: %s", query)
+        self.logger.info(
+            f"Assembled context for query: {query}"
+        )
         prompt = (
             f"Goal: Answer the query based on the provided context.\n\n"
             f"Query: {query}\n\n"
@@ -324,12 +359,14 @@ class LLMQueryEngine:
             prompt,
         )
 
-        structured_llm = self.llm.with_structured_output(cls_schema)
+        # structured_llm = self.llm.with_structured_output(cls_schema)
         try:
-            response = structured_llm.invoke(prompt)
+            # response = structured_llm.invoke(prompt)
+            response = self.llm.invoke(prompt)
+
 
             self.logger.info("Raw LLM response: %s", response)
-            if response is None:
+            if not response:
                 self.logger.error("LLM returned None for query: %s", query)
 
                 raise ValueError("LLM returned None")
@@ -375,7 +412,7 @@ def query_llm(
     query: str,
     cls_schema: Type[BaseModel],
     max_chunks: int = 10,
-    token_budget: int = 1024,
+    token_budget: int = 3000,
 ) -> Any:
     """High-level query function with structured output."""
     if model_name not in _engine_instances:
@@ -383,7 +420,7 @@ def query_llm(
             f"Engine for model '{model_name}' not initialized. Call init_engine first."
         )
     engine = _engine_instances[model_name]
-    return engine.query_json(query, cls_schema, max_chunks, token_budget)
+    return engine.query_structured(query, cls_schema, max_chunks, token_budget)
 
 
 # Example Pydantic models for testing

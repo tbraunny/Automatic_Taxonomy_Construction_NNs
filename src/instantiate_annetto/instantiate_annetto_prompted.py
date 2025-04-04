@@ -7,7 +7,13 @@ from typing import Dict, Any, Union, List, Optional
 import warnings
 from builtins import TypeError
 
-from owlready2 import Ontology, ThingClass, Thing, ObjectPropertyClass, DataPropertyClass
+from owlready2 import (
+    Ontology,
+    ThingClass,
+    Thing,
+    ObjectPropertyClass,
+    DataPropertyClass,
+)
 from rapidfuzz import process, fuzz
 from pydantic import BaseModel
 
@@ -17,7 +23,7 @@ from utils.owl_utils import (
     create_subclass,
     get_all_subclasses,
     create_class_data_property,
-    link_data_property_to_instance
+    link_data_property_to_instance,
 )
 from utils.constants import Constants as C
 
@@ -244,7 +250,10 @@ class OntologyInstantiator:
         self.logger.info(
             f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
         )
-    def _link_data_property(self, instance: Thing, data_property: DataPropertyClass, value: Any) -> None:
+
+    def _link_data_property(
+        self, instance: Thing, data_property: DataPropertyClass, value: Any
+    ) -> None:
         """
         Link a data property to an instance.
         """
@@ -261,7 +270,7 @@ class OntologyInstantiator:
         examples: str,
         extra_instructions: str = "",
     ) -> str:
-        return f"{task}\n{instructions}\n{examples}\n{extra_instructions}\nNow, for the following:\n{query}\nAnswer: "
+        return f"{task}\n{instructions}\n{examples}\n{extra_instructions}\nNow, for the following:\n{query}\n "
 
     def _query_llm(
         self,
@@ -307,6 +316,8 @@ class OntologyInstantiator:
                 self.ann_config_name,
                 prompt,
                 pydantic_type_schema,
+                max_chunks=10,
+                token_budget=5000
             )
 
             self.logger.info(f"LLM query: {prompt}")
@@ -1302,7 +1313,6 @@ class OntologyInstantiator:
                 self._link_instances(
                     dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
                 )
-                
 
                 dataset_instance.data_description = [dataset.data_description]
 
@@ -1459,15 +1469,27 @@ class OntologyInstantiator:
             # Set data properties
             if details.learning_rate_decay:
                 # self._link_data_property(dataset_instance,self.ontology.learning_rate_decay, details.learning_rate_decay)
-                self._link_data_property(dataset_instance,self.ontology.learning_rate_decay, 0.000001)
+                self._link_data_property(
+                    dataset_instance, self.ontology.learning_rate_decay, 0.000001
+                )
 
             if details.learning_rate_decay_epochs:
-                self._link_data_property(dataset_instance,self.ontology.learning_rate_decay_epochs, details.learning_rate_decay_epochs)
+                self._link_data_property(
+                    dataset_instance,
+                    self.ontology.learning_rate_decay_epochs,
+                    details.learning_rate_decay_epochs,
+                )
             if details.number_of_epochs:
-                self._link_data_property(dataset_instance,self.ontology.number_of_epochs, details.number_of_epochs)
+                self._link_data_property(
+                    dataset_instance,
+                    self.ontology.number_of_epochs,
+                    details.number_of_epochs,
+                )
             if details.batch_size:
-                self._link_data_property(dataset_instance,self.ontology.batch_size, details.batch_size)
-            
+                self._link_data_property(
+                    dataset_instance, self.ontology.batch_size, details.batch_size
+                )
+
             # Set required fields
             # training_step_instance.batch_size = [details.batch_size]
             # training_step_instance.learning_rate_decay = [details.learning_rate_decay]
