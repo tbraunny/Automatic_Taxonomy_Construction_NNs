@@ -107,7 +107,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                         has = eq.HasType
                         inserts = get_instance_property_values(instance,has)
                         for insert in inserts:
-                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True} 
+                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name} 
                             if not insert in found:
                                 found.append(insert)
                     find_instance_properties_new(value, query=query, found=found,visited=visited)
@@ -117,15 +117,44 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
 
 
 
-def get_property_from_ann(annconfig, value, query, vectorize=True):
+def get_property_from_ann_for_clustering(annconfig, value, query, vectorize=True):
     items = []
+    returnlist = [] 
     #find_instance_properties(ann_config, has_property=hs)
     #items += find_instance_properties(annconfig, has_property=[], equals=[{'type':'name','value':value}], found=[])
-    items += find_instance_properties_new(annconfig, query, found=[])
     
+    # coping original values
+    HasType = query.HasType
+    values = query.Value
+
+    # masking value
+    query.Value = []
+    
+    if query.HasType != '':
+        items.append(find_instance_properties_new(annconfig, query, found=[]))
+    
+        returnlist = [[str(item['type']) for item in items[0]]]
+        items = []
+
+    # masking has type
+    query.HasType = ''
+    
+    # going value by value to get properies
+    for value in values:
+        query.Value = [value]
+        items.append(find_instance_properties_new(annconfig, query, found=[]))
+    
+    # restore original values 
+    query.HasType = HasType
+    query.Value = values
+   
+    # need to do this better....
+    
+    # vectorize if asked -- this default
     if vectorize:
-        items = [ item['value'] for item in items]
-    return items
+        for itemlist in items:
+            returnlist.append([ item['value'] if type(item['value']) == float or type(item['value']) == int or type(item['value']) == str else str(item['value'])  for item in itemlist])
+    return returnlist
 
 def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
     '''
@@ -399,13 +428,18 @@ class TaxonomyCreator:
             clustervecs = []
             length = -1
             for ann_config in ann_configurations:
-                vector = get_property_from_ann(ann_config,clusterop.Value[0], clusterop, vectorize=True)
-                length = max(length,len(vector))
+                vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, vectorize=True)
+
+                #length = max(length,len(vector))
                 clustervecs.append(vector)
-                print(clusterop,ann_config,vector)
-            if length != 0: # only do clustering if we have some sort of vector returned
+                #print(clusterop,ann_config,vector)
+
+
+
+
+            if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 # fill in values that have nothing with a negative one
-                clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
+                #clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
                 if 'kmeans' in clusterop.Type:
                     fname, arguments = parse_function(clusterop.Type)
                     #print(arguments)
@@ -413,8 +447,40 @@ class TaxonomyCreator:
                     centroids=10
                     if len(arguments) > 0:
                         centroids = int(arguments[0])
-
-                    centers = kmeans_clustering(clustervecs, centroids=centroids )
+                        whattocast = str(arguments[1])
+                    str_mapping = {i : {} for i in range(len(clusterop.Value))} # precreate mapping for strings
+                    str_count = {i : 0 for i in range(len(clusterop.Value))} # precreate mapping for strings
+                    remapping = False
+                    print(len(clustervecs[0]))
+                    for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now
+                        for vecindex, vecs in enumerate(vector):
+                            for vec in vecs:
+                                if type(vec) == str:
+                                    if not vecindex in str_mapping:
+                                        str_mapping[vecindex] = {}
+                                        str_count[vecindex] = 0
+                                    # check if exists in str_mapping
+                                    if not vec in str_mapping[vecindex]:
+                                        str_mapping[vecindex][vec] = str_count[vecindex]
+                                        str_count[vecindex] += 1
+                    inputclustervecs = []
+                    length = 0
+                    binlength = max([str_count[i] for i in str_count])
+                    for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
+                        vectorlist = []
+                        for vecindex, vecs in enumerate(vector):
+                            if len(vecs) > 0 and type(vecs[0]) == str and whattocast == 'binary':
+                                # create binary vector
+                                bins = [0 for i in range(binlength)]
+                                for vec in vecs:
+                                    bins[str_mapping[vecindex][vec]] = 1
+                                vectorlist += bins
+                            else:
+                                vectorlist += vecs
+                        length = max(length, len(vectorlist))
+                        inputclustervecs.append(vectorlist)
+                    inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
+                    centers = kmeans_clustering(inputclustervecs, centroids=centroids )
                     for index, center in enumerate(centers):
                         hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
                         if not ann_configurations[index] in prefind:
@@ -580,7 +646,7 @@ def main():
     criteria2 = Criteria(Name='HasTaskType')
     criteria2.add(op2)
    
-    op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'])
+    op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
 
@@ -594,7 +660,6 @@ def main():
 
     #print(ontology.load())
     logger.info(ontology.instances)
-    #input()
     logger.info("Ontology loaded.")
 
     logger.info("Creating taxonomy from Annetto annotations.")
@@ -607,7 +672,6 @@ def main():
 
 
     print (json.dumps(serialize(facetedTaxonomy)))
-    input()
 
     print(output)
     with open('test.xml','w') as handle:
