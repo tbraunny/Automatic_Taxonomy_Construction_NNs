@@ -5,7 +5,7 @@ from rapidfuzz import process, fuzz
 
 from utils.constants import Constants as C
 
-def load_annetto_ontology(release_type:str)->Ontology:
+def load_annetto_ontology(owl_file_path:str=None,release_type:str=None)->Ontology:
     """
     Loads the Annetto ontology from the file system.
     Must choose a release type: "development", "test", "base", or "stable".
@@ -13,15 +13,22 @@ def load_annetto_ontology(release_type:str)->Ontology:
     :param: release_type: The type of release to load.
     :return: The Annett-o ontology object.
     """
+    
     releases = {
         "development": C.ONTOLOGY.DEV_ONTOLOGY_PATH,
         "test": C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         "base": C.ONTOLOGY.BASE_ONTOLOGY_PATH,
         "stable": C.ONTOLOGY.STABLE_ONTOLOGY_PATH,
-        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH
+        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH,
     }
+    if (owl_file_path and release_type) or (not owl_file_path and not release_type):
+        print(f"owl_file: {owl_file_path}, {type(owl_file_path)}, release_type: {release_type}, {type(release_type)}")
+        raise ValueError(f"Must provide either an owl file path or release name. Releases can be of types {list(releases)}.")
+    
+    if owl_file_path:
+        return get_ontology(owl_file_path)
 
-    if release_type not in releases:
+    if release_type not in list(releases.keys()):
         raise ValueError(f"Invalid release type: {release_type}. Must be one of {list(releases)}")
 
     return get_ontology(releases[release_type]).load()

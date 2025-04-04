@@ -28,8 +28,8 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 # )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
@@ -87,14 +87,14 @@ class DebugCallbackHandler(BaseCallbackHandler):
         print("\n\n\n")
 
     def on_llm_end(self, output, **kwargs):
-        print("LLM End:", output)
-        logger.info(f"LLM End: {output}")
+        print("LLM Debug Output:", output)
+        logger.debug(f"LLM Debug Output: {output}")
         print("\n\n\n")
 
     def on_text(self, text, **kwargs):
         print("LLM Text:", text)
         print("\n\n\n")
-        logger.info(f"LLM Text: {text}")
+        logger.debug(f"LLM Text: {text}")
         print("\n\n\n")
 
     def on_llm_error(self, error, **kwargs):
@@ -138,9 +138,9 @@ class LLMQueryEngine:
             model=self.generation_model,
             temperature=0.2,
             seed=42,
-            num_ctx=20000,
-            verbose=True,
-            callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
+            num_ctx=10000,
+            # verbose=True,
+            # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
 
         # Load and chunk documents
@@ -289,31 +289,36 @@ class LLMQueryEngine:
         if not chunks:
             self.logger.error("No chunks to assemble context from.",exc_info=True)
             raise ValueError("No chunks to assemble context from.")
-        if token_budget <= 0:
-            self.logger.warning("Token budget must be greater than 0.")
-            token_budget = 3000
+        if token_budget <= 1500:
+            new_token_budget = 3000
+            self.logger.warning(f"Strangly small token budget of {token_budget}, changing to {new_token_budget} tokens.")
+            token_budget = new_token_budget
+
         context = ""
         skipped = 0
         total_words = 0
         seen_content = set()  # Track content hashes to avoid duplicates
         for chunk in chunks:
-            if not chunk["content"].strip():
-                self.logger.debug("Skipping empty chunk.")
+            try:
+                if not chunk["content"].strip():
+                    self.logger.debug("Skipping empty chunk.")
+                    continue
+                content_hash = compute_hash(chunk["content"])
+                if content_hash in seen_content:
+                    self.logger.debug("Skipping duplicate chunk: %s out of total %s", chunk["content"][:30], skipped)
+                    skipped += 1
+                    continue
+                chunk_words = len(chunk["content"].split())
+                if total_words + chunk_words <= token_budget:
+                    
+                    context += f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}\n\n"
+                    total_words += chunk_words
+                    seen_content.add(content_hash)
+                else:
+                    break
+            except Exception as e:
+                self.logger.exception("Error processing chunk: %s", str(e))
                 continue
-            content_hash = compute_hash(chunk["content"])
-            if content_hash in seen_content:
-                self.logger.debug("Skipping duplicate chunk: %s out of total %s", chunk["content"][:30], skipped)
-                skipped += 1
-                continue
-            chunk_words = len(chunk["content"].split())
-            print("Chunk words: ", chunk_words) # TEMP
-            print("Total words: ", total_words)
-            if total_words + chunk_words <= token_budget:
-                context += f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}\n\n"
-                total_words += chunk_words
-                seen_content.add(content_hash)
-            else:
-                break
         self.logger.info(
             "Assembled context with ~%d words from %d unique chunks.",
             total_words,
@@ -332,7 +337,6 @@ class LLMQueryEngine:
         """Query the LLM with structured output using ChatOllama."""
         start_time = time.time()
         candidates = self.retrieve_chunks(query, max_chunks)
-        print ("Length of candidates: ", len(candidates)) # TEMP
         self.logger.info(
             f"Retrieved {len(candidates)} candidate chunks for query: {query}"
         )
@@ -351,18 +355,18 @@ class LLMQueryEngine:
         prompt = (
             f"Goal: Answer the query based on the provided context.\n\n"
             f"Query: {query}\n\n"
-            f"Context Dump:\n{context}\n\n"
+            f"Context:\n```\n{context}\n```\n\n"
             f"Response:\n"
         ).strip()
         self.logger.info(
-            "Generated prompt: %s",
+            "Generated prompt:\n%s",
             prompt,
         )
 
-        # structured_llm = self.llm.with_structured_output(cls_schema)
+        structured_llm = self.llm.with_structured_output(cls_schema)
         try:
-            # response = structured_llm.invoke(prompt)
-            response = self.llm.invoke(prompt)
+            response = structured_llm.invoke(prompt)
+            # response = self.llm.invoke(prompt)
 
 
             self.logger.info("Raw LLM response: %s", response)
@@ -420,7 +424,7 @@ def query_llm(
             f"Engine for model '{model_name}' not initialized. Call init_engine first."
         )
     engine = _engine_instances[model_name]
-    return engine.query_structured(query, cls_schema, max_chunks, token_budget)
+    return engine.query_structured(query, cls_schema, token_budget, max_chunks)
 
 
 # Example Pydantic models for testing

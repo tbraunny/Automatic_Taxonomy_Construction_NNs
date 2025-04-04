@@ -1,5 +1,5 @@
 from owlready2 import *
-from typing import List, Union, Optional, Any
+from typing import List, Union, Optional, Any, Type
 import warnings
 from builtins import TypeError
 
@@ -545,7 +545,14 @@ def assign_object_property_relationship(
             f"Failed to connect {domain} to {range} via {object_property}",
             exec_info=True,
         )
-
+    
+def is_functional_property(property: DataPropertyClass) -> bool:
+    """
+    Determines if a given property is functional.
+    :param property: The DataPropertyClass to check.
+    :return: True if the property is functional, False otherwise.
+    """
+    return isinstance(property, FunctionalProperty)
 
 def link_data_property_to_instance(
     instance: Thing, data_property: DataPropertyClass, value: Any
@@ -565,15 +572,29 @@ def link_data_property_to_instance(
         raise TypeError(
             "The 'data_property' argument must be an instance of DataPropertyClass."
         )
-    # Set the data property value for the instance
-    instance.data_property = [value]
+    # setattr(instance, data_property.name, value)
+    setattr(instance, data_property.name, [value] if not isinstance(value, list) else value)
 
-    # Check if the value was set successfully
-    if not instance.data_property == value:
-        raise ValueError(
-            f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
-        )
-    #
+    # # Verify the value was set correctly
+    # if value not in getattr(instance, data_property.name, []):
+    #     raise ValueError(
+    #         f"Failed to set data property '{data_property.name}' to '{value}' for instance '{instance}'."
+    #     )
+    
+    if is_functional_property(data_property):
+        # Assign the value directly for functional properties
+        setattr(instance, data_property.name, value)
+    else:
+        # Assign the value as a list for non-functional properties
+        setattr(instance, data_property.name, [value] if not isinstance(value, list) else value)
+    # # Set the data property value for the instance
+    # instance.data_property = [value]
+
+    # # Check if the value was set successfully
+    # if not instance.data_property == value:
+    #     raise ValueError(
+    #         f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
+    #     )
 
 
 def create_class_data_property(
@@ -616,6 +637,49 @@ def create_class_data_property(
 
     return NewDataProperty
 
+def create_class_object_property(
+    ontology: Ontology,
+    property_name: str,
+    domain_class: Union[ThingClass, Thing],
+    range_class: Union[ThingClass, Thing],
+) -> Type[ObjectProperty]:
+    """
+    Dynamically creates an ObjectProperty for a class.
+    Must still assign the value of the property to an instance of the domain class.
+
+    A functional ObjectProperty means each subject can be linked to at most one object via the property.
+
+    :param ontology: The ontology
+    :param property_name: Name of the ObjectProperty to be created
+    :param domain_class: Class that serves as the domain
+    :param range_class: Class that serves as the range
+    :return: Created ObjectProperty class
+    """
+
+    # if functional:
+    NewObjectProperty = type(
+        property_name,
+        (ObjectProperty, FunctionalProperty),
+        {
+            "namespace": ontology,
+            "domain": [domain_class],
+            "range": [range_class],
+        },
+    )
+    # else:
+    #     NewObjectProperty = type(
+    #         property_name,
+    #         (ObjectProperty,),
+    #         {
+    #             "namespace": ontology,
+    #             "domain": [domain_class],
+    #             "range": [range_class],
+    #         },
+    #     )
+
+    return NewObjectProperty
+
+
 
 def list_owl_classes(onto: Ontology) -> List[ThingClass]:
     # Return list of all classes in ontology
@@ -636,11 +700,15 @@ if __name__ == "__main__":
 
     ontology = load_annetto_ontology("test")
 
-    with ontology:
-        p3 = create_class(ontology, "Person", base_class=ontology.Network)
-        p2 = create_class(ontology, "Person2", base_class=ontology.TaskCharacterization)
-        p4 = create_subclass(ontology, "Person", p2)
-        print(p3, p2, p4)
+    list_owl_props = list_owl_data_properties(ontology)
+    print()
+
+
+    # with ontology:
+    #     p3 = create_class(ontology, "Person", base_class=ontology.Network)
+    #     p2 = create_class(ontology, "Person2", base_class=ontology.TaskCharacterization)
+    #     p4 = create_subclass(ontology, "Person", p2)
+    #     print(p3, p2, p4)
 
     # instance1 = create_cls_instance(ontology.Network, "Conv Network")
     # instance2 = create_cls_instance(ontology.CostFunction, "Class1")

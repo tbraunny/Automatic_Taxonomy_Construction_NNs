@@ -24,6 +24,7 @@ from utils.owl_utils import (
     get_all_subclasses,
     create_class_data_property,
     link_data_property_to_instance,
+    create_class_object_property,
 )
 from utils.constants import Constants as C
 
@@ -68,7 +69,7 @@ class OntologyInstantiator:
         """
         Initialize the OntologyInstantiator class.
         # Args:
-            ontology_path (str): The path to the ontology file.
+            ontology (str): The ontology. 
             json_doc_files_paths (list[str]): The list of str paths to the JSON_doc files for paper and/or code.
             ann_config_name (str): The name of the ANN configuration.
             output_owl_path (str): The path to save the output OWL file.
@@ -259,7 +260,7 @@ class OntologyInstantiator:
         """
         link_data_property_to_instance(instance, data_property, value)
         self.logger.info(
-            f"Linked {self._unformat_instance_name(instance.name)} with data property {data_property.name}."
+            f"Linked '{self._unformat_instance_name(instance.name)}' with data property '{data_property.name}'."
         )
 
     def build_prompt(
@@ -1226,26 +1227,21 @@ class OntologyInstantiator:
             )
             raise e
 
-    def __addclasses(self) -> None:
-        """Adds new predefined classes to the ontology."""
-        new_classes = {
-            "Self-Supervised Classification": self.ontology.TaskCharacterization,
-            "Unsupervised Classification": self.ontology.TaskCharacterization,
-        }
-
-        for name, parent in new_classes.items():
-            try:
-                create_subclass(self.ontology, name, parent)
-            except Exception as e:
-                self.logger.error(
-                    f"Error creating new class {name}: {e}", exc_info=True
-                )
-
-    def _process_dataset(self, dataset_pipe_instance: Thing) -> None:
+    def _process_dataset(self, training_step_instance: Thing) -> None:
         try:
-            if not dataset_pipe_instance:
-                self.logger.error("No DatasetPipe instance provided.", exc_info=True)
-                raise ValueError("Missing DatasetPipe instance.")
+            if not training_step_instance:
+                self.logger.error("No TrainingStepInstance instance provided when processing dataset.", exc_info=True)
+                raise ValueError("No TrainingStepInstance instance provided when processing dataset.")
+            
+            # Link Training Single DataPipe
+            dataset_pipe_instance = self._instantiate_and_format_class(
+                self.ontology.DatasetPipe, "Dataset Pipe"
+            )
+            self._link_instances(
+                training_step_instance,
+                dataset_pipe_instance,
+                self.ontology.trainingSingleHasIOPipe,
+            )
 
             task = "Extract and describe all datasets used in the paper."
 
@@ -1314,18 +1310,33 @@ class OntologyInstantiator:
                     dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
                 )
 
-                dataset_instance.data_description = [dataset.data_description]
-
+                # Set Data Properties
+                self._link_data_property(
+                    dataset_instance,
+                    self.ontology.data_description,
+                    dataset.data_description,
+                )
                 if dataset.data_doi:
-                    dataset_instance.data_doi = [dataset.data_doi]
+                    self._link_data_property(
+                        dataset_instance,
+                        self.ontology.data_doi,
+                        dataset.data_doi,
+                    )
                 if dataset.dataset_name:
-                    dataset_instance.dataset_name = [dataset.dataset_name]
+                    print(f"Dataset name: {dataset.dataset_name}, type: {type(dataset.dataset_name)}")
+                    self._link_data_property( # TODO: may need to create datasetname dataproperty
+                        dataset_instance,
+                        self.ontology.dataset_name,
+                        dataset.dataset_name,
+                    )
                 if dataset.data_sample_dimensionality:
-                    dataset_instance.data_sample_dimensionality = [
-                        dataset.data_sample_dimensionality
-                    ]
+                    self._link_data_property(dataset_instance, self.ontology.data_sample_dimensionality, dataset.data_sample_dimensionality)
                 if dataset.data_samples:
-                    dataset_instance.data_samples = [dataset.data_samples]
+                    self._link_data_property(
+                        dataset_instance,
+                        self.ontology.data_samples,
+                        dataset.data_samples,
+                    )
 
                 # Instantiate Label set for labeled data information
                 label_set_instance = self._instantiate_and_format_class(
@@ -1338,7 +1349,7 @@ class OntologyInstantiator:
                 )
                 # Set number of classes
                 if dataset.number_of_classes:
-                    label_set_instance.labels_count = [dataset.number_of_classes]
+                    self._link_data_property(label_set_instance, self.ontology.labels_count, dataset.number_of_classes)
 
                 # Handle dataType
                 data_type_subclass = dataset.data_type
@@ -1391,6 +1402,7 @@ class OntologyInstantiator:
                 session_instance,
                 self.ontology.hasPrimaryTrainingSession,
             )
+            self.logger.info("Successfully processed training strategy.")
 
         except Exception as e:
             self.logger.error(f"Error in _process_training_single: {e}", exc_info=True)
@@ -1468,26 +1480,26 @@ class OntologyInstantiator:
 
             # Set data properties
             if details.learning_rate_decay:
-                # self._link_data_property(dataset_instance,self.ontology.learning_rate_decay, details.learning_rate_decay)
+                self._link_data_property(training_step_instance,self.ontology.learning_rate_decay, details.learning_rate_decay)
                 self._link_data_property(
-                    dataset_instance, self.ontology.learning_rate_decay, 0.000001
+                    training_step_instance, self.ontology.learning_rate_decay, 0.000001
                 )
 
             if details.learning_rate_decay_epochs:
                 self._link_data_property(
-                    dataset_instance,
+                    training_step_instance,
                     self.ontology.learning_rate_decay_epochs,
                     details.learning_rate_decay_epochs,
                 )
             if details.number_of_epochs:
                 self._link_data_property(
-                    dataset_instance,
+                    training_step_instance,
                     self.ontology.number_of_epochs,
                     details.number_of_epochs,
                 )
             if details.batch_size:
                 self._link_data_property(
-                    dataset_instance, self.ontology.batch_size, details.batch_size
+                    training_step_instance, self.ontology.batch_size, details.batch_size
                 )
 
             # Set required fields
@@ -1500,27 +1512,19 @@ class OntologyInstantiator:
             #         details.learning_rate_decay_epochs
             #     ]
 
-            # Process connected Training Single DataPipe
-            dataset_pipe = self._instantiate_and_format_class(
-                self.ontology.DatasetPipe, "Dataset Pipe"
-            )
-            self._link_instances(
-                training_step_instance,
-                dataset_pipe,
-                self.ontology.trainingSingleHasIOPipe,
-            )
+            
 
-            dataset_instance = self._instantiate_and_format_class(
-                self.ontology.Dataset, "Dataset"
-            )
-            self._link_instances(
-                dataset_pipe,
-                dataset_instance,
-                self.ontology.joinsDataSet,
-            )
+            # dataset_instance = self._instantiate_and_format_class(
+            #     self.ontology.Dataset, "Dataset"
+            # )
+            # self._link_instances(
+            #     dataset_pipe,
+            #     dataset_instance,
+            #     self.ontology.joinsDataSet,
+            # )
 
             self.logger.info("Successfully processed training single.")
-            self._process_dataset(dataset_pipe)
+            self._process_dataset(training_step_instance)
 
         except Exception as e:
             self.logger.error(
@@ -1788,7 +1792,34 @@ class OntologyInstantiator:
                 f"Error in _process_training_strategy: {e}", exc_info=True
             )
             raise e
+    
+    def __addclasses(self) -> None:
+        """Adds new predefined classes to the ontology."""
 
+        # Dataset name DataProperty
+        create_class_data_property(
+            self.ontology, "dataset_name", self.ontology.Dataset, str, False
+        )
+        ###
+
+        # Add hasWeightInitialization
+        create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
+        ###
+
+        # Add tasks
+        new_classes = {
+            "Self-Supervised Classification": self.ontology.TaskCharacterization,
+            "Unsupervised Classification": self.ontology.TaskCharacterization,
+        }
+
+        for name, parent in new_classes.items():
+            try:
+                create_subclass(self.ontology, name, parent)
+            except Exception as e:
+                self.logger.error(
+                    f"Error creating new class {name}: {e}", exc_info=True
+                )
+        ###
     def save_ontology(self) -> None:
         """
         Saves the ontology to the pre-specified file.
@@ -1917,20 +1948,9 @@ if __name__ == "__main__":
         instantiate_annetto(
             model_name,
             f"data/{model_name}",
-            load_annetto_ontology("base"),
+            load_annetto_ontology(release_type="base"),
             C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         )
-        # try:
-        #     instantiate_annetto(
-        #         model_name,
-        #         f"data/{model_name}",
-        #         load_annetto_ontology("base"),
-        #         C.ONTOLOGY.TEST_ONTOLOGY_PATH,
-        #     )
-        # except Exception as e:
-        #     print(f"Error instantiating the {model_name} ontology in __name__: {e}")
-        #     continu
-
     time_end = time.time()
     minutes, seconds = divmod(time_end - time_start, 60)
     print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds.")
