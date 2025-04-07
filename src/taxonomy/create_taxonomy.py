@@ -78,7 +78,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
                         found.append(insert)
-                if eq.Op == 'greater' and etype(value) == int and searchValue < value and eq.Name == prop.name:
+                if eq.Op == 'greater' and type(value) == int and searchValue < value and eq.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
                         found.append(insert)
@@ -225,7 +225,7 @@ class TaxonomyNode(BaseModel):
         super().__init__(name=name,criteria=criteria,children=[],splitProperties=splitProperties,annConfigs=annConfigs, splitKey=splitKey)
     
     def add_children(self, child):
-        self.children.append(children)
+        self.children.append(child)
 
     def to_json(self):
         return json.dumps(serialize(self)) #self.model_dump_json(indent=2, serialize_as_any=True)
@@ -354,7 +354,7 @@ def query_instance_properties(instance, query):
                 insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                 if not insert in found:
                     found.append(insert)
-            if eq.Op == 'greater' and etype(value) == int and eq.Value < value and eq.Name == prop.name:
+            if eq.Op == 'greater' and type(value) == int and eq.Value < value and eq.Name == prop.name:
                 insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                 if not insert in found:
                     found.append(insert)
@@ -639,14 +639,12 @@ def main():
 
     logger.info("Loading ontology.")
     #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
-    ontology_path = f"./data/owl/annett-o-test.owl"
+    ontology_path = f"./data/Annett-o/annett-o-test.owl"
 
     #ontology_path = f"./data/owl/annett-o.owl" 
     # Example Criteria...
     op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
@@ -665,6 +663,7 @@ def main():
     criterias = [criteria,criteria2,criteria3]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
+    print('after load')
 
     #print(ontology.load())
     logger.info(ontology.instances)
@@ -673,22 +672,23 @@ def main():
     logger.info("Creating taxonomy from Annetto annotations.")
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
 
-    format='ontology'
+    format='json'
 
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='ontology',faceted=True)
-
-
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
 
     print (json.dumps(serialize(facetedTaxonomy)))
 
-    print(output)
-    with open('test.xml','w') as handle:
-        handle.write(output)
+    with open('/home/richw/Josue/Automatic_Taxonomy_Construction_NNs/src/taxonomy/test.json', 'w') as handle:
+        handle.write(json.dumps(serialize(facetedTaxonomy)))
 
-    if format == 'graphml':
-        visualizeTaxonomy(output)
-        print(output)
-    logger.info("Finished creating taxonomy.")
+    # print(output)
+    # with open('test.xml','w') as handle:
+    #     handle.write(output)
+
+    # if format == 'graphml':
+    #     visualizeTaxonomy(output)
+    #     print(output)
+    # logger.info("Finished creating taxonomy.")
 
 
 if __name__ == "__main__":
