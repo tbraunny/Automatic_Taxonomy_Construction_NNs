@@ -638,6 +638,13 @@ class TaxonomyCreator:
         else:
             output = topnode.to_rdf()
         return topnode, facetedTaxonomy, output
+
+
+
+
+
+
+
 def main():
 
     logger.info("Loading ontology.")

@@ -14,42 +14,14 @@ from langchain_community.document_loaders import UnstructuredPDFLoader,PyPDFLoad
 from graphviz import Source
 import json
 import re
-import tiktoken
 #from os import path
 import os
-from criteria import Criteria, SearchOperator,HasLoss, TypeOperator
+from criteria import Criteria, SearchOperator,HasLoss, TypeOperator, OutputCriteria
 from typing import List
 from pydantic import BaseModel, Field
 from langchain.output_parsers import OutputFixingParser
 from create_taxonomy import *
 from visualizeutils import visualizeTaxonomy
-
-class OutputCriteria(BaseModel):
-    """Always use this tool to structure your response to the user."""
-    criteriagroup: List[Criteria] = Field(description='The levels of the taxonomy as written by the criteria in each element of this list.')
-    description: str = Field(description="The description of the taxonomy created.")
-
-op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-#op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
-#op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
-
-criteria1 = Criteria(Name='Has Loss Criteria')
-criteria1.add(op)
-
-criteria2 = Criteria(Name='Layer Num Units')
-criteria2.add(op2)
-
-op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
-criteria3 = Criteria(Name='KMeans Clustering')
-
-
-
-oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
-#print(criteria1.model_dump_json())
-
-
-
 
 
 system_prompt = """ 
@@ -193,62 +165,60 @@ Return only the format with no ``` ```
 '''
 
 
-parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
-criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
-print(criteriaprompt)
-#conservative_model = OllamaLLM(model="qwq:32b",temperature=0)
-#conservative_model = OllamaLLM(model="llama3.2",temperature=0)
-#conservative_model = ChatOllama(model="neuralexpert:latest",temperature=0)
-#conservative_model = ChatOllama(model="qwq:32b",temperature=0)
-llama_model = ChatOllama(model="llama3.2",temperature=0.1)
-conservative_model = ChatOllama(model="deepseek-r1:32b-qwen-distill-q4_K_M",temperature=0.1)
-#conservative_model = ChatOllama(model="neuralexpert",temperature=0.2)
+def llm_create_taxonomy(query : str) -> OutputCriteria:
+    
+    # constructing an example output criteria and search operator for the taxonomy
+    op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 
-fixparser = OutputFixingParser.from_llm(parser=parser, llm=conservative_model)
+    criteria1 = Criteria(Name='Has Loss Criteria')
+    criteria1.add(op)
 
+    criteria2 = Criteria(Name='Layer Num Units')
+    criteria2.add(op2)
 
-#if not streaming:
-#    conservative_model = conservative_model.bind_tools([OutputCriteria])
+    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+    criteria3 = Criteria(Name='KMeans Clustering')
 
+    oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
+    
+    # create a parser to parse output criteria
+    parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
-conservative_model.with_structured_output(OutputCriteria)
-chain = criteriaprompt | conservative_model
+    criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
+    model = ChatOllama(model="deepseek-r1:32b-qwen-distill-q4_K_M",temperature=0.1)
 
-#ontology_path = f"./data/owl/annett-o-test.owl" 
-ontology_path = f"./data/owl/fairannett-o.owl" 
-ontology = load_ontology(ontology_path=ontology_path)
-
-
-#output = chain.invoke({'user_input': 'Give me a taxonomy that splits small networks use the range operator.','oc': oc}).content
-output = chain.invoke({'user_input': 'What would you say is the taxonomy that preresents all neural network?.','oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
-output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
-thecriteria = output = fixparser.parse(output)
-print(type(output))
-print(thecriteria)
-input()
-taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
-
-print(output)
-#visualizeTaxonomy(output)
-print(thecriteria)
-print(faceted)
-
-with open('test.json', 'w') as handle:
-    handle.write(json.dumps(serialize(faceted)))
-
-'''if not streaming:
-    output = chain.invoke({'user_input': 'Construct a taxonomy that splits on 10 to 100 neurons.','oc': oc})
-    #print(output)
-    if len(output.tool_calls):
-        print('never gonna give you up :). It was successful')
-        print(output.tool_calls[0]['args'])
-        thecriteria = OutputCriteria(**output.tool_calls[0]['args'])
+    # a fixing parser if the original model doesnt work
+    fixparser = OutputFixingParser.from_llm(parser=parser, llm=model)
 
 
+    model.with_structured_output(OutputCriteria)
+    chain = criteriaprompt | model
 
+    #ontology_path = f"./data/owl/annett-o-test.owl" 
+    ontology_path = f"./data/owl/fairannett-o.owl" 
+    ontology = load_ontology(ontology_path=ontology_path)
+
+
+    output = chain.invoke({'user_input': query,'oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
+    output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
+    
+    # fixing the criteria -- this may fail sometimes
+    thecriteria = output = fixparser.parse(output)
+    
+    return thecriteria
+
+
+if __name__ == '__main__':
+    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that preresents all neural network?')
+
+    ontology_path = f"./data/owl/fairannett-o.owl" 
+    ontology = load_ontology(ontology_path=ontology_path)
+    
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-    print(taxonomy_creator.create_taxonomy(format='graphml'))
-    print(thecriteria)
-'''
+    topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
+    
+    with open('test.json', 'w') as handle:
+        handle.write(json.dumps(serialize(faceted)))
+    

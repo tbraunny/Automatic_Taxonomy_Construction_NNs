@@ -46,6 +46,7 @@ class Criteria(BaseModel):
     def add(self, operator:SearchOperator):
         self.Searchs.append(operator)
 
-
-        
-
+class OutputCriteria(BaseModel):
+    """Always use this tool to structure your response to the user."""
+    criteriagroup: List[Criteria] = Field(description='The levels of the taxonomy as written by the criteria in each element of this list.')
+    description: str = Field(description="The description of the taxonomy created.")
