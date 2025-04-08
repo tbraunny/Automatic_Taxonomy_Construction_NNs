@@ -17,7 +17,7 @@ import re
 import tiktoken
 #from os import path
 import os
-from criteria import Criteria, SearchOperator,HasLoss
+from criteria import Criteria, SearchOperator,HasLoss, TypeOperator
 from typing import List
 from pydantic import BaseModel, Field
 from langchain.output_parsers import OutputFixingParser
@@ -30,7 +30,7 @@ class OutputCriteria(BaseModel):
     description: str = Field(description="The description of the taxonomy created.")
 
 op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-op2 = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 #op = SearchOperator(has= [] , equals=[{'type':'name', 'value':'simple_classification_L2'}])
 #op = SearchOperator(has= [] , equals=[{'type':'value','value':1000,'op':'greater','name':'layer_num_units'}])
 
@@ -40,7 +40,7 @@ criteria1.add(op)
 criteria2 = Criteria(Name='Layer Num Units')
 criteria2.add(op2)
 
-op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
 criteria3 = Criteria(Name='KMeans Clustering')
 
 
@@ -216,12 +216,12 @@ conservative_model.with_structured_output(OutputCriteria)
 chain = criteriaprompt | conservative_model
 
 #ontology_path = f"./data/owl/annett-o-test.owl" 
-ontology_path = f"./data/owl/annett-o.owl" 
+ontology_path = f"./data/owl/fairannett-o.owl" 
 ontology = load_ontology(ontology_path=ontology_path)
 
 
 #output = chain.invoke({'user_input': 'Give me a taxonomy that splits small networks use the range operator.','oc': oc}).content
-output = chain.invoke({'user_input': 'Give me a taxonomy that categorizes based on types of layers, optimizer, and loss function and uses kmeans.','oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
+output = chain.invoke({'user_input': 'What would you say is the taxonomy that preresents all neural network?.','oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
 output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
 thecriteria = output = fixparser.parse(output)
 print(type(output))
@@ -231,7 +231,7 @@ taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
 topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
 
 print(output)
-visualizeTaxonomy(output)
+#visualizeTaxonomy(output)
 print(thecriteria)
 print(faceted)
 

@@ -66,7 +66,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                     insert = {'type': type(value), 'value': value, 'name': prop.name} 
                     if not insert in found:
                         found.append(insert)
-                elif isinstance(value,Thing) and eq.Type == 'name' and searchValue == value.name:
+                elif isinstance(value,Thing) and eq.Type and eq.Type.Name == 'name' and searchValue == value.name:
                     insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
                     if not insert in found:
                         found.append(insert)
@@ -442,14 +442,17 @@ class TaxonomyCreator:
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 # fill in values that have nothing with a negative one
                 #clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
-                if clusterop.Type != None and 'kmeans' in clusterop.Type:
-                    fname, arguments = parse_function(clusterop.Type)
+                if clusterop.Type != None and 'kmeans' in clusterop.Type.Name:
+                    #fname, arguments = parse_function(clusterop.Type)
                     #print(arguments)
                     #input()
                     centroids=10
-                    if len(arguments) > 0:
-                        centroids = int(arguments[0])
-                        whattocast = str(arguments[1])
+                    #if len(arguments) > 0:
+                    #    centroids = int(arguments[0])
+                    #    whattocast = str(arguments[1])
+                    centroids = int(clusterop.Type.Arguments[0])
+                    whattocast = str(clusterop.Type.Arguments[1])
+
                     str_mapping = {i : {} for i in range(len(clusterop.Value))} # precreate mapping for strings
                     str_count = {i : 0 for i in range(len(clusterop.Value))} # precreate mapping for strings
                     remapping = False
@@ -485,7 +488,7 @@ class TaxonomyCreator:
                         inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
                         centers = kmeans_clustering(inputclustervecs, centroids=centroids )
                         for index, center in enumerate(centers):
-                            hashcenter = f'cluster_{center}_{clusterop.Type}_{clusterop.Value}'
+                            hashcenter = f'cluster_{center}_{clusterop.Type.Name}_{clusterop.Value}'
                             if not ann_configurations[index] in prefind:
                                 prefind[ann_configurations[index]] = {hashcenter : center}
                             else:
@@ -644,7 +647,7 @@ def main():
     #ontology_path = f"./data/owl/annett-o.owl" 
     # Example Criteria...
     op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type='layer_num_units',Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
@@ -652,7 +655,8 @@ def main():
     criteria2 = Criteria(Name='HasTaskType')
     criteria2.add(op2)
    
-    op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+    #op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
 
@@ -678,7 +682,7 @@ def main():
 
     print (json.dumps(serialize(facetedTaxonomy)))
 
-    with open('/home/richw/Josue/Automatic_Taxonomy_Construction_NNs/src/taxonomy/test.json', 'w') as handle:
+    with open('test.json', 'w') as handle:
         handle.write(json.dumps(serialize(facetedTaxonomy)))
 
     # print(output)

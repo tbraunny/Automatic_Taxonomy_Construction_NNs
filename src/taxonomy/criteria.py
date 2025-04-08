@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ValidationError,Field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Literal
 
 
 AND = 'and'
@@ -15,15 +15,20 @@ HasTaskType = 'hasTaskType'
 HasLayer = 'hasLayer'
 HasLoss = 'hasLoss'
 
+
+class TypeOperator(BaseModel):
+    Name: str = Field("")
+    Arguments: List[int|float|str] = Field([])
+
 class SearchOperator(BaseModel):
     '''
     Name: SearchOperator
     Description: Has is for the edge properties like hasNetwork, hasLayer. Equals is for matching to specific names.
     '''
     HasType: Optional[str] = Field("")
-    Type: Optional[str] = Field("")
+    Type: Optional[TypeOperator] = None #Optional[str] = Field("")
     Name: Optional[str] = Field("")
-    Op: Optional[str] = Field("") 
+    Op: Literal["cluster","sequal","none","range","scomp","leq","less","greater","geq"] = "none" #Optional[str] = Field("") 
     Value: Optional[str | int | float | list ] = Field("")
     HashOn: Optional[str] = Field("type")
 
