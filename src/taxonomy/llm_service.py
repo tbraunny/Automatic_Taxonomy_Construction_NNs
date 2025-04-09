@@ -16,12 +16,12 @@ import json
 import re
 #from os import path
 import os
-from criteria import Criteria, SearchOperator,HasLoss, TypeOperator, OutputCriteria
+from .criteria import Criteria, SearchOperator,HasLoss, TypeOperator, OutputCriteria
 from typing import List
 from pydantic import BaseModel, Field
 from langchain.output_parsers import OutputFixingParser
-from create_taxonomy import *
-from visualizeutils import visualizeTaxonomy
+from .create_taxonomy import *
+from .visualizeutils import visualizeTaxonomy
 
 
 system_prompt = """ 
@@ -203,7 +203,10 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
 
     output = chain.invoke({'user_input': query,'oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
-    
+   
+    print(output)
+    input('test')
+
     # fixing the criteria -- this may fail sometimes
     thecriteria = output = fixparser.parse(output)
     

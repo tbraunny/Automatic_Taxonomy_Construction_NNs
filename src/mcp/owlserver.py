@@ -8,18 +8,28 @@ from owlready2 import *
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_graph
 from rdflib import Graph, URIRef
 
+
+#from ... import *
+#from taxonomy import llm_service,criteria,create_taxonomy
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from src.taxonomy import llm_service,create_taxonomy
+
 # Create an MCP server named "OWL Server
 mcp = FastMCP("OWL Server")
 
 # Load the ontology using rdflib.
 # Adjust "ontology.owl" and its format as needed.
 g = rdflib.Graph()
-g.parse("./ontology/annett-o-0.1.owl", format="xml")
+g.parse("./data/owl/annett-o-0.1.owl", format="xml")
 
 
-onto = get_ontology("./ontology/annett-o-0.1.owl").load()
+onto = get_ontology("./data/owl/annett-o-0.1.owl").load()
 
-options = glob.glob('./ontology/*.owl')
+options = glob.glob('./data/owl/*.owl')
 
 
 def extract_subgraph(graph: Graph, root_iri: str) -> Graph:
@@ -131,6 +141,19 @@ def get_classes() -> str:
         classes.add(str(o))
         #break
     return ",".join(classes) if classes else "No classes found."
+
+@mcp.tool()
+def create_taxonomy(query: str) -> str():
+    """
+    Takes in a sentence from the user that the llm clarifies and underneath a faceted taxonomy s returned
+    """
+    oc = llm_service.llm_create_taxonomy(query)
+    taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
+
+    format='json'
+
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    return str(output)
 
 @mcp.resource("ontology://info")
 def ontology_info() -> str:

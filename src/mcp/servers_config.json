@@ -2,7 +2,7 @@
     "mcpServers": {
       "owl": {
         "command": "python",
-        "args": ["owlserver.py"]
+        "args": ["/fastdata2/data/Automatic_Taxonomy_Construction_NNs/src/mcp/owlserver.py"]
       }
     }
   }

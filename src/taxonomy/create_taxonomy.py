@@ -2,17 +2,17 @@ from utils.owl_utils import *
 from utils.annetto_utils import make_thing_classes_readable
 from utils.constants import Constants as C
 from typing import Optional
-from criteria import *
+from .criteria import *
 from pathlib import Path
 import logging
 import json
 
 import networkx as nx
-from visualizeutils import visualizeTaxonomy
+from .visualizeutils import visualizeTaxonomy
 
 from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
-from clustering import kmeans_clustering
+from .clustering import kmeans_clustering
 import re
 
 
