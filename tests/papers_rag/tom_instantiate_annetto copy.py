@@ -1,16 +1,14 @@
 import logging
 import os
-import json
 import hashlib
 from datetime import datetime
 import time
 from typing import Dict, Any, Union, List, Optional
-from utils.onnx_db import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
-from rapidfuzz import process , fuzz
+from rapidfuzz import process, fuzz
 from pydantic import BaseModel
-import warnings
+
 from utils.constants import Constants as C
 from utils.owl_utils import (
     create_cls_instance,
@@ -18,16 +16,22 @@ from utils.owl_utils import (
     create_subclass,
     get_all_subclasses,
 )
-from utils.constants import Constants as C
-
-from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable, load_annetto_ontology
-from utils.onnx_additions.add_onnx import OnnxAddition
-
-# from utils.llm_service import init_engine, query_llm
+from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 from utils.llm_service import init_engine, query_llm
-from utils.pydantic_models import *
+from rapidfuzz import process, fuzz
 
-# Set up logging
+try:
+    import tiktoken
+except ImportError:
+    tiktoken = None
+
+
+OMIT_CLASSES = {
+    "DataCharacterization",
+    "Regularization",
+}  # Classes to omit from instantiation.
+
+
 log_dir = "logs"
 log_file = os.path.join(
     log_dir, f"instantiate_annetto_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log"
@@ -55,7 +59,7 @@ class OntologyInstantiator:
         ontology_path: str,
         list_json_doc_paths: List[str],
         ann_config_name: str = "alexnet",
-        output_owl_path: str = "data/owl/annett-o-test.owl",
+        output_owl_path: str = "data/annett-o-test.owl",
     ) -> None:
         """
         Initialize the OntologyInstantiator class.
@@ -80,10 +84,7 @@ class OntologyInstantiator:
             self.logger.error("Expected a string for output OWL path.")
             raise TypeError("Expected a string for output OWL path.")
         
-        if not ontology_path:
-            self.ontology = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
-        else:
-            self.ontology = get_ontology(ontology_path).load()
+        self.ontology = get_ontology(ontology_path).load()
         self.list_json_doc_paths = list_json_doc_paths
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
@@ -105,18 +106,14 @@ class OntologyInstantiator:
         Instantiate a given ontology class with the specified instance name.
         Uses the ANN configuration hash as a prefix for uniqueness.
         """
-        try:
-            unique_instance_name = self._format_instance_name(instance_name)
-            instance = create_cls_instance(cls, unique_instance_name)
-            self.logger.info(
-                f"Instantiated {cls.name} with name: {self._unformat_instance_name(unique_instance_name)}."
-            )
-            return instance
-        except Exception as e:
-            self.logger.error(
-                f"Error instantiating {cls.name} with name {instance_name}: {e}"
-            )
-    def _format_instance_name(self, instance_name: str) -> str:
+        unique_instance_name = self._hash_and_format_instance_name(instance_name)
+        instance = create_cls_instance(cls, unique_instance_name)
+        self.logger.info(
+            f"Instantiated {cls.name} with name: {self._unhash_and_format_instance_name(unique_instance_name)}."
+        )
+        return instance
+
+    def _hash_and_format_instance_name(self, instance_name: str) -> str:
         """
         Generate a unique instance name using the hash of the ANN config name.
 
@@ -135,7 +132,7 @@ class OntologyInstantiator:
         """
         return f"{self.ann_config_hash}_{instance_name.replace(' ', '-').lower()}"
 
-    def _unformat_instance_name(self, instance_name: str) -> str:
+    def _unhash_and_format_instance_name(self, instance_name: str) -> str:
         """
         Remove the ANN config hash prefix from the instance name and restore readability.
 
@@ -154,11 +151,6 @@ class OntologyInstantiator:
         stripped_name = parts[-1]  # Extract the actual instance name (without hash)
         return stripped_name.replace("-", " ")  # Convert dashes back to spaces
 
-    ###### NOTE
-    """
-    Changed fuzzy match to be case insensitive 
-    (was returning scores of 50 for identical strings w differing capitalization)
-    """
     def _fuzzy_match_class(
         self, instance_name: str, classes: List[ThingClass], threshold: int = 80
     ) -> Optional[ThingClass]:
@@ -170,45 +162,17 @@ class OntologyInstantiator:
         :param threshold: The minimum score required for a match.
         :return: The best-matching ThingClass object or None if no good match is found.
         """
-        if not isinstance(instance_name, str):
-            raise TypeError("Expected instance_name to be a string.")
-        if not all(isinstance(cls, ThingClass) for cls in classes):
-            raise TypeError("Expected classes to be a list of ThingClass objects.")
-        if not all(isinstance(cls.name, str) for cls in classes):
-            raise TypeError("Expected classes to have string names. ######")
-        if not isinstance(threshold, int):
-            raise TypeError("Expected threshold to be an integer.")
+        if not instance_name or not classes:
+            return None
 
         # Convert classes to a dictionary for lookup
-        class_name_map = {cls.name.lower(): cls for cls in classes}
+        class_name_map = {cls.name: cls for cls in classes}
 
         match, score, _ = process.extractOne(
-            instance_name.lower(), class_name_map.keys(), scorer=fuzz.ratio
+            instance_name, class_name_map.keys(), scorer=fuzz.ratio
         )
 
         return class_name_map[match] if score >= threshold else None
-
-    def _fuzzy_match_list(self , class_names: List[str] , instance=None , threshold: int = 80) -> Optional[str]:
-        """
-        Perform fuzzy matching to find the best match for an instance in a list of strings.
-
-        :param class_names: A list of string names to match with.
-        :param instance_name: The instance name.
-        :param threshold: The minimum score required for a match.
-        :return: The best-matching string or None if no good match is found.
-        """
-        if not instance:
-            instance = self.ann_config_name
-
-        if not all(isinstance(name, str) for name in class_names):
-            raise TypeError("Expected class_names to be a list of strings.")
-        if not isinstance(threshold, int):
-            raise TypeError("Expected threshold to be an integer.")
-        
-        class_names_lower = [name.lower() for name in class_names]
-        match, score, _ = process.extractOne(self.ann_config_name.lower(), class_names_lower, scorer=fuzz.ratio)
-
-        return match if score >= threshold else None
 
     def _link_instances(
         self,
@@ -223,7 +187,7 @@ class OntologyInstantiator:
             parent_instance, child_instance, object_property
         )
         self.logger.info(
-            f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
+            f"Linked {self._unhash_and_format_instance_name(parent_instance.name)} and {self._unhash_and_format_instance_name(child_instance.name)} via {object_property.name}."
         )
 
     def _query_llm(
@@ -341,7 +305,7 @@ class OntologyInstantiator:
         try:
 
             # Get the name of the network instance
-            network_instance_name = self._unformat_instance_name(
+            network_instance_name = self._unhash_and_format_instance_name(
                 network_instance.name
             )
 
@@ -353,10 +317,8 @@ class OntologyInstantiator:
             )  # TEMP
 
             objective_function_json_format_prompt = (
-                "Return the task name in JSON format with the key 'answer'.\n\n"
-                "The output should be structured as follows:\n"
-                f"- loss function: the loss function used in the {network_instance_name} network.\n"
-                "- regularizer function: a penalty term added to the loss function to improve a network's generalization ability.\n"
+                f"- loss function: a string representing the type of loss function used in the {network_instance_name} network.\n"
+                "- regularizer function: a string representing the type of regularizer function used in along with the loss function.\n"
                 "- objective function: a string representing whether the loss function function is set to 'minimize' or 'maximize', where minimization reduces prediction errors (e.g., in regression and classification tasks) and maximization enhances desired outcomes (e.g., in reinforcement learning or adversarial training).\n\n"
                 "For example, if the loss function is 'Mean Squared Error', the regularizer function is 'L1', and the objective function is set to 'maximize', the output should look like:\n"
                 "{\n"
@@ -416,7 +378,7 @@ class OntologyInstantiator:
             self._link_instances(
                 network_instance,
                 objective_function_instance,
-                self.ontology.hasObjective,
+                self.ontology.hasObjectiveFunction,
             )
 
             # Get all known loss functions for the loss function
@@ -466,212 +428,177 @@ class OntologyInstantiator:
                 )
 
                 if not best_match_reg_class:
-                    best_match_reg_class = create_subclass(
-                        self.ontology,
-                        regularizer_function_name,
-                        self.ontology.RegularizerFunction,
-                    )
-
-                reg_instance = self._instantiate_and_format_class(
-                    best_match_reg_class, regularizer_function_name
+                    best_match_class = create_subclass(self.ontology.RegularizerFunction, reg_name)
+                
+                reg_instance = self._instantiate_cls(
+                    best_match_class, reg_name
                 )
                 self._link_instances(
-                    cost_function_instance,
-                    reg_instance,
-                    self.ontology.hasRegularizer,
+                    cost_function_instance, reg_instance, self.ontology.hasRegularizer
                 )
+        except Exception as e:
+            self.logger.error(f"Error processing objective functions: {e}")
 
-            self.logger.info(
-                f"Processed objective functions for {network_instance_name}: Loss Function: {loss_function_name}, Regularizer Function: {regularizer_function_name}, Objective Function Type: {objective_function_type}."
+            loss_name = "Unknown Loss Function"
+            cost_function_instance = self._instantiate_cls(
+                self.ontology.CostFunction, "cost function"
             )
-
-        except Exception as e:
-            self.logger.error(
-                f"Error processing objective functions: {e}", exc_info=True
+            loss_function_instance = self._instantiate_cls(
+                self.ontology.LossFunction, loss_name
             )
-    def _process_layers(self, network_instance: Thing) -> None:
+            objective_function_instance = self._instantiate_cls(
+                self.ontology.MinObjectiveFunction, "Unknown Objective Function"
+            )
+            
+            self._link_instances(
+                objective_function_instance,
+                cost_function_instance,
+                self.ontology.hasCost,
+            )
+            self._link_instances(
+                cost_function_instance, loss_function_instance, self.ontology.hasLoss
+            )
+            return
+            
+            
+        # loss_function_prompt = (
+        #     f"Extract only the names of the loss functions used for only the {network_instance_name}'s architecture and return the result in JSON format with the key 'answer'. "
+        #     f"Examples of loss functions include {loss_function_subclass_names}."
+        #     "Follow the examples below.\n\n"
+        #     "Examples:\n"
+        #     "Network: Discriminator\n"
+        #     '{"answer": ["Binary Cross-Entropy Loss"]}\n'
+        #     "Network: Discriminator\n"
+        #     '{"answer": ["Wasserstein Loss", "Hinge Loss"]}\n\n'
+        #     f"Now, for the following network:\nNetwork: {network_instance_name}\n"
+        #     '{"answer": "<Your Answer Here>"}'
+        # )
+        # loss_function_names = self._query_llm("", loss_function_prompt)
+
+        # # If no loss function names are provided, create a default loss function instance and return.
+        # if not loss_function_names:
+        #     self.logger.info("No response for loss function classes.")
+            
+        #     loss_name = "Unknown Loss Function"
+
+        #     cost_function_instance = self._instantiate_cls(
+        #         self.ontology.CostFunction, "cost function"
+        #     )
+        #     loss_function_instance = self._instantiate_cls(
+        #         self.ontology.LossFunction, loss_name
+        #     )
+        #     self._link_instances(
+        #         objective_function_instance,
+        #         cost_function_instance,
+        #         self.ontology.hasCost,
+        #     )
+        #     self._link_instances(
+        #         cost_function_instance, loss_function_instance, self.ontology.hasLoss
+        #     )
+        #     return
+
+        # for loss_name in loss_function_names:
+        #     loss_objective_prompt = (
+        #         f"Is the {loss_name} function designed to minimize or maximize its objective function? "
+        #         "Please respond with either 'minimize' or 'maximize' in JSON format using the key 'answer'.\n\n"
+        #         "**Clarification:**\n"
+        #         "- If the function is set up to minimize (e.g., cross-entropy, MSE), respond with 'minimize'.\n"
+        #         "- If the function is set to maximize a likelihood or score function (e.g., log-likelihood, accuracy), respond with 'maximize'.\n"
+        #         "- Note: Maximizing the log-probability typically corresponds to minimizing the negative log-likelihood.\n\n"
+        #         "Examples:\n"
+        #         "Loss Function: Cross-Entropy Loss\n"
+        #         '{"answer": "minimize"}\n'
+        #         "Loss Function: Custom Score Function\n"
+        #         '{"answer": "maximize"}\n\n'
+        #         f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
+        #         '{"answer": "<Your Answer Here>"}'
+        #     )
+        #     loss_obj_response = self._query_llm("", loss_objective_prompt)
+        #     if not loss_obj_response:
+        #         self.logger.info(
+        #             f"No response for loss function objective for {loss_name}."
+        #         )
+        #         # Assume minimize if no response.
+        #         loss_obj_response = "minimize"
+        #     loss_obj_type = loss_obj_response.lower()
+
+        #     if loss_obj_type == "minimize":
+        #         objective_function_instance = self._instantiate_cls(
+        #             self.ontology.MinObjectiveFunction, "Min Objective Function"
+        #         )
+        #     elif loss_obj_type == "maximize":
+        #         objective_function_instance = self._instantiate_cls(
+        #             self.ontology.MaxObjectiveFunction, f"Max Objective Function"
+        #         )
+        #     else:
+        #         self.logger.info(
+        #             f"Invalid response for loss function objective for {loss_name}."
+        #         )
+        #         continue
+
+        #     cost_function_instance = self._instantiate_cls(
+        #         self.ontology.CostFunction, "cost function"
+        #     )
+        #     loss_function_instance = self._instantiate_cls(
+        #         self.ontology.LossFunction, loss_name
+        #     )
+
+        #     self._link_instances(
+        #         objective_function_instance,
+        #         cost_function_instance,
+        #         self.ontology.hasCost,
+        #     )
+        #     self._link_instances(
+        #         cost_function_instance, loss_function_instance, self.ontology.hasLoss
+        #     )
+
+        #     regularizer_function_prompt = (
+        #         f"Extract only the names of explicit regularizer functions that are mathematically added to the objective function for the {loss_name} loss function. "
+        #         "Exclude implicit regularization techniques like Dropout, Batch Normalization, or any regularization that is not directly part of the loss function. "
+        #         "Return the result in JSON format with the key 'answer'. Follow the examples below.\n\n"
+
+        #         "Clarifications:\n"
+        #         "L2 Regularization is a technique that explicitly adds a penalty term to the loss function, encouraging smaller weights and reducing overfitting. This means that during backpropagation, the gradient update includes an additional term derived from this penalty."
+        #         "Weight Decay is an optimization technique that directly modifies the weight update rule by scaling the weights down after each step, effectively implementing L2 regularization but without explicitly altering the loss function"
+        #         "\n\n"
+
+        #         "Examples:\n"
+        #         "Loss Function: Discriminator Loss\n"
+        #         '{"answer": ["L1 Regularization"]}\n\n'
+        #         "Loss Function: Generator Loss\n"
+        #         '{"answer": ["L2 Regularization", "Elastic Net"]}\n\n'
+        #         "Loss Function: Cross-Entropy Loss\n"
+        #         '{"answer": []}\n\n'
+        #         "Loss Function: Binary Cross-Entropy Loss\n"
+        #         '{"answer": ["L2 Regularization"]}\n\n'
+        #         f"Now, for the following loss function:\nLoss Function: {loss_name}\n"
+        #         '{"answer": "<Your Answer Here>"}'
+        #     )
+        #     regularizer_names = self._query_llm("", regularizer_function_prompt)
+        #     if not regularizer_names:
+        #         self.logger.info(
+        #             f"No response for regularizer function classes for loss function {loss_name}."
+        #         )
+        #         continue
+        #     if regularizer_names == []:
+        #         self.logger.info(
+        #             f"No regularizer functions provided for loss function {loss_name}."
+        #         )
+        #         continue
+
+        #     for reg_name in regularizer_names:
+        #         reg_instance = self._instantiate_cls(
+        #             self.ontology.RegularizerFunction, reg_name
+        #         )
+        #         self._link_instances(
+        #             cost_function_instance, reg_instance, self.ontology.hasRegularizer
+        #         )
+
+    def _process_layers(self, network_instance: str) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
-        try:
-            # fetch info from database
-            onn = OnnxAddition()
-            onn.init_engine()
-            models_list = onn.fetch_models()
-            num_models = len(models_list)
-            prev_model = None
-            subclasses:List[ThingClass] = get_all_subclasses(self.ontology.Layer)
-
-            # fetch ann config name, find relevant model in database
-            best_model_name = self._fuzzy_match_list(models_list)
-            if not best_model_name:
-                warnings.warn(f"Model name {best_model_name} not found in database")
-                pass # throw to josue's script for llm instantiation
-
-            # fetch layer list of relevant model
-            layer_list = onn.fetch_layers(best_model_name)
-
-            for name in layer_list:
-                layer_name , model_type , model_id , model_name = name
-
-                #odd mismatch that is owlready2's fault, not mine
-                if model_type == "Softmax":
-                    model_type = "SoftMax"
-                if model_type == "ReLU": # apprently owl is very case sensitive
-                    model_type = "Relu"
-
-                best_subclass_match = self._fuzzy_match_class(model_type , subclasses , 70)
-
-                if not best_subclass_match: # create subclass if layer type not found in ontology
-                    best_subclass_match = create_subclass(self.ontology , model_type , self.ontology.Layer)
-                    subclasses.append(best_subclass_match) # track subclasses, ensure no duplicates
-                
-                #Debugging
-                if model_id != prev_model:
-                    self.logger.info(f"Processing model {model_id} / {num_models}")
-                    self.logger.info(f"Model name {model_name}, subclass match {best_subclass_match}")
-
-                layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
-                self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
-
-                self.logger.info(f"All layers of {model_name} successfully processed")
-
-        except Exception as e:
-            print("ERROR")
-            self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
-
-    def _extract_network_data(self) -> list:
-        """
-        Extract name & type for each layer found within relevant parsed code
-
-        :return List of dictionaries containing name & type per layer
-        """
-        network_json_path = glob.glob(f"data/{self.ann_config_name}/*.json")
-        extracted_data: list = []
-
-        for file in network_json_path:
-            with open(file , "r") as f:
-                try:
-                    data: dict = json.load(f)
-
-                    if 'network' in data and isinstance(data['network'] , list):
-                        for layer in data['network']:
-                            if 'name' in layer and 'type' in layer and layer['type'] is not None:
-                                extracted_data.append({'name': layer['name'] , 'type': layer['type']})
-                except Exception as e:
-                    self.logger.exception(f"Error extracting JSON network data in {file} {e}" , exc_info=True)
-        
-        return extracted_data
-    
-    def _process_parsed_code(self , network_instance: Thing) -> None:
-        """
-        Process code that has been parsed into specific JSON structure to instantiate
-        an ontology for the network associated with the code
-
-        NOTE: modularize w onnx db parsing
-        - include parameter counts per layer (allow to compute model total)
-        - differentiate between layer & activation function (for known activations)
-        - include prev & next layers in instantiation
-        - insert new models into the onnx database? (still somewhat unsure about this, how to best accomplish it)
-
-        :param network_instance: the network instance
-        :return None
-        """
-        try:
-            network_data: dict = self._extract_network_data()
-            if network_data is None:
-                warnings.warn("No parsed code available for given network")
-
-            layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
-            actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
-            layer_subclasses.extend(actfunc_subclasses)
-
-            for layer in network_data:
-                layer_name = layer['name']
-                layer_type = layer['type']
-
-                best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
-                #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
-
-                if not best_layer_match: # create subclass if layer type not found
-                    best_layer_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
-                    layer_subclasses.append(best_layer_match)
-
-                # deal with activation functions later (how do we know uninstantiated layer is an activation layer?)
-
-                layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
-                self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
-
-            self.logger.info(f"All layers of {self.ann_config_name} processed")
-        except Exception as e:
-            self.logger.error(f"Error processing parsed code {e}" , exc_info=True)
-
-    def _process_layers(self, network_instance: Thing) -> None:
-        """
-        Process the different layers (input, output, activation, noise, and modification) of it's network instance.
-
-        :param network_instance: the network instance
-        :return None
-        """
-        try:
-            # fetch info from database
-            onn = OnnxAddition()
-            onn.init_engine()
-            models_list = onn.fetch_models()
-            num_models = len(models_list)
-            prev_model = None
-            subclasses:List[ThingClass] = get_all_subclasses(self.ontology.Layer)
-
-            #### NOTE
-            # accounts for undetailed ontology wherein activation functions
-            # are treated as layers (prevents duplication)
-            subclasses.extend(get_all_subclasses(self.ontology.ActivationFunction))
-
-            # fetch ann config name, find relevant model in database
-            best_model_name = self._fuzzy_match_list(models_list)
-            if not best_model_name:
-                warnings.warn(f"Model name {best_model_name} not found in database")
-                self._llm_process_layers(network_instance) # for now...
-                # throw to josue's script for llm instantiation?
-
-            # fetch layer list of relevant model
-            layer_list = onn.fetch_layers(best_model_name)
-
-            for name in layer_list:
-                layer_name , layer_type , model_id , model_name = name
-
-                # Trying to be robust to weird db situations
-                if layer_name is None:
-                    continue
-                if layer_name.lower() == self.ann_config_name.lower():
-                    continue
-
-                best_subclass_match = self._fuzzy_match_class(layer_type , subclasses , 70)
-                if not best_subclass_match: # create subclass if layer type not found in ontology
-                    best_subclass_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
-                    subclasses.append(best_subclass_match) # track subclasses, ensure no duplicates
-                
-                # Debugging
-                if model_id != prev_model:
-                    self.logger.info(f"Processing model {model_id} / {num_models}")
-                    self.logger.info(f"Model name {model_name}, subclass match {best_subclass_match}")
-
-                layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
-                self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
-
-            self.logger.info(f"All layers of {model_name} successfully processed")
-
-        except Exception as e:
-            print("ERROR")
-            self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
-
-    def _llm_process_layers(self, network_instance: str) -> None:
-        """
-        Process the different layers (input, output, activation, noise, and modification) of it's network instance.
-        """
-        network_instance_name = self._unformat_instance_name(
-            network_instance.name
-        )
+        network_instance_name = self._unhash_and_format_instance_name(network_instance.name)
 
         # Process Input Layer
         input_layer_prompt = (
@@ -695,7 +622,7 @@ class OntologyInstantiator:
         if not input_units:
             self.logger.info("No response for input layer units.")
         else:
-            input_layer_instance = self._instantiate_and_format_class(
+            input_layer_instance = self._instantiate_cls(
                 self.ontology.InputLayer, "Input Layer"
             )
             input_layer_instance.layer_num_units = [input_units]
@@ -722,7 +649,7 @@ class OntologyInstantiator:
         if not output_units:
             self.logger.info("No response for output layer units.")
         else:
-            output_layer_instance = self._instantiate_and_format_class(
+            output_layer_instance = self._instantiate_cls(
                 self.ontology.OutputLayer, "Output Layer"
             )
             output_layer_instance.layer_num_units = [output_units]
@@ -786,13 +713,11 @@ class OntologyInstantiator:
         else:
             for layer_type, layer_count in activation_layer_counts.items():
                 for i in range(layer_count):
-                    activation_layer_instance = self._instantiate_and_format_class(
+                    activation_layer_instance = self._instantiate_cls(
                         self.ontology.ActivationLayer, f"{layer_type} {i + 1}"
                     )
-                    activation_layer_instance_name = (
-                        self._unformat_instance_name(
-                            activation_layer_instance.name
-                        )
+                    activation_layer_instance_name = self._unhash_and_format_instance_name(
+                        activation_layer_instance.name
                     )
                     self._link_instances(
                         network_instance,
@@ -846,11 +771,9 @@ class OntologyInstantiator:
                     )
                     if activation_function_response:
                         if activation_function_response != "[]":
-                            activation_function_instance = (
-                                self._instantiate_and_format_class(
-                                    self.ontology.ActivationFunction,
-                                    activation_function_response,
-                                )
+                            activation_function_instance = self._instantiate_cls(
+                                self.ontology.ActivationFunction,
+                                activation_function_response,
                             )
                             self._link_instances(
                                 activation_layer_instance,
@@ -909,7 +832,7 @@ class OntologyInstantiator:
                         ) in (
                             noise_layer_pdf.items()
                         ):  # Not sure if this is the correct way to iterate over the dictionary.
-                            noise_layer_instance = self._instantiate_and_format_class(
+                            noise_layer_instance = self._instantiate_cls(
                                 self.ontology.NoiseLayer, noise_name
                             )
                             self._link_instances(
@@ -1000,7 +923,7 @@ class OntologyInstantiator:
                 for layer_type, layer_count in modification_layer_counts.items():
                     for i in range(layer_count):
                         if dropout_match and layer_type == dropout_match:
-                            dropout_layer_instance = self._instantiate_and_format_class(
+                            dropout_layer_instance = self._instantiate_cls(
                                 self.ontology.DropoutLayer, f"{layer_type} {i + 1}"
                             )
                             if dropout_layer_rate:
@@ -1013,11 +936,8 @@ class OntologyInstantiator:
                                 self.ontology.hasLayer,
                             )
                         else:
-                            modification_layer_instance = (
-                                self._instantiate_and_format_class(
-                                    self.ontology.ModificationLayer,
-                                    f"{layer_type} {i + 1}",
-                                )
+                            modification_layer_instance = self._instantiate_cls(
+                                self.ontology.ModificationLayer, f"{layer_type} {i + 1}"
                             )
                             self._link_instances(
                                 network_instance,
@@ -1040,7 +960,7 @@ class OntologyInstantiator:
             # TODO: Assumes only ones task per network, may need to change to multiple tasks.
 
             # Get the name of the network instance
-            network_instance_name = self._unformat_instance_name(
+            network_instance_name = self._unhash_and_format_instance_name(
                 network_instance.name
             )
 
@@ -1056,21 +976,27 @@ class OntologyInstantiator:
             task_characterization_json_format_prompt = (
                 "The primary task is the most important or central objective of the network. "
                 "Return the task name in JSON format with the key 'answer'.\n\n"
-                # "Types of tasks include:\n"
-                "Types of tasks include, choose the task that best fits:\n"
-                "- Adversarial: The task of generating adversarial examples or countering another network’s predictions, often used in adversarial training or GANs. \n"
-                "- Self-Supervised Classification: The task of learning useful representations without explicit labels, often using contrastive or predictive learning techniques. \n"
-                "- Semi-Supervised Classification: A classification task where the network is trained on a mix of labeled and unlabeled data. \n"
-                "- Supervised Classification: The task of assigning input data to predefined categories using fully labeled data. \n"
-                "- Unsupervised Classification (Clustering): The task of grouping similar data points into clusters without predefined labels. \n"
-                "- Discrimination: The task of distinguishing between different types of data distributions, often used in adversarial training. \n"
-                "- Generation: The task of producing new data that resembles a given distribution. \n"
-                # "- Reconstruction: The task of reconstructing input data, often used in denoising or autoencoders. \n"
-                "Clustering: The task of grouping similar data points into clusters without predefined labels. \n"
-                "- Regression: The task of predicting continuous values rather than categorical labels. \n"
+                # "Examples of types of tasks include:\n"
+                # "- **Adversarial**: The task of generating adversarial examples or countering another network’s predictions, often used in adversarial training or GANs. \n"
+                # "  Example: A model that generates images to fool a classifier.\n\n"
+                # "- **Self-Supervised Classification**: The task of learning useful representations without explicit labels, often using contrastive or predictive learning techniques. \n"
+                # "  Example: A network pre-trained using contrastive learning and later fine-tuned for classification.\n\n"
+                # "- **Semi-Supervised Classification**: A classification task where the network is trained on a mix of labeled and unlabeled data. \n"
+                # "  Example: A model trained with a small set of labeled images and a large set of unlabeled ones for better generalization.\n\n"
+                # "- **Supervised Classification**: The task of assigning input data to predefined categories using fully labeled data. \n"
+                # "  Example: A CNN trained on labeled medical images to classify diseases.\n\n"
+                # "- **Unsupervised Classification (Clustering)**: The task of grouping similar data points into clusters without predefined labels. \n"
+                # "  Example: A model that clusters news articles into topics based on similarity.\n\n"
+                # "- **Discrimination**: The task of distinguishing between different types of data distributions, often used in adversarial training. \n"
+                # "  Example: A discriminator in a GAN that differentiates between real and generated images.\n\n"
+                # "- **Generation**: The task of producing new data that resembles a given distribution. \n"
+                # "  Example: A generative model that creates realistic human faces from random noise.\n\n"
+                # "- **Reconstruction**: The task of reconstructing input data, often used in denoising or autoencoders. \n"
+                # "  Example: A model that removes noise from images to restore the original content.\n\n"
+                # "- **Regression**: The task of predicting continuous values rather than categorical labels. \n"
+                # "  Example: A neural network that predicts house prices based on features like size and location.\n\n"
                 # "If the network's primary task does not fit any of the above categories, provide a conciece description of the task instead using at maximum a few words.\n\n"
-                # "For example, if the network is designed to classify images of handwritten digits, the task would be 'Supervised Classification'.\n\n"
-                "Expected JSON Output:\n"
+                "For example, if the network is designed to classify images of handwritten digits, the task would be 'Supervised Classification'.\n\n"
                 "{\n"
                     '"answer": {\n'
                         '"task_type": "Supervised Classification"\n'
@@ -1107,6 +1033,7 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"Error processing task characerization for network instance '{network_instance_name}': {e}",exc_info=True)
 
+
     def _process_network(self, ann_config_instance: Thing) -> None:
         """
         Process the network class and it's components.
@@ -1140,16 +1067,15 @@ class OntologyInstantiator:
                 self._link_instances(
                     ann_config_instance, network_instance, self.ontology.hasNetwork
                 )
-                self._process_layers(network_instance) # May be processed by onnx
-                #self._process_objective_functions(network_instance)
-                #self._process_task_characterization(network_instance)
+                # self._process_layers(network_instance) # May be processed by onnx
+                self._process_objective_functions(network_instance)
+                self._process_task_characterization(network_instance)
         except Exception as e:
             self.logger.error(
                 f"Error processing the '{ann_config_instance}' networks: {e}",
                 exc_info=True,
             )
             raise e
-            
 
     def __addclasses(self) -> None:
         """Adds new predefined classes to the ontology."""
@@ -1165,267 +1091,6 @@ class OntologyInstantiator:
                 self.logger.error(
                     f"Error creating new class {name}: {e}", exc_info=True
                 )
-
-    def _process_dataset(self, dataset_pipe_instance: Thing) -> None:
-        """
-        Process the dataset class and it's components.
-        """
-        try:
-            if not dataset_pipe_instance:
-                self.logger.error(
-                    "No DatasetPipe instance provided in _process_dataset."
-                )
-                raise ValueError("No DatasetPipe instance in the ontology.")
-
-            self.logger.info("Starting to process dataset.")
-            dataset_instance = self._instantiate_and_format_class(
-                self.ontology.Dataset, "Dataset"
-            )
-            self._link_instances(
-                dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
-            )
-
-            # Define dataset properties and datatype
-
-            dataset_prompt = "Based on the provided paper, extract and describe the dataset details used.\n"
-
-            dataset_json_format_prompt = (
-                "Your answer should include the following information:\n"
-                "- data_description: A brief description of the dataset, including what data it contains, its source, and the number of examples. (Required)\n"
-                "- data_doi: The DOI of the dataset, if available. (Optional)\n"
-                "- data_location: The physical or digital location of the dataset. (Optional)\n"
-                '- data_sample_dimensionality: The dimensions or shape of a single data sample (e.g., "28x28" for MNIST images). (Optional)\n'
-                "- data_sample_features: A description of the features or attributes present in each data sample. (Optional)\n"
-                "- data_samples: The total number of data samples in the dataset. (Optional)\n"
-                "- is_transient_dataset: A boolean indicating whether the dataset is transient (temporary) or persistent. (Optional)\n"
-                '- dataType: An object with a key "subclass" representing the type of data present in the dataset. '
-                'The subclass must be one of the following: "Image", "MultiDimensionalCube", "Text", or "Video".\n\n'
-                'Return your answer strictly in JSON format with a key "answer". For example:\n'
-                "{\n"
-                '  "answer": {\n'
-                '    "data_description": "The MNIST database of handwritten digits, containing 60,000 training and 10,000 test examples.",\n'
-                '    "data_doi": "10.1234/mnist",\n'
-                '    "data_location": "http://yann.lecun.com/exdb/mnist/",\n'
-                '    "data_sample_dimensionality": "28x28",\n'
-                '    "data_sample_features": "Grayscale pixel values",\n'
-                '    "data_samples": 70000,\n'
-                '    "is_transient_dataset": false,\n'
-                '    "dataType": {\n'
-                '      "subclass": "Image"\n'
-                "    }\n"
-                "  }\n"
-                "}\n"
-                "If any optional field is not available, you may omit it or return None."
-            )
-
-            dataset_response = self._query_llm(
-                "",
-                dataset_prompt,
-                dataset_json_format_prompt,
-                pydantic_type_schema=DatasetResponse,
-            )
-            if not dataset_response:
-                self.logger.warning("No response received for dataset details.")
-                return
-
-            dataset_details = dataset_response.answer
-
-            dataset_instance.data_description = [dataset_details.data_description]
-            if dataset_details.data_doi is not None:
-                dataset_instance.data_doi = [dataset_details.data_doi]
-            if dataset_details.data_location is not None:
-                dataset_instance.data_location = [dataset_details.data_location]
-            if dataset_details.data_sample_dimensionality is not None:
-                dataset_instance.data_sample_dimensionality = [
-                    dataset_details.data_sample_dimensionality
-                ]
-            if dataset_details.data_sample_features is not None:
-                dataset_instance.data_sample_features = [
-                    dataset_details.data_sample_features
-                ]
-            if dataset_details.data_samples is not None:
-                dataset_instance.data_samples = [dataset_details.data_samples]
-            if dataset_details.is_transient_dataset is not None:
-                dataset_instance.is_transient_dataset = [
-                    dataset_details.is_transient_dataset
-                ]
-
-            # Process Datatype
-            best_data_type_match = self._fuzzy_match_class(
-                dataset_details.dataType.subclass,
-                get_all_subclasses(self.ontology.DataType),
-            )
-            if best_data_type_match:
-                self.logger.info(f"Best Data Type Match: {best_data_type_match}")
-                data_type_instance = self._instantiate_and_format_class(
-                    best_data_type_match, "Data Type"
-                )
-                self._link_instances(
-                    dataset_instance, data_type_instance, self.ontology.hasDataType
-                )
-            else:
-                self.logger.info(
-                    f"Unknown Data Type: {dataset_details.dataType.subclass}"
-                )
-
-            self.logger.info("Finished processing dataset.")
-
-            # print(f"Dataset Details: {dataset_details}")
-            # print(f"Dataset Details Data Description: {dataset_details.data_description}")
-            # print(f"Dataset Details Data DOI: {dataset_details.data_doi}")
-            # print(f"Dataset Details Data Location: {dataset_details.data_location}")
-            # print(f"Dataset Details Data Sample Dimensionality: {dataset_details.data_sample_dimensionality}")
-            # print(f"Dataset Details Data Sample Features: {dataset_details.data_sample_features}")
-            # print(f"Dataset Details Data Samples: {dataset_details.data_samples}")
-            # print(f"Dataset Details Is Transient Dataset: {dataset_details.is_transient_dataset}")
-            # print(f"Dataset Details Data Type: {dataset_details.dataType.subclass}")
-
-            # print(f"Dataset Instance: {dataset_instance}")
-            # print(f"Dataset Instance Data Description: {dataset_instance.data_description}")
-            # print(f"Dataset Instance Data DOI: {dataset_instance.data_doi}")
-            # print(f"Dataset Instance Data Location: {dataset_instance.data_location}")
-            # print(f"Dataset Instance Data Sample Dimensionality: {dataset_instance.data_sample_dimensionality}")
-            # print(f"Dataset Instance Data Sample Features: {dataset_instance.data_sample_features}")
-            # print(f"Dataset Instance Data Samples: {dataset_instance.data_samples}")
-            # print(f"Dataset Instance Is Transient Dataset: {dataset_instance.is_transient_dataset}")
-            # print(f"Dataset Instance Data Type: {dataset_instance.hasDataType}")
-        except Exception as e:
-            self.logger.error(f"Error in _process_dataset: {e}", exc_info=True)
-            raise e
-
-    def _process_training_strategy(self, ann_config_instance: Thing) -> None:
-        """
-        Process training strategy for an Ann Configuration instance.
-        """
-        try:
-            if not ann_config_instance:
-                self.logger.error(
-                    "No ANN Configuration instance provided in _process_training_strategy."
-                )
-                raise ValueError("No ANN Configuration instance in the ontology.")
-
-            if hasattr(self.ontology, "TrainingStrategy"):
-                # Instantiate the training strategy instance with name of the ANN Configuration instance _training-strategy
-                training_strategy_instance = self._instantiate_and_format_class(
-                    self.ontology.TrainingStrategy, "Training Strategy"
-                )
-                self._link_instances(
-                    ann_config_instance,
-                    training_strategy_instance,
-                    self.ontology.hasPrimaryTrainingSession,
-                )
-
-                # Instantiate primary training session
-                training_session_instance = self._instantiate_and_format_class(
-                    self.ontology.TrainingSession, "Training Session"
-                )
-                self._link_instances(
-                    training_strategy_instance,
-                    training_session_instance,
-                    self.ontology.hasPrimaryTrainingSession,
-                )
-
-                # Instantiate TrainingStep subclass: 'NetworkSpecific' with subclass 'Training Single'
-                training_single_instance = self._instantiate_and_format_class(
-                    self.ontology.TrainingSingle, "Training Single"
-                )
-
-                # network_specific_instance = self._instantiate_and_format_class(self.ontology.NetworkSpecific, "Network Specific")
-                self._link_instances(
-                    training_session_instance,
-                    training_single_instance,
-                    self.ontology.hasPrimaryTrainingStep,
-                )
-
-                training_single_prompt = "Based on the provided context, extract the training details used in the network-specific training step."
-                # JSON format instructions: How the JSON output should be structured.
-                training_single_json_format_prompt = (
-                    "Return a JSON object with a key 'answer'. The value should be an object with the following keys:\n"
-                    "- batch_size: an integer representing the number of examples per iteration.\n"
-                    "- learning_rate_decay: a float representing the rate at which the learning rate decays.\n"
-                    "- number_of_epochs: an integer representing the total number of epochs.\n"
-                    "- learning_rate_decay_epochs (optional): an integer representing the epoch at which decay is applied, if available.\n\n"
-                    "For example, if the training step uses a batch size of 32, a learning rate decay of 0.01, "
-                    "number of epochs 10, and a learning_rate_decay_epochs of 5, the output should look like:\n"
-                    "{\n"
-                    '  "answer": {\n'
-                    '    "batch_size": 32,\n'
-                    '    "learning_rate_decay": 0.01,\n'
-                    '    "number_of_epochs": 10,\n'
-                    '    "learning_rate_decay_epochs": 5\n'
-                    "  }\n"
-                    "}\n"
-                    "If the learning_rate_decay_epochs value is not available, you may return None.\n\n"
-                )
-
-                # Training Single Response should be in pydantic format
-                training_single_response = self._query_llm(
-                    "",
-                    training_single_prompt,
-                    training_single_json_format_prompt,
-                    pydantic_type_schema=TrainingSingleResponse,
-                )
-                if not training_single_response:
-                    self.logger.warning("No response received for training details.")
-                    return
-
-                training_single_details = training_single_response.answer
-                training_single_instance.batch_size = [
-                    training_single_details.batch_size
-                ]
-                training_single_instance.learning_rate_decay = [
-                    training_single_details.learning_rate_decay
-                ]
-                training_single_instance.number_of_epochs = [
-                    training_single_details.number_of_epochs
-                ]
-                # Learning rate is optional
-                if training_single_details.learning_rate_decay_epochs is not None:
-                    training_single_instance.learning_rate_decay_epochs = [
-                        training_single_details.learning_rate_decay_epochs
-                    ]
-
-                # print(f"Training Single Details: {training_single_details}")
-                # print(f"Training Single Instance: {training_single_instance}")
-                # print(f"Training Single Instance Batch Size: {training_single_instance.batch_size}")
-                # print(f"Training Single Instance Learning Rate Decay: {training_single_instance.learning_rate_decay}")
-                # print(f"Training Single Instance Number of Epochs: {training_single_instance.number_of_epochs}")
-                # print(f"Training Single Instance Learning Rate Decay Epochs: {training_single_instance.learning_rate_decay_epochs}")
-
-                # Process TrainingSingle connected classes:
-
-                # Instantiate DatasetPipe for primary training session
-                dataset_pipe_instance = self._instantiate_and_format_class(
-                    self.ontology.DatasetPipe, "Dataset Pipe"
-                )
-                self._link_instances(
-                    training_single_instance,
-                    dataset_pipe_instance,
-                    self.ontology.trainingSingleHasIOPipe,
-                )
-
-                # Instantiate dataset for dataset pipe
-                dataset_instance = self._instantiate_and_format_class(
-                    self.ontology.Dataset, "Dataset"
-                )
-                self._link_instances(
-                    dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
-                )
-
-                # Process dataset
-                self._process_dataset(dataset_pipe_instance)
-                self.logger.info("Finished processing training strategy.")
-            else:
-                self.logger.error("TrainingStrategy class not found in the ontology.")
-                raise AttributeError(
-                    "TrainingStrategy class not found in the ontology."
-                )
-
-        except:
-            self.logger.error(
-                f"Error in _process_training_strategy: {e}", exc_info=True
-            )
-            raise e
 
     def save_ontology(self) -> None:
         """
@@ -1449,7 +1114,7 @@ class OntologyInstantiator:
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
                 for count, j in enumerate(self.list_json_doc_paths):
-                    init_engine(self.ann_config_name, j, self.logger)
+                    init_engine(self.ann_config_name, j)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
 
@@ -1459,11 +1124,10 @@ class OntologyInstantiator:
                 )
 
                 # Process the network class and it's components.
-                #self._process_network(ann_config_instance)
-                self._process_parsed_code(ann_config_instance) # network name?
+                self._process_network(ann_config_instance)
 
                 # Process TrainingStrategy and it's components.
-                self._process_training_strategy(ann_config_instance)
+                # self._process_training_strategy(ann_config_instance)
 
                 # Log time taken to instantiate the ANN ontology instance.
                 minutes, seconds = divmod(time.time() - start_time, 60)
@@ -1482,28 +1146,31 @@ class OntologyInstantiator:
             )
             raise e
 
-def test_run_layers():
-    pass
-
 
 # For standalone testing
 if __name__ == "__main__":
+    import glob
 
-    ontology_path = f"{C.ONTOLOGY.FILENAME}"
-    output_ontology_filePath = "data/owl/annett-o-test.owl"
+    ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
+    ontology = get_ontology(ontology_path).load()
 
-    time_start = time.time()
+    for model_name in ["alexnet", "resnet", "vgg16", "gan"]:
+        with ontology:
+            try:
+                instantiator = OntologyInstantiator(
+                    ontology, f"data/{model_name}/doc_{model_name}.json", model_name
+                )
+                instantiator.run()
+            except Exception as e:
+                logging.error(f"Error instantiating the {model_name} ontology: {e}")
+                continue
 
-    from utils.annetto_utils import load_annetto_ontology
+    # Move saving outside the loop to ensure all networks are stored in the final ontology
+    new_file_path = "tests/papers_rag/annett-o-test.owl"  # Assume test file for now.
+    ontology.save(file=new_file_path, format="rdfxml")
+    logging.info(f"Ontology saved to {new_file_path}")
 
-    for model_name in [
-        "alexnet", # id = 191
-        # "resnet", # id = 198
-        # "vgg16", # id = 206
-        #"gan", # Assume we can model name from user or something
-    ]:
-        try:
-            instantiate_annetto(model_name, f"data/{model_name}", load_annetto_ontology("base"), load_annetto_ontology("test"))
-        except Exception as e:
-            print(f"Error instantiating the {model_name} ontology in __name__: {e}")
-            continue
+    elapsed_time = time.time() - start_time
+    minutes, seconds = divmod(elapsed_time, 60)
+    logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
+    logging.info("Ontology instantiation completed.")

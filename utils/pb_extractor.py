@@ -5,7 +5,8 @@ class PBExtractor:
     def extract_compute_graph(pb_file: str , output_json: str):
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
-        NOTE: needs work, kinda just threw this together, do NOT try to instantiate
+        NOTE: useless layer types: DecodeJPEG, Cast, ExpandDims, ResizeBilinear, sub (tensor subtraction),
+        mul (* of 2 tensors), CheckNumerics, identity, 
 
         :param pb_file: input tensorflow file
         :param output_json: output path for parsed JSON
@@ -25,23 +26,27 @@ class PBExtractor:
                 continue  
 
             node_info: dict = {
-                "name": "",
-                "type": node.op,
+                "name": node.op,
+                "type": None, # for flagging in instantation (layers without a type)
                 "target": node.name,
                 "input": list(node.input),
-                "parameters": {} # for later (if needed)
+                "parameters": {} # for later (very much needed)
             }
 
-            # like Chase's PyTorch-ONNX mapping, but for tensorflow (INCOMPLETE)
-            tf_to_onnx_type_map: dict = {
+            # like Chase's PyTorch-ONNX mapping, but for tensorflow to pytorch (INCOMPLETE)
+            tf_to_pytorch_type_map: dict = {
                 "Conv2D": "Conv2d",
                 "Relu": "ReLU",
                 "MaxPool": "MaxPool2d",
                 "MatMul": "Linear",
                 "Dense": "Linear",
-                "BiasAdd": "Bias"
+                "BiasAdd": "Bias",
+                "BatchNormWithGlobalNormalization": "batch_norm",
+                "AvgPool": "AveragePooling2D",
+                "Concat": "cat",
+                "reduce_prod": "prod"
             }
-            node_info["name"] = tf_to_onnx_type_map.get(node.op, node.op)
+            node_info["type"] = tf_to_pytorch_type_map.get(node.op, node.op)
             minimal_graph.append(node_info)
 
         with open(output_json, "w") as json_file:

@@ -5,7 +5,9 @@
 import ast
 import os
 
-# so basically this is useless
+"""
+DEPRECATED
+"""
 
 class CNN_parser(ast.NodeVisitor):
     def __init__(self):

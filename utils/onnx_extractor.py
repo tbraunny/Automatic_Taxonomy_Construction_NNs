@@ -187,7 +187,6 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
 
 class ONNXProgram:
     def extract_properties(self,filepath,savePath='./outdata/',model_name='',parameters=False):
-        
         #files = glob.glob(filepath+'*.onnx',recursive=True)
         out = extract_compute_graph_taxonomy_style(filepath,savePath=savePath,parameters=parameters)
         with open("data/onnx_testing/resnet50_test.json" , "w") as f:
@@ -251,4 +250,4 @@ class ONNXProgram:
 if __name__ == '__main__':
     #extract_properties('adv_inception_v3_Opset16.onnx',model_type="cnn",model_name="inception")
     #fire.Fire(ONNXProgram)
-    ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx")
+    ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx" , parameters=True)

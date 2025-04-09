@@ -126,7 +126,7 @@ def write_list_to_txt(documents: list, output_path: str) -> None:
         for doc in documents:
             f.write(doc.page_content + "\n---\n")
 
-def extract_filter_pdf_to_json(pdf_path: str, output_path: str, debug: bool = False) -> None:
+def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
     """
     Loads a PDF, extracts and filters its text into sections, and saves the results as a JSON file.
     
@@ -136,6 +136,8 @@ def extract_filter_pdf_to_json(pdf_path: str, output_path: str, debug: bool = Fa
     logger.info(f"Loading PDF from: {pdf_path}")
     loader = DoclingPDFLoader(file_path=pdf_path)
     docs = loader.load()
+
+    output_path = pdf_path.replace(".pdf" , "_doc.json")
     
     logger.info("Filtering sections from extracted documents...")
     filtered_docs = filter_sections_from_documents(docs, EXCLUDED_SECTIONS)
@@ -152,5 +154,6 @@ if __name__ == "__main__":
     parser.add_argument("pdf_path", type=str, help="Path to the input PDF file.")
     parser.add_argument("output_path", type=str, help="Path to save the output JSON file.")
     args = parser.parse_args()
+    
+    extract_filter_pdf_to_json(args.pdf_path)
 
-    extract_filter_pdf_to_json(args.pdf_path, args.output_path)

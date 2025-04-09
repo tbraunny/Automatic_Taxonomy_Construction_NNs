@@ -5,13 +5,18 @@ from graphviz import Digraph
 import json 
 from torchvision import models as tmodels
 
+"""
+NOTE: switched ordering of JSON for consistency & added None to type (easier checking in instantiate annetto)
+"""
+
 def extract_graph(model):
     traced = symbolic_trace(model)
     computeGraph = {"network": []}
     for node in traced.graph.nodes:
         node_info = {
-            "op": node.op,
             "name": node.name,
+            "type": None,
+            "op": node.op,
             "target": str(node.target),
             "input": [str(arg) for arg in node.args],  # Convert inputs to strings for JSON serialization
             "parameters": {}  # Initialize empty parameters
