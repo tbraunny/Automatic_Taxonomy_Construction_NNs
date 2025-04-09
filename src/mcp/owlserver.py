@@ -8,6 +8,7 @@ from owlready2 import *
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_graph
 from rdflib import Graph, URIRef
 
+import time
 
 #from ... import *
 #from taxonomy import llm_service,criteria,create_taxonomy
@@ -143,16 +144,19 @@ def get_classes() -> str:
     return ",".join(classes) if classes else "No classes found."
 
 @mcp.tool()
-def create_taxonomy(query: str) -> str():
+def create_taxonomy_tool(query: str) -> str():
     """
     Takes in a sentence from the user that the llm clarifies and underneath a faceted taxonomy s returned
     """
+    #try:
     oc = llm_service.llm_create_taxonomy(query)
     taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
-
     format='json'
-
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+        #output = 'this is a test'
+    #except Exception as e: 
+    #    return f"Error creating taxonomy: {e}"
+        
     return str(output)
 
 @mcp.resource("ontology://info")
@@ -170,6 +174,11 @@ def app_name() -> str:
     return "OWL Server"
 
 if __name__ == "__main__":
+    start_time = time.time()
+    #print('testing')
+    #print(create_taxonomy_tool('create a taxonomy of neural network layers'))
+    #print('after')
+    #print(time.time() - start_time)
     # Run the MCP server.
     mcp.run()
 

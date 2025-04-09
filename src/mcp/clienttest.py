@@ -101,7 +101,7 @@ class Server:
             read, write = stdio_transport
             session = await self.exit_stack.enter_async_context(
                 # read_timeout_seconds with timedelta of 5 minutes
-                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=5))
+                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=10))
             )
             await session.initialize()
             self.session = session
@@ -254,6 +254,7 @@ class LLMClient:
         }
         model1 = "neuralexpert:latest"
         model2 = "qwq:32b"
+        model3 = 'deepseek-r1:32b-qwen-distill-q4_K_M'
         payload = {
             "messages": messages,
             "model": model1,
@@ -266,7 +267,7 @@ class LLMClient:
             "request_timeout": 120
         }
 
-        response = chat(model="qwq:32b",options={'temperature':.2, 'max_tokens':20000,'top_p':1,'repeat_penalty':1,'stream':False},messages=messages)
+        response = chat(model=model3,options={'temperature':.2, 'max_tokens':2048,'top_p':1,'repeat_penalty':1,'stream':False},messages=messages)
         output = response.message.content
         output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
         return output

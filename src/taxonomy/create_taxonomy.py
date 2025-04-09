@@ -1,20 +1,31 @@
 from utils.owl_utils import *
 from utils.annetto_utils import make_thing_classes_readable
 from utils.constants import Constants as C
+import os
+import sys
+import re
 from typing import Optional
-from .criteria import *
+
 from pathlib import Path
 import logging
 import json
 
+
 import networkx as nx
-from .visualizeutils import visualizeTaxonomy
+
 
 from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
-from .clustering import kmeans_clustering
-import re
 
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+
+from src.taxonomy.visualizeutils import visualizeTaxonomy
+from src.taxonomy.clustering import kmeans_clustering
+from src.taxonomy.criteria import *
 
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
