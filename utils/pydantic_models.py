@@ -93,12 +93,11 @@ class TrainingOptimizerResponse(LLMResponse[TrainingOptimizerDetails]):
 #     pass
 
 
-class DataTypeDetails(BaseModel):
-    subclass: str = Field(
-        ...,
-        description="The type of data present in the dataset. Suggested values: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
-    )
-
+# class DataTypeDetails(BaseModel):
+#     subclass: str = Field(
+#         ...,
+#         description="The type of data present in the dataset. Suggested values: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
+#     )
 
 class DatasetDetails(BaseModel):
     data_description: str = Field(
@@ -124,7 +123,6 @@ class DatasetDetails(BaseModel):
         ...,
         description="The type of data present in the dataset. Suggested types: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
     )
-
 
 # Allows multiple datasets in the response
 class MultiDatasetResponse(BaseModel):
@@ -208,8 +206,6 @@ class TaskCharacterizationDetails(BaseModel):
                 "Regression"] = Field(
         ..., description="Details about the training task type used."
     )
-
-
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
     pass

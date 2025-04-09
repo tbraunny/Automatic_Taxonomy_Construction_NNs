@@ -32,7 +32,6 @@ from utils.annetto_utils import int_to_ordinal, load_annetto_ontology
 from utils.util import get_sanitized_attr
 
 # from utils.onnx_db import OnnxAddition
-from src.instantiate_annetto.prompt_builder import PromptBuilder
 
 from utils.llm_service_simple_test import init_engine, query_llm
 from utils.pydantic_models import *
@@ -110,7 +109,6 @@ class OntologyInstantiator:
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
-        self.prompt_builder = PromptBuilder()
 
     def _generate_hash(self, str: str) -> str:
         """
@@ -266,6 +264,20 @@ class OntologyInstantiator:
         self.logger.info(
             f"Linked '{self._unformat_instance_name(instance.name)}' with data property '{data_property.name}'."
         )
+    def _add_instance_definition_data_property(self, instance: Thing, definition: str) -> None:
+
+        try:
+            definition_property = create_class_data_property(
+                self.ontology, "definition", type(instance), str, False
+            )
+        except Exception as e:
+            self.logger.warning(
+                f"Error creating definition data property: {e}", exc_info=True
+            )
+        link_data_property_to_instance(instance, definition_property, definition)
+        self.logger.info(
+            f"Linked '{self._unformat_instance_name(instance.name)}' with definition data property."
+        )
 
     def build_prompt(
         self,
@@ -390,8 +402,6 @@ class OntologyInstantiator:
         
         # loss_name = str(response.loss.name)
         # loss_def = str(response.loss.definition)
-        print(f"Loss Function: {loss_name}, Definition: {loss_def}")
-        print(f"Regularizer: {reg_name}, Definition: {reg_def}")
 
         # Objective function handling
         if obj_type:
@@ -424,6 +434,10 @@ class OntologyInstantiator:
             loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name)
             self._link_instances(obj_instance, cost_instance, self.ontology.hasCost)
             self._link_instances(cost_instance, loss_instance, self.ontology.hasLoss)
+        
+            # Add definition to loss instance
+            if loss_def:
+                self._add_instance_definition_data_property(loss_instance, loss_def)
 
         # Regularizer handling
         if reg_name:
@@ -436,11 +450,8 @@ class OntologyInstantiator:
             self._link_instances(
                 cost_instance, reg_instance, self.ontology.hasRegularizer
             )
-        if reg_def:
-            reg_instance.hasDefinition = [reg_def]
-            self._link_data_property(
-                reg_instance, self.ontology.hasDefinition, reg_def
-            )
+            if reg_def:
+                self._add_instance_definition_data_property(reg_instance, reg_def)
 
         self.logger.info(
             f"Processed objective functions for {network_name}: Loss: {loss_name}, Regularizer: {reg_name}, Objective: {obj_type}."
@@ -986,8 +997,8 @@ class OntologyInstantiator:
 
             instructions = (
                 "Return the response in JSON format with the key 'answer'.\n"
-                "The 'task_type' field should be a list of objects, each with a 'name' (e.g., 'Generation') "
-                "and an optional 'definition' (a succinct explanation of the term).\n"
+                # "The 'task_type' field should be a list of objects, each with a 'name' (e.g., 'Generation') "
+                # "and an optional 'definition' (a succinct explanation of the term).\n"
                 "The task type should reflect the machine learning training paradigm, not the specific application.\n"
             )
 
@@ -1053,12 +1064,11 @@ class OntologyInstantiator:
                 )
                 return
             
-            task_type_name = get_sanitized_attr(response, "answer.task_type.name")
+            task_type_name = get_sanitized_attr(response, "answer.task_type")
             task_type_def = get_sanitized_attr(response, "answer.task_type.definition")
-
+            
             # task_type_name = str(response.answer.task_type.name)
             # task_type_def = str(response.answer.task_type.definition)
-            print(f"Task Type Name: {task_type_name}, Task Type Definition: {task_type_def}")
 
             if not task_type_name:
                 self.logger.warning(
@@ -1089,6 +1099,12 @@ class OntologyInstantiator:
             self._link_instances(
                 network_instance, task_type_instance, self.ontology.hasTaskType
             )
+
+            # Task definition handling
+            if task_type_def:
+                self._add_instance_definition_data_property(
+                    task_type_instance, task_type_def
+                )
 
             self.logger.info(
                 f"Processed task characterization for {network_name}: Task Type: {task_type_name}."
@@ -1263,18 +1279,9 @@ class OntologyInstantiator:
             if not training_step_instance:
                 self.logger.error("No TrainingStepInstance instance provided when processing dataset.", exc_info=True)
                 raise ValueError("No TrainingStepInstance instance provided when processing dataset.")
-            
-            # Link Training Single DataPipe
-            dataset_pipe_instance = self._instantiate_and_format_class(
-                self.ontology.DatasetPipe, "Dataset Pipe"
-            )
-            self._link_instances(
-                training_step_instance,
-                dataset_pipe_instance,
-                self.ontology.trainingSingleHasIOPipe,
-            )
 
             task = "Extract and describe all datasets used in the paper."
+
 
             extra_instructions = (
                 "Each dataset must be described as an object with the following keys:\n\n"
@@ -1331,12 +1338,33 @@ class OntologyInstantiator:
             if not dataset_response:
                 self.logger.warning("No dataset response received.")
                 return
+            
+            counter = 0
 
             for dataset in dataset_response.answer:
+                counter += 1
                 self.logger.info("Starting dataset processing.")
-                dataset_instance = self._instantiate_and_format_class(
-                    self.ontology.Dataset, "Dataset"
+
+                # Link Training Single to new DataPipe
+                dataset_pipe_instance = self._instantiate_and_format_class(
+                    self.ontology.DatasetPipe, f"Dataset Pipe {counter}"
                 )
+                self._link_instances(
+                    training_step_instance,
+                    dataset_pipe_instance,
+                    self.ontology.trainingSingleHasIOPipe,
+                )
+
+                # Check if dataset name exists, otherwise give a placeholder name
+                if dataset.dataset_name:
+                    dataset_instance = self._instantiate_and_format_class(
+                        self.ontology.Dataset, dataset.dataset_name
+                    )
+                else:
+                    dataset_instance = self._instantiate_and_format_class(
+                        self.ontology.Dataset, f"Unknown Dataset {counter}"
+                    )
+
                 self._link_instances(
                     dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet
                 )
@@ -1353,13 +1381,7 @@ class OntologyInstantiator:
                         self.ontology.data_doi,
                         dataset.data_doi,
                     )
-                if dataset.dataset_name:
-                    print(f"Dataset name: {dataset.dataset_name}, type: {type(dataset.dataset_name)}")
-                    self._link_data_property( # TODO: may need to create datasetname dataproperty
-                        dataset_instance,
-                        self.ontology.dataset_name,
-                        dataset.dataset_name,
-                    )
+
                 if dataset.data_sample_dimensionality:
                     self._link_data_property(dataset_instance, self.ontology.data_sample_dimensionality, dataset.data_sample_dimensionality)
                 if dataset.data_samples:
@@ -1826,12 +1848,6 @@ class OntologyInstantiator:
     
     def __addclasses(self) -> None:
         """Adds new predefined classes to the ontology."""
-
-        # Dataset name DataProperty
-        create_class_data_property(
-            self.ontology, "dataset_name", self.ontology.Dataset, str, False
-        )
-        ###
 
         # Add hasWeightInitialization
         create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)

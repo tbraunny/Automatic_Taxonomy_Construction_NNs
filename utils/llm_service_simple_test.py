@@ -28,9 +28,9 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 # )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
 
 
 

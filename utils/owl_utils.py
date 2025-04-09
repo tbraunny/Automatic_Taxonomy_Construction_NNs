@@ -550,13 +550,19 @@ def assign_object_property_relationship(
             f"The 'object_property' argument '{object_property}' '{type(object_property)}' must of type ObjectPropertyClass."
         )
     # Connect the two Thing instances
-    object_property[domain].append(range)
+    try:
+        object_property[domain].append(range)
+    except Exception as e:
+        raise ValueError(
+            f"Failed to assign object property {object_property} from {domain} to {range} (perhaps because it is functional?): {e}"
+        )
 
     # Check if the connection was successful
-    if not range in object_property[domain]:
+    related_objects = list(object_property[domain])
+    if range not in related_objects:
+
         raise ValueError(
-            f"Failed to connect {domain} to {range} via {object_property}",
-            exec_info=True,
+            f"Verification failed: {range} not found in {object_property}[{domain}]. Current values: {related_objects}"
         )
     
 def is_functional_property(property: DataPropertyClass) -> bool:
@@ -629,6 +635,8 @@ def create_class_data_property(
     :param functional: Boolean flag to set the property as functional
     :return: Created DataProperty class
     """
+    if hasattr(ontology, property_name): # need new logic to check if property exits for the given domain class
+        print(f"Property '{property_name}' already exists in the ontology. Error or unexepcted behavior may occur.")
     valid_range_types = {int, float, str, bool}
     if range_type not in valid_range_types:
         raise ValueError(
@@ -691,6 +699,30 @@ def create_class_object_property(
     #     )
 
     return NewObjectProperty
+
+def is_functional_property_for(domain: Union[ThingClass, Thing], property_: Union[ObjectPropertyClass, DataPropertyClass]) -> bool:
+    """
+    Check if an ObjectProperty or DataProperty is functional for a given domain instance or class.
+
+    :param domain: The domain (Thing or ThingClass) to check against.
+    :param property_: The property (ObjectProperty or DataProperty) to inspect.
+    :return: True if functional, False otherwise.
+    """
+    if not isinstance(domain, (Thing, ThingClass)):
+        raise TypeError(f"'domain' must be a Thing or ThingClass, got {type(domain)}")
+
+    if not isinstance(property_, (ObjectPropertyClass, DataPropertyClass)):
+        raise TypeError(f"'property_' must be an ObjectPropertyClass or DataPropertyClass, got {type(property_)}")
+
+    # Check whether the property is functional at the ontology level
+    if issubclass(property_, FunctionalProperty):
+        return True
+
+    # In Owlready2, a property can also be declared functional per domain-class via .is_functional_for
+    try:
+        return property_.is_functional_for(domain)
+    except AttributeError:
+        return False
 
 
 
