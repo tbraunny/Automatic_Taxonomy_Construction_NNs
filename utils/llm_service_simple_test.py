@@ -29,7 +29,9 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
+
 
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
@@ -338,7 +340,7 @@ class LLMQueryEngine:
         start_time = time.time()
         candidates = self.retrieve_chunks(query, max_chunks)
         self.logger.info(
-            f"Retrieved {len(candidates)} candidate chunks for query: {query}"
+            f"Retrieved {len(candidates)} candidate chunks for query."
         )
         if not candidates:
             self.logger.error(f"No candidate chunks retrieved for query: {query}", exc_info=True)
@@ -350,7 +352,7 @@ class LLMQueryEngine:
             self.logger.error("No context assembled for query: %s", query, exc_info=True)
             raise ValueError("No context assembled for query: %s", query)
         self.logger.info(
-            f"Assembled context for query: {query}"
+            f"Assembled context for query."
         )
         prompt = (
             f"Goal: Answer the query based on the provided context.\n\n"
@@ -366,8 +368,6 @@ class LLMQueryEngine:
         structured_llm = self.llm.with_structured_output(cls_schema)
         try:
             response = structured_llm.invoke(prompt)
-            # response = self.llm.invoke(prompt)
-
 
             self.logger.info("Raw LLM response: %s", response)
             if not response:
@@ -389,10 +389,8 @@ class LLMQueryEngine:
 
             elapsed_time = time.time() - start_time
             self.logger.info(
-                "Query: %s, Time: %.2f seconds, Response: %s",
-                query,
+                "Time Elapsed for Query: %.2f seconds",
                 elapsed_time,
-                response,
             )
             return response
         except Exception as e:

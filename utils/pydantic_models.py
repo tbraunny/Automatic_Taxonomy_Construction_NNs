@@ -8,6 +8,11 @@ T = TypeVar("T")
 class LLMResponse(BaseModel, Generic[T]):
     answer: T
 
+class TermDefinition(BaseModel):
+    name: str = Field(..., description="The name of the function or component.")
+    definition: Optional[str] = Field(
+        None, description="A brief, succinct definition of this term."
+    )
 
 # Define a model for TrainingSingle details.
 class TrainingSingleDetails(BaseModel):
@@ -129,13 +134,6 @@ class MultiDatasetResponse(BaseModel):
 """Define Process Objective Function"""
 
 
-class TermDefinition(BaseModel):
-    name: str = Field(..., description="The name of the function or component.")
-    definition: Optional[str] = Field(
-        None, description="A brief, succinct definition of this term."
-    )
-
-
 # # Example
 # ACCEPTABLE_LOSS_FUNCTIONS = ["CrossEntropy", "MSE"]
 # ACCEPTABLE_REGULARIZERS = ["L1Regularization", "L2Regularization", "L1L2Regularization"]
@@ -179,7 +177,7 @@ class ObjectiveFunctionDetails(BaseModel):
     loss: TermDefinition = Field(
         ..., description="Details about the loss function used."
     )
-    regularizer: Optional[TermDefinition] = Field(
+    regularizer: TermDefinition = Field(
         None, description="Details about the regularizer used, if any."
     )
     objective: Literal["minimize", "maximize"] = Field(
@@ -196,21 +194,21 @@ class ObjectiveFunctionDetails(BaseModel):
 class ObjectiveFunctionResponse(ObjectiveFunctionDetails):
     pass
 
-
-class TermAndDefinition(BaseModel):
-    name: str = Field(..., description="The name of the function or component.")
-    definition: Optional[str] = Field(
-        None, description="A brief, succinct definition of this term."
-    )
-
-
 """Define Process Task Characterization"""
 
-
 class TaskCharacterizationDetails(BaseModel):
-    task_type: TermDefinition = Field(
+    task_type: Literal["Adversarial",
+                "Self-Supervised Classification",
+                "Semi-Supervised Classification",
+                "Supervised Classification",
+                "Unsupervised Classification",
+                "Discrimination",
+                "Generation",
+                "Clustering",
+                "Regression"] = Field(
         ..., description="Details about the training task type used."
     )
+
 
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
