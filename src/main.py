@@ -4,7 +4,7 @@ import glob
 
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 # from src.code_extraction.code_extractor import process_code_file
-from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
+from src.instantiate_annetto.instantiate_annetto_prompted import instantiate_annetto
 
 from utils.annetto_utils import load_annetto_ontology
 
@@ -37,6 +37,7 @@ def main(ann_name: str, ann_path:str,output_ontology_path: str) -> str:
     
     
     # Extract text from PDF
+    print("Running main!! meow")
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
     if ann_pdf_files:
         for pdf_file in ann_pdf_files:
@@ -47,7 +48,7 @@ def main(ann_name: str, ann_path:str,output_ontology_path: str) -> str:
 
     # Instantiate Annett-o
     if not os.path.exists(output_ontology_path):
-        input_ontology = load_annetto_ontology(release_type="stable")
+        input_ontology = load_annetto_ontology(release_type="base")
     else:
         input_ontology = load_annetto_ontology(owl_file_path=output_ontology_path)
         

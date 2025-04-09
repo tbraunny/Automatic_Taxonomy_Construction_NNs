@@ -6,6 +6,8 @@ import time
 from typing import Dict, Any, Union, List, Optional
 import warnings
 from builtins import TypeError
+import glob
+
 
 from owlready2 import (
     Ontology,
@@ -51,7 +53,7 @@ logging.basicConfig(
     ],
     force=True,
 )
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class OntologyInstantiator:
@@ -74,6 +76,8 @@ class OntologyInstantiator:
             ann_config_name (str): The name of the ANN configuration.
             output_owl_path (str): The path to save the output OWL file.
         """
+        logger = logging.getLogger(__name__)
+        
         if not isinstance(ann_config_name, str):
             self.logger.error(
                 "Expected a string for ANN Configuration name.", exc_info=True
@@ -1858,6 +1862,8 @@ class OntologyInstantiator:
                     return list(unique_titles)
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
+                if not self.list_json_doc_paths:
+                    raise ValueError(f"No JSON files provided in instantiate annetto!")
                 for count, j in enumerate(self.list_json_doc_paths):
                     init_engine(self.ann_config_name, j)
 
@@ -1923,6 +1929,7 @@ def instantiate_annetto(
         f"{ann_path}/*.json"
     )  # TODO: Lazy to just glob all json files in the directory
     list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
+    print("hi")
     instantiator = OntologyInstantiator(
         list_json_doc_paths,
         ann_name,
@@ -1938,7 +1945,6 @@ def instantiate_annetto(
 
 # For standalone testing
 if __name__ == "__main__":
-    import glob
 
     time_start = time.time()
 

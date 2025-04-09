@@ -29,8 +29,8 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
-
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
@@ -47,7 +47,6 @@ BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 #     format="%(asctime)s - %(levelname)s - %(message)s",
 #     handlers=[logging.FileHandler(log_file)],
 # )
-logger = logging.getLogger(__name__)
 
 # async (wrappers for blocking API calls)
 async def async_embedding(model: str, prompt: str):
@@ -127,6 +126,8 @@ class LLMQueryEngine:
         embedding_model: str = EMBEDDING_MODEL,
         generation_model: str = GENERATION_MODEL,
     ):
+        logger = logging.getLogger(__name__)
+        
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_model = embedding_model
@@ -408,6 +409,7 @@ def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryE
     """Initialize and cache an LLMQueryEngine instance."""
     if model_name not in _engine_instances:
         _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, **kwargs)
+        print("hi2")
     return _engine_instances[model_name]
 
 

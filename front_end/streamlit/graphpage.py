@@ -59,7 +59,6 @@ def ontology_import():
     if submit_button and uploaded_file is not None:
         if user_ann_name:  # Ensure that the user has entered an architecture name
             ann_path = join_unique_dir(user_data_dir, user_ann_name)  # Get the folder path based on architecture name
-
             file_type = uploaded_file.type
             #this is code for zip for future reference
             # if file_type == "application/zip":
@@ -93,8 +92,9 @@ def ontology_import():
             
         
             user_owl_output = os.path.join(ann_path, user_ann_name + ".owl")
+    
             
-            main(user_ann_name, user_data_dir, user_owl_output)
+            main(user_ann_name, ann_path, user_owl_output)
             
             # main(user_ann_name,user_data_dir, user_owl_output)
         
