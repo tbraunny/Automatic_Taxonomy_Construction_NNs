@@ -1,7 +1,9 @@
 import streamlit as st
-from graphpage import display_graph
+from graphpage import ontology_import
 from LLMchat import chat_page
-import webbrowser
+from graphvis import display_graph
+
+st.set_page_config(layout="wide")
 
 # Page 1: Home
 def home_page():
@@ -66,12 +68,14 @@ def home_page():
 # Sidebar for navigation
 st.sidebar.markdown("## Welcome to TaxonNeuro!")
 
-page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📊 Graph"))
+page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📊 Import", "Graph"))
 
 # Conditional rendering of pages based on selection
 if page == "🏠 Home":
     home_page()
 elif page == "🤖 Chat with AI":
     chat_page()
-elif page == "📊 Graph":
+elif page == "📊 Import":
+    ontology_import()
+elif page == "Graph":
     display_graph()

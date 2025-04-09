@@ -5,7 +5,7 @@ from rapidfuzz import process, fuzz
 
 from utils.constants import Constants as C
 
-def load_annetto_ontology(release_type:str)->Ontology:
+def load_annetto_ontology(owl_file_path:str=None,release_type:str=None)->Ontology:
     """
     Loads the Annetto ontology from the file system.
     Must choose a release type: "development", "test", "base", or "stable".
@@ -13,15 +13,22 @@ def load_annetto_ontology(release_type:str)->Ontology:
     :param: release_type: The type of release to load.
     :return: The Annett-o ontology object.
     """
+    
     releases = {
         "development": C.ONTOLOGY.DEV_ONTOLOGY_PATH,
         "test": C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         "base": C.ONTOLOGY.BASE_ONTOLOGY_PATH,
-        "stable": C.ONTOLOGY.STABLE_ONTOLOGY_PATH
-        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH
+        "stable": C.ONTOLOGY.STABLE_ONTOLOGY_PATH,
+        "MID_DEMO": C.ONTOLOGY.MID_DEMO_ONTOLOGY_PATH,
     }
+    if (owl_file_path and release_type) or (not owl_file_path and not release_type):
+        print(f"owl_file: {owl_file_path}, {type(owl_file_path)}, release_type: {release_type}, {type(release_type)}")
+        raise ValueError(f"Must provide either an owl file path or release name. Releases can be of types {list(releases)}.")
+    
+    if owl_file_path:
+        return get_ontology(owl_file_path)
 
-    if release_type not in releases:
+    if release_type not in list(releases.keys()):
         raise ValueError(f"Invalid release type: {release_type}. Must be one of {list(releases)}")
 
     return get_ontology(releases[release_type]).load()
@@ -116,30 +123,7 @@ def fuzzy_match_class(
         instance_name, class_name_map.keys(), scorer=fuzz.ratio
     )
 
-<<<<<<< HEAD
-        return class_name_map[match] if score >= threshold else None
-    
-def _unhash_and_format_instance_name(self, instance_name: str) -> str:
-        """
-        Remove the ANN config hash prefix from the instance name and restore readability.
-
-        This method extracts the actual instance name by stripping out the
-        prefixed hash and replacing dashes with spaces.
-
-        Example: Input: "abcd1234_convolutional-layer" Output: "Convolutional Layer"
-
-        Args:
-            instance_name (str): The unique instance name with the hash prefix.
-
-        Returns:
-            str: The original readable instance name.
-        """
-        parts = instance_name.split("_", 1)  # Split at the first underscore
-        stripped_name = parts[-1]  # Extract the actual instance name (without hash)
-        return stripped_name.replace("-", " ")  # Convert dashes back to spaces
-=======
     return class_name_map[match] if score >= threshold else None
 
 if __name__ == "__main__":
     ontology = load_annetto_ontology("meow")
->>>>>>> feature-instantiate-annetto

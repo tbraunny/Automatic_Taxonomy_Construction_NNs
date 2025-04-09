@@ -1,7 +1,10 @@
 import streamlit as st
+from instances import list_of_class_instances
 
 def chat_page():
-    
+    #annetto class instances
+    instances = list_of_class_instances()
+    instance_names = ", ".join([instance.name for instance in instances])
     
     from langchain_neo4j import Neo4jGraph
     from neo4j import GraphDatabase
@@ -16,50 +19,47 @@ def chat_page():
     from langchain_experimental.graph_transformers import LLMGraphTransformer
     from langchain_ollama.llms import OllamaLLM
 
-    llm = OllamaLLM(model = "llama3.1:8b-instruct-fp16") 
-
-    llm_transformer = LLMGraphTransformer(llm=llm)
+    llm = OllamaLLM(model = "deepseek-r1:32b") 
 
     from langchain.prompts import PromptTemplate
-    from langchain_core.prompts import PromptTemplate
     from langchain_neo4j import GraphCypherQAChain
-
-    CYPHER_GENERATION_TEMPLATE = """
-    You are an AI system that generates Cypher queries to retrieve data from a graph database. 
-    The graph schema consists of nodes and relationships related to the following ontologies:
-    - Adversarial Autoencoders (AAEs)
-    - Generative Adversarial Networks (GANs)
-    - Simple Classification
-    You will receive a question related to the domain. Based on that, generate a Cypher query that answers the question.
-
-    Here is the schema:
-    {schema}
-
-    For example if you are to retrieve the nodes to a specific naming convention:
-
-    MATCH (n)
-    WHERE n.uri IS NOT NULL AND n.uri CONTAINS 'GAN'
-    RETURN n
-
-    Based on the above, answer the following question by creating a Cypher query to retrieve the relevant data from the graph. 
-    (Do not change the structure of the graph)
     
-    If there is no relevant Cypher query return nothing.
+    CYPHER_GENERATION_TEMPLATE ="""
+    You are an AI system that generates Cypher queries for retrieving data from a graph database. 
+    The graph schema consists of nodes and relationships related to neural network ontologies. 
+    These are the exact instance names:
+    """ + f"{instance_names}" + """
+    
+    You will receive a question related to this domain. Based on the question, generate a Cypher query that answers it. 
+
+    Cypher Query will look like:
+    MATCH (a)
+    WHERE a.uri IN ["instance name"]
+    MATCH (a)-[r*1..7]->(b)
+    RETURN a, r, b
+
+    insert the correct instance name relevent to the question.
+
+    example of inserting instance name:
+    MATCH (a)
+    WHERE a.uri IN ["GAN"]
+    MATCH (a)-[r*1..7]->(b)
+    RETURN a, r, b
+    
+    ### Important Notes:
+    - If the question doesn't correspond to any relevant data in the graph, return nothing (i.e., an empty result).
 
     Question: {question}
     """
-
+   
     CYPHER_GENERATION_PROMPT = PromptTemplate(
-        input_variables=["schema", "question"], template=CYPHER_GENERATION_TEMPLATE
+        input_variables=["question"], template=CYPHER_GENERATION_TEMPLATE
     )
-
+    
     CYPHER_QA_TEMPLATE = """
     You are an assistant that helps to provide human-readable answers to questions based on classes and relationships in the graph.
-    The graph is related to three ontology instances on:
-    - Adversarial Autoencoders (AAEs)
-    - Generative Adversarial Networks (GANs)
-    - Simple Classification
-
+    The graph is related to ontology instances on: """ + f"{instance_names}" + """
+    
     You will receive the context (results of a Cypher query) and a question. Based on that, return an understandable answer.
     
     If there is no context provided, try to answer the question pertaining to aspects in the graph. 
@@ -75,9 +75,9 @@ def chat_page():
     CYPHER_QA_PROMPT = PromptTemplate(
         input_variables=["context", "question"], template=CYPHER_QA_TEMPLATE
     )
-
+    
     graphCypher_chain = GraphCypherQAChain.from_llm(
-        OllamaLLM(model = "llama3.1:8b-instruct-fp16", temperature=0.0), 
+        llm, 
         graph=graph, 
         cypher_prompt=CYPHER_GENERATION_PROMPT, 
         qa_prompt=CYPHER_QA_PROMPT,
@@ -91,18 +91,19 @@ def chat_page():
 
     # Create a chat input field
     user_input = st.chat_input("Enter your prompt:")
-
+    
     if user_input:
         try:
-            # Replace 'graphCypher_chain.invoke' with your actual function to generate a response
-            answer = graphCypher_chain.invoke({"schema": graph.get_schema, "query": user_input})
+            answer = graphCypher_chain.invoke({
+                "query": user_input
+            })
             # Display the user's message
             messages.chat_message("user").write(user_input)
             # Display the model's response
             messages.chat_message("assistant").write(f"Answer: {answer['result']}")
         except Exception as e:
-            st.write("An error occurred while processing your request. Please ask questions related to the taxonomy.")
-    else:
-        st.write("Please enter a prompt!")
+            st.write(f"An error occurred: {str(e)}. Please ask questions related to the taxonomy.")
+
+        
 
         

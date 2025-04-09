@@ -1,26 +1,31 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from utils.join_unique_dir_util import join_unique_dir
+from src.main import main
+import glob
 
-def display_graph():
+def ontology_import():
+    
+    
     st.title("Graph Visualization & File Upload")
-    import zipfile
+    # import zipfile
     import os
-    import io
-
+    
     # Get the neural network architecture input from the user
-    nn_architecture = st.text_input("Enter the name of the neural network architecture (e.g., alexnet):")
+    user_ann_name = st.text_input("Enter the name of the neural network architecture (e.g., alexnet):")
 
     # Display the user's input
-    if nn_architecture:
-        st.write(f"You entered: {nn_architecture}")
-        nn_architecture = nn_architecture.lower()
+    if user_ann_name:
+        st.write(f"You entered: {user_ann_name}")
+        user_ann_name = user_ann_name.lower()
     else:
         st.write("Please enter a neural network architecture.")
+    
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    user_data_dir = os.path.join(script_dir, "../../data/userinput")
 
-    base_path = "/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/userinput"
-
-    def ensure_directory(nn_architecture):
-        directory_path = os.path.join(base_path, nn_architecture)
+    def ensure_directory(user_ann_name):
+        directory_path = os.path.join(user_data_dir, user_ann_name)
         if not os.path.exists(directory_path):
             os.makedirs(directory_path)
         return directory_path
@@ -52,8 +57,8 @@ def display_graph():
 
     # Handle file processing upon form submission
     if submit_button and uploaded_file is not None:
-        if nn_architecture:  # Ensure that the user has entered an architecture name
-            save_path = ensure_directory(nn_architecture)  # Get the folder path based on architecture name
+        if user_ann_name:  # Ensure that the user has entered an architecture name
+            ann_path = join_unique_dir(user_data_dir, user_ann_name)  # Get the folder path based on architecture name
 
             file_type = uploaded_file.type
             #this is code for zip for future reference
@@ -77,14 +82,27 @@ def display_graph():
             #     except Exception as e:
             #         st.error(f"An error occurred while processing the zip file: {e}")
             if file_type == "application/octet-stream":
-                handle_python(uploaded_file, save_path)
+                handle_python(uploaded_file, ann_path)
             elif file_type == "application/pdf":
-                handle_pdf(uploaded_file, save_path)
+                handle_pdf(uploaded_file, ann_path)
             else:
                 st.write("Unsupported file type.")
+                
+            
+            
+            
+        
+            user_owl_output = os.path.join(ann_path, user_ann_name + ".owl")
+            
+            main(user_ann_name, user_data_dir, user_owl_output)
+            
+            # main(user_ann_name,user_data_dir, user_owl_output)
+        
+        
         else:
             st.error("Please enter a neural network architecture before uploading files.")
-    
+            
+        
     
     animation_html = """
     <a href="http://localhost:8866/" target="_blank">
@@ -92,7 +110,7 @@ def display_graph():
         <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
     </a>
     """
-
+    
     st.markdown("Click below to view the Graph!")
     components.html(animation_html, height=400)
     

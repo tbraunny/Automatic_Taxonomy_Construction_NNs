@@ -17,7 +17,6 @@ from utils.owl_utils import (
     create_cls_instance ,
     assign_object_property_relationship ,
     create_subclass ,
-    print_instantiated_classes_and_properties ,
     get_object_properties_with_domain_and_range ,
     get_all_subclasses
 )

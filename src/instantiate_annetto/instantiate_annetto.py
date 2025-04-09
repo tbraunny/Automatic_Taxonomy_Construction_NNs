@@ -5,7 +5,7 @@ from datetime import datetime
 import time
 from typing import Dict, Any, Union, List, Optional
 import warnings
-
+import glob
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty
 from rapidfuzz import process, fuzz
@@ -79,6 +79,7 @@ class OntologyInstantiator:
             self.logger.error("Expected a string for output OWL path.")
             raise TypeError("Expected a string for output OWL path.")
         
+        self.ontology = load_annetto_ontology("base")
         self.ontology = load_annetto_ontology("test")
         self.list_json_doc_paths = list_json_doc_paths
         self.llm_cache: Dict[str, Any] = {}
@@ -1363,7 +1364,6 @@ def instantiate_annetto(ann_name: str, ann_path: str, ontology_path:str, ontolog
 
 # For standalone testing
 if __name__ == "__main__":
-    import glob
 
     ontology_path = f"{C.ONTOLOGY.FILENAME}"
     output_ontology_filePath = "data/owl/annett-o-test.owl"
