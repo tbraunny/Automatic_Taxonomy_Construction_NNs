@@ -31,6 +31,7 @@ from utils.owl_utils import (
 from utils.constants import Constants as C
 
 from utils.annetto_utils import int_to_ordinal, load_annetto_ontology
+from utils.util import get_sanitized_attr
 
 # from utils.onnx_db import OnnxAddition
 from src.instantiate_annetto.prompt_builder import PromptBuilder
@@ -324,12 +325,9 @@ class OntologyInstantiator:
                 self.ann_config_name,
                 prompt,
                 pydantic_type_schema,
-                max_chunks=10,
+                max_chunks=20,
                 token_budget=5000
             )
-
-            self.logger.info(f"LLM query: {prompt}")
-            self.logger.info(f"LLM query response: {response}")
             self.llm_cache[prompt] = response
 
             return response
@@ -387,36 +385,49 @@ class OntologyInstantiator:
                 f"No response for objective functions in network {network_name}."
             )
             return
+        
+        loss_name = get_sanitized_attr(response, "loss.name")
+        loss_def = get_sanitized_attr(response, "loss.definition")
+        reg_name = get_sanitized_attr(response, "regularizer.name")
+        reg_def = get_sanitized_attr(response, "regularizer.definition")
+        obj_type = get_sanitized_attr(response, "objective")
+        
+        # loss_name = str(response.loss.name)
+        # loss_def = str(response.loss.definition)
+        print(f"Loss Function: {loss_name}, Definition: {loss_def}")
+        print(f"Regularizer: {reg_name}, Definition: {reg_def}")
 
-        loss_name = str(response.loss.name)
-        loss_def = str(response.loss.definition)
-        reg_name = None
-        if response.regularizer:
-            reg_name = str(response.regularFunction.name)
-            reg_def = str(response.regularFunction.defintion)
-        obj_type = str(response.objective)
+        # Objective function handling
+        if obj_type:
+            obj_cls = (
+                self.ontology.MinObjectiveFunction
+                if obj_type.lower().strip() == "minimize"
+                else self.ontology.MaxObjectiveFunction
+            )
+            obj_instance = self._instantiate_and_format_class(
+                obj_cls, f"{obj_type} Objective Function"
+            )
+            self._link_instances(network_instance, obj_instance, self.ontology.hasObjective)
+        else:
+            obj_cls = self.ontology.MinObjectiveFunction
+            obj_instance = self._instantiate_and_format_class(
+                obj_cls, f"Min Objective Function"
+            )
+            self.logger.warning(f"No objective type specified for {network_name}. Defaulting to MinObjectiveFunction.")
 
-        obj_cls = (
-            self.ontology.MinObjectiveFunction
-            if obj_type.lower().strip() == "minimize"
-            else self.ontology.MaxObjectiveFunction
-        )
-        obj_instance = self._instantiate_and_format_class(
-            obj_cls, f"{obj_type} Objective Function"
-        )
-        self._link_instances(network_instance, obj_instance, self.ontology.hasObjective)
 
         # Loss function handling
-        known_losses = get_all_subclasses(self.ontology.LossFunction)
-        best_loss_match = self._fuzzy_match_class(
-            loss_name, known_losses, 90
-        ) or create_subclass(self.ontology, loss_name, self.ontology.LossFunction)
-        cost_instance = self._instantiate_and_format_class(
-            self.ontology.CostFunction, "cost function"
-        )
-        loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name)
-        self._link_instances(obj_instance, cost_instance, self.ontology.hasCost)
-        self._link_instances(cost_instance, loss_instance, self.ontology.hasLoss)
+        if loss_name:
+            known_losses = get_all_subclasses(self.ontology.LossFunction)
+            best_loss_match = self._fuzzy_match_class(
+                loss_name, known_losses, 90
+            ) or create_subclass(self.ontology, loss_name, self.ontology.LossFunction)
+            cost_instance = self._instantiate_and_format_class(
+                self.ontology.CostFunction, "cost function"
+            )
+            loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name)
+            self._link_instances(obj_instance, cost_instance, self.ontology.hasCost)
+            self._link_instances(cost_instance, loss_instance, self.ontology.hasLoss)
 
         # Regularizer handling
         if reg_name:
@@ -428,6 +439,11 @@ class OntologyInstantiator:
             reg_instance = self._instantiate_and_format_class(best_reg_match, reg_name)
             self._link_instances(
                 cost_instance, reg_instance, self.ontology.hasRegularizer
+            )
+        if reg_def:
+            reg_instance.hasDefinition = [reg_def]
+            self._link_data_property(
+                reg_instance, self.ontology.hasDefinition, reg_def
             )
 
         self.logger.info(
@@ -1022,12 +1038,12 @@ class OntologyInstantiator:
                 "- Self-Supervised Classification\n"
                 "- Semi-Supervised Classification\n"
                 "- Supervised Classification\n"
-                "- Unsupervised Classification (Clustering)\n"
+                "- Unsupervised Classification\n"
                 "- Discrimination\n"
                 "- Generation\n"
                 "- Clustering\n"
                 "- Regression\n"
-                "If none of these apply, use a concise custom name (as close to one or few words as possible)."
+                # "If none of these apply, use a concise custom name using only one or a couple words."
             )
 
             prompt = self.build_prompt(
@@ -1040,9 +1056,21 @@ class OntologyInstantiator:
                     f"No response for task characterization in network {network_name}."
                 )
                 return
+            
+            task_type_name = get_sanitized_attr(response, "answer.task_type.name")
+            task_type_def = get_sanitized_attr(response, "answer.task_type.definition")
 
-            task_type_name = str(response.answer.task_type)
+            # task_type_name = str(response.answer.task_type.name)
+            # task_type_def = str(response.answer.task_type.definition)
+            print(f"Task Type Name: {task_type_name}, Task Type Definition: {task_type_def}")
 
+            if not task_type_name:
+                self.logger.warning(
+                    f"No task type name provided in task characterization for network {network_name}."
+                )
+                return
+            
+            # Task Handling
             known_task_types = get_all_subclasses(self.ontology.TaskCharacterization)
             if not known_task_types:
                 self.logger.warning(
@@ -1890,7 +1918,7 @@ class OntologyInstantiator:
                     ann_config_instance.hasPaperPath = path
 
                 # Process the network class and it's components.
-                # self._process_network(ann_config_instance)
+                self._process_network(ann_config_instance)
 
                 # Process TrainingStrategy and it's components.
                 self._process_training_strategy(ann_config_instance)

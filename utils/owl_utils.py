@@ -172,31 +172,44 @@ def get_connected_classes(
     cls: Union[ThingClass, Thing], ontology: Ontology
 ) -> Optional[List[ThingClass]]:
     """
-    Retrieves classes connected to the given class via object properties.
+    Retrieves classes connected to the given class or instance via object properties.
 
-    :param: cls: The class for which to find connected classes.
+    :param: cls: The class or instance for which to find connected classes.
     :param: ontology: The ontology containing the classes.
     :return: A list of connected classes, or None if no connections are found.
     """
     if not isinstance(cls, (Thing, ThingClass)):
-        raise TypeError(f"Invalid class type '{cls}'.")
+        raise TypeError(f"Invalid class or instance type for '{cls}'.")
     if not isinstance(ontology, Ontology):
-        raise TypeError(f"Invalid ontology type '{ontology}'.")
+        raise TypeError(f"Invalid ontology type for '{cls}'.")
+
     connected_classes = set()
-    object_properties = [
-        prop for prop in ontology.object_properties() if cls in prop.domain
-    ]
 
-    for prop in object_properties:
-        for range_cls in prop.range:
-            # Skip if the range is the same as cls
-            if range_cls == cls:
-                continue
-            if isinstance(range_cls, ThingClass):
-                connected_classes.add(range_cls)
-    connected_classes = list(connected_classes)
+    if isinstance(cls, ThingClass):
+        # For ThingClass, use the domain of object properties
+        object_properties = [
+            prop for prop in ontology.object_properties() if cls in prop.domain
+        ]
+        for prop in object_properties:
+            for range_cls in prop.range:
+                if range_cls != cls and isinstance(range_cls, ThingClass):
+                    connected_classes.add(range_cls)
+        return list(connected_classes) if connected_classes else None
 
-    return connected_classes if connected_classes != [] else None
+    elif isinstance(cls, Thing):
+        for prop in cls.get_properties():
+            if isinstance(prop, ObjectPropertyClass):  # Ensure it's an object property
+                values = cls.__getattr__(prop.name)
+                if isinstance(values, list):
+                    for value in values:
+                        if isinstance(value, Thing):
+                            print(value)
+                            connected_classes.add(value)
+                elif isinstance(values, Thing):
+                    print(values)
+                    connected_classes.add(values)
+
+        return list(connected_classes) if connected_classes else None
 
 
 def get_immediate_subclasses(
