@@ -31,6 +31,8 @@ from src.taxonomy.criteria import *
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
+
 def parse_function(text):
     pattern = r"(\w+)\(([^)]*)\)"
     matches = re.findall(pattern, text)
@@ -60,76 +62,95 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
         return found
     visited.add(instance)
     for prop in instance.get_properties():
-        #print('property',prop.name)
 
         for value in prop[instance]:
-                
-            #print('value',value,type(value))
-            
             eq = query
             values = eq.Value
-            if type(values) != list:
-                values = [values]
             
             # single searches
-            for searchValue in values:
-                if searchValue == prop.name:
+            for index, searchValue in enumerate(values):
+                if searchValue.Name == prop.name and searchValue.Op == 'name':
                     insert = {'type': type(value), 'value': value, 'name': prop.name} 
                     if not insert in found:
-                        found.append(insert)
-                elif isinstance(value,Thing) and eq.Type and eq.Type.Name == 'name' and searchValue == value.name:
-                    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
-                    if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'sequal' and isinstance(value,Thing) and searchValue == value.name:
+                        found[index].append(insert)
+                if isinstance(value, Thing) and searchValue.Op == "has":
+                    inserts = instance.__getattr__(searchValue.Name)
+                    for insert in inserts:
+                        insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
+                        if not insert in found:
+                            found[index].append(insert)
+                #if isinstance(value,Thing) and searchValue.Name == value.name and searchValue.Op == 'propertyvaluename':
+                #    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
+                #    if not insert in found:
+                #        found[index].append(insert)
+                if searchValue.Op == 'sequal' and isinstance(value,Thing) and searchValue.Name == value.name:
                     insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'less' and type(value) == int and searchValue > value and eq.Name == prop.name:
+                        found[index].append(insert)
+                if searchValue.Op == 'less' and type(value) == int and searchValue.Value[0] > value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'greater' and type(value) == int and searchValue < value and eq.Name == prop.name:
+                        found[index].append(insert)
+                if searchValue.Op == 'greater' and type(value) == int and searchValue.Value[0] < value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'leq' and type(value) == int and searchValue >= value and eq.Name == prop.name:
+                        found[index].append(insert)
+                if searchValue.Op == 'leq' and type(value) == int and searchValue.Value[0] >= value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'geq' and type(value) == int and  searchValue <= value and eq.Name == prop.name:
+                        found[index].append(insert)
+                if searchValue.Op == 'geq' and type(value) == int and  searchValue.Value[0] <= value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-                if eq.Op == 'equal' and type(value) == int and searchValue == value and eq.Name == prop.name:
+                        found[index].append(insert)
+                if searchValue.Op == 'equal' and type(value) == int and searchValue.Value[0] == value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found:
-                        found.append(insert)
-            
-            # range searches
-            if eq.Op == 'range' and type(value) == int and eq.Value[0] < value and eq.Value[1] > value and eq.Name == prop.name:
-                insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                if not insert in found:
-                    found.append(insert)
+                        found[index].append(insert)
+                # range searches
+                if searchValue.Op == 'range' and type(value) == int and searchValue.Value[0] < value and searchValue.Value[1] > value and searchValue.Name == prop.name:
+                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    if not insert in found:
+                        found[index].append(insert)
 
-            try: 
-                if isinstance(value, Thing): # TODO: this is super redudant and could probably be covered with the above...
-                    if eq.HasType != '':
-                        has = eq.HasType
-                        inserts = instance.__getattr__(has)
-                        for insert in inserts:
-                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name} 
-                            if not insert in found:
-                                found.append(insert)
-                    find_instance_properties_new(value, query=query, found=found,visited=visited)
-            except: 
-                pass
-                #print('broken')
+
+        try:
+            if isinstance(value, Thing):
+                find_instance_properties_new(value, query=query, found=found,visited=visited)
+        except:
+            pass
+
     return found
 
 
+backTrackMap = {}
 
-def get_property_from_ann_for_clustering(annconfig, value, query, vectorize=True):
+def find_instances(annConfig, ontology, query):
+    found = []
+    if query.HasType != "":
+        kwargs = {query.HasType:'*'}
+        hastypes = ontology.search(**kwargs)
+        #print(hastypes[0].is_a)
+        
+        for val in hastypes:
+            value = val
+            while not isinstance(value, ontology.ANNConfiguration): 
+                search = value.is_a[0].name
+                value = value.__getattr__(f'is{search}Of')
+                if len(value) > 0:
+                    value = value[0]
+
+
+            if value == annConfig:
+                print('magic',query.HasType)
+                for insert in val.__getattr__(query.HasType):
+                    insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
+                    if not insert in found:
+                        found.append(insert)
+    return found
+
+
+def get_property_from_ann_for_clustering(annconfig, value, query, ontology, vectorize=True):
     items = []
     returnlist = [] 
     #find_instance_properties(ann_config, has_property=hs)
@@ -138,25 +159,30 @@ def get_property_from_ann_for_clustering(annconfig, value, query, vectorize=True
     # coping original values
     HasType = query.HasType
     values = query.Value
-
+    
     # masking value
     query.Value = []
     
+
     if query.HasType != '':
-        items.append(find_instance_properties_new(annconfig, query, found=[]))
+        #items.append(find_instances(annconfig,ontology,query))
+        #items.append(find_instance_properties_new(annconfig, query, found=[]))
     
-        returnlist = [[str(item['type']) for item in items[0]]]
+        #returnlist = [[str(item['type']) for item in items[0]]]
         items = []
 
     # masking has type
     query.HasType = ''
-    
+
+
     # going value by value to get properies
     if value != None and type(value) == list:
-        for value in values:
-            query.Value = [value]
-            items.append(find_instance_properties_new(annconfig, query, found=[]))
-    
+        #for value in values:
+        #    query.Value = [value]
+        query.Value = values
+        items = find_instance_properties_new(annconfig, query, found=[ [] for index, value in enumerate(query.Value)])
+
+
     # restore original values 
     query.HasType = HasType
     query.Value = values
@@ -166,7 +192,8 @@ def get_property_from_ann_for_clustering(annconfig, value, query, vectorize=True
     # vectorize if asked -- this default
     if vectorize:
         for itemlist in items:
-            returnlist.append([ item['value'] if type(item['value']) == float or type(item['value']) == int or type(item['value']) == str else str(item['value'])  for item in itemlist])
+            returnlist.append([ item['value'] if type(item['value']) == float or type(item['value']) == int or type(item['value']) == str else str(item['value'])  for item in itemlist]
+                    )
     return returnlist
 
 def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
@@ -414,11 +441,12 @@ class TaxonomyCreator:
     levels: List[Criteria]
     
     def __init__(self, ontology: Ontology, criteria: [Criteria] = []):
-
+        global backTrackMap 
         self.ontology = ontology # Load ontology as Ontology object
+
         self.taxonomy = None
         self.levels = criteria
-    def create_level(self, ann_configurations, criteria):
+    def create_level(self, ann_configurations, criteria, ontology):
         hashmap = {}
         criteria = list(criteria) # copy search operators
 
@@ -441,7 +469,7 @@ class TaxonomyCreator:
             clustervecs = []
             length = -1
             for ann_config in ann_configurations:
-                vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, vectorize=True)
+                vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, ontology, vectorize=True)
 
                 #length = max(length,len(vector))
                 clustervecs.append(vector)
@@ -456,7 +484,6 @@ class TaxonomyCreator:
                 if clusterop.Type != None and 'kmeans' in clusterop.Type.Name:
                     #fname, arguments = parse_function(clusterop.Type)
                     #print(arguments)
-                    #input()
                     centroids=10
                     #if len(arguments) > 0:
                     #    centroids = int(arguments[0])
@@ -467,7 +494,7 @@ class TaxonomyCreator:
                     str_mapping = {i : {} for i in range(len(clusterop.Value))} # precreate mapping for strings
                     str_count = {i : 0 for i in range(len(clusterop.Value))} # precreate mapping for strings
                     remapping = False
-                    print(len(clustervecs[0]))
+                    #print(len(clustervecs[0]))
                     for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now
                         for vecindex, vecs in enumerate(vector):
                             for vec in vecs:
@@ -482,36 +509,38 @@ class TaxonomyCreator:
                     inputclustervecs = []
                     length = 0
                     binlength = max([str_count[i] for i in str_count], default=0)
-                    if binlength != 0:
-                        for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
-                            vectorlist = []
-                            for vecindex, vecs in enumerate(vector):
-                                if len(vecs) > 0 and type(vecs[0]) == str and whattocast == 'binary':
-                                    # create binary vector
-                                    bins = [0 for i in range(binlength)]
-                                    for vec in vecs:
-                                        bins[str_mapping[vecindex][vec]] = 1
-                                    vectorlist += bins
-                                else:
-                                    vectorlist += vecs
-                            length = max(length, len(vectorlist))
-                            inputclustervecs.append(vectorlist)
-                        inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
-                        centers = kmeans_clustering(inputclustervecs, centroids=centroids )
-                        for index, center in enumerate(centers):
-                            hashcenter = f'cluster_{center}_{clusterop.Type.Name}_{clusterop.Value}'
-                            if not ann_configurations[index] in prefind:
-                                prefind[ann_configurations[index]] = {hashcenter : center}
+                    #if binlength != 0:
+                    for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
+                        vectorlist = []
+                        for vecindex, vecs in enumerate(vector):
+                            if len(vecs) > 0 and type(vecs[0]) == str and whattocast == 'binary':
+                                # create binary vector
+                                bins = [0 for i in range(binlength)]
+                                for vec in vecs:
+                                    bins[str_mapping[vecindex][vec]] = 1
+                                vectorlist += bins
                             else:
-                                prefind[ann_configurations[index]][hashcenter] = center
-                    else:
-                        logging.info('Nothing found so no clusters formulated')
+                                vectorlist += vecs
+                        length = max(length, len(vectorlist))
+                        inputclustervecs.append(vectorlist)
+                    inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
+                    
+                    centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                    for index, center in enumerate(centers):
+                        hashcenter = f'cluster_{center}_{clusterop.Type.Name}_{clusterop.Value}'
+                        if not ann_configurations[index] in prefind:
+                            prefind[ann_configurations[index]] = {hashcenter : center}
+                        else:
+                            prefind[ann_configurations[index]][hashcenter] = center
+                    #else:
+                    #    logging.info('Nothing found so no clusters formulated')
                         
-                        for ann_config in ann_configurations:
-                            prefind[ann_config] = {"":""}
+                    #    for ann_config in ann_configurations:
+                    #        prefind[ann_config] = {"":""}
         criteria = otherlist
         
-        for ann_config in ann_configurations:
+        for aindex, ann_config in enumerate(ann_configurations):
+            print(aindex,ann_config)
             found = []
             networks = ann_config.__getattr__(self.ontology.hasNetwork.name)
             
@@ -521,54 +550,59 @@ class TaxonomyCreator:
             # NOTE: ontology.hasNetwork is an ObjectProperty -> returns annett-o-0.1.hasNetwork of type: <class 'owlready2.prop.ObjectPropertyClass'>
             
             # iterate over network
-            for network in networks:
+            #for network in networks:
 
                 #print(criteria.has)
                 #for crit in criteria:
                 #    print(has)
                 #    found += get_instance_property_values(ann_config, has)
 
-                logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
+             #   logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
 
-                layers = network.__getattr__(self.ontology.hasLayer.name)
-                logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
+              #  layers = network.__getattr__(self.ontology.hasLayer.name)
+               # logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
 
-                for crit in criteria:
-                    items = []
-                    items += find_instance_properties_new(network, query=crit, found=[])
-                    '''if crit.HasType != '':
+            for crit in criteria:
+                items = []
+                newitems = find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
 
-                        # BFS search for has properties 
-                        #items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
+                #print(len(items))
+                #input()
+                # flatten found
+                items += [ item for itemlist in newitems for item in itemlist]
+                '''if crit.HasType != '':
 
-                    if crit.Type != '':
-                        searchType = crit.Type
+                    # BFS search for has properties 
+                    #items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
 
-                        # need to implement more search types ......
-                        if searchType == 'layer_num_units' or searchType == 'layer':
-                            #query_instance_properties(network, crit)
-                            
-                            for layer in layers:
-                                items += query_instance_properties(layer, crit)
-                                # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
-                                logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
-                                logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
+                if crit.Type != '':
+                    searchType = crit.Type
 
-                                subclass = layer.is_a[0]
-                                logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")'''
-                    for item in items:
-                        item['hash'] = item[crit.HashOn]
+                    # need to implement more search types ......
+                    if searchType == 'layer_num_units' or searchType == 'layer':
+                        #query_instance_properties(network, crit)
+                        
+                        for layer in layers:
+                            items += query_instance_properties(layer, crit)
+                            # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
+                            logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
+                            logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
 
-                    found += items
-            print('found',found)
+                            subclass = layer.is_a[0]
+                            logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")'''
+                for item in items:
+                    item['hash'] = item[crit.HashOn]
+
+                found += items
+            #print('found',found)
             for index, data in enumerate(found): 
                 found[index]['annconfig'] = ann_config
             if ann_config in prefind:
                 for pkey in prefind[ann_config]:
                     found.append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
             hashvalue = set([item['hash'] for item in found])
-            hashvalue = hashvalue = ' '.join( str(hash) for hash in hashvalue)
-            print('hash: ', hashvalue)
+            hashvalue = hashvalue = ','.join( str(hash) for hash in hashvalue)
+            #print('hash: ', hashvalue)
  
             if not hashvalue in hashmap:
                 hashmap[hashvalue] = { ann_config : found }
@@ -613,7 +647,7 @@ class TaxonomyCreator:
             newnodes = []
 
             for index,split in enumerate(splits):
-                found = self.create_level(split, level.Searchs) # only supporting has properties right now
+                found = self.create_level(split, level.Searchs, self.ontology) # only supporting has properties right now
                 for key in found:
                     
                     split = list(found[key].keys())
@@ -657,24 +691,25 @@ class TaxonomyCreator:
 
 
 def main():
-
+    logging.getLogger().setLevel(logging.WARNING)
     logger.info("Loading ontology.")
     #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
-    ontology_path = f"./data/Annett-o/annett-o-test.owl"
+    #ontology_path = f"./data/Annett-o/annett-o-test.owl"
+    #ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
-    #ontology_path = f"./data/owl/annett-o.owl" 
+    ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
-    op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Op='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
-    op2 = SearchOperator(HasType=HasTaskType )
-    criteria2 = Criteria(Name='HasTaskType')
-    criteria2.add(op2)
+    #op2 = SearchOperator(HasType=HasTaskType )
+    #criteria2 = Criteria(Name='HasTaskType')
+    #criteria2.add(op2)
    
-    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
-    #op3 = SearchOperator(Op='cluster',Type='kmeans(4,binary)', Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
+
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
 
@@ -682,7 +717,7 @@ def main():
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria,criteria2,criteria3]
+    criterias = [criteria]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
     print('after load')

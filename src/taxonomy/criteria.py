@@ -20,6 +20,11 @@ class TypeOperator(BaseModel):
     Name: str = Field("")
     Arguments: List[int|float|str] = Field([])
 
+class ValueOperator(BaseModel):
+    Name: str = Field("")
+    Op: Literal["sequal","none","range","scomp","leq","less","greater","geq","name",'has'] = Field("none")
+    Value: List[str | int | float ] = Field([])
+
 class SearchOperator(BaseModel):
     '''
     Name: SearchOperator
@@ -28,8 +33,8 @@ class SearchOperator(BaseModel):
     HasType: Optional[str] = Field("")
     Type: Optional[TypeOperator] = None #Optional[str] = Field("")
     Name: Optional[str] = Field("")
-    Op: Literal["cluster","sequal","none","range","scomp","leq","less","greater","geq"] = "none" #Optional[str] = Field("") 
-    Value: Optional[str | int | float | list ] = Field("")
+    Op: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
+    Value: List[ValueOperator] = Field([])
     HashOn: Optional[str] = Field("type")
 
     #has: Optional [ List ] = []
