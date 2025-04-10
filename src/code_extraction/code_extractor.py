@@ -8,6 +8,7 @@ import os
 from utils.onnx_db import check_onnx
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
+#from tests.deprecated.pt_extractor import PTExtractor
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
@@ -204,6 +205,7 @@ def process_code_file(file_path):
     """
     try:
         py_files = glob.glob(f"{file_path}/*.py")
+        #pt_files = glob.glob(f"{file_path}/*.pt") # still working on it
         onnx_files = glob.glob(f"{file_path}/*.onnx")
         pb_files = glob.glob(f"{file_path}/*.pb")
 
@@ -220,6 +222,12 @@ def process_code_file(file_path):
                 logger.info(f"Parsing TensorFlow file {file}...")
                 output_json = file.replace(".pb" , f"_pbcode_{count}.json")
                 PBExtractor.extract_compute_graph(file , output_json)
+        # if pt_files:
+        #     logger.info(f"PyTorch weights & biases detected: {pt_files}")
+        #     for count , file in enumerate(pt_files):
+        #         logger.info(f"Parsing PyTorch file {file}...")
+        #         output_json = file.replace(".pt" , f"_ptcode{count}.json")
+        #         PTExtractor.extract_compute_graph(file , output_json)
         if not py_files:
             print(file_path)
             print(py_files)

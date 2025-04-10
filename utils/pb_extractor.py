@@ -2,7 +2,7 @@ import tensorflow as tf
 import json
 
 class PBExtractor:
-    def extract_compute_graph(pb_file: str , output_json: str):
+    def extract_compute_graph(pb_file: str , output_json: str) -> None:
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
         NOTE: useless layer types: DecodeJPEG, Cast, ExpandDims, ResizeBilinear, sub (tensor subtraction),
