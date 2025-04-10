@@ -5,6 +5,7 @@ import json
 import os
 from onnx import numpy_helper
 import onnxruntime as ort
+from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 import fire
 from collections import OrderedDict
 from google.protobuf.json_format import MessageToJson
@@ -184,26 +185,61 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         handle.close()
     return outjson
 
-def calculate_params(layer, model):
+def fetch_input_layer_params(input_layer , model):
     """
     Calculate the number of parameters for different types of layers.
 
-    :param layer: layer node within the JSON
+    :param input_layer: name of input layer
+    :param node: layer node within the JSON
     :param model: ONNX model
     :return Number of parameters within the specific layer
     """
     num_params = 0
+    # want to only calc for the specific input layer
+    for shape in model.graph.input:
+        access_shape = shape.type.tensor_type.shape.dim
+        input_name: str = shape.name
+
+        if input_name.endswith("__SHAPE"):
+            num_params = access_shape[0].dim_value
+        else: # conv layer?
+            num_params = access_shape[1].dim_value
+
+    return num_params
+
+def calculate_params(parameters , layer , model):
+    """
+    Calculate the number of parameters for different types of layers.
+
+    :param parameters: List of parameters for the given layer
+    :param layer: Node of the layer being calculated
+    :param model: ONNX model
+
+    :return Number of parameters for the specified layer
+    """
+
+
+
+    if layer.op_type == "Conv":
+        pass
 
     # For Conv layers, the parameters are the weights and possibly the biases
-    if layer.op_type == "Conv":
+    #if layer.op_type == "Conv":
+
+        #input_list: list = layer.name
 
         ########################## SELF DONE MEAT
+        # print("INPUT LAYER NAME: " , layer)
+        # print(type(layer))
 
-        for input in model.graph.input:
-            if layer.name in input.name:
-                for dim_value in input.type.tensor_type.shape.dim:
-                    print("Dim value test: " , dim_value.dim_value)
 
+        # for input in model.graph.input:
+        #     print("INPUT NAME " , input.name)
+        #     print("LAYER NAME " , layer.name)
+        #     if layer.name in input.name:
+        #         print("marker2")
+        #         for dim_value in input.type.tensor_type.shape.dim:
+        #             print("Dim value test: " , dim_value.dim_value)
         #########################################
 
 
@@ -239,56 +275,164 @@ def calculate_params(layer, model):
         #             print(f"Unexpected weight shape: {weight_shape}")
 
         # Find and add the bias parameters if they exist
-        if biases_name:
-            for initializer in model.graph.initializer:
-                if initializer.name == biases_name:
-                    print(f"Found bias initializer: {initializer.name}")  # Debugging
-                    num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output channels
+        # if biases_name:
+        #     for initializer in model.graph.initializer:
+        #         if initializer.name == biases_name:
+        #             print(f"Found bias initializer: {initializer.name}")  # Debugging
+        #             num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output channels
     
     # For Dense layers (Fully Connected), the parameters are the weights and biases
-    elif layer.op_type == "Gemm":  # Gemm is typically used for Fully Connected layers in ONNX
-        weights_name = layer.input[1]
-        biases_name = layer.input[2] if len(layer.input) > 2 else None  # Optional bias input
+    # elif layer.op_type == "Gemm":  # Gemm is typically used for Fully Connected layers in ONNX
+    #     weights_name = layer.input[1]
+    #     biases_name = layer.input[2] if len(layer.input) > 2 else None  # Optional bias input
 
-        # Find the weight initializer and calculate its size (out_features * in_features)
-        for initializer in model.graph.initializer:
-            if initializer.name == weights_name:
-                weight_size = 1
-                for dim in initializer.dims:
-                    weight_size *= dim
-                num_params += weight_size
+    #     # Find the weight initializer and calculate its size (out_features * in_features)
+    #     for initializer in model.graph.initializer:
+    #         if initializer.name == weights_name:
+    #             weight_size = 1
+    #             for dim in initializer.dims:
+    #                 weight_size *= dim
+    #             num_params += weight_size
 
-        # Find and add the bias parameters if they exist
-        if biases_name:
-            for initializer in model.graph.initializer:
-                if initializer.name == biases_name:
-                    num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output features
+    #     # Find and add the bias parameters if they exist
+    #     if biases_name:
+    #         for initializer in model.graph.initializer:
+    #             if initializer.name == biases_name:
+    #                 num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output features
 
-    # Add logic for other layer types here (BatchNorm, RNN, etc.)
-    # Example for BatchNorm:
-    elif layer.op_type == "BatchNormalization":
-        # BatchNorm has gamma, beta, mean, and variance parameters
-        for initializer in model.graph.initializer:
-            if initializer.name in layer.input:  # Gamma and Beta are usually inputs
-                num_params += len(initializer.float_data)
+    # # Add logic for other layer types here (BatchNorm, RNN, etc.)
+    # # Example for BatchNorm:
+    # elif layer.op_type == "BatchNormalization":
+    #     # BatchNorm has gamma, beta, mean, and variance parameters
+    #     for initializer in model.graph.initializer:
+    #         if initializer.name in layer.input:  # Gamma and Beta are usually inputs
+    #             num_params += len(initializer.float_data)
 
-    return num_params
+    #return num_params
 
-def params_by_layer(onnx_model):    
-    layer_params = {}
+def parse_conv_layer(node , model , input_cache):
+    """
+    Handle the calculation for convolutional layers
+    """
+    in_channels , out_channels = None
 
-    # Iterate over all nodes (layers) in the model
-    for node in onnx_model.graph.node:
-        for input_layer in node.input:
-            if layer_params[input_layer] is None: # calc required input params
-                # assign node to input layer
-                total_params = calculate_params(node , onnx_model)
-                layer_params[input_layer] = total_params
-                
-        total_params = calculate_params(node , onnx_model)
-        layer_params[node.name] = total_params
+    for input_name in node.input: # take care of input layers
+        if input_name not in input_cache:
+            input_info = resolve_input_info(model , input_name)
+
+            if input_info is not None:
+                dims = input_info.type.tensor_shape.dim
+
+                if len(dims) == 1 or input.endswith("__SHAPE"):
+                    out_channels = dims[0].dim_value
+                    input_cache[input_name] = out_channels
+                else:
+                    in_channels = dims[1].dim_value
+        else:
+            if input_name.endswith("__SHAPE"):
+                out_channels = input_cache[input_name]
+            else:
+                in_channels = input_cache[input_name]
+
+        # fallback plan in case channels aren't provided (prevent 0 param conv layers)
+        in_channels = in_channels or 1
+        out_channels = out_channels or 1
+
+        kernel_shape = [1 , 1] # also a fallback
+        for attr in node.attribute:
+            if attr.name == "kernel_shape":
+                kernel_shape = attr.ints # tuple
+
+        return (kernel_shape[0] * kernel_shape[1] * in_channels + 1) * out_channels # conv param formula
+
+def gemm_layer_parsing(node , model , input_cache):
+    pass # WRITE STUFF HERE
+
+def parse_bn_layer(node , model , input_cache):
+    pass
+
+def resolve_input_info(model , input_name):
+    """
+    Fetch input section of ONNX parsed JSON to obtain layer info
+    """
+
+    input_info = next((i for i in model.graph.input if i.name == input_name) , None)
+
+    if input_info:
+        return input_info
+    else:
+        alt_name = input_name + "__SHAPE"
+        input_info = next((i for i in model.graph.input if i.name == alt_name) , None)
+
+        return input_info
+
+def extract_params_by_layer(model): 
+    """
+    Fetch & calculate the number of parameters per layer for a given model
+    """
+
+    layer_params: dict = {}
+    input_cache: dict = {} # track calculated input layers
+
+    for node in model.graph.node:
+        if not node.name:
+            continue
+        
+        handler = LAYER_PARSERS.get(node.op_type)
+        if handler:
+            try:
+                param_count = handler(node , model , input_cache)
+                layer_params[node.name] = param_count
+            except Exception as e:
+                print(f"Error processing {node.op_type} node {node.name}: {e}")
+        else:
+            print(f"Layer type {node.op_type} has no learnable parameters (hopefully)")
+            layer_params = 0
 
     return layer_params
+
+LAYER_PARSERS = {
+    "Conv": parse_conv_layer,
+    # "Gemm": parse_gemm_layer,
+    # "BatchNormalization": parse_bn_layer,
+}
+
+def count_params(tensor):
+    arr = onnx.numpy_helper.to_array(tensor)
+    return arr.size  # Total number of parameters in this tensor
+
+def count_onnx_params_by_layer(onnx_model):
+    """
+    Another attempt at a less manual approach, UNSUCCESSFUL
+    """
+    initializer_map = {init.name: init for init in onnx_model.graph.initializer}
+    layer_param_counts = []
+
+    for node in onnx_model.graph.node:
+        param_count = 0
+        param_names = []
+
+        # Count parameters from initializers (weights/biases)
+        for input_name in node.input:
+            initializer = initializer_map.get(input_name)
+            if initializer:
+                dims = initializer.dims
+                count = np.prod(dims) if dims else 0
+                param_count += count
+                param_names.append(input_name)
+
+        if param_count > 0:
+            layer_info = {
+                "layer_name": node.name or node.output[0],
+                "op_type": node.op_type,
+                "params": int(param_count),
+                "param_tensors": param_names
+            }
+            layer_param_counts.append(layer_info)
+
+    return layer_param_counts
+
+
 class ONNXProgram:
     def extract_properties(self,filepath,savePath='./outdata/',model_name='',parameters=False):
         #files = glob.glob(filepath+'*.onnx',recursive=True)
@@ -334,8 +478,39 @@ class ONNXProgram:
     def compute_graph_extraction(self,onnx_file,outfile=None,savePath=''):
         model = onnx.load(onnx_file)
 
+        params = count_onnx_params_by_layer(model)
+
+        # Print summary
+        for p in params:
+            print(f"{p['layer_name']} ({p['op_type']}): {p['params']} parameters")
+
+        # less manual way of calculating parameters per layer
+        inferred_model = SymbolicShapeInference.infer_shapes(model)
+
+        # Map initializers by name for quick lookup
+        initializer_map = {init.name: init for init in inferred_model.graph.initializer}
+
+        layer_param_counts = {}
+
+        for node in inferred_model.graph.node:
+            param_count = 0
+            for input_name in node.input:
+                if input_name in initializer_map:
+                    param_count += count_params(initializer_map[input_name])
+            
+            if param_count > 0:
+                layer_param_counts[node.name or node.output[0]] = {
+                    "op_type": node.op_type,
+                    "params": param_count
+        }
+
+
+        for layer, info in layer_param_counts.items():
+            print(f"{layer}: {info['op_type']} → {info['params']} learnable parameters")
+
+
         # Calculate the parameters by layer
-        layer_params = params_by_layer(model)
+        layer_params = extract_params_by_layer(model)
 
         # Convert the modified model to JSON format
         model_json = MessageToJson(model)
