@@ -10,6 +10,7 @@ from pathlib import Path
 import logging
 import json
 
+from collections import deque, defaultdict
 
 import networkx as nx
 
@@ -31,7 +32,54 @@ from src.taxonomy.criteria import *
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+def find_paths_to_classes(onto):
+    mapping = {}
+    stack = [(onto.ANNConfiguration,[])]
+    path = []
+    visited = []
+    ignored = [onto.sameLayerAs]
+    classmapping = {}
+    while len(stack) > 0:
+        current,path = stack[0]
+        #input('has available')
+        del stack[0]
+        #path.append(current)
+        for prop in onto.object_properties():
+            if current in prop.domain:
+                copypath = list(path)
+                copypath.append(prop)
+                mapping[prop] = path
+                if len(prop.range) > 0:
+                    if type(current) == ThingClass:
+                        if not current in classmapping:
+                            classmapping[current] = []
+                        classmapping[current].append(prop)
+                    if not prop.range[0] in stack and not prop.range[0] in visited and not prop.range[0] in ignored:
+                        stack.append((prop.range[0], copypath))
+                        visited.append(prop.range[0])
+        for prop in onto.data_properties():
+            if current in prop.domain:
+                copypath = list(path)
+                copypath.append(prop)
+                mapping[prop] = path
+                if len(prop.range) > 0:
+                    if type(current) == ThingClass:
+                        if not current in classmapping:
+                            classmapping[current] = []
+                        classmapping[current].append(prop)
+                    if not prop.range[0] in stack and not prop.range[0] in visited and not prop.range[0] in ignored:
+                        stack.append((prop.range[0], copypath))
+                        visited.append(prop.range[0])
 
+    #print(classmapping)
+    #print(mapping)
+    #print(list(mapping.keys()))
+
+    #print(list(classmapping.keys()))
+    #print(classmapping[onto.Layer])
+    #print(mapping[classmapping[onto.Layer]])
+    #input('done')
+    return classmapping, mapping
 
 def parse_function(text):
     pattern = r"(\w+)\(([^)]*)\)"
@@ -42,7 +90,6 @@ def parse_function(text):
         function_name = match[0]
         arguments = match[1].split(',') if match[1] else []
     return function_name, arguments
-
 
 
 def find_instance_properties_new(instance, query=[], found=None, visited=None):
@@ -71,46 +118,47 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
             for index, searchValue in enumerate(values):
                 if searchValue.Name == prop.name and searchValue.Op == 'name':
                     insert = {'type': type(value), 'value': value, 'name': prop.name} 
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if isinstance(value, Thing) and searchValue.Op == "has":
                     inserts = instance.__getattr__(searchValue.Name)
-                    for insert in inserts:
-                        insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
-                        if not insert in found:
-                            found[index].append(insert)
+                    if insert:
+                        for insert in inserts:
+                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
+                            if not insert in found[index]:
+                                found[index].append(insert)
                 #if isinstance(value,Thing) and searchValue.Name == value.name and searchValue.Op == 'propertyvaluename':
                 #    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name} 
                 #    if not insert in found:
                 #        found[index].append(insert)
                 if searchValue.Op == 'sequal' and isinstance(value,Thing) and searchValue.Name == value.name:
                     insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'less' and type(value) == int and searchValue.Value[0] > value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'greater' and type(value) == int and searchValue.Value[0] < value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'leq' and type(value) == int and searchValue.Value[0] >= value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'geq' and type(value) == int and  searchValue.Value[0] <= value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'equal' and type(value) == int and searchValue.Value[0] == value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
                 # range searches
                 if searchValue.Op == 'range' and type(value) == int and searchValue.Value[0] < value and searchValue.Value[1] > value and searchValue.Name == prop.name:
                     insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
-                    if not insert in found:
+                    if not insert in found[index]:
                         found[index].append(insert)
 
 
@@ -123,30 +171,81 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
     return found
 
 
+
 backTrackMap = {}
 
 def find_instances(annConfig, ontology, query):
-    found = []
-    if query.HasType != "":
-        kwargs = {query.HasType:'*'}
-        hastypes = ontology.search(**kwargs)
-        #print(hastypes[0].is_a)
-        
-        for val in hastypes:
-            value = val
-            while not isinstance(value, ontology.ANNConfiguration): 
-                search = value.is_a[0].name
-                value = value.__getattr__(f'is{search}Of')
-                if len(value) > 0:
-                    value = value[0]
+    found = [[] for value in query.Value]
+    #print(query)
 
+    #find_instance_properties_new(instance, query=[], found=None, visited=None)
+    for index,value in enumerate(query.Value):
+        val = ontology[value.Name]
+        searchFound = False
+        stack = [annConfig]
+        if val in classmapping:
+            #print('here1',classmapping)
+            searchFound = True
+            val = classmapping[val][0] # assuming this works -- needs testing
+        if val in propertymapping:
+            searchFound = True
+            #print('here2',propertymapping)
 
-            if value == annConfig:
-                print('magic',query.HasType)
-                for insert in val.__getattr__(query.HasType):
-                    insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
-                    if not insert in found:
-                        found.append(insert)
+            for j in propertymapping[val]:
+                newstack = []
+                for plate in stack:
+                    newstack += plate.__getattr__(j.name)
+                stack = newstack
+                #print(stack)
+                #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
+        if searchFound:
+            #print(searchFound,value)
+            #input('found')
+            for plate in stack:
+                for food in plate.__getattr__(value.Name):
+                    #found[index].append(food)
+                    if value.Op == 'name':
+                        insert = {'type': type(food), 'value': food, 'name': value} 
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if isinstance(food, Thing) and value.Op == "has":
+                        insert = {'type': food.is_a[0].name, 'name': food.name, 'found': True, 'value': food.name}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'sequal' and isinstance(food,Thing) and value.Name == food.name:
+                        insert = {'type': food.is_a[0].name, 'value': food.name, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'less' and type(food) == int and value.Value[0] > food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'greater' and type(food) == int and value.Value[0] < food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'leq' and type(food) == int and value.Value[0] >= food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'geq' and type(food) == int and value.Value[0] <= food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    if value.Op == 'equal' and type(food) == int and value.Value[0] == food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+                    # range searches
+                    if value.Op == 'range' and type(food) == int and value.Value[0] < food and value.Value[1] > food:
+                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
+                        if not insert in found[index]:
+                            found[index].append(insert)
+        if not searchFound:
+            values = query.Value 
+            query.Value = [value]
+            found = find_instance_properties_new(annConfig, query=query, found=[[]], visited=None)
+            found[index] = found[0]
     return found
 
 
@@ -420,7 +519,7 @@ def createFacetedTaxonomy(topNode: TaxonomyNode):
     count = 0
     while len(searching) > 0:
         currentlevel = [j for i in searching for j in i.children]
-        print(currentlevel)
+        #print(currentlevel)
         nameoflevel = ''
         if len(currentlevel) > 0:
             nameoflevel = currentlevel[0].name+ f'_level_{count}'
@@ -441,9 +540,11 @@ class TaxonomyCreator:
     levels: List[Criteria]
     
     def __init__(self, ontology: Ontology, criteria: [Criteria] = []):
-        global backTrackMap 
+        global classmapping, propertymapping 
         self.ontology = ontology # Load ontology as Ontology object
 
+        classmapping, propertymapping = find_paths_to_classes(self.ontology)
+        
         self.taxonomy = None
         self.levels = criteria
     def create_level(self, ann_configurations, criteria, ontology):
@@ -465,7 +566,7 @@ class TaxonomyCreator:
         # do cluster operations
         prefind = {}
         for clusterop in clusterlist:
-            print(clusterop)
+            #print(clusterop)
             clustervecs = []
             length = -1
             for ann_config in ann_configurations:
@@ -564,7 +665,32 @@ class TaxonomyCreator:
 
             for crit in criteria:
                 items = []
-                newitems = find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
+
+                #print(classmapping,propertymapping)
+
+                '''for value in crit.Value:
+                    val = ontology[value.Name]
+                    if val in classmapping:
+                        print('here1',classmapping)
+                    if val in propertymapping:
+                        print('here2',propertymapping)
+                        stack = [ann_config]
+                        for j in propertymapping[val]:
+                            newstack = []
+                            for plate in stack:
+                                newstack += plate.__getattr__(j.name)
+                            stack = newstack
+                            #print(stack)
+                            #input()
+                            #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
+                        for plate in stack:
+                            print('plate: ',plate)
+                            print(plate.__getattr__(value.Name))
+
+                    #print(value.Name)
+                    input()
+                '''
+                newitems = find_instances(ann_config,ontology,crit) #find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
 
                 #print(len(items))
                 #input()

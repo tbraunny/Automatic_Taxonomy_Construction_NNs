@@ -17,10 +17,18 @@ HasLoss = 'hasLoss'
 
 
 class TypeOperator(BaseModel):
+    '''
+    Name: TypeOperator
+    Description: Is used to specify types and is mainly used with clustering.
+    '''
     Name: str = Field("")
     Arguments: List[int|float|str] = Field([])
 
 class ValueOperator(BaseModel):
+    '''
+    Name: ValueOperator
+    Description: Is used to query for things in a ontology and has a number of different operators.
+    '''
     Name: str = Field("")
     Op: Literal["sequal","none","range","scomp","leq","less","greater","geq","name",'has'] = Field("none")
     Value: List[str | int | float ] = Field([])
@@ -30,9 +38,9 @@ class SearchOperator(BaseModel):
     Name: SearchOperator
     Description: Has is for the edge properties like hasNetwork, hasLayer. Equals is for matching to specific names.
     '''
-    HasType: Optional[str] = Field("")
+    #HasType: Optional[str] = Field("")
     Type: Optional[TypeOperator] = None #Optional[str] = Field("")
-    Name: Optional[str] = Field("")
+    Name: str = Field("")
     Op: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
     Value: List[ValueOperator] = Field([])
     HashOn: Optional[str] = Field("type")

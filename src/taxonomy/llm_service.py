@@ -115,13 +115,13 @@ When you receive a request—such as classifying small vs. large neural networks
    - The final output should be a list of Criteria objects arranged in hierarchical order.
 
 2. SearchOperator Definition
-   - Use the HasType field to specify the ontology property to filter on (e.g., hasLayer, hasEvaluation).
-   - Use the HasType to search across all has types, but note that it doesn't support the Op field.
-   - Use the Op field to specify the comparison operator. Supported operators are: cluster, less, greater, leq, geq, equal, scomp, and range.
-   - With the cluster Op the Type field is used to specify the type of clustering. The only supported clustering is kmeans. Example: Type: 'kmeans(4,binary)' -- kmeans with four clusters and encoding words to binary. It must be specified this way. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on.
-   - Use the Value field to define the target value or range.
+   - Use the Op field to specify the comparison operator to sue clustering. Supported operators are: cluster and none    
+   - With the cluster Op the Type field is used to specify the type of clustering. The only supported clustering is kmeans. kmeans with four clusters and encoding words to binary. It must be specified this way. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on. Here is the spec: {typeoperator}
+   - Use the Value field to define what values you want to query against.
+   - The Value field takes a list of ValueOperator with schema within the Criteria: {valueoperator}
+   - The Value field has the following supported ops: less, greater, leq, geq, equal, scomp, and range, name, has. name is used to query for specific names and has for querying specific types. The has can be used to query for things like hasLayer, hasEvaluation.
 
-3. Supported HasType Values:
+3. Supported 'has' op Values:
    - Network Structure:
      - hasNetwork
      - hasLayer
@@ -167,8 +167,7 @@ To create a taxonomy with the top layer representing loss and the bottom layer r
 
 -----------------------------------------------------------
 {oc}
------------------------------------------------------------
-
+----------
 
 Replace the example properties and values as needed based on the specific query. Your output must be a structured list of Criteria objects using the defined DSL.
 Return only the format with no ``` ```
@@ -179,8 +178,8 @@ Return only the format with no ``` ```
 def llm_create_taxonomy(query : str) -> OutputCriteria:
     
     # constructing an example output criteria and search operator for the taxonomy
-    op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[600,3001],Op='range',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Value=[ValueOperator(Name=HasLoss,Op='has')])#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Op='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 
     criteria1 = Criteria(Name='Has Loss Criteria')
     criteria1.add(op)
@@ -188,7 +187,7 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
     criteria2 = Criteria(Name='Layer Num Units')
     criteria2.add(op2)
 
-    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=['layer_num_units','dropout_rate'], HasType='hasLayer')
+    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=[ValueOperator(Name='layer_num_units',Op='name'),ValueOperator(Name='dropout_rate',Op='name')])
     criteria3 = Criteria(Name='KMeans Clustering')
 
     oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
@@ -211,7 +210,7 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
     ontology = load_ontology(ontology_path=ontology_path)
 
 
-    output = chain.invoke({'user_input': query,'oc': oc, 'schema': OutputCriteria.schema_json(indent=2)}).content
+    output = chain.invoke({'user_input': query,'oc': oc,'valueoperator': ValueOperator.schema_json(indent=2), 'typeoperator': TypeOperator.schema_json(indent=2)} ).content
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
    
     #print(output)
@@ -219,7 +218,8 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
 
     # fixing the criteria -- this may fail sometimes
     thecriteria = output = fixparser.parse(output)
-    
+    #print(thecriteria)
+    #input("test2")
     return thecriteria
 
 
