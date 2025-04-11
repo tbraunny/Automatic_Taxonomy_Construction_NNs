@@ -21,17 +21,18 @@ class TypeOperator(BaseModel):
     Name: TypeOperator
     Description: Is used to specify types and is mainly used with clustering.
     '''
-    Name: str = Field("")
-    Arguments: List[int|float|str] = Field([])
+    Name: str = ""
+    Arguments: List[int|float|str] = []
 
 class ValueOperator(BaseModel):
     '''
     Name: ValueOperator
     Description: Is used to query for things in a ontology and has a number of different operators.
+    Name: Is a property of the knowledge base.
     '''
-    Name: str = Field("")
-    Op: Literal["sequal","none","range","scomp","leq","less","greater","geq","name",'has'] = Field("none")
-    Value: List[str | int | float ] = Field([])
+    Name: str = "" #Field("", description="A property of the knowledgebase that the values represent.")
+    Op: Literal["sequal","none","range","scomp","leq","less","greater","geq","name",'has'] = "none"
+    Value: List[str | int | float ] = []
 
 class SearchOperator(BaseModel):
     '''
@@ -41,9 +42,9 @@ class SearchOperator(BaseModel):
     #HasType: Optional[str] = Field("")
     Type: Optional[TypeOperator] = None #Optional[str] = Field("")
     Name: str = Field("")
-    Op: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
-    Value: List[ValueOperator] = Field([])
-    HashOn: Optional[str] = Field("type")
+    Cluster: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
+    Value: List[ValueOperator] = []
+    HashOn: Literal["type", "found"] = "type"
 
     #has: Optional [ List ] = []
     #equals: Optional[ List ] = []

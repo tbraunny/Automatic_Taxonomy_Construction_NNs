@@ -122,7 +122,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                         found[index].append(insert)
                 if isinstance(value, Thing) and searchValue.Op == "has":
                     inserts = instance.__getattr__(searchValue.Name)
-                    if insert:
+                    if inserts:
                         for insert in inserts:
                             insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
                             if not insert in found[index]:
@@ -194,7 +194,10 @@ def find_instances(annConfig, ontology, query):
             for j in propertymapping[val]:
                 newstack = []
                 for plate in stack:
-                    newstack += plate.__getattr__(j.name)
+                    try:
+                        newstack += plate.__getattr__(j.name)
+                    except Exception as e:
+                        logger.warning(f'Problem found with {query} with error: {e}')
                 stack = newstack
                 #print(stack)
                 #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
@@ -244,8 +247,9 @@ def find_instances(annConfig, ontology, query):
         if not searchFound:
             values = query.Value 
             query.Value = [value]
-            found = find_instance_properties_new(annConfig, query=query, found=[[]], visited=None)
-            found[index] = found[0]
+            foundproperties = find_instance_properties_new(annConfig, query=query, found=[[]], visited=None)
+            found[index] = foundproperties[0]
+
     return found
 
 
@@ -256,35 +260,36 @@ def get_property_from_ann_for_clustering(annconfig, value, query, ontology, vect
     #items += find_instance_properties(annconfig, has_property=[], equals=[{'type':'name','value':value}], found=[])
     
     # coping original values
-    HasType = query.HasType
-    values = query.Value
+    #HasType = query.HasType
+    #values = query.Value
     
     # masking value
-    query.Value = []
+    #query.Value = []
     
 
-    if query.HasType != '':
+    #if query.HasType != '':
         #items.append(find_instances(annconfig,ontology,query))
         #items.append(find_instance_properties_new(annconfig, query, found=[]))
     
         #returnlist = [[str(item['type']) for item in items[0]]]
-        items = []
+    #    items = []
 
     # masking has type
-    query.HasType = ''
+    #query.HasType = ''
 
 
     # going value by value to get properies
-    if value != None and type(value) == list:
+    #if value != None and type(value) == list:
         #for value in values:
         #    query.Value = [value]
-        query.Value = values
-        items = find_instance_properties_new(annconfig, query, found=[ [] for index, value in enumerate(query.Value)])
-
+    #    query.Value = values
+    #    items = find_instance_properties_new(annconfig, query, found=[ [] for index, value in enumerate(query.Value)])
+    
+    items = find_instances(annconfig, ontology, query)
 
     # restore original values 
-    query.HasType = HasType
-    query.Value = values
+    #query.HasType = HasType
+    #query.Value = values
    
     # need to do this better....
     
@@ -558,7 +563,7 @@ class TaxonomyCreator:
 
         # seperate out cluster criteria and other things that are not clustering
         for searchop in criteria:
-            if searchop.Op != None and  'cluster' in searchop.Op:
+            if searchop.Cluster != None and  'cluster' in searchop.Cluster:
                 clusterlist.append(searchop)
             else:
                 otherlist.append(searchop)
@@ -589,8 +594,13 @@ class TaxonomyCreator:
                     #if len(arguments) > 0:
                     #    centroids = int(arguments[0])
                     #    whattocast = str(arguments[1])
-                    centroids = int(clusterop.Type.Arguments[0])
-                    whattocast = str(clusterop.Type.Arguments[1])
+                    if len(clusterop.Type.Arguments) == 2:
+                        centroids = int(clusterop.Type.Arguments[0])
+                        whattocast = str(clusterop.Type.Arguments[1])
+                    else:
+                        centroids = 10
+                        whattocast = 'binary'
+                        logger.warn('No Arguments given')
 
                     str_mapping = {i : {} for i in range(len(clusterop.Value))} # precreate mapping for strings
                     str_count = {i : 0 for i in range(len(clusterop.Value))} # precreate mapping for strings
@@ -826,7 +836,7 @@ def main():
     ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
     #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Op='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
@@ -834,7 +844,7 @@ def main():
     #criteria2 = Criteria(Name='HasTaskType')
     #criteria2.add(op2)
    
-    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
+    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
 
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
@@ -843,7 +853,7 @@ def main():
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria]
+    criterias = [criteria,criteria3]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
     print('after load')

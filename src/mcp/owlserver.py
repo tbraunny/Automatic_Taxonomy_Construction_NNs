@@ -146,16 +146,16 @@ def get_classes() -> str:
 @mcp.tool()
 def create_taxonomy_tool(query: str) -> str():
     """
-    Takes in a sentence from the user that the llm clarifies and underneath a faceted taxonomy s returned
+    Takes in a sentence from the user that the llm clarifies and a faceted taxonomy is returned
     """
-    #try:
-    oc = llm_service.llm_create_taxonomy(query)
-    taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
-    format='json'
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    try:
+        oc = llm_service.llm_create_taxonomy(query, onto)
+        taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
+        format='json'
+        topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
         #output = 'this is a test'
-    #except Exception as e: 
-    #    return f"Error creating taxonomy: {e}"
+    except Exception as e: 
+        return f"Error creating taxonomy: {e}"
         
     return str(output)
 

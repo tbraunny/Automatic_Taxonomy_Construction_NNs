@@ -173,13 +173,38 @@ Replace the example properties and values as needed based on the specific query.
 Return only the format with no ``` ```
 '''
 
+system_prompt = '''
+You are a knight of the order of the unicorn and are an expert in constructing taxonomy-based queries using a structured data schema language. Your primary goal is to generate search constraints using SearchOperator objects and arrange them into Criteria objects. Each Criteria corresponds to a single layer in the taxonomy, and each layer (i.e., each Criteria) is a union of elements.
 
+When you receive a request—such as classifying small vs. large neural networks or creating a taxonomy with a top layer representing a loss function and a bottom layer representing a range of units—follow these guidelines:
 
-def llm_create_taxonomy(query : str) -> OutputCriteria:
+1. Taxonomy Construction
+   - Each Criteria represents one level in the taxonomy.
+   - A single level (one Criteria) can contain one or more SearchOperator objects.
+   - The final output should be a list of Criteria objects arranged in hierarchical order.
+2. SearchOperator Definition
+   - The name for Search operator does not change taxonomy and it is recommended to make it something descriptive
+   - Use the Cluster field to specify the comparison operator to use clustering. Supported operators are: cluster and none    
+   - The Type field is used to specify the type of clustering. The only supported clustering is kmeans. kmeans with four clusters and encoding words to binary. It must be specified this way. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on. Here is the spec: {typeoperator}
+   - Use the Value field to define what values you want to query against and is Value Operator.
+3. ValueOperator Definition
+   - The Value field takes a list of int,string,float.
+   - The Op field has the following supported ops: less, greater, leq, geq, equal, scomp, and range, name, has. name is used to query for specific names and has for querying specific types. The has can be used to query for things like hasLayer, hasEvaluation.
+   - The Name field has the following supported names: {properties}
+4. Response Format
+   - Return only the structured DSL in Python (or JSON) format.
+   - Format your answer as a Python code block similar to the example below or following the schema below.
+   - Do not include additional explanation unless explicitly requested.
+
+Example API block: {oc}
+Do your best and follow the following schema no matter what: {schema}
+'''
+
+def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     
     # constructing an example output criteria and search operator for the taxonomy
     op = SearchOperator(Value=[ValueOperator(Name=HasLoss,Op='has')])#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Op='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 
     criteria1 = Criteria(Name='Has Loss Criteria')
     criteria1.add(op)
@@ -187,7 +212,7 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
     criteria2 = Criteria(Name='Layer Num Units')
     criteria2.add(op2)
 
-    op3 = SearchOperator(Op='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=[ValueOperator(Name='layer_num_units',Op='name'),ValueOperator(Name='dropout_rate',Op='name')])
+    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=[ValueOperator(Name='layer_num_units',Op='name'),ValueOperator(Name='dropout_rate',Op='name')])
     criteria3 = Criteria(Name='KMeans Clustering')
 
     oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
@@ -196,7 +221,9 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
     parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
     criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
-    model = ChatOllama(model="deepseek-r1:32b-qwen-distill-q4_K_M",temperature=0.1)
+    #model='qwq:32b'
+    model = 'llama3.2:latest'
+    model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=20000)
 
     # a fixing parser if the original model doesnt work
     fixparser = OutputFixingParser.from_llm(parser=parser, llm=model)
@@ -206,11 +233,18 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
     chain = criteriaprompt | model
 
     #ontology_path = f"./data/owl/annett-o-test.owl" 
-    ontology_path = f"./data/owl/fairannett-o.owl" 
-    ontology = load_ontology(ontology_path=ontology_path)
+    #ontology_path = f"./data/owl/fairannett-o.owl" 
+    #ontology = load_ontology(ontology_path=ontology_path)
 
+    #for prop in ontology.get_properties():
+    properties = list(ontology.data_properties()) + list(ontology.object_properties()) + list(ontology.classes())
+    properties = [prop.name for prop in properties]
+    print(properties)
+    #input()
+    output = chain.invoke({'user_input': query,'oc': oc,'schema': json.dumps(OutputCriteria.model_json_schema()), 'valueoperator': json.dumps(ValueOperator.model_json_schema()), 'typeoperator': json.dumps(TypeOperator.model_json_schema()), "properties": json.dumps(properties).replace('"','') } ).content
+    print(output)
+    #input('output')
 
-    output = chain.invoke({'user_input': query,'oc': oc,'valueoperator': ValueOperator.schema_json(indent=2), 'typeoperator': TypeOperator.schema_json(indent=2)} ).content
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
    
     #print(output)
@@ -218,16 +252,20 @@ def llm_create_taxonomy(query : str) -> OutputCriteria:
 
     # fixing the criteria -- this may fail sometimes
     thecriteria = output = fixparser.parse(output)
+    handle = open('criteria.json','w')
+    handle.write(json.dumps(thecriteria.model_dump()))
+    handle.close()
     #print(thecriteria)
     #input("test2")
     return thecriteria
 
 
 if __name__ == '__main__':
-    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that preresents all neural network?')
-
     ontology_path = f"./data/owl/fairannett-o.owl" 
+    #ontology_path = f"./data/owl/annett-o-test.owl" 
     ontology = load_ontology(ontology_path=ontology_path)
+
+    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that preresents all neural network?', ontology)
     
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
     topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
