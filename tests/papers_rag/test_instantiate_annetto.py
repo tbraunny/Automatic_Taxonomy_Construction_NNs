@@ -1,5 +1,5 @@
 import tests.papers_rag.instantiate_annetto as inst_ann
-import  utils.llm_service as llm_service
+import  tests.deprecated.llm_service as llm_service
 
 from owlready2 import *
 from unittest.mock import MagicMock, patch

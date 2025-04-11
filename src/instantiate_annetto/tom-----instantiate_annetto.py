@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 import hashlib
 from datetime import datetime
 import time
@@ -7,7 +8,7 @@ from typing import Dict, Any, Union, List, Optional
 from utils.onnx_db import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
-from rapidfuzz import process, fuzz
+from rapidfuzz import process , fuzz
 from pydantic import BaseModel
 import warnings
 from utils.constants import Constants as C
@@ -16,6 +17,7 @@ from utils.owl_utils import (
     assign_object_property_relationship,
     create_subclass,
     get_all_subclasses,
+    get_class_instances
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
 
@@ -76,7 +78,10 @@ class OntologyInstantiator:
             self.logger.error("Expected a string for output OWL path.")
             raise TypeError("Expected a string for output OWL path.")
         
-        self.ontology = get_ontology(ontology_path).load()
+        if not ontology_path:
+            self.ontology = get_ontology(f"./data/owl/{C.ONTOLOGY.FILENAME}").load()
+        else:
+            self.ontology = get_ontology(ontology_path).load()
         self.list_json_doc_paths = list_json_doc_paths
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
@@ -177,21 +182,25 @@ class OntologyInstantiator:
 
         return class_name_map[match] if score >= threshold else None
 
-    def _fuzzy_match_list(self , class_names: List[str], threshold: int = 80) -> Optional[str]:
+    def _fuzzy_match_list(self , class_names: List[str] , instance=None , threshold: int = 80) -> Optional[str]:
         """
         Perform fuzzy matching to find the best match for an instance in a list of strings.
 
-        :param instance_name: The instance name.
         :param class_names: A list of string names to match with.
+        :param instance_name: The instance name.
         :param threshold: The minimum score required for a match.
         :return: The best-matching string or None if no good match is found.
         """
+        if not instance:
+            instance = self.ann_config_name
+
         if not all(isinstance(name, str) for name in class_names):
             raise TypeError("Expected class_names to be a list of strings.")
         if not isinstance(threshold, int):
             raise TypeError("Expected threshold to be an integer.")
-
-        match, score, _ = process.extractOne(self.ann_config_name, class_names, scorer=fuzz.ratio)
+        
+        class_names_lower = [name.lower() for name in class_names]
+        match, score, _ = process.extractOne(self.ann_config_name.lower(), class_names_lower, scorer=fuzz.ratio)
 
         return match if score >= threshold else None
 
@@ -473,6 +482,164 @@ class OntologyInstantiator:
                 f"Error processing objective functions: {e}", exc_info=True
             )
 
+    def _extract_network_data(self) -> list:
+        """
+        Extract name & type for each layer found within relevant parsed code
+
+        :return List of dictionaries containing name & type per layer
+        """
+        network_json_path = glob.glob(f"data/{self.ann_config_name}/*.json")
+        extracted_data: list = []
+
+        for file in network_json_path:
+            with open(file , "r") as f:
+                try:
+                    data: dict = json.load(f)
+
+                    if 'network' in data and isinstance(data['network'] , list):
+                        for layer in data['network']:
+                            if 'name' in layer and 'type' in layer and layer['type'] is not None:
+                                extracted_data.append({'name': layer['name'] , 'type': layer['type']})
+                except Exception as e:
+                    self.logger.exception(f"Error extracting JSON network data in {file} {e}" , exc_info=True)
+        
+        return extracted_data
+    
+    def _process_parsed_code(self , network_instance: Thing) -> None:
+        """
+        Process code that has been parsed into specific JSON structure to instantiate
+        an ontology for the network associated with the code
+
+        NOTE: modularize w onnx db parsing
+        - include parameter counts per layer (allow to compute model total)
+        - insert new models into the onnx database? (still somewhat unsure about this, how to best accomplish it)
+
+        :param network_instance: the network instance
+        :return None
+        """
+        # list of activation functions (append to as needed)
+        activation_functions = [
+            "Softmax",
+            "ReLU",
+            "Tanh",
+            "Linear",
+            "GAN_Generator_Tanh",
+            "GAN_Generator_ReLU",
+            "GAN_Discriminator_Sigmoid",
+            "GAN_Discriminator_ReLU",
+            "AAE_Encoder_Linear",
+            "AAE_Encoder_ReLU",
+            "AAE_Encoder_Softmax",
+            "AAE_Encoder_ZClone_ReLU",
+            "AAE_Encoder_YClone_ReLU",
+            "AAE_Decoder_Sigmoid",
+            "AAE_Decoder_ReLU",
+            "AAE_Style_Discriminator_ReLU",
+            "AAE_Style_Discriminator_Sigmoid",
+            "AAE_Label_Discriminator_Sigmoid",
+            "AAE_Label_Discriminator_ReLU",
+            "ELU",
+            "Hardshrink",
+            "Hardsigmoid",
+            "Hardtanh",
+            "Hardswish",
+            "LeakyReLU",
+            "LogSigmoid",
+            "MultiheadAttention",
+            "PReLU",
+            "ReLU",
+            "ReLU6",
+            "RReLU",
+            "SELU",
+            "CELU",
+            "GELU",
+            "Sigmoid",
+            "SiLU",
+            "Mish",
+            "Softplus",
+            "Softshrink",
+            "Softsign",
+            "Tanh",
+            "Tanhshrink",
+            "Threshold",
+            "GLU",
+            # Non-Linear activations (others)
+            "Softmin",
+            "Softmax",
+            "Softmax2d",
+            "LogSoftmax",
+            "AdaptiveLogSoftmaxWithLoss"
+        ]
+
+        try:
+            network_data: dict = self._extract_network_data()
+            if network_data is None:
+                warnings.warn("No parsed code available for given network")
+
+            layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
+            # NOTE: uncomment if method found for instantiating previously unknown activation functions
+            #actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
+            #layer_subclasses.extend(actfunc_subclasses)
+            name_to_instance: dict = {} # easier lookup between actfunc & layer, keeps instance in scope, less calls to ontology
+
+            for layer in network_data:
+                layer_name = layer['name']
+                layer_type = layer['type']
+
+                best_actfunc_match = self._fuzzy_match_class(layer_type , activation_functions , 70)
+                #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
+
+                if best_actfunc_match: # if activation function present
+                    actfunc_instance = self._instantiate_and_format_class(best_actfunc_match , layer_name)
+                    self._link_instances(network_instance , actfunc_instance , self.ontology.hasActivationFunction)
+                    name_to_instance[layer_name] = actfunc_instance
+                else: 
+                    best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
+                    if not best_layer_match: # create subclass if layer type not found
+                        best_layer_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
+                        layer_subclasses.append(best_layer_match)
+
+                    layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
+                    self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+
+                    # attach number of parameters to layer
+                    if layer['num_params']:
+                        self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer['num_params'])
+                    else:
+                        self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
+                    name_to_instance[layer_name] = layer_instance
+
+            # second run for instantiating next, prev, and other linkages
+            for layer in network_data:
+                layer_name = layer['name']
+                layer_type = layer['type']
+                prev_layer = layer.get('input' , [])
+                next_layer = layer.get('target' , [])
+
+                layer_instance = name_to_instance.get(layer_name)
+                if not layer_instance:
+                    self.logger.error(f"Layer instance not found for {layer_name} , linkage unsuccessful")
+
+                for prev in prev_layer: # link nextLayer & hasInputLayer
+                    prev_layer_instance = name_to_instance.get(prev)
+                    if prev_layer_instance:
+                        self._link_instances(layer_instance , prev_layer_instance , self.ontology.previousLayer)
+                        self._link_instances(network_instance , layer_instance , self.ontology.hasInputLayer)
+                    else:
+                        self.logger.error(f"Previous layer {prev} of {layer} not instantiated")
+                
+                for next in next_layer: # link prevLayer & hasOutputLayer
+                    next_layer_instance = name_to_instance.get(next)
+                    if next_layer_instance:
+                        self._link_instances(layer_instance , next_layer_instance , self.ontology.nextLayer)
+                        self._link_instances(network_instance , layer_instance , self.ontology.hasOutputLayer)
+                    else:
+                        self.logger.error(f"Next layer {next} of {layer} not instantiated")
+
+            self.logger.info(f"All layers of {self.ann_config_name} processed")
+        except Exception as e:
+            self.logger.error(f"Error processing parsed code {e}" , exc_info=True)
+
     def _process_layers(self, network_instance: Thing) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
@@ -498,13 +665,20 @@ class OntologyInstantiator:
             best_model_name = self._fuzzy_match_list(models_list)
             if not best_model_name:
                 warnings.warn(f"Model name {best_model_name} not found in database")
-                pass # throw to josue's script for llm instantiation
+                self._llm_process_layers(network_instance) # for now...
+                # throw to josue's script for llm instantiation?
 
             # fetch layer list of relevant model
             layer_list = onn.fetch_layers(best_model_name)
 
             for name in layer_list:
                 layer_name , layer_type , model_id , model_name = name
+
+                # Trying to be robust to weird db situations
+                if layer_name is None:
+                    continue
+                if layer_name.lower() == self.ann_config_name.lower():
+                    continue
 
                 best_subclass_match = self._fuzzy_match_class(layer_type , subclasses , 70)
                 if not best_subclass_match: # create subclass if layer type not found in ontology
@@ -519,13 +693,13 @@ class OntologyInstantiator:
                 layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
                 self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
-            self.logger.info(f"All layers of {model_name} processed")
+            self.logger.info(f"All layers of {model_name} successfully processed")
 
         except Exception as e:
             print("ERROR")
             self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
 
-    def _old_process_layers(self, network_instance: str) -> None:
+    def _llm_process_layers(self, network_instance: str) -> None:
         """
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
         """
@@ -1063,7 +1237,8 @@ class OntologyInstantiator:
                 )
 
                 # Process the network class and it's components.
-                self._process_network(ann_config_instance)
+                #self._process_network(ann_config_instance)
+                self._process_parsed_code(ann_config_instance) # network name?
 
                 # Process TrainingStrategy and it's components.
                 # self._process_training_strategy(ann_config_instance)
@@ -1084,6 +1259,9 @@ class OntologyInstantiator:
                 exc_info=True,
             )
             raise e
+
+def test_run_layers():
+    pass
 
 
 # For standalone testing

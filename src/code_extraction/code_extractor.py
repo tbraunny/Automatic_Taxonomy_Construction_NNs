@@ -8,6 +8,7 @@ import os
 from utils.onnx_db import check_onnx
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
+#from tests.deprecated.pt_extractor import PTExtractor
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
@@ -101,7 +102,7 @@ class CodeProcessor(ast.NodeVisitor):
                 model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
                 self.model_name = node.name
 
-                self.pytorch_graph = json.loads(extract_graph(model)) # extract_graph returns json.dumps                
+                self.pytorch_graph: dict = extract_graph(model) # extract_graph returns dict                
         
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
@@ -204,22 +205,32 @@ def process_code_file(file_path):
     """
     try:
         py_files = glob.glob(f"{file_path}/*.py")
+        #pt_files = glob.glob(f"{file_path}/*.pt") # still working on it
         onnx_files = glob.glob(f"{file_path}/*.onnx")
         pb_files = glob.glob(f"{file_path}/*.pb")
 
+
+        #save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
         if onnx_files:
             logger.info(f"ONNX files detected: {onnx_files}")
             for count , file in enumerate(onnx_files):
                 logger.info(f"Parsing ONNX file {file}...")
-                output_json = file.replace(".onnx" , f"onnx_{count}.json")
-                ONNXProgram().extract_properties(file , savePath=output_json) # how should we run the onnx extractor
-                print("ONNX file parsed & saved to: " , output_json)
+                #output_json = file.replace(".onnx" , f"onnx_{count}.json")
+                onnx_graph: dict = ONNXProgram().compute_graph_extraction(file)
+                save_json(file.replace(".onnx" , f"_onnx_{count}.json") , onnx_graph)
         if pb_files:
             logger.info(f"TensorFlow files detected: {pb_files}")
             for count , file in enumerate(pb_files):
                 logger.info(f"Parsing TensorFlow file {file}...")
-                output_json = file.replace(".pb" , f"_pbcode_{count}.json")
-                PBExtractor.extract_compute_graph(file , output_json)
+                #output_json = file.replace(".pb" , f"_pbcode_{count}.json")
+                pb_graph = PBExtractor.extract_compute_graph(file)
+                save_json(file.replace(".pb" , f"_pb_{count}.json") , pb_graph)
+        # if pt_files:
+        #     logger.info(f"PyTorch weights & biases detected: {pt_files}")
+        #     for count , file in enumerate(pt_files):
+        #         logger.info(f"Parsing PyTorch file {file}...")
+        #         output_json = file.replace(".pt" , f"_ptcode{count}.json")
+        #         PTExtractor.extract_compute_graph(file , output_json)
         if not py_files:
             print(file_path)
             print(py_files)
@@ -246,8 +257,7 @@ def process_code_file(file_path):
 
             if processor.pytorch_graph: # symbolic graph dictionary
                 logger.info(f"PyTorch code found within file {file}")
-                content = processor.pytorch_graph
-                save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
+                save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
             # elif onnx_model: # check for model in onnx
             #     logger.info(f"Model name '{onnx_model}' found within ONNX database")
             #     # instantiate it
@@ -265,7 +275,7 @@ def process_code_file(file_path):
 
 def main():
     ann_name = "alexnet"
-    filepath = f"data/onnx_testing"
+    filepath = f"data/{ann_name}"
     #logger.info(f"File(s) found: {filepath}")
 
     # simply provide the file path that may contain the related network code files

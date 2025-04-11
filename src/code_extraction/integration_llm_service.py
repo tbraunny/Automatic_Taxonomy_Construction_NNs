@@ -2,7 +2,7 @@ import unittest
 import os
 import glob
 import pytest
-from utils.llm_service import init_engine , query_llm
+from tests.deprecated.llm_service import init_engine , query_llm
 import code_extractor
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 

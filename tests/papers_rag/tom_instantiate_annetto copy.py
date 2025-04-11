@@ -17,7 +17,7 @@ from utils.owl_utils import (
     get_all_subclasses,
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
-from utils.llm_service import init_engine, query_llm
+from tests.deprecated.llm_service import init_engine, query_llm
 from rapidfuzz import process, fuzz
 
 try:
