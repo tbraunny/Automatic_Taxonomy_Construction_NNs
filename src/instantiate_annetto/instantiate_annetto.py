@@ -15,7 +15,7 @@ from owlready2 import (
 )
 
 from utils.constants import Constants as C
-from utils.onnx_db import OnnxAddition
+# from utils.onnx_db import OnnxAddition
 from utils.annetto_utils import int_to_ordinal, load_annetto_ontology
 from utils.util import get_sanitized_attr
 from utils.llm_service import init_engine, query_llm
@@ -43,7 +43,7 @@ class OntologyInstantiator:
         self,
         list_json_doc_paths: List[str],
         ann_config_name: str,
-        ontology: Ontology = load_annetto_ontology("base"),
+        ontology: Ontology,
         output_owl_path: str = C.ONTOLOGY.TEST_ONTOLOGY_PATH,
     ) -> None:
         """
@@ -1975,7 +1975,7 @@ if __name__ == "__main__":
         instantiate_annetto(
             model_name,
             f"data/{model_name}",
-            load_annetto_ontology(release_type="base"),
+            load_annetto_ontology(return_onto_from_release="base"),
             C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         )
     time_end = time.time()
