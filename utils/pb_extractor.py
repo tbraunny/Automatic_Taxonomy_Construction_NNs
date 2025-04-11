@@ -16,7 +16,7 @@ uselss_layers = [ # layers that do not provide us any benefit
 ]
 
 class PBExtractor:
-    def extract_compute_graph(pb_file: str , output_json: str) -> None:
+    def extract_compute_graph(pb_file: str , output_json: str) -> dict:
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
         NOTE: useless layer types: DecodeJPEG, Cast, ExpandDims, ResizeBilinear, sub (tensor subtraction),
@@ -89,10 +89,11 @@ class PBExtractor:
 
             minimal_graph.append(node_info)
 
-        with open(output_json, "w") as json_file:
-            json.dump({"network": minimal_graph}, json_file, indent=3)
+        return minimal_graph
+        # with open(output_json, "w") as json_file:
+        #     json.dump({"network": minimal_graph}, json_file, indent=3)
         
-        print(f"Graph extracted and saved to {output_json}")
+        # print(f"Graph extracted and saved to {output_json}")
 
 
 if __name__ == "__main__":

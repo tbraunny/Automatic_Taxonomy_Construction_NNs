@@ -475,7 +475,7 @@ class ONNXProgram:
         ort_outs = ort_session.run(outputs, input_data_dict)
         ort_outs = OrderedDict(zip(outputs, ort_outs))
 
-    def compute_graph_extraction(self,onnx_file,outfile=None,savePath=''):
+    def compute_graph_extraction(self,onnx_file,outfile=None,savePath='') -> dict:
         model = onnx.load(onnx_file)
 
         params = count_onnx_params_by_layer(model)
@@ -526,15 +526,24 @@ class ONNXProgram:
             if layer_name in layer_params:
                 node['num_param'] = layer_params[layer_name]
 
+        return model_json_dict
+
+        #return json.dumps(model_json_dict , indent=4)
+
         # Save as JSON
-        if savePath == '':
-            savePath = '.'
-        outfile = onnx_file.replace(".onnx" , "_parsed.json")
-        with open(outfile , "w") as f:
-            json.dump(model_json_dict , f , indent=2)
+        # if savePath == '':
+        #     savePath = '.'
+        # outfile = onnx_file.replace(".onnx" , "_parsed.json")
+        # with open(outfile , "w") as f:
+        #     json.dump(model_json_dict , f , indent=2)
 
 if __name__ == '__main__':
     #extract_properties('adv_inception_v3_Opset16.onnx',model_type="cnn",model_name="inception")
     #fire.Fire(ONNXProgram)
     ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx" , parameters=True)
-    ONNXProgram().compute_graph_extraction("data/onnx_testing/light_resnet50.onnx")
+    onnx_graph = ONNXProgram().compute_graph_extraction("data/onnx_testing/light_resnet50.onnx")
+    
+    with open("data/onnx_testing/light_resnet50_parsed.onnx" , "w") as f:
+        json.dump(onnx_graph , f , indent=2)
+
+    print("ONNX parsed!")
