@@ -43,7 +43,7 @@ class PBExtractor:
                 consumer_map[clean_input].append(node.name)
 
         const_nodes = {}
-        minimal_graph: list = []
+        minimal_graph: dict = {"graph": {"node": []}}
         for node in graph_def.node:  
             if node.op == "Const": # Const has become useful!
                 try:
@@ -57,9 +57,10 @@ class PBExtractor:
             target_layers: list = consumer_map.get(node.name , [])
             node_info: dict = {
                 "name": node.name,
-                "type": None, # for flagging in instantation (layers without a type)
-                "target": target_layers,
+                "op_type": None, # for flagging in instantation (layers without a type)
+                "output": target_layers,
                 "input": list(node.input),
+                "attributes": [],
                 "num_params": None
             }
 
@@ -76,7 +77,7 @@ class PBExtractor:
                 "Concat": "cat",
                 "reduce_prod": "prod"
             }
-            node_info["type"] = tf_to_pytorch_type_map.get(node.op, node.op)
+            node_info["op_type"] = tf_to_pytorch_type_map.get(node.op, node.op)
 
             total_params = 0
             for input_name in node.input:
@@ -87,7 +88,7 @@ class PBExtractor:
 
             node_info["num_params"] = int(total_params)
 
-            minimal_graph.append(node_info)
+            minimal_graph['graph']['node'].append(node_info)
 
         return minimal_graph
         # with open(output_json, "w") as json_file:
@@ -98,4 +99,9 @@ class PBExtractor:
 
 if __name__ == "__main__":
     pb_file_path = "data/pb_testing/inception.pb" 
-    PBExtractor.extract_compute_graph(pb_file_path, "data/pb_testing/pb_inception_architecture.json")
+    pb_graph = PBExtractor.extract_compute_graph(pb_file_path, "data/pb_testing/pb_inception_architecture.json")
+
+    with open("data/pb_testing/pb_inception_test.json" , "w") as f:
+        json.dump(pb_graph , f , indent=2)
+
+    print("Tensorflow parsed!")

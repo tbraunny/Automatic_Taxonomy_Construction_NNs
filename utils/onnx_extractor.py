@@ -478,39 +478,39 @@ class ONNXProgram:
     def compute_graph_extraction(self,onnx_file,outfile=None,savePath='') -> dict:
         model = onnx.load(onnx_file)
 
-        params = count_onnx_params_by_layer(model)
+        # params = count_onnx_params_by_layer(model)
 
-        # Print summary
-        for p in params:
-            print(f"{p['layer_name']} ({p['op_type']}): {p['params']} parameters")
+        # # Print summary
+        # for p in params:
+        #     print(f"{p['layer_name']} ({p['op_type']}): {p['params']} parameters")
 
-        # less manual way of calculating parameters per layer
-        inferred_model = SymbolicShapeInference.infer_shapes(model)
+        # # less manual way of calculating parameters per layer
+        # inferred_model = SymbolicShapeInference.infer_shapes(model)
 
-        # Map initializers by name for quick lookup
-        initializer_map = {init.name: init for init in inferred_model.graph.initializer}
+        # # Map initializers by name for quick lookup
+        # initializer_map = {init.name: init for init in inferred_model.graph.initializer}
 
-        layer_param_counts = {}
+        # layer_param_counts = {}
 
-        for node in inferred_model.graph.node:
-            param_count = 0
-            for input_name in node.input:
-                if input_name in initializer_map:
-                    param_count += count_params(initializer_map[input_name])
+        # for node in inferred_model.graph.node:
+        #     param_count = 0
+        #     for input_name in node.input:
+        #         if input_name in initializer_map:
+        #             param_count += count_params(initializer_map[input_name])
             
-            if param_count > 0:
-                layer_param_counts[node.name or node.output[0]] = {
-                    "op_type": node.op_type,
-                    "params": param_count
-        }
+        #     if param_count > 0:
+        #         layer_param_counts[node.name or node.output[0]] = {
+        #             "op_type": node.op_type,
+        #             "params": param_count
+        # }
 
 
-        for layer, info in layer_param_counts.items():
-            print(f"{layer}: {info['op_type']} → {info['params']} learnable parameters")
+        # for layer, info in layer_param_counts.items():
+        #     print(f"{layer}: {info['op_type']} → {info['params']} learnable parameters")
 
 
-        # Calculate the parameters by layer
-        layer_params = extract_params_by_layer(model)
+        # # Calculate the parameters by layer
+        # layer_params = extract_params_by_layer(model)
 
         # Convert the modified model to JSON format
         model_json = MessageToJson(model)
@@ -521,10 +521,10 @@ class ONNXProgram:
         model_json_dict = json.loads(model_json)
 
         # modify onnx dict to include num params by corresponding layer
-        for node in model_json_dict['graph']['node']:
-            layer_name = node.get('name', '')
-            if layer_name in layer_params:
-                node['num_param'] = layer_params[layer_name]
+        # for node in model_json_dict['graph']['node']:
+        #     layer_name = node.get('name', '')
+        #     if layer_name in layer_params:
+        #         node['num_param'] = layer_params[layer_name]
 
         return model_json_dict
 
@@ -543,7 +543,7 @@ if __name__ == '__main__':
     ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx" , parameters=True)
     onnx_graph = ONNXProgram().compute_graph_extraction("data/onnx_testing/light_resnet50.onnx")
     
-    with open("data/onnx_testing/light_resnet50_parsed.onnx" , "w") as f:
+    with open("data/onnx_testing/light_resnet50__param_parsed.json" , "w") as f:
         json.dump(onnx_graph , f , indent=2)
 
     print("ONNX parsed!")

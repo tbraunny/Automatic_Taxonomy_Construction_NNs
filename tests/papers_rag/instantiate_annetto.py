@@ -614,7 +614,7 @@ class OntologyInstantiator:
                 layer_name = layer['name']
                 layer_type = layer['type']
                 prev_layer = layer.get('input' , [])
-                next_layer = layer.get('target' , [])
+                next_layer = layer.get('output' , [])
 
                 layer_instance = name_to_instance.get(layer_name)
                 if not layer_instance:

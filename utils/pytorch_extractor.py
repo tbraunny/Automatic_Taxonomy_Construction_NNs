@@ -8,7 +8,7 @@ from collections import defaultdict
 
 def extract_graph(model) -> dict:
     traced = symbolic_trace(model)
-    computeGraph = {"network": []}
+    computeGraph = {"graph": {"node": []}}
 
     node_outputs: dict = defaultdict(list) # bypass init loop
     for node in traced.graph.nodes:
@@ -19,11 +19,11 @@ def extract_graph(model) -> dict:
     for node in traced.graph.nodes: 
         node_info = {
             "name": node.name,
-            "type": None,
+            "op_type": None,
             "op": node.op,
-            "target": node_outputs[node.name],#str(node.target),
+            "output": node_outputs[node.name],#str(node.target),
             "input": list([str(arg) for arg in node.args]),  # Convert inputs to strings for JSON serialization
-            "parameters": {},  # Initialize empty parameters
+            "attributes": {},  # Initialize empty parameters
             "num_params": None # important stuff
         }
 
@@ -31,11 +31,11 @@ def extract_graph(model) -> dict:
         if node.op == 'call_module':
             module = traced.get_submodule(node.target)
             module_type = type(module).__name__
-            node_info['type'] = module_type
+            node_info['op_type'] = module_type
 
             # Retrieve shapes of parameters
             param_shapes = {k: list(v.shape) for k, v in module.state_dict().items()}
-            node_info['parameters'] = param_shapes
+            node_info['attributes'] = param_shapes
 
             # Retrieve total number of learned parameters
             param_count: int = 0
@@ -44,14 +44,14 @@ def extract_graph(model) -> dict:
             node_info["num_params"] = param_count
 
         elif node.op == 'call_function':
-            node_info['type'] = f"Function: {str(node.target)}"
+            node_info['op_type'] = f"Function: {str(node.target)}"
             # Get the name of the built-in function (like add, relu, etc.)
             if hasattr(node.target, '__name__'):
                 func_name = node.target.__name__
             else:
                 func_name = str(node.target)  # Fallback for complex functions
-            node_info['type'] = f"{func_name}"
-        computeGraph['network'].append(node_info)
+            node_info['op_type'] = f"{func_name}"
+        computeGraph['graph']['node'].append(node_info)
 
     # Convert to JSON and return
     return computeGraph
