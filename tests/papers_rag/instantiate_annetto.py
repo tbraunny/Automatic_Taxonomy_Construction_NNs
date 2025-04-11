@@ -601,6 +601,7 @@ class OntologyInstantiator:
 
                     layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
                     self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+                    
                     name_to_instance[layer_name] = layer_instance
 
             # second run for instantiating next, prev, and other linkages
