@@ -40,12 +40,21 @@ def find_paths_to_classes(onto):
     ignored = [onto.sameLayerAs]
     classmapping = {}
     while len(stack) > 0:
+        #print(stack)
+        #input('next')
         current,path = stack[0]
+        visited.append(stack[0])
         #input('has available')
         del stack[0]
         #path.append(current)
         for prop in onto.object_properties():
-            if current in prop.domain:
+            searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
+            #print(prop.name,searchdomain, current in searchdomain)
+            #print(type(current))
+            #input('bark1')
+            if current in searchdomain:
+                #if 'hasTrainingOptimizer' in str(prop):
+                #    input('here2')
                 copypath = list(path)
                 copypath.append(prop)
                 mapping[prop] = path
@@ -58,7 +67,12 @@ def find_paths_to_classes(onto):
                         stack.append((prop.range[0], copypath))
                         visited.append(prop.range[0])
         for prop in onto.data_properties():
-            if current in prop.domain:
+            searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
+            #print(prop.name,searchdomain, current in searchdomain)
+            #print(type(current))
+            #input('bark1')
+            if current in searchdomain:
+
                 copypath = list(path)
                 copypath.append(prop)
                 mapping[prop] = path
@@ -70,8 +84,8 @@ def find_paths_to_classes(onto):
                     if not prop.range[0] in stack and not prop.range[0] in visited and not prop.range[0] in ignored:
                         stack.append((prop.range[0], copypath))
                         visited.append(prop.range[0])
+        #input('waiting')
 
-    #print(classmapping)
     #print(mapping)
     #print(list(mapping.keys()))
 
@@ -121,7 +135,11 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                     if not insert in found[index]:
                         found[index].append(insert)
                 if isinstance(value, Thing) and searchValue.Op == "has":
-                    inserts = instance.__getattr__(searchValue.Name)
+                    print(type(instance))
+                    #print(ontology[searchValue.Name], instance.get_properties())
+                    inserts = []
+                    #if 
+                    inserts = getattr(instance,searchValue.Name,[])
                     if inserts:
                         for insert in inserts:
                             insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
@@ -195,9 +213,14 @@ def find_instances(annConfig, ontology, query):
                 newstack = []
                 for plate in stack:
                     try:
-                        newstack += plate.__getattr__(j.name)
+                        toinsert = plate.__getattr__(j.name)
+                        if type(toinsert) == IndividualValueList:
+                            newstack += toinsert
+                        else: # somethings don't return back as list :(
+                            newstack.append(toinsert)
                     except Exception as e:
                         logger.warning(f'Problem found with {query} with error: {e}')
+                        input(e)
                 stack = newstack
                 #print(stack)
                 #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
@@ -205,7 +228,11 @@ def find_instances(annConfig, ontology, query):
             #print(searchFound,value)
             #input('found')
             for plate in stack:
-                for food in plate.__getattr__(value.Name):
+                # need to check if this thing returns a single or list...
+                iters = plate.__getattr__(value.Name)
+                if type(iters) is not IndividualValueList:
+                    iters = [iters] # make it a list
+                for food in iters:
                     #found[index].append(food)
                     if value.Op == 'name':
                         insert = {'type': type(food), 'value': food, 'name': value} 
@@ -530,11 +557,12 @@ def createFacetedTaxonomy(topNode: TaxonomyNode):
             nameoflevel = currentlevel[0].name+ f'_level_{count}'
             fctaxo[nameoflevel] = {}
             fctaxo[nameoflevel]['criteria'] = currentlevel[0].criteria
+            fctaxo[nameoflevel]['splits'] = {}
         for node in currentlevel:
-            if not node.splitKey in fctaxo[nameoflevel]:
-                fctaxo[nameoflevel][node.splitKey] = node.annConfigs
+            if not node.splitKey in fctaxo[nameoflevel]['splits']:
+                fctaxo[nameoflevel]['splits'][node.splitKey] = node.annConfigs
             else:
-                fctaxo[nameoflevel][node.splitKey] += node.annConfigs
+                fctaxo[nameoflevel]['splits'][node.splitKey] += node.annConfigs
         searching = currentlevel
         count += 1
     return fctaxo
@@ -781,24 +809,28 @@ class TaxonomyCreator:
         for level_index, level in enumerate(self.levels):
             newsplits = []
             newnodes = []
-
+            inserting = level.Name + f'_level_{level_index}'
+            facetedTaxonomy[inserting]['splits'] = {}
+            facetedTaxonomy[inserting]['criteria'] = level
             for index,split in enumerate(splits):
                 found = self.create_level(split, level.Searchs, self.ontology) # only supporting has properties right now
+
                 for key in found:
                     
                     split = list(found[key].keys())
 
                     childnode = TaxonomyNode(level.Name,  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
-                    print(level_index,key,found[key].keys())
-                    inserting = level.Name + f'_level_{level_index}'
-                    facetedTaxonomy[inserting]['criteria'] = level
-
-                    if not key in facetedTaxonomy[inserting]:
-                        facetedTaxonomy[inserting][key] = list(found[key].keys())
-                    else:
-                        facetedTaxonomy[inserting][key] += list(found[key].keys())
+                    #print(level_index,key,found[key].keys())
                     
-                    print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
+                    
+                    #print('keystest:', key)
+                    #input()
+                    if not key in facetedTaxonomy[inserting]['splits']:
+                        facetedTaxonomy[inserting]['splits'][key] = list(found[key].keys())
+                    else:
+                        facetedTaxonomy[inserting]['splits'][key] += list(found[key].keys())
+                    
+                    #print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
                     if faceted: # alway expand if faceted -- bring them to other grouping
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
