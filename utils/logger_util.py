@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 import glob
 
-def get_logger(base_name: str = "app", max_logs: int = 5) -> logging.Logger:
+def get_logger(base_name: str = "app", max_logs: int = 3) -> logging.Logger:
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
 

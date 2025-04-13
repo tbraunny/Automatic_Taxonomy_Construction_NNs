@@ -209,3 +209,29 @@ class TaskCharacterizationDetails(BaseModel):
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
     pass
+
+class Subnetwork(BaseModel):
+    name: str = Field(..., description="Name or functional label of the subnetwork.")
+    # role: str = Field(
+    #     None,
+    #     description="Optional role of the subnetwork (e.g., 'primary', 'discriminator', 'encoder')."
+    # )
+
+class Architecture(BaseModel):
+    architecture_name: str = Field(..., description="Name of the neural network architecture.")
+    subnetworks: List[Subnetwork] = Field(..., description="List of subnetworks within the architecture.")
+
+# class Architecture(BaseModel):
+#     architecture_name: str = Field(..., description="Explicit name of the neural network architecture.")
+#     subnetworks: List[Subnetwork] = Field(
+#         ..., description="List of subnetworks or functional components in this architecture."
+#     )
+
+
+class NetworkDetails(BaseModel):
+    architectures: List[Architecture] = Field(
+        ..., description="List of neural network architectures and their corresponding subnetworks."
+    )
+
+class NetworkResponse(LLMResponse[NetworkDetails]):
+    pass
