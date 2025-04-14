@@ -25,7 +25,7 @@ if parent_dir not in sys.path:
 
 
 from src.taxonomy.visualizeutils import visualizeTaxonomy
-from src.taxonomy.clustering import kmeans_clustering
+from src.taxonomy.clustering import kmeans_clustering,agglomerative_clustering
 from src.taxonomy.criteria import *
 
 # Set up logging @ STREAM level
@@ -607,7 +607,7 @@ class TaxonomyCreator:
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 
                 # fill in values that have nothing with a negative one
-                if clusterop.Type != None and 'kmeans' in clusterop.Type.Name:
+                if clusterop.Type != None and ('kmeans' in clusterop.Type.Name or 'agg' in clusterop.Type.Name):
                     
                     centroids=10
                     if len(clusterop.Type.Arguments) == 2:
@@ -653,7 +653,10 @@ class TaxonomyCreator:
                     maxdimension = max(map(len,inputclustervecs))
                     
                     if maxdimension != 0:
-                        centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                        if 'kmeans' in clusterop.Type.Name:
+                            centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                        if 'agg' in clusterop.Type.Name:
+                            centers = agglomerative_clustering(inputclustervecs, centroids=centroids)
                     else:
                         logging.warn("clustering received vectors with zero dimensionality")
                         centers = []
@@ -799,7 +802,7 @@ def main():
     #criteria2 = Criteria(Name='HasTaskType')
     #criteria2.add(op2)
    
-    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
+    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='agg', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
 
     criteria3 = Criteria(Name='KMeans Clustering')
     criteria3.add(op3)
@@ -819,7 +822,7 @@ def main():
 
     logger.info("Creating taxonomy from Annetto annotations.")
 
-    criteriatest = '{"Searchs": [{"Type": {"Name": "kmeans", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
+    criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
     output = Criteria.model_validate_json(criteriatest)
     print(output)
     criterias = [output]
