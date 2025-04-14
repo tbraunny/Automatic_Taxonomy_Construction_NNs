@@ -9,7 +9,7 @@ class DBUtils:
     """
     Utils for accessing, fetching & inserting data into remote Postgres server
 
-    Must be run from WPEB machine to access server
+    Must be run from WPEB machine to access server automatically
     """
     def __init__(self):
         self.engine , self.session = self._init_engine()

@@ -2,12 +2,13 @@ import ast
 import json
 import glob
 from utils.pytorch_extractor import extract_graph
+from utils.tensorflow_extractor import extract_tf_graph
 import logging
 from datetime import datetime
 import os
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
-#from tests.deprecated.pt_extractor import PTExtractor
+import tensorflow as tf
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
@@ -88,6 +89,7 @@ class CodeProcessor(ast.NodeVisitor):
         Also checks for class that instantiates PyTorch model
         """
         for base in node.bases:
+            # PyTorch check
             if base.attr == "Module" and ( # check for nn.Module base class
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
@@ -99,10 +101,27 @@ class CodeProcessor(ast.NodeVisitor):
                 model_class = mappings.get(node.name)
                 model = model_class()
                 model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
+                
                 self.model_name = node.name
-
                 self.pytorch_graph: dict = extract_graph(model) # extract_graph returns dict                
-        
+
+            # Tensorflow check
+            elif hasattr(base, "attr") and base.attr == "Model":
+                if (
+                    (hasattr(base.value, "id") and base.value.id in ("keras", "tf")) or
+                    (hasattr(base.value, "attr") and base.value.attr == "keras" and hasattr(base.value, "value") and base.value.value.id == "tf")
+                ):
+                    logging.info("TensorFlow/Keras instantiation found")
+                    mappings: dict = {}
+
+                    class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+                    exec("\n".join(class_code), globals(), mappings)
+                    model_class = mappings.get(node.name)
+                    model = model_class()
+
+                    self.model_name = node.name
+                    self.tf_graph: dict = extract_tf_graph(node)
+
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
             "page_content" : "Functions: " + (", ".join([f"{func.name}" for func in node.body if isinstance(func , ast.FunctionDef)])) , 
@@ -208,11 +227,6 @@ def process_code_file(file_path) -> int:
         onnx_files = glob.glob(f"{file_path}/*.onnx")
         pb_files = glob.glob(f"{file_path}/*.pb")
 
-
-        if not py_files and pb_files and onnx_files:
-            logger.warning(f"No code files of any denomination found")
-            return -1
-        #save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
         if onnx_files:
             logger.info(f"ONNX file(s) detected: {onnx_files}")
             for count , file in enumerate(onnx_files):
@@ -257,18 +271,24 @@ def process_code_file(file_path) -> int:
                 if processor.pytorch_graph: # symbolic graph dictionary
                     logger.info(f"PyTorch code found within file {file}")
                     save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
+                elif processor.tf_graph:
+                    logger.info(f"TensorFlow code found within file {file}")
+                    save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
                 else:
-                    logger.info(f"Model name '{processor.model_name}' is not PyTorch or an instance in the ONNX database")
+                    logger.info(f"Model name '{processor.model_name}' is not PyTorch or TensorFlow")
 
                 # regular code dictionary for RAG
                 output = processor.parse_code()
                 save_json(output_file , output)
+        else:
+            logger.warning(f"No code file(s) of any type found")
+            return -1
 
         return 0
             
     except Exception as e:
         print(e)
-        logger.error(f"Error processing code files, {e}")
+        logger.error(f"Error processing code file(s), {e}")
 
         return -1
 
