@@ -10,7 +10,7 @@ from utils.annetto_utils import (
     requires_final_instantiation,
     subclasses_requires_final_instantiation
 )
-from utils.llm_service import init_engine, query_llm
+from utils.llm_service_with_code import init_engine, query_llm
 
 # Classes to omit from instantiation
 OMIT_CLASSES = set(["DataCharacterization", "Regularization"])

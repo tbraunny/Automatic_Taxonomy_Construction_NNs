@@ -53,7 +53,7 @@ class OntologyInstantiator:
         ontology_path: str,
         list_json_doc_paths: List[str],
         ann_config_name: str = "alexnet",
-        output_owl_path: str = "data/owl/annett-o-test.owl",
+        output_owl_path: str = "data/annett-o-test.owl",
     ) -> None:
         """
         Initialize the OntologyInstantiator class.
@@ -347,8 +347,6 @@ class OntologyInstantiator:
             )  # TEMP
 
             objective_function_json_format_prompt = (
-                "Return the task name in JSON format with the key 'answer'.\n\n"
-                "The output should be structured as follows:\n"
                 f"- loss function: a string representing the type of loss function used in the {network_instance_name} network.\n"
                 "- regularizer function: a string representing the type of regularizer function used in along with the loss function.\n"
                 "- objective function: a string representing whether the loss function function is set to 'minimize' or 'maximize', where minimization reduces prediction errors (e.g., in regression and classification tasks) and maximization enhances desired outcomes (e.g., in reinforcement learning or adversarial training).\n\n"
@@ -616,7 +614,7 @@ class OntologyInstantiator:
                 layer_name = layer['name']
                 layer_type = layer['type']
                 prev_layer = layer.get('input' , [])
-                next_layer = layer.get('output' , [])
+                next_layer = layer.get('target' , [])
 
                 layer_instance = name_to_instance.get(layer_name)
                 if not layer_instance:
@@ -1092,21 +1090,27 @@ class OntologyInstantiator:
             task_characterization_json_format_prompt = (
                 "The primary task is the most important or central objective of the network. "
                 "Return the task name in JSON format with the key 'answer'.\n\n"
-                # "Types of tasks include:\n"
-                "Types of tasks include, choose the task that best fits:\n"
-                "- Adversarial: The task of generating adversarial examples or countering another network’s predictions, often used in adversarial training or GANs. \n"
-                "- Self-Supervised Classification: The task of learning useful representations without explicit labels, often using contrastive or predictive learning techniques. \n"
-                "- Semi-Supervised Classification: A classification task where the network is trained on a mix of labeled and unlabeled data. \n"
-                "- Supervised Classification: The task of assigning input data to predefined categories using fully labeled data. \n"
-                "- Unsupervised Classification (Clustering): The task of grouping similar data points into clusters without predefined labels. \n"
-                "- Discrimination: The task of distinguishing between different types of data distributions, often used in adversarial training. \n"
-                "- Generation: The task of producing new data that resembles a given distribution. \n"
-                # "- Reconstruction: The task of reconstructing input data, often used in denoising or autoencoders. \n"
-                "Clustering: The task of grouping similar data points into clusters without predefined labels. \n"
-                "- Regression: The task of predicting continuous values rather than categorical labels. \n"
+                # "Examples of types of tasks include:\n"
+                # "- **Adversarial**: The task of generating adversarial examples or countering another network’s predictions, often used in adversarial training or GANs. \n"
+                # "  Example: A model that generates images to fool a classifier.\n\n"
+                # "- **Self-Supervised Classification**: The task of learning useful representations without explicit labels, often using contrastive or predictive learning techniques. \n"
+                # "  Example: A network pre-trained using contrastive learning and later fine-tuned for classification.\n\n"
+                # "- **Semi-Supervised Classification**: A classification task where the network is trained on a mix of labeled and unlabeled data. \n"
+                # "  Example: A model trained with a small set of labeled images and a large set of unlabeled ones for better generalization.\n\n"
+                # "- **Supervised Classification**: The task of assigning input data to predefined categories using fully labeled data. \n"
+                # "  Example: A CNN trained on labeled medical images to classify diseases.\n\n"
+                # "- **Unsupervised Classification (Clustering)**: The task of grouping similar data points into clusters without predefined labels. \n"
+                # "  Example: A model that clusters news articles into topics based on similarity.\n\n"
+                # "- **Discrimination**: The task of distinguishing between different types of data distributions, often used in adversarial training. \n"
+                # "  Example: A discriminator in a GAN that differentiates between real and generated images.\n\n"
+                # "- **Generation**: The task of producing new data that resembles a given distribution. \n"
+                # "  Example: A generative model that creates realistic human faces from random noise.\n\n"
+                # "- **Reconstruction**: The task of reconstructing input data, often used in denoising or autoencoders. \n"
+                # "  Example: A model that removes noise from images to restore the original content.\n\n"
+                # "- **Regression**: The task of predicting continuous values rather than categorical labels. \n"
+                # "  Example: A neural network that predicts house prices based on features like size and location.\n\n"
                 # "If the network's primary task does not fit any of the above categories, provide a conciece description of the task instead using at maximum a few words.\n\n"
-                # "For example, if the network is designed to classify images of handwritten digits, the task would be 'Supervised Classification'.\n\n"
-                "Expected JSON Output:\n"
+                "For example, if the network is designed to classify images of handwritten digits, the task would be 'Supervised Classification'.\n\n"
                 "{\n"
                     '"answer": {\n'
                         '"task_type": "Supervised Classification"\n'

@@ -14,9 +14,12 @@ import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from rapidfuzz import process , fuzz
-import logging
 from typing import Optional
 
+from utils.logger_util import get_logger
+
+# Initialize logger
+logger = get_logger("onnx_db")
 class OnnxAddition:
     """
     Fetch ONNX layers from graph database to instantiate ANNETT-O
@@ -40,9 +43,9 @@ class OnnxAddition:
         with self.engine.connect() as conn:
             try:
                 total_networks = conn.execute(text("SELECT COUNT(graph) FROM model"))
-                logging.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
+                logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
             except Exception as e:
-                logging.exception(f"Failed to connect to database: {e}")
+                logger.exception(f"Failed to connect to database: {e}")
 
         return self.engine , self.session
 

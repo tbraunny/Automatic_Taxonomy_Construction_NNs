@@ -35,10 +35,12 @@ import numpy as np
 import ollama
 import faiss
 from typing import Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Type, Any
 
 embedding_cache = {}  # In-memory only
+
+#logging.basicConfig(level=logging.INFO) # for verbose logging
 
 try:
     import tiktoken
@@ -59,6 +61,7 @@ CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "neuroexpert:latest")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 SUMMARIZATION_MODEL = os.environ.get("SUMMARIZATION_MODEL", "qwen2.5:32b")
 
 
@@ -79,7 +82,7 @@ logging.basicConfig(
     ],
     force=True
 )
-logger = logging.getLogger(__name__)
+service_logger = logging.getLogger(__name__)
 
 # Retry Decorator (with exponential backoff)
 def retry(max_attempts=3, initial_delay=1, backoff=2):
@@ -222,14 +225,18 @@ class LLMQueryEngine:
                  chunk_size: int = CHUNK_SIZE,
                  chunk_overlap: int = CHUNK_OVERLAP,
                  embedding_model: str = EMBEDDING_MODEL,
-                 generation_model: str = GENERATION_MODEL):
+                 generation_model: str = GENERATION_MODEL,
+                 logger=None):
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_model = embedding_model
         self.generation_model = generation_model
         self.total_input_tokens:int=0
         self.total_output_tokens:int=0
-        self.logger = logger
+        if logger:
+            self.logger = logger
+        else:
+            self.logger = service_logger
 
         # Load and process documents.
         docs = load_documents_from_json(json_file_path)
@@ -353,6 +360,9 @@ class LLMQueryEngine:
         self.logger.info("Routing query to hybrid (FAISS dense + BM25) retrieval.")
         dense_candidates = self.retrieve_initial_chunks(query, max_chunks=max_chunks)
         bm25_candidates = self.retrieve_bm25_chunks(query, max_chunks=max_chunks)
+
+        dense_candidates_code = self.retrieve_initial_chunks(query , max_chunks=max_chunks)
+
         return merge_candidates(dense_candidates, bm25_candidates)
 
     def assemble_context(self, ranked_chunks: list, token_budget: int) -> list:
@@ -661,12 +671,12 @@ class LLMQueryEngine:
 # Remove the singleton _engine_instance and use a dictionary instead.
 _engine_instances = {}
 
-def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
+def init_engine(model_name: str, doc_json_file_path: str, logger=None, **kwargs) -> LLMQueryEngine:
     """
     Initialize and cache an LLMQueryEngine instance per model name.
     """
     if model_name not in _engine_instances:
-        _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, **kwargs)
+        _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, logger, **kwargs)
     return _engine_instances[model_name]
 
 
@@ -742,11 +752,11 @@ if __name__ == "__main__":
 
     # Example for testing purposes
     class Layer(BaseModel):
-        type: str
-        size: int
+        type: str = Field(default=..., description="The type of the layer.")
+        size: int = Field(default=..., description="The size of the layer.")
 
     class NeuralNetworkDetails(BaseModel):
-        layers: list[Layer]
+        layers: list[Layer] = Field(default=..., description="A list of layers and their types.")
 
 
     json_file_path = "data/alexnet/doc_alexnet.json"

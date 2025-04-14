@@ -43,6 +43,12 @@ def extract_graph(model) -> dict:
             param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
             node_info["num_params"] = param_count
 
+            # Retrieve total number of learned parameters
+            param_count: int = 0
+            submodule = traced.get_submodule(node.target)
+            param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
+            node_info["num_params"] = param_count
+
         elif node.op == 'call_function':
             node_info['op_type'] = f"Function: {str(node.target)}"
             # Get the name of the built-in function (like add, relu, etc.)

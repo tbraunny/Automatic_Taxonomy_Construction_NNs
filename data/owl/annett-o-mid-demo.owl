@@ -406,12 +406,6 @@
   <rdfs:range rdf:resource="TrainingStrategy"/>
 </owl:ObjectProperty>
 
-<owl:ObjectProperty rdf:about="hasWeightInitialization">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="TrainingSingle"/>
-  <rdfs:range rdf:resource="WeightInitialization"/>
-</owl:ObjectProperty>
-
 <owl:DatatypeProperty rdf:about="batch_size">
   <rdfs:domain rdf:resource="TrainingSingle"/>
   <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
@@ -573,29 +567,6 @@
 <owl:DatatypeProperty rdf:about="trained_weights_array">
   <rdfs:domain rdf:resource="TrainedWeights"/>
   <rdfs:range rdf:resource="http://www.dmg.org/PMML-4_3#Array"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="hasTitle">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="ANNConfiguration"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="hasPaperPath">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="ANNConfiguration"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="definition">
-  <rdfs:domain rdf:resource="Multinomial Logistic Regression Loss"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-  <rdfs:domain rdf:resource="Dropout"/>
-  <rdfs:domain rdf:resource="Cross Entropy Loss"/>
-  <rdfs:domain rdf:resource="L2 Regularization"/>
-  <rdfs:domain rdf:resource="Euclidean Loss"/>
-  <rdfs:domain rdf:resource="Log Loss"/>
-  <rdfs:domain rdf:resource="Dropout Regularization"/>
 </owl:DatatypeProperty>
 
 <owl:Class rdf:about="Dataset">
@@ -1247,6 +1218,7 @@
 
 <owl:Class rdf:about="Linear">
   <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+  <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
 <owl:Class rdf:about="LogLikelihood">
@@ -1340,6 +1312,7 @@
 
 <owl:Class rdf:about="Relu">
   <rdfs:subClassOf rdf:resource="NonDiff"/>
+  <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
 <owl:Class rdf:about="Relu6">
@@ -1478,31 +1451,59 @@
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
-<owl:Class rdf:about="Multinomial Logistic Regression Loss">
+<owl:Class rdf:about="Sequential">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AlexNet">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Conv2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaptiveAvgPool2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="type='softmax'">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Dropout">
+<owl:Class rdf:about="type='dropout'">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Cross Entropy Loss">
+<owl:Class rdf:about="ResNet">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="BasicBlock">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="type='unknown'">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="L2 Regularization">
+<owl:Class rdf:about="type='none'">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Euclidean Loss">
+<owl:Class rdf:about="VGG">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="type='softmax cross-entropy'">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Log Loss">
-  <rdfs:subClassOf rdf:resource="LossFunction"/>
-</owl:Class>
-
-<owl:Class rdf:about="Dropout Regularization">
+<owl:Class rdf:about="type='L2'">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
@@ -3310,200 +3311,883 @@
 <owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="709942bd_convolutional-network"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet Classification with Deep Convolutional Neural Networks</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/alexnet/alexnet.pdf</hasPaperPath>
+  <hasPrimaryTrainingSession rdf:resource="709942bd_training-strategy"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="709942bd_maximize-objective-function"/>
+  <hasLayer rdf:resource="709942bd_classifier"/>
+  <hasLayer rdf:resource="709942bd_"/>
+  <hasLayer rdf:resource="709942bd_features"/>
+  <hasLayer rdf:resource="709942bd_features.0"/>
+  <hasLayer rdf:resource="709942bd_features.1"/>
+  <hasLayer rdf:resource="709942bd_features.2"/>
+  <hasLayer rdf:resource="709942bd_features.3"/>
+  <hasLayer rdf:resource="709942bd_features.4"/>
+  <hasLayer rdf:resource="709942bd_features.5"/>
+  <hasLayer rdf:resource="709942bd_features.6"/>
+  <hasLayer rdf:resource="709942bd_features.7"/>
+  <hasLayer rdf:resource="709942bd_features.8"/>
+  <hasLayer rdf:resource="709942bd_features.9"/>
+  <hasLayer rdf:resource="709942bd_features.10"/>
+  <hasLayer rdf:resource="709942bd_features.11"/>
+  <hasLayer rdf:resource="709942bd_features.12"/>
+  <hasLayer rdf:resource="709942bd_avgpool"/>
+  <hasLayer rdf:resource="709942bd_classifier.0"/>
+  <hasLayer rdf:resource="709942bd_classifier.1"/>
+  <hasLayer rdf:resource="709942bd_classifier.2"/>
+  <hasLayer rdf:resource="709942bd_classifier.3"/>
+  <hasLayer rdf:resource="709942bd_classifier.4"/>
+  <hasLayer rdf:resource="709942bd_classifier.5"/>
+  <hasLayer rdf:resource="709942bd_classifier.6"/>
+  <hasObjective rdf:resource="709942bd_min-objective-function"/>
   <hasTaskType rdf:resource="709942bd_supervised-classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_maximize-objective-function">
-  <rdf:type rdf:resource="MaxObjectiveFunction"/>
+<owl:NamedIndividual rdf:about="709942bd_classifier">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_">
+  <rdf:type rdf:resource="AlexNet"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.1">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.2">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.3">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.4">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.5">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.6">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.7">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.8">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.9">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.10">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.11">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features.12">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.0">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.2">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.3">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.4">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.5">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier.6">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_min-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="709942bd_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="709942bd_multinomial-logistic-regression-loss"/>
-  <hasRegularizer rdf:resource="709942bd_dropout"/>
+  <hasLoss rdf:resource="709942bd_type='softmax'"/>
+  <hasRegularizer rdf:resource="709942bd_type='dropout'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_multinomial-logistic-regression-loss">
-  <rdf:type rdf:resource="Multinomial Logistic Regression Loss"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maximizes the average log-probability of correct labels.</definition>
+<owl:NamedIndividual rdf:about="709942bd_type='softmax'">
+  <rdf:type rdf:resource="type='softmax'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_dropout">
-  <rdf:type rdf:resource="Dropout"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reduces co-adaptation by randomly deactivating neurons during training.</definition>
+<owl:NamedIndividual rdf:about="709942bd_type='dropout'">
+  <rdf:type rdf:resource="type='dropout'"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_supervised-classification">
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_resnet">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="d53410e0_residual-block"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deep Residual Learning for Image Recognition</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/resnet/resnet.pdf</hasPaperPath>
+<owl:NamedIndividual rdf:about="709942bd_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="709942bd_training-session"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_residual-block">
+<owl:NamedIndividual rdf:about="709942bd_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="709942bd_training-single"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">256</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.1</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">90</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_dataset-pipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="709942bd_dataset"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_dataset">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasDataType rdf:resource="709942bd_data-type"/>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ImageNet Large-Scale Visual Recognition Challenge (ILSVRC) dataset includes subsets with approximately 1.2 million training images, 50,000 validation images, and 150,000 testing images across 1000 categories. The dataset is derived from the larger ImageNet repository of over 15 million labeled high-resolution images collected via Amazon's Mechanical Turk.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1850000</data_samples>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</is_transient_dataset>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_data-type">
+  <rdf:type rdf:resource="Image"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_resnet">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="d53410e0_convolutional-network"/>
+  <hasPrimaryTrainingSession rdf:resource="d53410e0_training-strategy"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="d53410e0_minimize-objective-function"/>
+  <hasLayer rdf:resource="d53410e0_"/>
+  <hasLayer rdf:resource="d53410e0_conv1"/>
+  <hasLayer rdf:resource="d53410e0_bn1"/>
+  <hasLayer rdf:resource="d53410e0_relu"/>
+  <hasLayer rdf:resource="d53410e0_maxpool"/>
+  <hasLayer rdf:resource="d53410e0_layer1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer1.0.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer1.1.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer2"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.downsample"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.downsample.0"/>
+  <hasLayer rdf:resource="d53410e0_layer2.0.downsample.1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer2.1.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer3"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.downsample"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.downsample.0"/>
+  <hasLayer rdf:resource="d53410e0_layer3.0.downsample.1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer3.1.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer4"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.bn2"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.downsample"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.downsample.0"/>
+  <hasLayer rdf:resource="d53410e0_layer4.0.downsample.1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1.conv1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1.bn1"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1.relu"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1.conv2"/>
+  <hasLayer rdf:resource="d53410e0_layer4.1.bn2"/>
+  <hasLayer rdf:resource="d53410e0_avgpool"/>
+  <hasLayer rdf:resource="d53410e0_fc"/>
+  <hasObjective rdf:resource="d53410e0_min-objective-function"/>
   <hasTaskType rdf:resource="d53410e0_supervised-classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_minimize-objective-function">
+<owl:NamedIndividual rdf:about="d53410e0_">
+  <rdf:type rdf:resource="ResNet"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_maxpool">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.0.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer1.1.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.downsample">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.downsample.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.0.downsample.1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer2.1.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.downsample">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.downsample.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.0.downsample.1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer3.1.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.downsample">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.downsample.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.0.downsample.1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1">
+  <rdf:type rdf:resource="BasicBlock"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1.conv1">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1.bn1">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1.relu">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1.conv2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_layer4.1.bn2">
+  <rdf:type rdf:resource="BatchNormLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_fc">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_min-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="d53410e0_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="d53410e0_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="d53410e0_cross-entropy-loss"/>
-  <hasRegularizer rdf:resource="d53410e0_l2-regularization"/>
+  <hasLoss rdf:resource="d53410e0_type='unknown'"/>
+  <hasRegularizer rdf:resource="d53410e0_type='none'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_cross-entropy-loss">
-  <rdf:type rdf:resource="Cross Entropy Loss"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between predicted and true probability distributions.</definition>
+<owl:NamedIndividual rdf:about="d53410e0_type='unknown'">
+  <rdf:type rdf:resource="type='unknown'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_l2-regularization">
-  <rdf:type rdf:resource="L2 Regularization"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalizes large weights to prevent overfitting.</definition>
+<owl:NamedIndividual rdf:about="d53410e0_type='none'">
+  <rdf:type rdf:resource="type='none'"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="d53410e0_supervised-classification">
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_plain-network">
-  <rdf:type rdf:resource="ANNConfiguration"/>
+<owl:NamedIndividual rdf:about="d53410e0_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="d53410e0_training-session"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="d53410e0_training-single"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="d53410e0_dataset-pipe"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.1</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</number_of_epochs>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</learning_rate_decay_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_dataset-pipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="d53410e0_dataset"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_dataset">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasDataType rdf:resource="d53410e0_data-type"/>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The dataset used includes CIFAR-10 with 50k training images and 10k testing images across 10 classes, as well as ImageNet and MS COCO datasets for object detection tasks. The CIFAR-10 is sourced from standard benchmarks, while ImageNet and COCO are large-scale recognition and detection datasets.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60000</data_samples>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</is_transient_dataset>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="d53410e0_data-type">
+  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="92799309_vgg16">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VERY DEEP CONVOLUTIONAL NETWORKS FOR LARGE-SCALE IMAGE RECOGNITION</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/vgg16/VGG16.pdf</hasPaperPath>
+  <hasNetwork rdf:resource="92799309_convolutional-network"/>
+  <hasPrimaryTrainingSession rdf:resource="92799309_training-strategy"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_vggnet">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="92799309_classification-network"/>
-  <hasNetwork rdf:resource="92799309_localisation-network"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="92799309_classification-network">
+<owl:NamedIndividual rdf:about="92799309_convolutional-network">
   <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="92799309_minimize-objective-function"/>
+  <hasLayer rdf:resource="92799309_"/>
+  <hasLayer rdf:resource="92799309_features"/>
+  <hasLayer rdf:resource="92799309_features.0"/>
+  <hasLayer rdf:resource="92799309_features.1"/>
+  <hasLayer rdf:resource="92799309_features.2"/>
+  <hasLayer rdf:resource="92799309_features.3"/>
+  <hasLayer rdf:resource="92799309_features.4"/>
+  <hasLayer rdf:resource="92799309_features.5"/>
+  <hasLayer rdf:resource="92799309_features.6"/>
+  <hasLayer rdf:resource="92799309_features.7"/>
+  <hasLayer rdf:resource="92799309_features.8"/>
+  <hasLayer rdf:resource="92799309_features.9"/>
+  <hasLayer rdf:resource="92799309_features.10"/>
+  <hasLayer rdf:resource="92799309_features.11"/>
+  <hasLayer rdf:resource="92799309_features.12"/>
+  <hasLayer rdf:resource="92799309_features.13"/>
+  <hasLayer rdf:resource="92799309_features.14"/>
+  <hasLayer rdf:resource="92799309_features.15"/>
+  <hasLayer rdf:resource="92799309_features.16"/>
+  <hasLayer rdf:resource="92799309_features.17"/>
+  <hasLayer rdf:resource="92799309_features.18"/>
+  <hasLayer rdf:resource="92799309_features.19"/>
+  <hasLayer rdf:resource="92799309_features.20"/>
+  <hasLayer rdf:resource="92799309_features.21"/>
+  <hasLayer rdf:resource="92799309_features.22"/>
+  <hasLayer rdf:resource="92799309_features.23"/>
+  <hasLayer rdf:resource="92799309_features.24"/>
+  <hasLayer rdf:resource="92799309_features.25"/>
+  <hasLayer rdf:resource="92799309_features.26"/>
+  <hasLayer rdf:resource="92799309_features.27"/>
+  <hasLayer rdf:resource="92799309_features.28"/>
+  <hasLayer rdf:resource="92799309_features.29"/>
+  <hasLayer rdf:resource="92799309_features.30"/>
+  <hasLayer rdf:resource="92799309_avgpool"/>
+  <hasLayer rdf:resource="92799309_classifier"/>
+  <hasLayer rdf:resource="92799309_classifier.0"/>
+  <hasLayer rdf:resource="92799309_classifier.1"/>
+  <hasLayer rdf:resource="92799309_classifier.2"/>
+  <hasLayer rdf:resource="92799309_classifier.3"/>
+  <hasLayer rdf:resource="92799309_classifier.4"/>
+  <hasLayer rdf:resource="92799309_classifier.5"/>
+  <hasLayer rdf:resource="92799309_classifier.6"/>
+  <hasObjective rdf:resource="92799309_min-objective-function"/>
   <hasTaskType rdf:resource="92799309_supervised-classification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_minimize-objective-function">
+<owl:NamedIndividual rdf:about="92799309_">
+  <rdf:type rdf:resource="VGG"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.0">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.1">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.2">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.3">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.4">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.5">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.6">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.7">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.8">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.9">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.10">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.11">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.12">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.13">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.14">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.15">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.16">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.17">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.18">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.19">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.20">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.21">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.22">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.23">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.24">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.25">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.26">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.27">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.28">
+  <rdf:type rdf:resource="Conv2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.29">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_features.30">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier">
+  <rdf:type rdf:resource="Sequential"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.0">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.1">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.2">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.3">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.4">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.5">
+  <rdf:type rdf:resource="DropoutLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_classifier.6">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="92799309_min-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="92799309_cost-function"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="92799309_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="92799309_cross-entropy-loss"/>
-  <hasRegularizer rdf:resource="92799309_l2-regularization"/>
-  <hasLoss rdf:resource="92799309_euclidean-loss"/>
+  <hasLoss rdf:resource="92799309_type='softmax-cross-entropy'"/>
+  <hasRegularizer rdf:resource="92799309_type='l2'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_cross-entropy-loss">
-  <rdf:type rdf:resource="Cross Entropy Loss"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between predicted and true class probabilities.</definition>
+<owl:NamedIndividual rdf:about="92799309_type='softmax-cross-entropy'">
+  <rdf:type rdf:resource="type='softmax cross-entropy'"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_l2-regularization">
-  <rdf:type rdf:resource="L2 Regularization"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adds a penalty proportional to the square of the weights to prevent overfitting.</definition>
+<owl:NamedIndividual rdf:about="92799309_type='l2'">
+  <rdf:type rdf:resource="type='L2'"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="92799309_supervised-classification">
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_localisation-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="92799309_minimize-objective-function"/>
-  <hasTaskType rdf:resource="92799309_regression"/>
+<owl:NamedIndividual rdf:about="92799309_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="92799309_training-session"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_euclidean-loss">
-  <rdf:type rdf:resource="Euclidean Loss"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalises the deviation of predicted bounding box parameters from ground truth.</definition>
+<owl:NamedIndividual rdf:about="92799309_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="92799309_training-single"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="92799309_regression">
-  <rdf:type rdf:resource="Regression"/>
+<owl:NamedIndividual rdf:about="92799309_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="92799309_dataset-pipe"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.1</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">500</number_of_epochs>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</learning_rate_decay_epochs>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_gan">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Generative Adversarial Nets</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/gan/gan.pdf</hasPaperPath>
+<owl:NamedIndividual rdf:about="92799309_dataset-pipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="92799309_dataset"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_adversarial-nets">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="f1253bc7_generator-network-(g)"/>
-  <hasNetwork rdf:resource="f1253bc7_discriminator-network-(d)"/>
+<owl:NamedIndividual rdf:about="92799309_dataset">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasDataType rdf:resource="92799309_data-type"/>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The PASCAL VOC-2012 action classification dataset, containing 4.6K training images labeled into 11 classes for predicting actions from single images with person bounding boxes.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4600</data_samples>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</is_transient_dataset>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_generator-network-(g)">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="f1253bc7_minimize-objective-function"/>
-  <hasTaskType rdf:resource="f1253bc7_adversarial"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_minimize-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="f1253bc7_cost-function"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_cost-function">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="f1253bc7_log-loss"/>
-  <hasRegularizer rdf:resource="f1253bc7_dropout"/>
-  <hasRegularizer rdf:resource="f1253bc7_dropout-regularization"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_log-loss">
-  <rdf:type rdf:resource="Log Loss"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between predicted probabilities and actual labels.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_dropout">
-  <rdf:type rdf:resource="Dropout"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reduces overfitting by randomly deactivating neurons during training.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_adversarial">
-  <rdf:type rdf:resource="Adversarial"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_discriminator-network-(d)">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="f1253bc7_maximize-objective-function"/>
-  <hasTaskType rdf:resource="f1253bc7_adversarial"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_maximize-objective-function">
-  <rdf:type rdf:resource="MaxObjectiveFunction"/>
-  <hasCost rdf:resource="f1253bc7_cost-function"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_dropout-regularization">
-  <rdf:type rdf:resource="Dropout Regularization"/>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reduces overfitting by randomly deactivating neurons during training.</definition>
+<owl:NamedIndividual rdf:about="92799309_data-type">
+  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
