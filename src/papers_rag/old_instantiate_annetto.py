@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime
 import time
 from typing import Dict, Any, Union, List, Optional
-from utils.onnx_db import OnnxAddition
+from tests.deprecated.onnx_db import OnnxAddition
 
 from owlready2 import Ontology, ThingClass, Thing, ObjectProperty, get_ontology
 from rapidfuzz import process, fuzz

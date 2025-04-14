@@ -5,7 +5,6 @@ from utils.pytorch_extractor import extract_graph
 import logging
 from datetime import datetime
 import os
-from utils.onnx_db import check_onnx
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
 #from tests.deprecated.pt_extractor import PTExtractor
@@ -238,7 +237,7 @@ def process_code_file(file_path) -> int:
             logger.info(f"Python file(s) detected: {py_files}")
             for count , file in enumerate(py_files):
                 logger.info(f"Parsing python file {file}...")
-                
+
                 with open(file , "r") as f:
                     code = f.read()
                 tree = ast.parse(code)
