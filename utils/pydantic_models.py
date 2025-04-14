@@ -141,14 +141,15 @@ class ObjectiveFunctionResponse(LLMResponse[ObjectiveFunctionDetails]):
 """Define Process Task Characterization"""
 class TaskCharacterizationDetails(BaseModel):
     task_type: Literal[
-        "Classification",
         "Adversarial",
-        "Clustering",
+        "Self-Supervised Classification",
+        "Semi-Supervised Classification",
+        "Supervised Classification",
+        "Unsupervised Classification",
         "Discrimination",
         "Generation",
         "Clustering",
         "Regression",
-        "Unknown"
     ] = Field(..., description="The type of task that the model is being trained to perform.")
 
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):

@@ -340,25 +340,23 @@ def create_class(
     Returns:
         ThingClass: The newly created class or the existing class if it already exists.
     """
-    try:
-        # Check if the class already exists
-        ontology_classes:List[ThingClass] = list_owl_classes(ontology)
-        existing_class = next((cls for cls in ontology_classes if cls.name == class_name), None)
-        if existing_class:
-            warnings.warn(f"Class {class_name} already exists.")
-            return existing_class
+    # Check if the class already exists
+
+    ontology_classes:List[ThingClass] = list_owl_classes(ontology)
+    if class_name in ontology_classes:
+        warnings.warn(f"Class '{class_name}' already exists, continuing.")
+        return class_name
 
         # Set base class to Thing if no base_class is provided
         if base_class is None:
             base_class = ontology.Thing 
 
-        # Dynamically create the new class using `type()`
-        new_class = type(class_name, (base_class,), {"namespace": ontology})
-        setattr(ontology, class_name, new_class)  # Add the new class to the ontology's namespace
-        # print(f"Class '{class_name}' created with base '{base_class.__name__}'.")
-        return new_class
-    except Exception as e:
-        raise e
+    # Dynamically create the new class using `type()`
+    new_class = type(class_name, (base_class,), {"namespace": ontology})
+    setattr(
+        ontology, class_name, new_class
+    )  # Add the new class to the ontology's namespace
+    return new_class
 
 
 def create_subclass(
@@ -558,55 +556,57 @@ def create_cls_instance(
     :param properties: (Optional) Additional properties to set (as keyword arguments).
     :return: The created instance.
     """
-    # if not issubclass(onto_class, Thing):
-    #     raise ValueError("The provided class must be a subclass of owlready2.Thing")
-    
-    if not instance_name:
-        print(f"Warning: {onto_class} can't be instantiated without a name.")
-        return
+    if not isinstance(instance_name, str):
+        raise ValueError("The instance name must be a string.")
+    if not isinstance(onto_class, ThingClass):
+        raise ValueError(f"The provided class {onto_class} is not a valid ThingClass.")
 
     # Create instance with name
     instance = onto_class(instance_name)
 
     # Assign additional properties if provided
-    for key, value in properties.items():
-        if hasattr(instance, key):
-            setattr(instance, key, value)
-        else:
-            print(f"Warning: {onto_class.name} has no property '{key}'")
+    # TODO: Not sure if this is the correct way to set properties
+    try:
+        for key, value in properties.items():
+            if hasattr(instance, key):
+                setattr(instance, key, value)
+            else:
+                print(f"Warning: {onto_class.name} has no property '{key}'")
 
-    return instance
+    except Exception as e:
+        print(f"Error setting properties for {onto_class.name}: {e}")
+
+    return instance # return instantiated class
 
 
 def get_instance_class(instance: Thing) -> ThingClass:
+    if not isinstance(instance, Thing):
+        raise ValueError(f"The provided instance '{instance}' is not a valid Thing.")
     return type(instance)
 
 
 def assign_object_property_relationship(
-    domain: Thing, ranges: Thing, object_property: ObjectPropertyClass
+    domain: Thing, range: Thing, object_property: ObjectPropertyClass
 ):
     """
     Connect two Thing instances via a specified ObjectProperty in Owlready2.
 
     :param domain: The Thing instance representing the domain.
-    :param ranges: The Thing instance representing the range.
+    :param range: The Thing instance representing the range.
     :param object_property: The ObjectProperty to connect the instances.
     """
 
     # Check if domain and ranges are instances of Thing
     if not isinstance(domain, Thing):
-        raise TypeError("The 'domain' argument must be an instance of Thing.")
-    if not isinstance(ranges, Thing):
-        raise TypeError("The 'ranges' argument must be an instance of Thing.")
-
-    # Check if object_property is a valid ObjectProperty
+        raise TypeError(f"The 'domain' argument '{domain}' must be an instance of Thing.")
+    if not isinstance(range, Thing):
+        raise TypeError(f"The 'ranges' argument '{range}' must be of type Thing.")
     if not isinstance(object_property, ObjectPropertyClass):
         raise TypeError(
-            "The 'object_property' argument must be an instance of ObjectProperty."
+            f"The 'object_property' argument '{object_property}' must of type ObjectProperty."
         )
-
     # Connect the two Thing instances
-    object_property[domain].append(ranges)
+    object_property[domain].append(range)
 
 def link_data_property_to_instance(instance: Thing, data_property: DataPropertyClass, value):
     """
@@ -630,30 +630,23 @@ def link_data_property_to_instance(instance: Thing, data_property: DataPropertyC
     except Exception as e:
         print(f"Error setting data property: {e}")
 
-def list_owl_classes(onto: Ontology):
+def list_owl_classes(onto: Ontology) -> List[ThingClass]:
+    # Return list of all classes in ontology
     return [cls for cls in onto.classes()]
 
 
-def list_owl_object_properties(onto: Ontology):
-    # List all object properties
-    print("\nObject Properties in the ontology:")
-    for prop in onto.object_properties():
-        print(f"- {prop.name}")
+def list_owl_object_properties(onto: Ontology) -> List[ObjectPropertyClass]:
+    # return all object properties of the ontology
+    return [prop for prop in onto.object_properties()]
 
-
-def list_owl_data_properties(onto: Ontology):
-    # List all data properties
-    print("\nData Properties in the ontology:")
-    for prop in onto.data_properties():
-        print(f"- {prop.name}")
-
+def list_owl_data_properties(onto: Ontology) -> List[DataPropertyClass]:
+    # return all data properties of the ontology
+    return [prop for prop in onto.data_properties()]
+    
 
 if __name__ == "__main__":
 
     ontology = get_ontology("data/owl/annett-o-0.1.owl").load()
-
-    temp = get_all_subclasses(ontology.TaskCharacterization)
-    print(temp)
 
     # instance1 = create_cls_instance(ontology.Network, "Conv Network")
     # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
