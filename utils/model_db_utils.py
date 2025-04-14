@@ -76,7 +76,7 @@ class DBUtils:
 
         return self.model_list
     
-    def insert_model(self , name: str , type: str , graph: json , avg_embedding) -> int:
+    def insert_model(self , name: str , model_type: str , graph: json , avg_embedding) -> int:
         """
         Insert a model into the database
 
@@ -90,20 +90,20 @@ class DBUtils:
         try:
             if not avg_embedding:
                 query = text("""INSERT INTO model (model_name , library , graph) 
-                            VALUES (:name , :type , :graph) 
+                            VALUES (:name , :model_type , :graph) 
                             RETURNING model_id""")
                 result = self.session.execute(query , {
                     "name": name,
-                    'type': type,
+                    'model_type': model_type,
                     "graph": graph
                 })
             else:
                 query = text("""INSERT INTO model (model_name , library , average_weight_embedding , graph) 
-                            VALUES (:name , :type , :graph , :avg_embedding) 
+                            VALUES (:name , :model_type , :graph , :avg_embedding) 
                             RETURNING model_id""")
                 result = self.session.execute(query , {
                     "name": name,
-                    'type': type,
+                    'model_type': model_type,
                     "avg_embedding": avg_embedding,
                     "graph": graph
                 })
@@ -114,7 +114,7 @@ class DBUtils:
 
         return model_id
     
-    def insert_layer(self , model_id: int , name: str , type: str , attributes: dict) -> int:
+    def insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
         Inserts layer into the database for a specific model
 
@@ -127,11 +127,11 @@ class DBUtils:
         layer_id = -1
         try:
             query = text("""INSERT INTO layer (layer_name , known_type , model_id , attributes)
-                         VALUES (:name , :type , :model_id , :attributes)
+                         VALUES (:name , :layer_type , :model_id , :attributes)
                          RETURNING layer_id""")
             result = self.session.execute(query , {
                 "name": name,
-                "type": type,
+                "layer_type": layer_type,
                 "model_id": model_id,
                 "attributes": attributes
             })
@@ -211,6 +211,34 @@ class DBUtils:
             logging.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
 
         return paper_model_id
+
+def insert_model(ann_name: str , model_json: json) -> None:
+    """
+    Insert a model into the database given its symbolic graph (json)
+
+    :param ann_name: Name of model/network
+    :param model_json: JSON file of model to be inserted
+    :return None
+    """
+    insert = DBUtils()
+    network_data: dict = json.loads(model_json)
+    nodes = network_data.get('graph' , {}).get('node' , {})
+
+    model_type = None
+
+    model_id: int = insert.insert_model(ann_name , model_type , model_json)
+
+    for layer in nodes:
+        layer_name = layer.get('name')
+        layer_type = layer.get('op_type')
+        layer_attr = layer.get('attributes')
+
+        layer_id = insert.insert_layer(model_id , layer_name , layer_type , layer_attr)
+        shape = layer.get('kernel')
+
+        if layer_id and shape:
+            insert.insert_parameter(layer_id , 'kerne;' , shape)
+
     
 if __name__ == '__main__': # example usage
     ann_name = "alexnet"
