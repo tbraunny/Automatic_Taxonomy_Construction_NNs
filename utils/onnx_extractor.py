@@ -89,7 +89,7 @@ def parse_onnx_attributes(node,onlytensorsize=True):
             parameters[attr.name] = None  # Fallback for unknown types
     return parameters
 
-def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_name='',parameters=False,writeFile=True):
+def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_name='',parameters=True,writeFile=True):
     interpolate_space = np.linspace(0, 1, num=256)
     if model_name == '':
         model_name = os.path.splitext(os.path.basename(filename))[0]
@@ -184,10 +184,113 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         handle.close()
     return outjson
 
+def calculate_params(layer, model):
+    """
+    Calculate the number of parameters for different types of layers.
 
+    :param layer: layer node within the JSON
+    :param model: ONNX model
+    :return Number of parameters within the specific layer
+    """
+    num_params = 0
+
+    # For Conv layers, the parameters are the weights and possibly the biases
+    if layer.op_type == "Conv":
+
+        ########################## SELF DONE MEAT
+
+        for input in model.graph.input:
+            if layer.name in input.name:
+                for dim_value in input.type.tensor_type.shape.dim:
+                    print("Dim value test: " , dim_value.dim_value)
+
+        #########################################
+
+
+        # Conv layer typically has weights (filters) and optional biases
+        # weights_name_with_shape = layer.input[1]  # The weight shape tensor
+        # biases_name = layer.input[2] if len(layer.input) > 2 else None  # Optional bias input
+
+        # # Debugging: Print the weights and biases names
+        # print(f"Conv layer: weights_name_with_shape = {weights_name_with_shape}, biases_name = {biases_name}")
+
+        # for input in model.graph.input:
+        #     if weights_name_with_shape in input.name:
+        #         print(f"Found weight in input: {input.name}")
+        #         print(f"Dims: {input.type.tensor_type.shape.dim}")
+
+        #         for dim_value in input.type.tensor_type.shape.dim:
+        #             print("dim_value test: " , dim_value.dim_value)
+        #         print("Num params: " , num_params)
+
+        # # Find the weight shape initializer and calculate its size
+        # for initializer in model.graph.initializer:
+        #     if weights_name_with_shape in initializer.name:
+        #         print(f"Found weight shape initializer: {initializer.name}")  # Debugging
+        #         print(f"Dims: " , initializer.dims[0])
+        #         weight_shape = [int(dim.dim_value) for dim in initializer.dims]
+        #         print(f"Weight shape: {weight_shape}")  # Debugging
+
+        #         # Calculate the number of parameters using the weight shape
+        #         # Conv layer has (out_channels * in_channels * kernel_height * kernel_width) parameters
+        #         if len(weight_shape) == 4:  # Conv layer with 4D weights (out_channels, in_channels, kernel_height, kernel_width)
+        #             num_params += weight_shape[0] * weight_shape[1] * weight_shape[2] * weight_shape[3]
+        #         else:
+        #             print(f"Unexpected weight shape: {weight_shape}")
+
+        # Find and add the bias parameters if they exist
+        if biases_name:
+            for initializer in model.graph.initializer:
+                if initializer.name == biases_name:
+                    print(f"Found bias initializer: {initializer.name}")  # Debugging
+                    num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output channels
+    
+    # For Dense layers (Fully Connected), the parameters are the weights and biases
+    elif layer.op_type == "Gemm":  # Gemm is typically used for Fully Connected layers in ONNX
+        weights_name = layer.input[1]
+        biases_name = layer.input[2] if len(layer.input) > 2 else None  # Optional bias input
+
+        # Find the weight initializer and calculate its size (out_features * in_features)
+        for initializer in model.graph.initializer:
+            if initializer.name == weights_name:
+                weight_size = 1
+                for dim in initializer.dims:
+                    weight_size *= dim
+                num_params += weight_size
+
+        # Find and add the bias parameters if they exist
+        if biases_name:
+            for initializer in model.graph.initializer:
+                if initializer.name == biases_name:
+                    num_params += len(initializer.float_data)  # Biases are 1D, so the length is the number of output features
+
+    # Add logic for other layer types here (BatchNorm, RNN, etc.)
+    # Example for BatchNorm:
+    elif layer.op_type == "BatchNormalization":
+        # BatchNorm has gamma, beta, mean, and variance parameters
+        for initializer in model.graph.initializer:
+            if initializer.name in layer.input:  # Gamma and Beta are usually inputs
+                num_params += len(initializer.float_data)
+
+    return num_params
+
+def params_by_layer(onnx_model):    
+    layer_params = {}
+
+    # Iterate over all nodes (layers) in the model
+    for node in onnx_model.graph.node:
+        for input_layer in node.input:
+            if layer_params[input_layer] is None: # calc required input params
+                # assign node to input layer
+                total_params = calculate_params(node , onnx_model)
+                layer_params[input_layer] = total_params
+                
+        total_params = calculate_params(node , onnx_model)
+        layer_params[node.name] = total_params
+
+    return layer_params
 class ONNXProgram:
     def extract_properties(self,filepath,savePath='./outdata/',model_name='',parameters=False):
-        
         #files = glob.glob(filepath+'*.onnx',recursive=True)
         out = extract_compute_graph_taxonomy_style(filepath,savePath=savePath,parameters=parameters)
         with open("data/onnx_testing/resnet50_test.json" , "w") as f:
@@ -229,26 +332,34 @@ class ONNXProgram:
         ort_outs = OrderedDict(zip(outputs, ort_outs))
 
     def compute_graph_extraction(self,onnx_file,outfile=None,savePath=''):
-   
-        # Load ONNX model
         model = onnx.load(onnx_file)
-        # not including the raw data of the initializers
-        model.graph.ClearField("initializer")    
-        #model_json = MessageToJson(model, including_default_value_fields=False)
+
+        # Calculate the parameters by layer
+        layer_params = params_by_layer(model)
+
+        # Convert the modified model to JSON format
         model_json = MessageToJson(model)
 
+        #model.graph.ClearField("initializer") # OEM json output
+
+        model_json = MessageToJson(model)
+        model_json_dict = json.loads(model_json)
+
+        # modify onnx dict to include num params by corresponding layer
+        for node in model_json_dict['graph']['node']:
+            layer_name = node.get('name', '')
+            if layer_name in layer_params:
+                node['num_param'] = layer_params[layer_name]
+
         # Save as JSON
-        #with open(f"{model_name}.json", "w") as f:
-        #    json.dump(model_dict, f, indent=4)
         if savePath == '':
             savePath = '.'
-        # with open(f"{savePath}/{outfile}", "w") as f:
-        #     f.write(model_json)
         outfile = onnx_file.replace(".onnx" , "_parsed.json")
         with open(outfile , "w") as f:
-            f.write(model_json)
+            json.dump(model_json_dict , f , indent=2)
 
 if __name__ == '__main__':
     #extract_properties('adv_inception_v3_Opset16.onnx',model_type="cnn",model_name="inception")
     #fire.Fire(ONNXProgram)
-    ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx")
+    ONNXProgram().extract_properties("data/onnx_testing/light_resnet50.onnx" , parameters=True)
+    ONNXProgram().compute_graph_extraction("data/onnx_testing/light_resnet50.onnx")

@@ -3,3 +3,4 @@ holoviews
 panel
 bokeh
 seaborn
+graphviz
