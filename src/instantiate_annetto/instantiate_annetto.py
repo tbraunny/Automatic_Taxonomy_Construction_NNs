@@ -848,7 +848,7 @@ class OntologyInstantiator:
                     {
                         "architecture_name": "AlexNet",
                         "subnetworks": [
-                            {"name": "convolutional network"},
+                            {"name": "convolutional network", "is_independent": true}
                         ]
                     }
                 ]
@@ -888,7 +888,13 @@ class OntologyInstantiator:
             task = """You are a research assistant tasked with identifying neural network architectures and their components from academic papers. 
 For the given paper, analyze the content carefully and precisely to extract the following:\n
 Architecture Name(s): a named model or system composed of one or more subnetworks (e.g., “DeepONet”).\n
-Subnetwork(s): a distinct functional block within an architecture that can be described independently (e.g., generator, encoder, trunk net).\n"""
+Subnetwork(s): a distinct functional block within an architecture that can be described independently (e.g., generator, encoder, trunk net).\n
+A **subnetwork** is a block that\n
+- Has its **own loss function**, or
+- Is **trained or optimized independently**, or
+- Is explicitly described in the paper as a separate module.\n
+"""
+
             instructions = (
                 "Return the response in JSON format with the key 'answer'.\n"
                 "If a subnetwork is not named but has a described purpose, use a short functional label (e.g., “temporal integration module”).\n"
@@ -896,9 +902,8 @@ Subnetwork(s): a distinct functional block within an architecture that can be de
             query = f""
             extra_instructions = (
                 # f"Layers like convolution, pooling, or activation do not count as separate subnetworks unless they are grouped into a larger named module that is functionally distinct.\n"
-                "Avoid listing low-level components like layers (e.g., convolution, dense, pooling, activation) as separate subnetworks.\n"
+                "Avoid listing low-level components like layers (e.g., convolution, fully-connected, pooling, activation) as separate subnetworks.\n"
                 "If the architecture describes a single unified model composed of standard layers, return only one subnetwork with a high-level functional name (e.g., 'convolutional network' or 'feedforward network')."
-
             )
 
             prompt = self.build_prompt(
@@ -909,22 +914,53 @@ Subnetwork(s): a distinct functional block within an architecture that can be de
             if not response or not response.answer.architectures:
                 # self.logger.warning(f"No architectures found in network {network_name}.")
                 return
+            ann_config_instances: List[ThingClass] = []
 
             for architecture in response.answer.architectures:
-                print(f"Architecture: {architecture.architecture_name}")
                 arch_name = architecture.architecture_name
                 if not architecture.subnetworks:
                     self.logger.warning(f"No subnetworks found in architecture '{arch_name}'.")
                     continue
+                if not architecture.subnetworks:
+                    continue
+                # Instatiate ANN Config instance
+                ann_config_instances.append(
+                    self._instantiate_and_format_class(
+                        self.ontology.ANNConfiguration, arch_name
+                    )
+                )
 
                 for subnetwork in architecture.subnetworks:
-                    print(f"    Subnetwork: {subnetwork.name}")
                     sub_name = subnetwork.name
-                    # You can now process each architecture/subnetwork here
-                    self.logger.info(f"Architecture: {arch_name}, Subnetwork: {sub_name}")
+                    is_independent = subnetwork.is_independent
+                    self.logger.info(f"Architecture: {arch_name}, Subnetwork: {sub_name} is independent: {is_independent}")
 
+                    # Skip if not an independent network
+                    # This account for the LLM including layers as subnetworks
+                    # check if any word in sub_name is 'layer' or 'layers'
+                    if any(word in sub_name.lower() for word in ["layer", "layers"]):
+                        self.logger.warning(f"Subnetwork '{sub_name}' is mentioned as a layer. Skipping.")
+                        continue
+                    if not is_independent:
+                        self.logger.warning(
+                            f"Subnetwork '{sub_name}' is not independent. Skipping."
+                        )
+                        continue
 
-            # network_instances: List[ThingClass] = []  # List of network instances
+                    # Instantiate subnetwork instance
+                    network_instance = self._instantiate_and_format_class(
+                        self.ontology.Network, sub_name
+                    )
+                    self._link_instances(
+                        ann_config_instances[-1],
+                        network_instance,
+                        self.ontology.hasNetwork,
+                    )
+                    # if not layers_parsed:
+                    #     self._process_layers(network_instance)
+                    self._process_objective_functions(network_instance)
+                    self._process_task_characterization(network_instance)
+                    self.logger.info(f"Successfully processed network instance: {network_instance.name}")
 
             # # Here is where logic for processing the network instance would go.
             # network_instances.append(

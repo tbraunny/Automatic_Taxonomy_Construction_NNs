@@ -176,7 +176,7 @@ class ObjectiveFunctionDetails(BaseModel):
         ..., description="Details about the loss function used."
     )
     regularizer: TermDefinition = Field(
-        None, description="Details about the regularizer used, if any."
+        ..., description="Details about the regularizer used; if none put 'None'."
     )
     objective: Literal["minimize", "maximize"] = Field(
         ..., description="The optimization direction ('minimize' or 'maximize')."
@@ -212,10 +212,10 @@ class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
 
 class Subnetwork(BaseModel):
     name: str = Field(..., description="Name or functional label of the subnetwork.")
-    # role: str = Field(
-    #     None,
-    #     description="Optional role of the subnetwork (e.g., 'primary', 'discriminator', 'encoder')."
-    # )
+    is_independent: bool = Field(
+        ...,
+        description="Whether the subnetwork has its own loss function or is trained independently."
+    )
 
 class Architecture(BaseModel):
     architecture_name: str = Field(..., description="Name of the neural network architecture.")
