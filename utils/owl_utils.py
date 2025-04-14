@@ -6,7 +6,44 @@ from builtins import TypeError
 from utils.annetto_utils import load_annetto_ontology
 
 def load_ontology(ontology_path):
-    return get_ontology(ontology_path).load()
+    onto = get_ontology(ontology_path).load()
+    """with onto:
+        '''class hasLayer(ObjectProperty):
+            domain = [onto.Network]
+            range = [onto.Layer]
+
+        class isLayerOf(ObjectProperty):
+            domain = [onto.Layer]
+            range = [onto.Network]
+            inverse_property = hasLayer
+        class hasNetwork(ObjectProperty):
+            domain = [onto.ANNConfiguration]
+            range = [onto.Network]
+        class isAnnConfigOf(ObjectProperty):
+            domain = [onto.Network]
+            range = [onto.ANNConfiguration]
+            inverse_property = hasNetwork'''
+        existing_props = {prop.name for prop in onto.object_properties()}
+        for prop in onto.object_properties():
+            # Check if the property name starts with "has" and has no inverse yet
+            if prop.name.startswith("has") and not prop.inverse_property:
+                base = prop.name[3:]  # Strip 'has' prefix
+
+                # Create name for inverse: e.g., hasLayer -> isLayerOf
+                inverse_name = f"is{base}Of"
+                # Avoid name collisions
+                if inverse_name not in existing_props:
+                    # Define the inverse property
+                    inverse = types.new_class(inverse_name, (ObjectProperty,))
+                    inverse.inverse_property = prop
+                    prop.inverse_property = inverse
+
+                    print(f"Created inverse: {prop.name} ↔ {inverse_name}")
+                else:
+                    print(f"Skipped {prop.name}, {inverse_name} already exists")
+        # Or you can define the inverse the other way around
+        #hasLayer.inverse_property = isLayerOf"""
+    return onto
 
 """ 1) Class Functions """
 

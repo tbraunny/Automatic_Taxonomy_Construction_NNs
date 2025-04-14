@@ -267,7 +267,7 @@ class LLMClient:
             "request_timeout": 120
         }
 
-        response = chat(model=model3,options={'temperature':.2, 'max_tokens':2048,'top_p':1,'repeat_penalty':1,'stream':False},messages=messages)
+        response = chat(model=model2,options={'temperature':.2, 'max_tokens':4048, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
         output = response.message.content
         output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
         return output
