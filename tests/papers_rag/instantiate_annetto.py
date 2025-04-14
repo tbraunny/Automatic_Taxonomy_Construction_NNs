@@ -614,7 +614,7 @@ class OntologyInstantiator:
                     if layer_params:
                         self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer_params)
                     else:
-                        self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
+                        self.logger.info(f"Layer {layer_name} does not have a number of parameters.")
                     name_to_instance[layer_name] = layer_instance
 
             # second run for instantiating next, prev, and other linkages
