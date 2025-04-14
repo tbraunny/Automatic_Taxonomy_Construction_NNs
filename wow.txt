@@ -1,0 +1,48 @@
+## Adversarial Autoencoders
+
+
+---
+## Alireza Makhzani
+
+University of Toronto makhzani@psi.toronto.edu
+
+Ian Goodfellow OpenAI goodfellow.ian@gmail.com
+
+
+---
+## Brendan Frey
+
+University of Toronto frey@psi.toronto.edu
+
+
+---
+## Abstract
+
+In this paper, we propose the 'adversarial autoencoder' (AAE), which is a probabilistic autoencoder that uses the recently proposed generative adversarial networks (GAN) to perform variational inference by matching the aggregated posterior of the hidden code vector of the autoencoder with an arbitrary prior distribution. Matching the aggregated posterior to the prior ensures that generating from any part of prior space results in meaningful samples. As a result, the decoder of the adversarial autoencoder learns a deep generative model that maps the imposed prior to the data distribution. We show how the adversarial autoencoder can be used in applications such as semi-supervised classification, disentangling style and content of images, unsupervised clustering, dimensionality reduction and data visualization. We performed experiments on MNIST, Street View House Numbers and Toronto Face datasets and show that adversarial autoencoders achieve competitive results in generative modeling and semi-supervised classification tasks.
+
+
+---
+## 1 Introduction
+
+Building scalable generative models to capture rich distributions such as audio, images or video is one of the central challenges of machine learning. Until recently, deep generative models, such as Restricted Boltzmann Machines (RBM), Deep Belief Networks (DBNs) and Deep Boltzmann Machines (DBMs) were trained primarily by MCMC-based algorithms [Hinton et al., 2006, Salakhutdinov and Hinton, 2009]. In these approaches the MCMC methods compute the gradient of log-likelihood which becomes more imprecise as training progresses. This is because samples from the Markov Chains are unable to mix between modes fast enough. In recent years, generative models have been developed that may be trained via direct back-propagation and avoid the difficulties that come with MCMC training. For example, variational autoencoders (VAE) [Kingma and Welling, 2014, Rezende et al., 2014] or importance weighted autoencoders [Burda et al., 2015] use a recognition network to predict the posterior distribution over the latent variables, generative adversarial networks (GAN) [Goodfellow et al., 2014] use an adversarial training procedure to directly shape the output distribution of the network via back-propagation and generative moment matching networks (GMMN) [Li et al., 2015] use a moment matching cost function to learn the data distribution.
+
+In this paper, we propose a general approach, called an adversarial autoencoder (AAE) that can turn an autoencoder into a generative model. In our model, an autoencoder is trained with dual objectives - a traditional reconstruction error criterion, and an adversarial training criterion [Goodfellow et al., 2014] that matches the aggregated posterior distribution of the latent representation of the autoencoder to an arbitrary prior distribution. We show that this training criterion has a strong connection to V AE training. The result of the training is that the encoder learns to convert the data distribution to the prior distribution, while the decoder learns a deep generative model that maps the imposed prior to the data distribution.
+
+Jonathon Shlens &amp; Navdeep Jaitly Google Brain {shlens,ndjaitly}@google.com
+
+Figure 1: Architecture of an adversarial autoencoder. The top row is a standard autoencoder that reconstructs an image x from a latent code z . The bottom row diagrams a second network trained to discriminatively predict whether a sample arises from the hidden code of the autoencoder or from a sampled distribution specified by the user.
+
+<!-- image -->
+
+
+---
+## 1.1 Generative Adversarial Networks
+
+The Generative Adversarial Networks (GAN) [Goodfellow et al., 2014] framework establishes a min-max adversarial game between two neural networks - a generative model, G , and a discriminative model, D . The discriminator model, D ( x ) , is a neural network that computes the probability that a point x in data space is a sample from the data distribution (positive samples) that we are trying to model, rather than a sample from our generative model (negative samples). Concurrently, the generator uses a function G ( z ) that maps samples z from the prior p ( z ) to the data space. G ( z ) is trained to maximally confuse the discriminator into believing that samples it generates come from the data distribution. The generator is trained by leveraging the gradient of D ( x ) w.r.t. x , and using that to modify its parameters. The solution to this game can be expressed as following [Goodfellow et al., 2014]:
+
+<!-- formula-not-decoded -->
+
+The generator G and the discriminator D can be found using alternating SGD in two stages: (a) Train the discriminator to distinguish the true samples from the fake samples generated by the generator. (b) Train the generator so as to fool the discriminator with its generated samples.
+
+
+---

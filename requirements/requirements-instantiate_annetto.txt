@@ -1,0 +1,4 @@
+pydantic
+owlready2
+rapidfuzz
+psycopg2-binary
