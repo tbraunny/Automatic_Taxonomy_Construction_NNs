@@ -130,7 +130,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
             
             # single searches
             for index, searchValue in enumerate(values):
-                if searchValue.Name == prop.name and searchValue.Op == 'name':
+                if searchValue.Name == prop.name and (searchValue.Op == 'name' or searchValue.Op == 'none'):
                     insert = {'type': type(value), 'value': value, 'name': prop.name} 
                     if not insert in found[index]:
                         found[index].append(insert)
@@ -234,7 +234,7 @@ def find_instances(annConfig, ontology, query):
                     iters = [iters] # make it a list
                 for food in iters:
                     #found[index].append(food)
-                    if value.Op == 'name':
+                    if value.Op == 'name' or value.Op == 'none':
                         insert = {'type': type(food), 'value': food, 'name': value} 
                         if not insert in found[index]:
                             found[index].append(insert)
@@ -583,8 +583,6 @@ class TaxonomyCreator:
     def create_level(self, ann_configurations, criteria, ontology):
         hashmap = {}
         criteria = list(criteria) # copy search operators
-
-        #hasTypes = [crit.HasType  for crit in criteria]
         
         otherlist = []
         clusterlist = []
@@ -604,24 +602,14 @@ class TaxonomyCreator:
             length = -1
             for ann_config in ann_configurations:
                 vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, ontology, vectorize=True)
-
-                #length = max(length,len(vector))
                 clustervecs.append(vector)
-                #print(clusterop,ann_config,vector)
-
-
-
 
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
+                
                 # fill in values that have nothing with a negative one
-                #clustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in clustervecs]
                 if clusterop.Type != None and 'kmeans' in clusterop.Type.Name:
-                    #fname, arguments = parse_function(clusterop.Type)
-                    #print(arguments)
+                    
                     centroids=10
-                    #if len(arguments) > 0:
-                    #    centroids = int(arguments[0])
-                    #    whattocast = str(arguments[1])
                     if len(clusterop.Type.Arguments) == 2:
                         centroids = int(clusterop.Type.Arguments[0])
                         whattocast = str(clusterop.Type.Arguments[1])
@@ -633,7 +621,6 @@ class TaxonomyCreator:
                     str_mapping = {i : {} for i in range(len(clusterop.Value))} # precreate mapping for strings
                     str_count = {i : 0 for i in range(len(clusterop.Value))} # precreate mapping for strings
                     remapping = False
-                    #print(len(clustervecs[0]))
                     for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now
                         for vecindex, vecs in enumerate(vector):
                             for vec in vecs:
@@ -648,7 +635,6 @@ class TaxonomyCreator:
                     inputclustervecs = []
                     length = 0
                     binlength = max([str_count[i] for i in str_count], default=0)
-                    #if binlength != 0:
                     for index, vector in enumerate(clustervecs): # iterate through value list and convert strings to some encoding -- binary for now 
                         vectorlist = []
                         for vecindex, vecs in enumerate(vector):
@@ -664,21 +650,25 @@ class TaxonomyCreator:
                         inputclustervecs.append(vectorlist)
                     inputclustervecs = [vector + [-1 for _ in range(length - len(vector))] for vector in inputclustervecs]
                     
-                    centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                    maxdimension = max(map(len,inputclustervecs))
+                    
+                    if maxdimension != 0:
+                        centers = kmeans_clustering(inputclustervecs, centroids=centroids )
+                    else:
+                        logging.warn("clustering received vectors with zero dimensionality")
+                        centers = []
                     for index, center in enumerate(centers):
                         hashcenter = f'cluster_{center}_{clusterop.Type.Name}_{clusterop.Value}'
                         if not ann_configurations[index] in prefind:
                             prefind[ann_configurations[index]] = {hashcenter : center}
                         else:
                             prefind[ann_configurations[index]][hashcenter] = center
-                    #else:
-                    #    logging.info('Nothing found so no clusters formulated')
-                        
-                    #    for ann_config in ann_configurations:
-                    #        prefind[ann_config] = {"":""}
+
         criteria = otherlist
-        
+
+        # iterate over ann_config 
         for aindex, ann_config in enumerate(ann_configurations):
+            
             print(aindex,ann_config)
             found = []
             networks = ann_config.__getattr__(self.ontology.hasNetwork.name)
@@ -686,79 +676,20 @@ class TaxonomyCreator:
 
             logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
             
-            # NOTE: ontology.hasNetwork is an ObjectProperty -> returns annett-o-0.1.hasNetwork of type: <class 'owlready2.prop.ObjectPropertyClass'>
-            
-            # iterate over network
-            #for network in networks:
-
-                #print(criteria.has)
-                #for crit in criteria:
-                #    print(has)
-                #    found += get_instance_property_values(ann_config, has)
-
-             #   logger.info(f"{' '  * 5}Network: {network}, type: {type(network)}")
-
-              #  layers = network.__getattr__(self.ontology.hasLayer.name)
-               # logger.info(f"{' ' * 5}Layers: {layers}, type: {type(layers)}")
-
+            # iterate over criteria,facets,levels 
             for crit in criteria:
                 items = []
 
-                #print(classmapping,propertymapping)
-
-                '''for value in crit.Value:
-                    val = ontology[value.Name]
-                    if val in classmapping:
-                        print('here1',classmapping)
-                    if val in propertymapping:
-                        print('here2',propertymapping)
-                        stack = [ann_config]
-                        for j in propertymapping[val]:
-                            newstack = []
-                            for plate in stack:
-                                newstack += plate.__getattr__(j.name)
-                            stack = newstack
-                            #print(stack)
-                            #input()
-                            #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
-                        for plate in stack:
-                            print('plate: ',plate)
-                            print(plate.__getattr__(value.Name))
-
-                    #print(value.Name)
-                    input()
-                '''
                 newitems = find_instances(ann_config,ontology,crit) #find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
 
-                #print(len(items))
-                #input()
                 # flatten found
                 items += [ item for itemlist in newitems for item in itemlist]
-                '''if crit.HasType != '':
-
-                    # BFS search for has properties 
-                    #items += find_instance_properties(network, has_property=[crit.HasType], equals=[], found=[])
-
-                if crit.Type != '':
-                    searchType = crit.Type
-
-                    # need to implement more search types ......
-                    if searchType == 'layer_num_units' or searchType == 'layer':
-                        #query_instance_properties(network, crit)
-                        
-                        for layer in layers:
-                            items += query_instance_properties(layer, crit)
-                            # NOTE: Here we can access the class (ie for layer the subclass we care about) in two ways, we use .is_a[0] more typically
-                            logger.info(f"{' ' * 7}Layer: {layer}, type: {type(layer)}")
-                            logger.info(f"{' ' * 7}Layer: {layer}, type: {layer.is_a}")
-
-                            subclass = layer.is_a[0]
-                            logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")'''
+                
                 for item in items:
                     item['hash'] = item[crit.HashOn]
 
                 found += items
-            #print('found',found)
+            
             for index, data in enumerate(found): 
                 found[index]['annconfig'] = ann_config
             if ann_config in prefind:
@@ -766,14 +697,11 @@ class TaxonomyCreator:
                     found.append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
             hashvalue = set([item['hash'] for item in found])
             hashvalue = hashvalue = ','.join( str(hash) for hash in hashvalue)
-            #print('hash: ', hashvalue)
  
             if not hashvalue in hashmap:
                 hashmap[hashvalue] = { ann_config : found }
             else:
                 hashmap[hashvalue][ann_config] = found
-            #print(hashmap)
-            #annconfignodes.append(TaxonomyNode(ann_config.name))
 
             for network in networks:
                 
@@ -820,17 +748,12 @@ class TaxonomyCreator:
                     split = list(found[key].keys())
 
                     childnode = TaxonomyNode(level.Name,  criteria=level, splitProperties=found[key], splitKey=key if len(key) > 0 else 'empty', annConfigs = found[key].keys())
-                    #print(level_index,key,found[key].keys())
                     
-                    
-                    #print('keystest:', key)
-                    #input()
                     if not key in facetedTaxonomy[inserting]['splits']:
                         facetedTaxonomy[inserting]['splits'][key] = list(found[key].keys())
                     else:
                         facetedTaxonomy[inserting]['splits'][key] += list(found[key].keys())
                     
-                    #print(f'key: {key}', len(found[key]), len(key), key == ' ',len(key))
                     if faceted: # alway expand if faceted -- bring them to other grouping
                         nodes[index].children.append(childnode)
                         newnodes.append(childnode)
@@ -895,6 +818,11 @@ def main():
     logger.info("Ontology loaded.")
 
     logger.info("Creating taxonomy from Annetto annotations.")
+
+    criteriatest = '{"Searchs": [{"Type": {"Name": "kmeans", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
+    output = Criteria.model_validate_json(criteriatest)
+    print(output)
+    criterias = [output]
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
 
     format='json'

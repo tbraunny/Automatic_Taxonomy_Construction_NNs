@@ -221,9 +221,9 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
     criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
-    #model='qwq:32b'
-    model = 'llama3.2:latest'
-    model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=20000)
+    model='qwq:32b'
+    #model = 'llama3.2:latest'
+    model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=5000)
 
     # a fixing parser if the original model doesnt work
     fixparser = OutputFixingParser.from_llm(parser=parser, llm=model)
@@ -241,8 +241,10 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     properties = [prop.name for prop in properties]
     print(properties)
     #input()
-    output = chain.invoke({'user_input': query,'oc': oc,'schema': json.dumps(OutputCriteria.model_json_schema()), 'valueoperator': json.dumps(ValueOperator.model_json_schema()), 'typeoperator': json.dumps(TypeOperator.model_json_schema()), "properties": json.dumps(properties).replace('"','') } ).content
+    output = chain.invoke({'user_input': query,'oc': oc,'schema': json.dumps(OutputCriteria.model_json_schema()), 'valueoperator': json.dumps(ValueOperator.model_json_schema()), 'typeoperator': json.dumps(TypeOperator.model_json_schema()), "properties": json.dumps(properties).replace('"','') } ) #.content
     print(output)
+    output = output.content
+    #input()
     #input('output')
 
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
