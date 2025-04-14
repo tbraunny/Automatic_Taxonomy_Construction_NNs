@@ -222,10 +222,11 @@ def process_code_file(file_path) -> int:
     :return int: If not 0, error occured
     """
     try:
-        py_files = glob.glob(f"{file_path}/*.py")
+        file_path  = os.path.normpath(file_path)
+        py_files = glob.glob(f"{file_path}/**/*.py")
         #pt_files = glob.glob(f"{file_path}/*.pt") # still working on it
-        onnx_files = glob.glob(f"{file_path}/*.onnx")
-        pb_files = glob.glob(f"{file_path}/*.pb")
+        onnx_files = glob.glob(f"{file_path}/**/*.onnx")
+        pb_files = glob.glob(f"{file_path}/**/*.pb")
 
         if onnx_files:
             logger.info(f"ONNX file(s) detected: {onnx_files}")

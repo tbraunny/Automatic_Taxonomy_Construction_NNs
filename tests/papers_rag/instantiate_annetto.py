@@ -484,7 +484,8 @@ class OntologyInstantiator:
 
     def _extract_network_data(self) -> list:
         """
-        Extract name & type for each layer found within relevant parsed code
+        DEPRECATED
+        Extract relevant model data from parsed JSON's
 
         :return List of dictionaries containing name & type per layer
         """
@@ -571,20 +572,27 @@ class OntologyInstantiator:
             "AdaptiveLogSoftmaxWithLoss"
         ]
 
+        json_file = glob.glob(f"data/**/{self.ann_config_name}.json") # grab current json
+        network_data: dict = {}
         try:
-            network_data: dict = self._extract_network_data()
-            if network_data is None:
-                warnings.warn("No parsed code available for given network")
+            with open(json_file , 'r') as f:
+                network_data = json.loads(f)
+
+            nodes = network_data.get('graph' , {}).get('node' , {})
+            #network_data: dict = self._extract_network_data()
+            # if network_data is None:
+            #     warnings.warn("No parsed code available for given network")
 
             layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
             # NOTE: uncomment if method found for instantiating previously unknown activation functions
             #actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
             #layer_subclasses.extend(actfunc_subclasses)
-            name_to_instance: dict = {} # easier lookup between actfunc & layer, keeps instance in scope, less calls to ontology
 
-            for layer in network_data:
-                layer_name = layer['name']
-                layer_type = layer['type']
+            name_to_instance: dict = {} # easier lookup between actfunc & layer, keeps instance in scope, less calls to ontology
+            for layer in nodes:
+                layer_name = layer.get('name')
+                layer_type = layer.get('op_type')
+                layer_params = layer.get('num_params')
 
                 best_actfunc_match = self._fuzzy_match_class(layer_type , activation_functions , 70)
                 #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
@@ -603,16 +611,16 @@ class OntologyInstantiator:
                     self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
                     # attach number of parameters to layer
-                    if layer['num_params']:
-                        self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer['num_params'])
+                    if layer_params:
+                        self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer_params)
                     else:
                         self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
                     name_to_instance[layer_name] = layer_instance
 
             # second run for instantiating next, prev, and other linkages
-            for layer in network_data:
-                layer_name = layer['name']
-                layer_type = layer['type']
+            for layer in nodes:
+                layer_name = layer.get('name')
+                layer_type = layer.get('type')
                 prev_layer = layer.get('input' , [])
                 next_layer = layer.get('output' , [])
 
@@ -640,8 +648,9 @@ class OntologyInstantiator:
         except Exception as e:
             self.logger.error(f"Error processing parsed code {e}" , exc_info=True)
 
-    def _process_layers(self, network_instance: Thing) -> None:
+    def _process_db_layers(self, network_instance: Thing) -> None:
         """
+        DEPRECATED
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
 
         :param network_instance: the network instance
