@@ -2,12 +2,13 @@ import ast
 import json
 import glob
 from utils.pytorch_extractor import extract_graph
+from utils.tensorflow_extractor import extract_tf_graph
 import logging
 from datetime import datetime
 import os
-from utils.onnx_db import check_onnx
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
+import tensorflow as tf
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
@@ -88,6 +89,7 @@ class CodeProcessor(ast.NodeVisitor):
         Also checks for class that instantiates PyTorch model
         """
         for base in node.bases:
+            # PyTorch check
             if base.attr == "Module" and ( # check for nn.Module base class
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
@@ -99,10 +101,27 @@ class CodeProcessor(ast.NodeVisitor):
                 model_class = mappings.get(node.name)
                 model = model_class()
                 model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
+                
                 self.model_name = node.name
+                self.pytorch_graph: dict = extract_graph(model) # extract_graph returns dict                
 
-                self.pytorch_graph = json.loads(extract_graph(model)) # extract_graph returns json.dumps                
-        
+            # Tensorflow check
+            elif hasattr(base, "attr") and base.attr == "Model":
+                if (
+                    (hasattr(base.value, "id") and base.value.id in ("keras", "tf")) or
+                    (hasattr(base.value, "attr") and base.value.attr == "keras" and hasattr(base.value, "value") and base.value.value.id == "tf")
+                ):
+                    logging.info("TensorFlow/Keras instantiation found")
+                    mappings: dict = {}
+
+                    class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+                    exec("\n".join(class_code), globals(), mappings)
+                    model_class = mappings.get(node.name)
+                    model = model_class()
+
+                    self.model_name = node.name
+                    self.tf_graph: dict = extract_tf_graph(node)
+
         class_section = {
             #"page_content": "\n".join(self.clean_code_lines(class_code)) , # clean up code lines
             "page_content" : "Functions: " + (", ".join([f"{func.name}" for func in node.body if isinstance(func , ast.FunctionDef)])) , 
@@ -193,74 +212,86 @@ def save_json(output_file: str , content: dict):
             
     logger.info(f"JSON successfully saved to {output_file}")
 
-def process_code_file(file_path):
+def process_code_file(file_path) -> int:
     """
     Traverse abstract syntax tree & dump relevant code into JSON. Given model directory,
     automatically detects pytorch & handles both ONNX & TensorFlow files with ANNETT-O
     instantiation.
 
     :param file_path: Directory in which code files may be present (eg. data/{ann_name})
-    :return None: JSON files saved to same directory given
+    :return int: If not 0, error occured
     """
     try:
-        py_files = glob.glob(f"{file_path}/*.py")
-        onnx_files = glob.glob(f"{file_path}/*.onnx")
-        pb_files = glob.glob(f"{file_path}/*.pb")
+        file_path  = os.path.normpath(file_path)
+        py_files = glob.glob(f"{file_path}/**/*.py")
+        #pt_files = glob.glob(f"{file_path}/*.pt") # still working on it
+        onnx_files = glob.glob(f"{file_path}/**/*.onnx")
+        pb_files = glob.glob(f"{file_path}/**/*.pb")
 
         if onnx_files:
-            logger.info(f"ONNX files detected: {onnx_files}")
+            logger.info(f"ONNX file(s) detected: {onnx_files}")
             for count , file in enumerate(onnx_files):
                 logger.info(f"Parsing ONNX file {file}...")
-                output_json = file.replace(".onnx" , f"onnx_{count}.json")
-                ONNXProgram().extract_properties(file , savePath=output_json) # how should we run the onnx extractor
-                print("ONNX file parsed & saved to: " , output_json)
+                #output_json = file.replace(".onnx" , f"onnx_{count}.json")
+                onnx_graph: dict = ONNXProgram().compute_graph_extraction(file)
+                save_json(file.replace(".onnx" , f"_onnx_{count}.json") , onnx_graph)
         if pb_files:
-            logger.info(f"TensorFlow files detected: {pb_files}")
+            logger.info(f"TensorFlow file(s) detected: {pb_files}")
             for count , file in enumerate(pb_files):
                 logger.info(f"Parsing TensorFlow file {file}...")
-                output_json = file.replace(".pb" , f"_pbcode_{count}.json")
-                PBExtractor.extract_compute_graph(file , output_json)
-        if not py_files:
-            print(file_path)
-            print(py_files)
-            logger.info("No Python files found in directory")
+                #output_json = file.replace(".pb" , f"_pbcode_{count}.json")
+                pb_graph = PBExtractor.extract_compute_graph(file)
+                save_json(file.replace(".pb" , f"_pb_{count}.json") , pb_graph)
+        # if pt_files:
+        #     logger.info(f"PyTorch weights & biases detected: {pt_files}")
+        #     for count , file in enumerate(pt_files):
+        #         logger.info(f"Parsing PyTorch file {file}...")
+        #         output_json = file.replace(".pt" , f"_ptcode{count}.json")
+        #         PTExtractor.extract_compute_graph(file , output_json)
+        if py_files: # informational
+            logger.info(f"Python file(s) detected: {py_files}")
+            for count , file in enumerate(py_files):
+                logger.info(f"Parsing python file {file}...")
 
-        for count , file in enumerate(py_files):
-            logger.info(f"Parsing python file {file}...")
-            with open(file , "r") as f:
-                code = f.read()
-            tree = ast.parse(code)
-            output_file = file.replace(".py", f"_code_{count}.json")
+                with open(file , "r") as f:
+                    code = f.read()
+                tree = ast.parse(code)
+                output_file = file.replace(".py", f"_code_{count}.json")
 
-            # for node in ast.walk(tree): # track nodes
-            #     for child in ast.iter_child_nodes(node):
-            #         child.parent = node  # set reference nodes (ex. node.parent)
-            
-            processor = CodeProcessor(code)
-            processor.visit(tree)
+                # for node in ast.walk(tree): # track nodes
+                #     for child in ast.iter_child_nodes(node):
+                #         child.parent = node  # set reference nodes (ex. node.parent)
+                
+                processor = CodeProcessor(code)
+                processor.visit(tree)
 
-            if not processor.model_name:
-                base = os.path.basename(file)
-                processor.model_name = os.path.splitext(base)[0]
-            #onnx_model = check_onnx(processor.model_name) # check for onnx model
+                if not processor.model_name:
+                    base = os.path.basename(file)
+                    processor.model_name = os.path.splitext(base)[0]
 
-            if processor.pytorch_graph: # symbolic graph dictionary
-                logger.info(f"PyTorch code found within file {file}")
-                content = processor.pytorch_graph
-                save_json(file.replace(".py", f"_code_torch_{count}.json") , content)
-            # elif onnx_model: # check for model in onnx
-            #     logger.info(f"Model name '{onnx_model}' found within ONNX database")
-            #     # instantiate it
-            else:
-                logger.info(f"Model name '{processor.model_name}' is not PyTorch or an instance in the ONNX database")
+                if processor.pytorch_graph: # symbolic graph dictionary
+                    logger.info(f"PyTorch code found within file {file}")
+                    save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
+                elif processor.tf_graph:
+                    logger.info(f"TensorFlow code found within file {file}")
+                    save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
+                else:
+                    logger.info(f"Model name '{processor.model_name}' is not PyTorch or TensorFlow")
 
-            # regular code dictionary for RAG
-            output = processor.parse_code()
-            save_json(output_file , output)
+                # regular code dictionary for RAG
+                output = processor.parse_code()
+                save_json(output_file , output)
+        else:
+            logger.warning(f"No code file(s) of any type found")
+            return -1
+
+        return 0
             
     except Exception as e:
         print(e)
-        logger.error(f"Error processing code files, {e}")
+        logger.error(f"Error processing code file(s), {e}")
+
+        return -1
 
 
 def main():

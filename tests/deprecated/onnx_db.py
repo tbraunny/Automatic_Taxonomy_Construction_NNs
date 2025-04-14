@@ -3,10 +3,11 @@
 # 3. instantiate annetto instances for the layers found in an ontology
 
 """
+DEPRECATED
 NOTE: 
 - for the db connection to work, must forward port 5433 to virtual server postgres port (5432)
 - put following in bash terminal:
-    ssh -L 5433:172.20.199.232:5432 netid@nxlogin.engr.unr.edu
+    ssh -L 5433:100.80.229.100:5432 netid@nxlogin.engr.unr.edu
 """
 from typing import List
 
@@ -33,7 +34,7 @@ class OnnxAddition:
         """
         Initialize connection to the database
         """
-        self.engine = db.create_engine('postgresql://postgres:postgres@localhost:5433/graphdb')
+        self.engine = db.create_engine('postgresql://postgres:postgres@100.80.229.100:5432/graphdb')
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
