@@ -147,6 +147,12 @@ def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
 
     logger.info("Processing complete.")
 
+def main():
+    ann_name = "alexnet"
+    input_file = f"data/{ann_name}/{ann_name}.pdf"
+
+    extract_filter_pdf_to_json(input_file)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract, filter, and convert PDF content to JSON."
@@ -157,3 +163,4 @@ if __name__ == "__main__":
     
     extract_filter_pdf_to_json(args.pdf_path)
 
+    main()

@@ -3,10 +3,11 @@
 # 3. instantiate annetto instances for the layers found in an ontology
 
 """
+DEPRECATED
 NOTE: 
 - for the db connection to work, must forward port 5433 to virtual server postgres port (5432)
 - put following in bash terminal:
-    ssh -L 5433:172.20.199.232:5432 netid@nxlogin.engr.unr.edu
+    ssh -L 5433:100.80.229.100:5432 netid@nxlogin.engr.unr.edu
 """
 from typing import List
 
@@ -14,9 +15,12 @@ import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from rapidfuzz import process , fuzz
-import logging
 from typing import Optional
 
+from utils.logger_util import get_logger
+
+# Initialize logger
+logger = get_logger("onnx_db")
 class OnnxAddition:
     """
     Fetch ONNX layers from graph database to instantiate ANNETT-O
@@ -33,16 +37,16 @@ class OnnxAddition:
         """
         Initialize connection to the database
         """
-        self.engine = db.create_engine('postgresql://postgres:postgres@localhost:5433/graphdb')
+        self.engine = db.create_engine('postgresql://postgres:postgres@100.80.229.100:5432/graphdb')
         Session = sessionmaker(bind=self.engine)
         self.session = Session()
 
         with self.engine.connect() as conn:
             try:
                 total_networks = conn.execute(text("SELECT COUNT(graph) FROM model"))
-                logging.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
+                logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
             except Exception as e:
-                logging.exception(f"Failed to connect to database: {e}")
+                logger.exception(f"Failed to connect to database: {e}")
 
         return self.engine , self.session
 

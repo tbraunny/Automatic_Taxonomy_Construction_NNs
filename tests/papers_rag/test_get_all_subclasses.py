@@ -13,18 +13,13 @@ from utils.owl_utils import (
     get_all_subclasses
 )
 from utils.annetto_utils import int_to_ordinal, make_thing_classes_readable
-from tests.deprecated.llm_service import init_engine, query_llm, query_llm
+from utils.llm_service import init_engine, query_llm
 from rapidfuzz import process, fuzz
 
 try:
     import tiktoken
 except ImportError:
     tiktoken = None
-
-# LangChain JSON Output Parser with PyDantic
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 OMIT_CLASSES = {"DataCharacterization", "Regularization"} # Classes to omit from instantiation.
@@ -144,7 +139,7 @@ class OntologyInstantiator:
         self.logger.info(f"Linked {self._unhash_and_format_instance_name(parent_instance.name)} and {self._unhash_and_format_instance_name(child_instance.name)} via {object_property.name}.")
 
 
-    def _query_llm(self, instructions: str, prompt: str, json_format_instructions: Optional[str], pydantic_type_schema: Optional[type[BaseModel]]) -> Union[Dict[str, Any], int, str, List[str]]:
+    def _query_llm(self, instructions: str, prompt: str) -> Union[Dict[str, Any], int, str, List[str]]:
         """
         Queries the LLM with a structured prompt to obtain a response in a specific JSON format.
 
@@ -203,8 +198,7 @@ class OntologyInstantiator:
             print("Using cached LLM response #####")
             return self.llm_cache[full_prompt]
         try:
-            # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
-            response = query_llm(self.ann_config_name, full_prompt, json_format_instructions, pydantic_type_schema)
+            response = query_llm(self.ann_config_name, full_prompt)
 
             self.logger.info(f"LLM query: {full_prompt}")
             self.logger.info(f"LLM query response: {response}")
@@ -804,10 +798,6 @@ class OntologyInstantiator:
             self._link_instances(dataset_pipe_instance, dataset_instance, self.ontology.joinsDataSet)
 
             # Process Training Optimizer
-            # TODO: Insert subclasses from ontology instead.
-
-            "Examples:\n" + "\n".join([f"{i+1}. Training Optimizer: {make_thing_classes_readable(opt)}" for i, opt in enumerate(get_all_subclasses(self.ontology.TrainingOptimizer)) + "\n" ]) 
-
             training_optimizer_prompt = (
                 "Extract the name of the training optimizer used in the network-specific training step. "
                 "The training optimizer is responsible for updating the weights of the network during training. "
@@ -1042,7 +1032,7 @@ class OntologyInstantiator:
 
             # Process the network class and it's components.
             self._process_network(ann_config_instance)
-            # self._process_training_strategy(ann_config_instance) #TODO: Process training strategy later
+            self._process_training_strategy(ann_config_instance)
 
             # Process TrainingStrategy and it's components.
             # self._process_training_strategy(ann_config_instance)
@@ -1063,24 +1053,13 @@ if __name__ == "__main__":
     ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}"
     ontology = get_ontology(ontology_path).load()
 
-    for model_name in ["alexnet"]:#, "resnet", "vgg16", "gan"]:
-        with ontology:
-            try:
-                instantiator = OntologyInstantiator(ontology, f"data/{model_name}/doc_{model_name}.json", model_name)
-                instantiator.run()
-            except Exception as e:
-                logging.error(f"Error instantiating the {model_name} ontology: {e}")
-                continue
-
-    # Move saving outside the loop to ensure all networks are stored in the final ontology
-    new_file_path = "tests/papers_rag/annett-o-test-ts.owl"  # Assume test file for now.
-    ontology.save(file=new_file_path, format="rdfxml")
-    logging.info(f"Ontology saved to {new_file_path}")
-
-    elapsed_time = time.time() - start_time
-    minutes, seconds = divmod(elapsed_time, 60)
-    logging.info(f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds.")
-    logging.info("Ontology instantiation completed.")
-
-
+    model_name = "alexnet"
+    instantiator = OntologyInstantiator(ontology, f"data/{model_name}/doc_{model_name}.json", model_name)
     
+    training_optimizer = "SGD"
+    if not training_optimizer:
+        print("No response for training optimizer.")
+    else:
+        best_training_optimizer_match = instantiator._fuzzy_match_class(training_optimizer, get_all_subclasses(instantiator.ontology.TrainingOptimizer))
+        print("Best Training Optimizer Match:")
+        print(best_training_optimizer_match, type(best_training_optimizer_match))
