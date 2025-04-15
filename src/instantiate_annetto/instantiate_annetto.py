@@ -562,6 +562,8 @@ class OntologyInstantiator:
             "AdaptiveLogSoftmaxWithLoss"
         ]
 
+        
+
         try:
             network_data: dict = self._extract_network_data()
             if network_data is None:
@@ -866,10 +868,11 @@ class OntologyInstantiator:
             layers_parsed:bool = False # Flag for if layers have been parsed yet
 
             # # Process layers via code
-            # parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
-            # if parse_code_layers:
-            #     self._process_parsed_code(ann_config_instance)
-            #     layers_parsed = True
+            parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
+            if parse_code_layers:
+                print("hi")
+                self._process_parsed_code(ann_config_instance)
+                layers_parsed = True
             # ##############
 
             # Define examples using defintions
@@ -989,7 +992,7 @@ A **subnetwork** is a block that\n
                         self.ontology.hasNetwork,
                     )
                     # if not layers_parsed:
-                    #     self._process_layers(network_instance)
+                        # self._process_layers(network_instance)
                     # self._process_objective_functions(network_instance)
                     # self._process_task_characterization(network_instance)
                     self.logger.info(f"Successfully processed network instance: {network_instance.name}")
