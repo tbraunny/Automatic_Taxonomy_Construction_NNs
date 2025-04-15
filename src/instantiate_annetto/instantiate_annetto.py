@@ -881,14 +881,6 @@ class OntologyInstantiator:
 
             layers_parsed:bool = False # Flag for if layers have been parsed yet
 
-            # # Process layers via code
-            parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
-            if parse_code_layers:
-                print("hi")
-                self._process_parsed_code(ann_config_instance)
-                layers_parsed = True
-            # ##############
-
             # Define examples using defintions
             examples = (
             "Examples:\n"
@@ -978,6 +970,13 @@ A **subnetwork** is a block that\n
                         self.ontology.ANNConfiguration, arch_name
                     )
                 )
+                # # Process layers via code
+                parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
+                if parse_code_layers:
+                    print("hi")
+                    self._process_parsed_code(ann_config_instance)
+                    layers_parsed = True
+                # ##############
 
                 for subnetwork in architecture.subnetworks:
                     sub_name = subnetwork.name
@@ -1480,7 +1479,6 @@ def instantiate_annetto(
         f"{ann_path}/*doc*.json"
     )
     list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
-    print(ann_path, list_pdf_paths, list_json_doc_paths)
     instantiator = OntologyInstantiator(
         list_json_doc_paths,
         ann_name,
@@ -1500,9 +1498,9 @@ if __name__ == "__main__":
 
     for model_name in [
         "alexnet",
-        "resnet",
-        "vgg16",
-        "gan",  # Assume we can model name from user or something
+        # "resnet",
+        # "vgg16",
+        # "gan",  # Assume we can model name from user or something
     ]:
         instantiate_annetto(
             model_name,

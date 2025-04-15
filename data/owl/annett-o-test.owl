@@ -3275,60 +3275,28 @@
 
 <owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
+  <hasNetwork rdf:resource="709942bd_convolutional_network"/>
   <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet Classification with Deep Convolutional Neural Networks</hasTitle>
   <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/alexnet/alexnet.pdf</hasPaperPath>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
+<owl:NamedIndividual rdf:about="709942bd_convolutional_network">
   <rdf:type rdf:resource="Network"/>
   <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_resnet">
+<owl:NamedIndividual rdf:about="709942bd_pulseformer">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="d53410e0_residual-block"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Deep Residual Learning for Image Recognition</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/resnet/resnet.pdf</hasPaperPath>
+  <hasNetwork rdf:resource="709942bd_pulseencoder"/>
+  <hasNetwork rdf:resource="709942bd_pulseflow"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_residual-block">
+<owl:NamedIndividual rdf:about="709942bd_pulseencoder">
   <rdf:type rdf:resource="Network"/>
   <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="d53410e0_plain-network">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="92799309_vgg16">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VERY DEEP CONVOLUTIONAL NETWORKS FOR LARGE-SCALE IMAGE RECOGNITION</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/vgg16/VGG16.pdf</hasPaperPath>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="92799309_vgg">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_gan">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Generative Adversarial Nets</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/gan/gan.pdf</hasPaperPath>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_adversarial-nets">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="f1253bc7_generator-network-(g)"/>
-  <hasNetwork rdf:resource="f1253bc7_discriminator-network-(d)"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_generator-network-(g)">
-  <rdf:type rdf:resource="Network"/>
-  <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_discriminator-network-(d)">
+<owl:NamedIndividual rdf:about="709942bd_pulseflow">
   <rdf:type rdf:resource="Network"/>
   <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
 </owl:NamedIndividual>
