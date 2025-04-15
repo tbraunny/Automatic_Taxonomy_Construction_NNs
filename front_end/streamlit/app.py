@@ -14,11 +14,11 @@ def home_page():
         We are a research project for the Computer Science & Engineering [capstone program](https://www.unr.edu/engineering/student-resources/innovation-day/get-involved) at University of Nevada, Reno.
                     
         We present the newest tool for classifying & visualizing neural networks. We can classify, detail, visualize & summarize all things machine learning.
-        We utilize a hierarchical organization technique called a taxonomy to organize the structures of neural networks. Think of the tree of life, with all living
-        things in a hierarchy, perfectly organized for understanding what comes from where, and what it may relate to. Our tool will provide this organization, but
-        for neural networks. You may be wondering what kind of inputs are compatible with this tool. Poorly documented code? We can classify it. Lengthy academic
+        We utilize a hierarchical organization technique called a taxonomy to organize the structures of neural networks. 
+        <br> Think of the tree of life, with all living things in a hierarchy, perfectly organized for understanding what comes from where, and what it may relate to. 
+        <br> Our tool will provide this organization, but for neural networks. You may be wondering what kind of inputs are compatible with this tool. Poorly documented code? We can classify it. Lengthy academic
         papers? We got you covered. Just have weights & biases saved? You bet your buns we can do that too.
-             """)
+             """, unsafe_allow_html=True)
     
     with st.container():
         st.header('News & Updates')

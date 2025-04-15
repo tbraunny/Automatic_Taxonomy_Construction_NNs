@@ -2,15 +2,11 @@ import streamlit as st
 import streamlit.components.v1 as components
 from utils.join_unique_dir_util import join_unique_dir
 from src.main import main
-import glob
-
+import time
+import os
+import shutil
 def ontology_import():
-    
-    
     st.title("Graph Visualization & File Upload")
-    # import zipfile
-    import os
-    
     # Get the neural network architecture input from the user
     user_ann_name = st.text_input("Enter the name of the neural network architecture (e.g., alexnet):")
 
@@ -45,64 +41,92 @@ def ontology_import():
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.getvalue())
         st.success("PDF file saved!")
-
+        st.markdown("---")
+        
     # Streamlit app layout
     st.title("File Upload Example")
 
     # Create a form for file upload
     with st.form(key='file_upload_form'):
-        uploaded_file = st.file_uploader("Choose a file", type=["py", "pdf"])
+        uploaded_files = st.file_uploader("Choose a file", type=["py", "pdf"], accept_multiple_files=True)
         # uploaded_file = st.file_uploader("Choose a file", type=["zip", "py", "pdf"]) for zip implementation later
         submit_button = st.form_submit_button(label='Submit')
 
     # Handle file processing upon form submission
-    if submit_button and uploaded_file is not None:
-        if user_ann_name:  # Ensure that the user has entered an architecture name
-            ann_path = join_unique_dir(user_data_dir, user_ann_name)  # Get the folder path based on architecture name
-            file_type = uploaded_file.type
-            #this is code for zip for future reference
-            # if file_type == "application/zip":
-            #     try:
-            #         # Open the uploaded zip file
-            #         with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
-            #             # Iterate through each file in the zip archive
-            #             for file_name in zip_ref.namelist():
-            #                 # Check if the file is a Python file
-            #                 if file_name.endswith('.py'):
-            #                     with zip_ref.open(file_name) as file:
-            #                         handle_python(file, save_path)
-            #                 elif file_name.endswith('.pdf'):
-            #                     with zip_ref.open(file_name) as file:
-            #                         handle_pdf(file, save_path)
-            #                 else:
-            #                     st.write(f"Skipping unsupported file: {file_name}")
-            #     except zipfile.BadZipFile:
-            #         st.error("The uploaded file is not a valid zip file.")
-            #     except Exception as e:
-            #         st.error(f"An error occurred while processing the zip file: {e}")
-            if file_type == "application/octet-stream":
-                handle_python(uploaded_file, ann_path)
-            elif file_type == "application/pdf":
-                handle_pdf(uploaded_file, ann_path)
-            else:
-                st.write("Unsupported file type.")
-                
-            
-            
-            
+    if submit_button and uploaded_files:
         
+        if user_ann_name:
+            ann_path = ensure_directory(user_ann_name)
+
+            for uploaded_file in uploaded_files:
+                file_type = uploaded_file.type
+
+                if file_type == "application/octet-stream":
+                    handle_python(uploaded_file, ann_path)
+                elif file_type == "application/pdf":
+                    handle_pdf(uploaded_file, ann_path)
+                else:
+                    st.warning(f"Unsupported file type: {uploaded_file.name}")
+            
             user_owl_output = os.path.join(ann_path, user_ann_name + ".owl")
-    
-            
-            main(user_ann_name, ann_path, user_owl_output)
-            
-            # main(user_ann_name,user_data_dir, user_owl_output)
-        
-        
+            # main(user_ann_name, ann_path, user_owl_output)
         else:
             st.error("Please enter a neural network architecture before uploading files.")
+
+                
+            # user_owl_output = os.path.join(ann_path, user_ann_name + ".owl")
+    
             
+            # main(user_ann_name, ann_path, user_owl_output)
+
+    #file view
+    
+    st.header("View Uploaded Files")
+
+    if os.path.exists(user_data_dir):
+        arch_dirs = sorted([d for d in os.listdir(user_data_dir) if os.path.isdir(os.path.join(user_data_dir, d))])
         
+        if arch_dirs:
+            for arch in arch_dirs:
+                arch_path = os.path.join(user_data_dir, arch)
+                with st.expander(f"📁 {arch}"):
+                    files = os.listdir(arch_path)
+                    if files:
+                        for file in files:
+                            file_path = os.path.join(arch_path, file)
+                            file_mod_time = time.ctime(os.path.getmtime(file_path))
+
+                            col1, col2, col3 = st.columns([4, 3, 1])
+
+                            with col1:
+                                st.markdown(f"- **{file}**")
+                                st.caption(f"Uploaded: {file_mod_time}")
+                            # with col2:
+                                # with open(file_path, "rb") as f:
+                                #     st.download_button(
+                                #         label="Download",
+                                #         data=f,
+                                #         file_name=file,
+                                #         mime="application/octet-stream",
+                                #         key=f"download_{arch}_{file}"  # Unique key per file
+                                #     )
+                            with col3:
+                                if st.button(f"🗑️ Delete {file}", key=f"delete_{arch}_{file}"):
+                                    os.remove(file_path)
+                                    st.success(f"Deleted `{file}` from `{arch}`")
+                                    st.rerun()  # Refresh the page to reflect the change
+                    else:
+                        st.write("No files uploaded yet.")
+
+                    # Option to delete the entire architecture folder
+                    if st.button(f"🧹 Delete entire `{arch}` folder", key=f"delete_folder_{arch}"):
+                        shutil.rmtree(arch_path)
+                        st.success(f"Deleted entire architecture folder: `{arch}`")
+                        st.rerun()  # Refresh the page to reflect the change
+        else:
+            st.info("No architectures found yet.")
+    else:
+        st.warning("User input directory does not exist.")
     
     animation_html = """
     <a href="http://localhost:8866/" target="_blank">
