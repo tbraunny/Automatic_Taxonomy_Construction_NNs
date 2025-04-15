@@ -131,7 +131,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
             # single searches
             for index, searchValue in enumerate(values):
                 if searchValue.Name == prop.name and (searchValue.Op == 'name' or searchValue.Op == 'none'):
-                    insert = {'type': type(value), 'value': value, 'name': prop.name} 
+                    insert = {'type': str(type(value)), 'value': value, 'name': prop.name, 'found': True} 
                     if not insert in found[index]:
                         found[index].append(insert)
                 if isinstance(value, Thing) and searchValue.Op == "has":
@@ -142,7 +142,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                     inserts = getattr(instance,searchValue.Name,[])
                     if inserts:
                         for insert in inserts:
-                            insert = {'type': insert.is_a[0].name, 'name': insert.name, 'found': True, 'value': insert.name}
+                            insert = {'type': str(insert.is_a[0].name), 'name': insert.name, 'found': True, 'value': insert.name}
                             if not insert in found[index]:
                                 found[index].append(insert)
                 #if isinstance(value,Thing) and searchValue.Name == value.name and searchValue.Op == 'propertyvaluename':
@@ -150,32 +150,32 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
                 #    if not insert in found:
                 #        found[index].append(insert)
                 if searchValue.Op == 'sequal' and isinstance(value,Thing) and searchValue.Name == value.name:
-                    insert = {'type': value.is_a[0].name, 'value': value.name, 'name': prop.name, 'found': True}
+                    insert = {'type': str(value.is_a[0].name), 'value': value.name, 'name': prop.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'less' and type(value) == int and searchValue.Value[0] > value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'greater' and type(value) == int and searchValue.Value[0] < value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'leq' and type(value) == int and searchValue.Value[0] >= value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'geq' and type(value) == int and  searchValue.Value[0] <= value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 if searchValue.Op == 'equal' and type(value) == int and searchValue.Value[0] == value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
                 # range searches
                 if searchValue.Op == 'range' and type(value) == int and searchValue.Value[0] < value and searchValue.Value[1] > value and searchValue.Name == prop.name:
-                    insert = {'type': prop.name, 'value': value, 'name': instance.name, 'found': True}
+                    insert = {'type': str(prop.name), 'value': value, 'name': instance.name, 'found': True}
                     if not insert in found[index]:
                         found[index].append(insert)
 
@@ -213,64 +213,65 @@ def find_instances(annConfig, ontology, query):
                 newstack = []
                 for plate in stack:
                     try:
-                        toinsert = plate.__getattr__(j.name)
-                        if type(toinsert) == IndividualValueList:
-                            newstack += toinsert
-                        else: # somethings don't return back as list :(
-                            newstack.append(toinsert)
+                        if plate != None:
+                            toinsert = plate.__getattr__(j.name)
+                            if type(toinsert) == IndividualValueList:
+                                newstack += toinsert
+                            else: # somethings don't return back as list :(
+                                newstack.append(toinsert)
                     except Exception as e:
                         logger.warning(f'Problem found with {query} with error: {e}')
                         input(e)
                 stack = newstack
-                #print(stack)
                 #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
         if searchFound:
             #print(searchFound,value)
             #input('found')
             for plate in stack:
                 # need to check if this thing returns a single or list...
-                iters = plate.__getattr__(value.Name)
-                if type(iters) is not IndividualValueList:
-                    iters = [iters] # make it a list
-                for food in iters:
-                    #found[index].append(food)
-                    if value.Op == 'name' or value.Op == 'none':
-                        insert = {'type': type(food), 'value': food, 'name': value} 
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if isinstance(food, Thing) and value.Op == "has":
-                        insert = {'type': food.is_a[0].name, 'name': food.name, 'found': True, 'value': food.name}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'sequal' and isinstance(food,Thing) and value.Name == food.name:
-                        insert = {'type': food.is_a[0].name, 'value': food.name, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'less' and type(food) == int and value.Value[0] > food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'greater' and type(food) == int and value.Value[0] < food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'leq' and type(food) == int and value.Value[0] >= food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'geq' and type(food) == int and value.Value[0] <= food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    if value.Op == 'equal' and type(food) == int and value.Value[0] == food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
-                    # range searches
-                    if value.Op == 'range' and type(food) == int and value.Value[0] < food and value.Value[1] > food:
-                        insert = {'type': query.Name, 'value': food, 'name': plate.name, 'found': True}
-                        if not insert in found[index]:
-                            found[index].append(insert)
+                if plate != None:
+                    iters = plate.__getattr__(value.Name)
+                    if type(iters) is not IndividualValueList:
+                        iters = [iters] # make it a list
+                    for food in iters:
+                        #found[index].append(food)
+                        if value.Op == 'name' or value.Op == 'none':
+                            insert = {'type': str(type(food)), 'value': food, 'name': value, 'found': True} 
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if isinstance(food, Thing) and value.Op == "has":
+                            insert = {'type': str(food.is_a[0].name), 'name': food.name, 'found': True, 'value': food.name}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'sequal' and isinstance(food,Thing) and value.Name == food.name:
+                            insert = {'type': str(food.is_a[0].name), 'value': food.name, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'less' and type(food) == int and value.Value[0] > food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'greater' and type(food) == int and value.Value[0] < food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'leq' and type(food) == int and value.Value[0] >= food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'geq' and type(food) == int and value.Value[0] <= food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        if value.Op == 'equal' and type(food) == int and value.Value[0] == food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
+                        # range searches
+                        if value.Op == 'range' and type(food) == int and value.Value[0] < food and value.Value[1] > food:
+                            insert = {'type': str(query.Name), 'value': food, 'name': plate.name, 'found': True}
+                            if not insert in found[index]:
+                                found[index].append(insert)
         if not searchFound:
             values = query.Value 
             query.Value = [value]
@@ -360,6 +361,9 @@ def serialize(obj):
         return obj.iri
     elif isinstance(obj, ThingClass):
         return obj.name
+    elif isinstance(obj, ValueOperator):
+        values = [str(i) for i in obj.Value]
+        return {"Name": str(obj.Name), "Value": values, "Op":str(obj.Op)}
     elif isinstance(obj, Criteria):
         return obj.model_dump()
     elif isinstance(obj, TaxonomyNode):
@@ -689,7 +693,16 @@ class TaxonomyCreator:
                 items += [ item for itemlist in newitems for item in itemlist]
                 
                 for item in items:
-                    item['hash'] = item[crit.HashOn]
+                    if  crit.HashOn in item:
+                        item['hash'] = item[crit.HashOn]
+                    else:
+                        logging.warn(f'item is missing: {item} and {crit.HashOn}')
+                        print(crit.HashOn,item)
+                        print(item)
+                        print(type(item))
+                        print('test')
+                        print(crit)
+                        input()
 
                 found += items
             
@@ -789,9 +802,9 @@ def main():
     logger.info("Loading ontology.")
     #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
     #ontology_path = f"./data/Annett-o/annett-o-test.owl"
-    #ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
+    ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
-    ontology_path = f"./data/owl/fairannett-o.owl" 
+    #ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
     #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
@@ -822,11 +835,15 @@ def main():
 
     logger.info("Creating taxonomy from Annetto annotations.")
 
-    criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
+    criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "hasLoss", "Op": "has", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
+    criteriatest2 = '{"criteriagroup": [{"Searchs": [{"Type": null, "Name": "hasNetwork", "Cluster": "none", "Value": [{"Name": "hasNetwork", "Op": "has", "Value": []}], "HashOn": "type"}], "Name": "Network Existence"}, {"Searchs": [{"Type": null, "Name": "layer_num_units", "Cluster": "none", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": [600, 3001]}], "HashOn": "found"}], "Name": "Layer Num Units"}, {"Searchs": [{"Type": null, "Name": "dropout_rate", "Cluster": "none", "Value": [{"Name": "dropout_rate", "Op": "none", "Value": [0.2, 0.5]}], "HashOn": "found"}], "Name": "Dropout Rate"}, {"Searchs": [{"Type": null, "Name": "activation_function", "Cluster": "none", "Value": [{"Name": "activation_function", "Op": "none", "Value": ["relu", "tanh"]}], "HashOn": "found"}], "Name": "Activation Function"}, {"Searchs": [{"Type": null, "Name": "learning_rate", "Cluster": "none", "Value": [{"Name": "learning_rate", "Op": "none", "Value": [0.01, 0.1]}], "HashOn": "found"}], "Name": "Learning Rate"}], "description": "A taxonomy representing all neural networks, including existence, layer number of units, dropout rate, activation function, and learning rate."}'
+
     output = Criteria.model_validate_json(criteriatest)
-    print(output)
-    criterias = [output]
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
+    output = OutputCriteria.model_validate_json(criteriatest2)
+    #print(output)
+    #input()
+    #criterias = [output]
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=output.criteriagroup)
 
     format='json'
 
