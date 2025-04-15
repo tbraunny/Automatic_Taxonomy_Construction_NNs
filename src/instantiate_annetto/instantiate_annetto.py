@@ -92,6 +92,7 @@ class OntologyInstantiator:
         self.output_owl_path = ontology_output_filepath
 
         self.llm_cache: Dict[str, Any] = {}
+        self.ann_path = None
         self.logger = logger
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
 
@@ -562,72 +563,85 @@ class OntologyInstantiator:
             "AdaptiveLogSoftmaxWithLoss"
         ]
 
-        
 
         try:
-            network_data: dict = self._extract_network_data()
-            if network_data is None:
-                warnings.warn("No parsed code available for given network")
+            json_files: list = []
+            json_files.extend(glob.glob(f"{self.ann_path}/**/*torch*.json" , recursive=True))
+            json_files.extend(glob.glob(f"{self.ann_path}/**/*pb*.json" , recursive=True))
+            json_files.extend(glob.glob(f"{self.ann_path}/**/*onnx*.json" , recursive=True))
+            
+            if not json_files:
+                return 0
 
             layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
-            # NOTE: uncomment if method found for instantiating previously unknown activation functions
-            #actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
-            #layer_subclasses.extend(actfunc_subclasses)
-            name_to_instance: dict = {} # easier lookup between actfunc & layer, keeps instance in scope, less calls to ontology
+            for file in json_files:
+                with open(file , "r") as f:
+                    network_data: dict = json.loads(f)
 
-            for layer in network_data:
-                layer_name = layer['name']
-                layer_type = layer['type']
+                nodes = network_data.get("graph" , {}).get("node" , [])
 
-                best_actfunc_match = self._fuzzy_match_class(layer_type , activation_functions , 70)
-                #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
+                if nodes is None:
+                    warnings.warn("No parsed code available for given network")
 
-                if best_actfunc_match: # if activation function present
-                    actfunc_instance = self._instantiate_and_format_class(best_actfunc_match , layer_name)
-                    self._link_instances(network_instance , actfunc_instance , self.ontology.hasActivationFunction)
-                    name_to_instance[layer_name] = actfunc_instance
-                else: 
-                    best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
-                    if not best_layer_match: # create subclass if layer type not found
-                        best_layer_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
-                        layer_subclasses.append(best_layer_match)
+                # NOTE: uncomment if method found for instantiating previously unknown activation functions
+                #actfunc_subclasses: list = get_all_subclasses(self.ontology.ActivationFunction)
+                #layer_subclasses.extend(actfunc_subclasses)
+                name_to_instance: dict = {} # easier lookup between actfunc & layer, keeps instance in scope, less calls to ontology
 
-                    layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
-                    self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
+                for layer in nodes:
+                    layer_name = layer.get('name')
+                    layer_type = layer.get('op_type')
+                    layer_params = layer.get('num_params')
 
-                    # attach number of parameters to layer
-                    if layer['num_params']:
-                        self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer['num_params'])
-                    else:
-                        self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
-                    name_to_instance[layer_name] = layer_instance
+                    best_actfunc_match = self._fuzzy_match_class(layer_type , activation_functions , 70)
+                    #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
 
-            # second run for instantiating next, prev, and other linkages
-            for layer in network_data:
-                layer_name = layer['name']
-                layer_type = layer['type']
-                prev_layer = layer.get('input' , [])
-                next_layer = layer.get('target' , [])
+                    if best_actfunc_match: # if activation function present
+                        actfunc_instance = self._instantiate_and_format_class(best_actfunc_match , layer_name)
+                        self._link_instances(network_instance , actfunc_instance , self.ontology.hasActivationFunction)
+                        name_to_instance[layer_name] = actfunc_instance
+                    else: 
+                        best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
+                        if not best_layer_match: # create subclass if layer type not found
+                            best_layer_match = create_subclass(self.ontology , layer_type , self.ontology.Layer)
+                            layer_subclasses.append(best_layer_match)
 
-                layer_instance = name_to_instance.get(layer_name)
-                if not layer_instance:
-                    self.logger.error(f"Layer instance not found for {layer_name} , linkage unsuccessful")
+                        layer_instance = self._instantiate_and_format_class(best_layer_match , layer_name)
+                        self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
-                for prev in prev_layer: # link nextLayer & hasInputLayer
-                    prev_layer_instance = name_to_instance.get(prev)
-                    if prev_layer_instance:
-                        self._link_instances(layer_instance , prev_layer_instance , self.ontology.previousLayer)
-                        self._link_instances(network_instance , layer_instance , self.ontology.hasInputLayer)
-                    else:
-                        self.logger.error(f"Previous layer {prev} of {layer} not instantiated")
-                
-                for next in next_layer: # link prevLayer & hasOutputLayer
-                    next_layer_instance = name_to_instance.get(next)
-                    if next_layer_instance:
-                        self._link_instances(layer_instance , next_layer_instance , self.ontology.nextLayer)
-                        self._link_instances(network_instance , layer_instance , self.ontology.hasOutputLayer)
-                    else:
-                        self.logger.error(f"Next layer {next} of {layer} not instantiated")
+                        # attach number of parameters to layer
+                        if layer_params:
+                            self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer_params)
+                        else:
+                            self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
+                        name_to_instance[layer_name] = layer_instance
+
+                # second run for instantiating next, prev, and other linkages
+                for layer in network_data:
+                    layer_name = layer.get('name')
+                    layer_type = layer.get('op_type')
+                    prev_layer = layer.get('input' , [])
+                    next_layer = layer.get('target' , [])
+
+                    layer_instance = name_to_instance.get(layer_name)
+                    if not layer_instance:
+                        self.logger.error(f"Layer instance not found for {layer_name} , linkage unsuccessful")
+
+                    for prev in prev_layer: # link nextLayer & hasInputLayer
+                        prev_layer_instance = name_to_instance.get(prev)
+                        if prev_layer_instance:
+                            self._link_instances(layer_instance , prev_layer_instance , self.ontology.previousLayer)
+                            self._link_instances(network_instance , layer_instance , self.ontology.hasInputLayer)
+                        else:
+                            self.logger.error(f"Previous layer {prev} of {layer} not instantiated")
+                    
+                    for next in next_layer: # link prevLayer & hasOutputLayer
+                        next_layer_instance = name_to_instance.get(next)
+                        if next_layer_instance:
+                            self._link_instances(layer_instance , next_layer_instance , self.ontology.nextLayer)
+                            self._link_instances(network_instance , layer_instance , self.ontology.hasOutputLayer)
+                        else:
+                            self.logger.error(f"Next layer {next} of {layer} not instantiated")
 
             self.logger.info(f"All layers of {self.ann_config_name} processed")
         except Exception as e:
@@ -1370,6 +1384,8 @@ A **subnetwork** is a block that\n
         try:
             with self.ontology:
                 start_time = time.time()
+
+                self.ann_path = ann_path
 
                 if not hasattr(self.ontology, "ANNConfiguration"):
                     raise AttributeError(
