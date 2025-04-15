@@ -1461,9 +1461,10 @@ def instantiate_annetto(
                     )
     
     list_json_doc_paths = glob.glob(  # TODO: Lazy to just glob all json files in the directory; should keep track of code and paper seperately 
-        f"{ann_path}/*.json"
+        f"{ann_path}/*doc*.json"
     )
     list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
+    print(ann_path, list_pdf_paths, list_json_doc_paths)
     instantiator = OntologyInstantiator(
         list_json_doc_paths,
         ann_name,
