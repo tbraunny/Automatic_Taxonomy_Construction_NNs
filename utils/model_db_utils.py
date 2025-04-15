@@ -59,7 +59,7 @@ class DBUtils:
 
         return self.layer_list
     
-    def fetch_models(self) -> list:
+    def fetch_all_models(self) -> list:
         """
         Fetch all models in database by id & name
 
@@ -212,6 +212,28 @@ class DBUtils:
 
         return paper_model_id
 
+    def find_model(self , name: str=None , model_id: int=None) -> str:
+        """
+        Find a model in the dataabase given its ID (if no ID, fuzzy match by name)
+
+        :param name: Name of the model
+        :param model_id: ID for the model
+        :return model name
+        """
+        if model_id:
+            query = text("""SELECT name FROM model WHERE model_id = :model_id""")
+            result = self.session.execute(query , {
+                "model_id": model_id
+            })
+            model = result.fetchone()
+        elif name:
+            # fuzzy match for the name
+            pass
+        else:
+            raise "name or model_id params requried"
+
+        return model
+
 def insert_model(ann_name: str , model_json: json) -> None:
     """
     Insert a model into the database given its symbolic graph (json)
@@ -243,5 +265,3 @@ def insert_model(ann_name: str , model_json: json) -> None:
 if __name__ == '__main__': # example usage
     ann_name = "alexnet"
     runner = DBUtils()
-    print(runner.fetch_layers(network=ann_name))
-    print(runner.fetch_models())
