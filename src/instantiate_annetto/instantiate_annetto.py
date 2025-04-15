@@ -1,4 +1,5 @@
 import hashlib
+import os
 import time
 import json
 import glob
@@ -45,15 +46,15 @@ class OntologyInstantiator:
         list_json_doc_paths: List[str],
         ann_config_name: str,
         ontology: Ontology,
-        output_owl_path: str = C.ONTOLOGY.TEST_ONTOLOGY_PATH,
+        ontology_output_filepath: str = C.ONTOLOGY.TEST_ONTOLOGY_PATH,
     ) -> None:
         """
         Initialize the OntologyInstantiator class.
         # Args:
-            ontology (str): The ontology. 
             json_doc_files_paths (list[str]): The list of str paths to the JSON_doc files for paper and/or code.
             ann_config_name (str): The name of the ANN configuration.
-            output_owl_path (str): The path to save the output OWL file.
+            ontology (str): The ontology. 
+            ontology_output_filepath (str): The .owl path to save the ontology file.
         """
         if not isinstance(ann_config_name, str):
             self.logger.error(
@@ -69,23 +70,26 @@ class OntologyInstantiator:
             raise TypeError(
                 "Expected a Owlready2 Ontology type for ontology.", exc_info=True
             )
-        if not isinstance(list_json_doc_paths, list) and all(
-            isinstance(path, str) for path in list_json_doc_paths
-        ):
+        if not isinstance(list_json_doc_paths, list) and all((
+            path.endswith(".json")) for path in list_json_doc_paths):
             self.logger.error(
-                "Expected a list of strings for JSON doc paths.", exc_info=True
+                "Expected a list of strings ending with .json for list_json_doc_paths", exc_info=True
             )
             raise TypeError(
                 "Expected a list of strings for JSON doc paths.", exc_info=True
             )
-        if not isinstance(output_owl_path, str):
-            self.logger.error("Expected a string for output OWL path.", exc_info=True)
-            raise TypeError("Expected a string for output OWL path.", exc_info=True)
+        if not ontology_output_filepath.endswith(".owl"):
+            self.logger.error(
+                "Expected a string for output OWL path ending with .owl.", exc_info=True
+            )
+            raise TypeError(
+                "Expected a string for output OWL path ending with .owl.", exc_info=True
+            )
 
         self.ontology = ontology
         self.list_json_doc_paths = list_json_doc_paths
         self.ann_config_name = ann_config_name.lower().strip()
-        self.output_owl_path = output_owl_path
+        self.output_owl_path = ontology_output_filepath
 
         self.llm_cache: Dict[str, Any] = {}
         self.logger = logger
@@ -99,11 +103,15 @@ class OntologyInstantiator:
         return hash_object.hexdigest()[:8]
 
     def _instantiate_and_format_class(
-        self, cls: ThingClass, instance_name: str
+        self, cls: ThingClass, instance_name: str, source: Optional[str] = None
     ) -> Thing:
         """
         Instantiate a given ontology class with the specified instance name.
         Uses the ANN configuration hash as a prefix for uniqueness.
+        :param cls: The ontology class to instantiate.
+        :param instance_name: The name of the instance to create.
+        :param source: Optional source for the instance (i.e. 'code' or 'paper').
+        :return: The instantiated Thing object.
         """
         try:
             unique_instance_name = self._format_instance_name(instance_name)
@@ -114,12 +122,18 @@ class OntologyInstantiator:
             self.logger.info(
                 f"Instantiated {cls.name} with name: {self._unformat_instance_name(unique_instance_name)}."
             )
+            if source:
+                self._add_source_data_property(instance, source)
+                self.logger.info(
+                    f"Source for {cls.name} instance '{self._unformat_instance_name(unique_instance_name)}' is: {source}."
+                )
             return instance
         except Exception as e:
             self.logger.error(
                 f"Error instantiating {cls.name} with name {instance_name}: {e}",
                 exc_info=True,
             )
+    
 
     def _format_instance_name(self, instance_name: str) -> str:
         """
@@ -248,7 +262,25 @@ class OntologyInstantiator:
         self.logger.info(
             f"Linked '{self._unformat_instance_name(instance.name)}' with data property '{data_property.name}'."
         )
-    def _add_instance_definition_data_property(self, instance: Thing, definition: str) -> None:
+    
+    def _add_source_data_property(self, instance: Thing, source: str) -> None:
+        """
+        Add a source data property to an instance.
+        """
+        try:
+            source_property = create_class_data_property(
+                self.ontology, "source", type(instance), str, False
+            )
+        except Exception as e:
+            self.logger.warning(
+                f"Error creating source data property: {e}", exc_info=True
+            )
+        link_data_property_to_instance(instance, source_property, source)
+        self.logger.info(
+            f"Linked '{self._unformat_instance_name(instance.name)}' with source data property."
+        )
+
+    def _add_definition_data_property(self, instance: Thing, definition: str) -> None:
 
         try:
             definition_property = create_class_data_property(
@@ -421,7 +453,7 @@ class OntologyInstantiator:
         
             # Add definition to loss instance
             if loss_def:
-                self._add_instance_definition_data_property(loss_instance, loss_def)
+                self._add_definition_data_property(loss_instance, loss_def)
 
         # Regularizer handling
         if reg_name:
@@ -435,7 +467,7 @@ class OntologyInstantiator:
                 cost_instance, reg_instance, self.ontology.hasRegularizer
             )
             if reg_def:
-                self._add_instance_definition_data_property(reg_instance, reg_def)
+                self._add_definition_data_property(reg_instance, reg_def)
 
         self.logger.info(
             f"Processed objective functions for {network_name}: Loss: {loss_name}, Regularizer: {reg_name}, Objective: {obj_type}."
@@ -795,7 +827,7 @@ class OntologyInstantiator:
 
             # Task definition handling
             if task_type_def:
-                self._add_instance_definition_data_property(
+                self._add_definition_data_property(
                     task_type_instance, task_type_def
                 )
 
@@ -949,7 +981,7 @@ A **subnetwork** is a block that\n
 
                     # Instantiate subnetwork instance
                     network_instance = self._instantiate_and_format_class(
-                        self.ontology.Network, sub_name
+                        self.ontology.Network, sub_name, "paper"
                     )
                     self._link_instances(
                         ann_config_instances[-1],
@@ -958,8 +990,8 @@ A **subnetwork** is a block that\n
                     )
                     # if not layers_parsed:
                     #     self._process_layers(network_instance)
-                    self._process_objective_functions(network_instance)
-                    self._process_task_characterization(network_instance)
+                    # self._process_objective_functions(network_instance)
+                    # self._process_task_characterization(network_instance)
                     self.logger.info(f"Successfully processed network instance: {network_instance.name}")
 
             # # Here is where logic for processing the network instance would go.
@@ -1338,8 +1370,7 @@ A **subnetwork** is a block that\n
 
                 if not hasattr(self.ontology, "ANNConfiguration"):
                     raise AttributeError(
-                        "Error: Class 'ANNConfiguration' not found in ontology.",
-                        exc_info=True,
+                        "Error: Class 'ANNConfiguration' not found in ontology."
                     )
 
                 def grab_titles():
@@ -1393,7 +1424,7 @@ A **subnetwork** is a block that\n
                 )
 
                 self.logger.info(
-                    f"Ontology instantiation completed for {self.ann_config_name}."
+                    f"Ontology instantiation completed for {self.ann_config_name}.\n\n\n"
                 )
 
         except Exception as e:
@@ -1405,8 +1436,7 @@ A **subnetwork** is a block that\n
 
 
 def instantiate_annetto(
-    ann_name: str, ann_path: str, ontology: Ontology, ontology_output_path: str
-) -> None:
+    ann_name: str, ann_path: str, ontology: Ontology, ontology_output_filepath:str):
     """
     Instantiates an ANN ontology from the provided ANN Configuration filepath.
     Papers and Code must be extracted to the proper JSON format beforehand.
@@ -1414,24 +1444,35 @@ def instantiate_annetto(
     :param: ann_name: The name of the ANN Configuration.
     :param: ann_path: The path to the ANN Configuration JSON files.
     :param: ontology: The ontology to instantiate.
-    :param: ontology_output_path: The path to save the ontology.
+    :param: ontology_output_filepath: The .owl file path of the ontology.
     """
-    list_json_doc_paths = glob.glob(
+    if not os.path.isdir(ann_path):
+        raise NotADirectoryError(f"Path {ann_path} is not a directory.")
+    if not isinstance(ontology, Ontology):
+        raise TypeError("Ontology must be an instance of the Ontology class.")
+    if not ontology_output_filepath.endswith(".owl"):
+        raise ValueError("Ontology output file must have a .owl extension.")
+    if not hasattr(ontology, "ANNConfiguration"):
+                    raise AttributeError(
+                        "Error: Class 'ANNConfiguration' not found in ontology."
+                    )
+    
+    list_json_doc_paths = glob.glob(  # TODO: Lazy to just glob all json files in the directory; should keep track of code and paper seperately 
         f"{ann_path}/*.json"
-    )  # TODO: Lazy to just glob all json files in the directory
-    list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
+    )
+    list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
     instantiator = OntologyInstantiator(
         list_json_doc_paths,
         ann_name,
         ontology=ontology,
-        output_owl_path=ontology_output_path,
+        ontology_output_filepath=ontology_output_filepath,
     )
     instantiator.run(list(list_pdf_paths))
     instantiator.save_ontology()
     print(
-        f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_path}."
+        f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
     )
-
+    return ontology_output_filepath
 
 # For standalone testing
 if __name__ == "__main__":

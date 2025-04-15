@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.fx import symbolic_trace
-from graphviz import Digraph
 import json 
 from torchvision import models as tmodels
 from collections import defaultdict

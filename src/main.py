@@ -73,4 +73,6 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str) -> str:
 
 
 if __name__ == "__main__":
-    main()
+    from utils.constants import Constants as C
+
+    main("alexnet", "data/alexnet", C.ONTOLOGY.TEST_ONTOLOGY_PATH)
