@@ -724,7 +724,16 @@ def is_functional_property_for(domain: Union[ThingClass, Thing], property_: Unio
     except AttributeError:
         return False
 
-
+def entitiy_exists(ontology: Ontology, name: str) -> bool:
+    """
+    Check if an entity (class, property, or instance) exists in the ontology.
+    :param ontology: The ontology to check.
+    :param name: The name of the entity to check.
+    :return: True if the entity exists, False otherwise.
+    """
+    if not isinstance(ontology, Ontology):
+        raise TypeError(f"Ontology '{ontology}' must be an Ontology.")
+    return hasattr(ontology, name)
 
 def list_owl_classes(onto: Ontology) -> List[ThingClass]:
     # Return list of all classes in ontology
