@@ -21,7 +21,7 @@ def load_json(path):
                 with open(f , 'r') as file:
                     model_data.append(json.load(file))
         else:
-            with open(f , 'r') as file:
+            with open(path , 'r') as file:
                 model_data.append(json.load(file))
 
         return model_data

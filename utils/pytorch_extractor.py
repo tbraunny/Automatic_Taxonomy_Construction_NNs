@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.fx import symbolic_trace
-from graphviz import Digraph
 import json 
 from torchvision import models as tmodels
 from collections import defaultdict
@@ -36,6 +35,12 @@ def extract_graph(model) -> dict:
             # Retrieve shapes of parameters
             param_shapes = {k: list(v.shape) for k, v in module.state_dict().items()}
             node_info['attributes'] = param_shapes
+
+            # Retrieve total number of learned parameters
+            param_count: int = 0
+            submodule = traced.get_submodule(node.target)
+            param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
+            node_info["num_params"] = param_count
 
             # Retrieve total number of learned parameters
             param_count: int = 0

@@ -8,6 +8,11 @@ T = TypeVar("T")
 class LLMResponse(BaseModel, Generic[T]):
     answer: T
 
+class TermDefinition(BaseModel):
+    name: str = Field(..., description="The name of the function or component.")
+    definition: Optional[str] = Field(
+        None, description="A brief, succinct definition of this term."
+    )
 
 # Define a model for TrainingSingle details.
 class TrainingSingleDetails(BaseModel):
@@ -88,12 +93,11 @@ class TrainingOptimizerResponse(LLMResponse[TrainingOptimizerDetails]):
 #     pass
 
 
-class DataTypeDetails(BaseModel):
-    subclass: str = Field(
-        ...,
-        description="The type of data present in the dataset. Suggested values: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
-    )
-
+# class DataTypeDetails(BaseModel):
+#     subclass: str = Field(
+#         ...,
+#         description="The type of data present in the dataset. Suggested values: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
+#     )
 
 class DatasetDetails(BaseModel):
     data_description: str = Field(
@@ -120,20 +124,12 @@ class DatasetDetails(BaseModel):
         description="The type of data present in the dataset. Suggested types: 'Image', 'MultiDimensionalCube', 'Text', 'Video'.",
     )
 
-
 # Allows multiple datasets in the response
 class MultiDatasetResponse(BaseModel):
     answer: List[DatasetDetails]
 
 
 """Define Process Objective Function"""
-
-
-class TermDefinition(BaseModel):
-    name: str = Field(..., description="The name of the function or component.")
-    definition: Optional[str] = Field(
-        None, description="A brief, succinct definition of this term."
-    )
 
 
 # # Example
@@ -179,8 +175,8 @@ class ObjectiveFunctionDetails(BaseModel):
     loss: TermDefinition = Field(
         ..., description="Details about the loss function used."
     )
-    regularizer: Optional[TermDefinition] = Field(
-        None, description="Details about the regularizer used, if any."
+    regularizer: TermDefinition = Field(
+        ..., description="Details about the regularizer used; if none put 'None'."
     )
     objective: Literal["minimize", "maximize"] = Field(
         ..., description="The optimization direction ('minimize' or 'maximize')."
@@ -196,22 +192,46 @@ class ObjectiveFunctionDetails(BaseModel):
 class ObjectiveFunctionResponse(ObjectiveFunctionDetails):
     pass
 
-
-class TermAndDefinition(BaseModel):
-    name: str = Field(..., description="The name of the function or component.")
-    definition: Optional[str] = Field(
-        None, description="A brief, succinct definition of this term."
-    )
-
-
 """Define Process Task Characterization"""
 
-
 class TaskCharacterizationDetails(BaseModel):
-    task_type: TermDefinition = Field(
+    task_type: Literal["Adversarial",
+                "Self-Supervised Classification",
+                "Semi-Supervised Classification",
+                "Supervised Classification",
+                "Unsupervised Classification",
+                "Discrimination",
+                "Generation",
+                "Clustering",
+                "Regression"] = Field(
         ..., description="Details about the training task type used."
     )
 
-
 class TaskCharacterizationResponse(LLMResponse[TaskCharacterizationDetails]):
+    pass
+
+class Subnetwork(BaseModel):
+    name: str = Field(..., description="Name or functional label of the subnetwork.")
+    is_independent: bool = Field(
+        ...,
+        description="Whether the subnetwork has its own loss function or is trained independently."
+    )
+
+class Architecture(BaseModel):
+    architecture_name: str = Field(..., description="Name of the neural network architecture.")
+    subnetworks: List[Subnetwork] = Field(..., description="List of subnetworks within the architecture.")
+
+# class Architecture(BaseModel):
+#     architecture_name: str = Field(..., description="Explicit name of the neural network architecture.")
+#     subnetworks: List[Subnetwork] = Field(
+#         ..., description="List of subnetworks or functional components in this architecture."
+#     )
+
+
+class NetworkDetails(BaseModel):
+    architectures: List[Architecture] = Field(
+        ..., description="List of neural network architectures and their corresponding subnetworks."
+    )
+
+class NetworkResponse(LLMResponse[NetworkDetails]):
     pass

@@ -1,5 +1,5 @@
 ollama
-langchain_ollama
+langchain-ollama
 rank_bm25
 chromadb
 numpy

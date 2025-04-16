@@ -8,7 +8,7 @@ from datetime import datetime
 import os
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
-import tensorflow as tf
+#from tests.deprecated.pt_extractor import PTExtractor
 import os
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
