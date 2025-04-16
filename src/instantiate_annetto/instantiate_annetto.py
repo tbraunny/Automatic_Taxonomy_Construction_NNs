@@ -294,7 +294,7 @@ class OntologyInstantiator:
             return self.llm_cache[full_prompt]
         try:
             # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
-            response = query_llm(
+            response = self.query_llm(
                 self.ann_config_name,
                 full_prompt,
                 json_format_instructions,
@@ -1238,7 +1238,7 @@ class OntologyInstantiator:
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
                 for count, j in enumerate(self.list_json_doc_paths):
-                    init_engine(self.ann_config_name, j)
+                    self.init_engine(self.ann_config_name, j)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
 
