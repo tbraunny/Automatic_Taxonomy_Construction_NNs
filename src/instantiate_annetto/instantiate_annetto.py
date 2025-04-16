@@ -31,14 +31,14 @@ from utils.owl_utils import (
     create_class_data_property,
     link_data_property_to_instance,
     create_class_object_property,
-    list_owl_object_properties,
+    entitiy_exists,
     is_subclass_of_class,
 )
 
 # Initialize logger
 logger = get_logger("instantiate_annetto")
 
-class OntologyInstantiator:
+class OntologyProcessor:
     """
     A class to instantiate an annett-o ontology by processing each main component separately and linking them together.
     """
@@ -51,7 +51,7 @@ class OntologyInstantiator:
         ontology_output_filepath: str = C.ONTOLOGY.TEST_ONTOLOGY_PATH,
     ) -> None:
         """
-        Initialize the OntologyInstantiator class.
+        Initialize the OntologyProcessor class.
         # Args:
             ann_path (str): The path to the ANN configuration directory.
             ann_config_name (str): The name of the ANN configuration.
@@ -102,6 +102,15 @@ class OntologyInstantiator:
         """
         hash_object = hashlib.md5(str.encode())  # Generate a consistent hash
         return hash_object.hexdigest()[:8]
+    
+    def _format_instance_name(self, instance_name: str) -> str:
+        return f"{self.ann_config_hash}_{instance_name.replace(' ', '-').lower()}"
+    
+    def _unformat_instance_name(self, instance_name: str) -> str:
+        parts = instance_name.split("_", 1)
+        if len(parts) == 2:
+            return " ".join(word.capitalize() for word in parts[1].replace("-", " ").split())
+        return instance_name
 
     def _instantiate_and_format_class(
         self, cls: ThingClass, instance_name: str, source: Optional[str] = None
@@ -115,67 +124,17 @@ class OntologyInstantiator:
         :return: The instantiated Thing object.
         """
         try:
-            unique_instance_name = self._format_instance_name(instance_name)
-            instance = create_cls_instance(self.ontology, cls, unique_instance_name)
+            unique_name = self._format_instance_name(instance_name)
+            instance = create_cls_instance(self.ontology, cls, unique_name)
             if not isinstance(instance, Thing):
-                raise TypeError(f"{instance} is not a Thing: {type(instance)}")
-
-            self.logger.info(
-                f"Instantiated {cls.name} with name: {self._unformat_instance_name(unique_instance_name)}."
-            )
+                raise TypeError(f"Instance is not of type Thing: {type(instance)}")
+            self.logger.info(f"Instantiated {cls.name} as {self._unformat_instance_name(unique_name)}.")
             if source:
-                self._add_source_data_property(instance, source)
-                self.logger.info(
-                    f"Source for {cls.name} instance '{self._unformat_instance_name(unique_instance_name)}' is: {source}."
-                )
+                self._add_data_property(instance, "source", source)
             return instance
         except Exception as e:
-            self.logger.error(
-                f"Error instantiating {cls.name} with name {instance_name}: {e}",
-                exc_info=True,
-            )
-    
-
-    def _format_instance_name(self, instance_name: str) -> str:
-        """
-        Generate a unique instance name using the hash of the ANN config name.
-
-        Ensures instance names remain consistent for a given ANN config name
-        while maintaining readability.
-
-        Example:
-            Input: "Convolutional Layer"
-            Output: "abcd1234_convolutional-layer" (assuming the hash is abcd1234)
-
-        Args:
-            instance_name (str): The base name of the instance.
-
-        Returns:
-            str: A unique instance name prefixed with the ANN config hash.
-        """
-        return f"{self.ann_config_hash}_{instance_name.replace(' ', '-').lower()}"
-
-    def _unformat_instance_name(self, instance_name: str) -> str:
-        """
-        Remove the ANN config hash prefix from the instance name and restore readability.
-
-        This method extracts the actual instance name by stripping out the
-        prefixed hash and replacing dashes with spaces.
-
-        Example: Input: "abcd1234_convolutional-layer" Output: "Convolutional Layer"
-
-        Args:
-            instance_name (str): The unique instance name with the hash prefix.
-
-        Returns:
-            str: The original readable instance name.
-        """
-        parts = instance_name.split("_", 1)  # Split at the first underscore
-        stripped_name = parts[-1]  # Extract the actual instance name (without hash)
-        stripped_name = stripped_name.replace("-", " ")  # Convert dashes back to spaces
-        # capitalize the first letter of each word
-        stripped_name = " ".join(word.capitalize() for word in stripped_name.split())
-        return stripped_name
+            self.logger.error(f"Error instantiating {cls.name} with name '{instance_name}'.", exc_info=True)
+            return None
 
     def _fuzzy_match_class(
         self, instance_name: str, classes: List[ThingClass], threshold: int = 80
@@ -1376,93 +1335,69 @@ A **subnetwork** is a block that\n
             raise
 
     def save_ontology(self) -> None:
-        """
-        Saves the ontology to the pre-specified file.
-        """
-        self.ontology.save(file=self.output_owl_path, format="rdfxml")
-        self.logger.info(f"Ontology saved to {self.output_owl_path}")
+        try:
+            self.ontology.save(file=self.output_owl_path, format="rdfxml")
+            self.logger.info(f"Ontology saved to {self.output_owl_path}.")
+        except Exception as e:
+            self.logger.error("Failed to save ontology.", exc_info=True)
 
     def run(self, ann_path: List[str]) -> None:
-        """
-        Main method to run the ontology instantiation process.
-        """
         try:
             with self.ontology:
-                start_time = time.time()
-                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
-                list_json_doc_paths = glob.glob(
-                    f"{ann_path}/*doc*.json"
-                )
-                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
+                def _add_ann_metadata(ann_config_instance: Thing, titles: List[str], paper_paths: List[str]) -> None:
 
+                    if not class_exists(self.ontology, "hasTitle"):
+                        create_class_data_property(
+                            self.ontology, "hasTitle", self.ontology.ANNConfiguration, str, True
+                        )
+                        for title in titles:
+                            ann_config_instance.hasTitle = title
 
-                self.ann_path = ann_path
-
-                if not hasattr(self.ontology, "ANNConfiguration"):
-                    raise AttributeError(
-                        "Error: Class 'ANNConfiguration' not found in ontology."
+                    if not 
+                    create_class_data_property(
+                        self.ontology, "hasPaperPath", self.ontology.ANNConfiguration, str, True
                     )
-
-                def grab_titles():
+                    for path in paper_paths:
+                        ann_config_instance.hasPaperPath = path
+                def _extract_titles_from_docs(json_doc_paths: List[str]) -> List[str]:
                     unique_titles = set()
-                    import json
-
-                    # Loop through each file and extract titles
-                    for file in list_json_doc_paths:
+                    for file in json_doc_paths:
                         with open(file, "r", encoding="utf-8") as f:
                             data = json.load(f)
                             for entry in data:
-                                if "metadata" in entry and "title" in entry["metadata"]:
-                                    unique_titles.add(entry["metadata"]["title"])
+                                title = entry.get("metadata", {}).get("title")
+                                if title:
+                                    unique_titles.add(title)
                     return list(unique_titles)
 
-                # Initialize the LLM engine for each json_document context in paper and/or code.
-                for count, j in enumerate(list_json_doc_paths):
+
+                start_time = time.time()
+                self.ann_path = ann_path
+
+                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
+                list_json_doc_paths = glob.glob(f"{ann_path}/*doc*.json")
+
+                if not hasattr(self.ontology, "ANNConfiguration"):
+                    raise AttributeError("Class 'ANNConfiguration' not found in ontology.")
+
+                for j in list_json_doc_paths:
                     init_engine(self.ann_config_name, j)
 
-                self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
-
-                # Instantiate the ANN Configuration class.
                 ann_config_instance = self._instantiate_and_format_class(
                     self.ontology.ANNConfiguration, self.ann_config_name
                 )
-                create_class_data_property(
-                    self.ontology, "hasTitle", self.ontology.ANNConfiguration, str, True
-                )
-                for title in grab_titles():
-                    ann_config_instance.hasTitle = title
-                create_class_data_property(
-                    self.ontology,
-                    "hasPaperPath",
-                    self.ontology.ANNConfiguration,
-                    str,
-                    True,
-                )
-                for path in ann_path:
-                    ann_config_instance.hasPaperPath = path
 
-                # Process the network class and it's components.
+                titles = _extract_titles_from_docs(list_json_doc_paths)
+                _add_ann_metadata(ann_config_instance, titles, ann_path)
+
                 self._process_network(ann_config_instance)
 
-                # Process TrainingStrategy and it's components.
-                # self._process_training_strategy(ann_config_instance)
-
-                # Log time taken to instantiate the ANN ontology instance.
                 minutes, seconds = divmod(time.time() - start_time, 60)
-                self.logger.info(
-                    f"Elapsed time: {int(minutes)} minutes and {seconds:.2f} seconds."
-                )
-
-                self.logger.info(
-                    f"Ontology instantiation completed for {self.ann_config_name}.\n\n\n"
-                )
-
+                self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")
+                self.logger.info(f"Ontology instantiation completed for {self.ann_config_name}.\n")
         except Exception as e:
-            self.logger.error(
-                f"Error during the {self.ann_config_name} ontology instantiation: {e}",
-                exc_info=True,
-            )
-            raise e
+            self.logger.error(f"Error during ontology instantiation: {e}", exc_info=True)
+            raise
 
 
 def instantiate_annetto(
@@ -1486,7 +1421,7 @@ def instantiate_annetto(
                     raise AttributeError(
                         "Error: Class 'ANNConfiguration' not found in ontology."
                     )
-    instantiator = OntologyInstantiator(
+    instantiator = OntologyProcessor(
         ann_path,
         ann_name,
         ontology=ontology,
@@ -1499,28 +1434,24 @@ def instantiate_annetto(
     )
     return ontology_output_filepath
 
-# # TODO: This is a temporary solution to add classes to the ontology.
-# def __addclasses(ontology:Ontology) -> None:
-#     """Adds new predefined classes to the ontology."""
+def add_initial_classes(ontology:Ontology, logger) -> None:
+    """Adds new predefined classes to the ontology."""
 
-#     # Add hasWeightInitialization
-#     create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
-#     ######
-
-#     # Add tasks
-#     new_classes = {
-#         "Self-Supervised Classification": self.ontology.TaskCharacterization,
-#         "Unsupervised Classification": self.ontology.TaskCharacterization,
-#     }
-
-#     for name, parent in new_classes.items():
-#         try:
-#             create_subclass(self.ontology, name, parent)
-#         except Exception as e:
-#             self.logger.error(
-#                 f"Error creating new class {name}: {e}", exc_info=True
-#             )
-#     #######
+    # Add object properties
+    create_class_object_property(
+        ontology, "hasWeightInitialization",
+        ontology.TrainingSingle, ontology.WeightInitialization
+    )
+    # Add new subclasses
+    new_classes = {
+        "Self-Supervised Classification": ontology.TaskCharacterization,
+        "Unsupervised Classification": ontology.TaskCharacterization,
+    }
+    for name, parent in new_classes.items():
+        try:
+            create_subclass(ontology, name, parent)
+        except Exception as e:
+            logger.error(f"Error creating new class {name}: {e}", exc_info=True)
 
 # For standalone testing
 if __name__ == "__main__":
