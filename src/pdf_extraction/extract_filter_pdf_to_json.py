@@ -151,9 +151,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract, filter, and convert PDF content to JSON."
     )
-    parser.add_argument("pdf_path", type=str, help="Path to the input PDF file.")
-    parser.add_argument("output_path", type=str, help="Path to save the output JSON file.")
+    parser.add_argument("--pdf_path", type=str, help="Path to the input PDF file.")
     args = parser.parse_args()
+    if not args.pdf_path:
+        raise ValueError("PDF path is required.")
     
     extract_filter_pdf_to_json(args.pdf_path)
 

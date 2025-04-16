@@ -43,7 +43,7 @@ class OntologyInstantiator:
 
     def __init__(
         self,
-        list_json_doc_paths: List[str],
+        ann_path: str,
         ann_config_name: str,
         ontology: Ontology,
         ontology_output_filepath: str = C.ONTOLOGY.TEST_ONTOLOGY_PATH,
@@ -51,7 +51,7 @@ class OntologyInstantiator:
         """
         Initialize the OntologyInstantiator class.
         # Args:
-            json_doc_files_paths (list[str]): The list of str paths to the JSON_doc files for paper and/or code.
+            ann_path (str): The path to the ANN configuration directory.
             ann_config_name (str): The name of the ANN configuration.
             ontology (str): The ontology. 
             ontology_output_filepath (str): The .owl path to save the ontology file.
@@ -70,13 +70,12 @@ class OntologyInstantiator:
             raise TypeError(
                 "Expected a Owlready2 Ontology type for ontology.", exc_info=True
             )
-        if not isinstance(list_json_doc_paths, list) and all((
-            path.endswith(".json")) for path in list_json_doc_paths):
+        if not os.path.isdir(ann_path):
             self.logger.error(
-                "Expected a list of strings ending with .json for list_json_doc_paths", exc_info=True
+                "Expected a directory path for ANN Configuration.", exc_info=True
             )
             raise TypeError(
-                "Expected a list of strings for JSON doc paths.", exc_info=True
+                "Expected a directory path for ANN Configuration.", exc_info=True
             )
         if not ontology_output_filepath.endswith(".owl"):
             self.logger.error(
@@ -87,12 +86,11 @@ class OntologyInstantiator:
             )
 
         self.ontology = ontology
-        self.list_json_doc_paths = list_json_doc_paths
+        self.ann_path = ann_path
         self.ann_config_name = ann_config_name.lower().strip()
         self.output_owl_path = ontology_output_filepath
 
         self.llm_cache: Dict[str, Any] = {}
-        self.ann_path = None
         self.logger = logger
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
 
@@ -190,10 +188,10 @@ class OntologyInstantiator:
         """
         if not isinstance(instance_name, str):
             raise TypeError("Expected instance_name to be a string.", exc_info=True)
-        if not all(isinstance(cls, ThingClass) for cls in classes):
-            raise TypeError(
-                "Expected classes to be a list of ThingClass objects.", exc_info=True
-            )
+        # if not all(isinstance(cls, ThingClass) for cls in classes):
+        #     raise TypeError(
+        #         "Expected classes to be a list of ThingClass objects.", exc_info=True
+        #     )
         if not all(isinstance(cls.name, str) for cls in classes):
             raise TypeError(
                 "Expected classes to have string names. ######", exc_info=True
@@ -974,7 +972,7 @@ A **subnetwork** is a block that\n
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
                 if parse_code_layers:
                     print("hi")
-                    self._process_parsed_code(ann_config_instance)
+                    self._process_parsed_code(ann_config_instance) # TODO: pass through a 
                     layers_parsed = True
                 # ##############
 
@@ -1346,29 +1344,6 @@ A **subnetwork** is a block that\n
             )
             raise
 
-    # TODO: This is a temporary solution to add classes to the ontology.
-    def __addclasses(self) -> None:
-        """Adds new predefined classes to the ontology."""
-
-        # Add hasWeightInitialization
-        create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
-        ######
-
-        # Add tasks
-        new_classes = {
-            "Self-Supervised Classification": self.ontology.TaskCharacterization,
-            "Unsupervised Classification": self.ontology.TaskCharacterization,
-        }
-
-        for name, parent in new_classes.items():
-            try:
-                create_subclass(self.ontology, name, parent)
-            except Exception as e:
-                self.logger.error(
-                    f"Error creating new class {name}: {e}", exc_info=True
-                )
-        #######
-
     def save_ontology(self) -> None:
         """
         Saves the ontology to the pre-specified file.
@@ -1383,6 +1358,12 @@ A **subnetwork** is a block that\n
         try:
             with self.ontology:
                 start_time = time.time()
+                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
+                list_json_doc_paths = glob.glob(
+                    f"{ann_path}/*doc*.json"
+                )
+                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
+
 
                 self.ann_path = ann_path
 
@@ -1396,7 +1377,7 @@ A **subnetwork** is a block that\n
                     import json
 
                     # Loop through each file and extract titles
-                    for file in self.list_json_doc_paths:
+                    for file in list_json_doc_paths:
                         with open(file, "r", encoding="utf-8") as f:
                             data = json.load(f)
                             for entry in data:
@@ -1405,7 +1386,7 @@ A **subnetwork** is a block that\n
                     return list(unique_titles)
 
                 # Initialize the LLM engine for each json_document context in paper and/or code.
-                for count, j in enumerate(self.list_json_doc_paths):
+                for count, j in enumerate(list_json_doc_paths):
                     init_engine(self.ann_config_name, j)
 
                 self.__addclasses()  # Add new general classes to ontology #TODO: better logic for doing this elsewhere
@@ -1474,23 +1455,40 @@ def instantiate_annetto(
                     raise AttributeError(
                         "Error: Class 'ANNConfiguration' not found in ontology."
                     )
-    
-    list_json_doc_paths = glob.glob(  # TODO: Lazy to just glob all json files in the directory; should keep track of code and paper seperately 
-        f"{ann_path}/*doc*.json"
-    )
-    list_pdf_paths = glob.glob(f"{ann_path}/*.pdf") #TODO: pass this as a metadata param
     instantiator = OntologyInstantiator(
-        list_json_doc_paths,
+        ann_path,
         ann_name,
         ontology=ontology,
         ontology_output_filepath=ontology_output_filepath,
     )
-    instantiator.run(list(list_pdf_paths))
     instantiator.save_ontology()
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
     )
     return ontology_output_filepath
+
+# TODO: This is a temporary solution to add classes to the ontology.
+def __addclasses(ontology:Ontology) -> None:
+    """Adds new predefined classes to the ontology."""
+
+    # Add hasWeightInitialization
+    create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
+    ######
+
+    # Add tasks
+    new_classes = {
+        "Self-Supervised Classification": self.ontology.TaskCharacterization,
+        "Unsupervised Classification": self.ontology.TaskCharacterization,
+    }
+
+    for name, parent in new_classes.items():
+        try:
+            create_subclass(self.ontology, name, parent)
+        except Exception as e:
+            self.logger.error(
+                f"Error creating new class {name}: {e}", exc_info=True
+            )
+    #######
 
 # For standalone testing
 if __name__ == "__main__":

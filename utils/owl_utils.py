@@ -99,7 +99,7 @@ def get_onto_object_from_str(ontology: Ontology, class_name: str) -> ThingClass:
         return None
 
 
-def is_subclass_of_class(cls: ThingClass, parent_cls: ThingClass) -> bool:
+def is_subclass_of_class(cls: Union[ThingClass,Thing], parent_cls: ThingClass) -> bool:
     """
     Determines whether a given class is a subclass of another class.
 
@@ -107,8 +107,8 @@ def is_subclass_of_class(cls: ThingClass, parent_cls: ThingClass) -> bool:
     :param: parent_cls: The class to check against.
     :return: True if cls is a subclass of parent_cls, False otherwise.
     """
-    if not isinstance(cls, ThingClass):
-        raise TypeError(f"The provided class '{cls}' is not a ThingClass.")
+    if not isinstance(cls, (ThingClass, Thing)):
+        raise TypeError(f"The provided class '{cls}' is not a ThingClass or Thing.")
     if not isinstance(parent_cls, ThingClass):
         raise TypeError(
             f"The provided parent class '{parent_cls}' is not a ThingClass."
