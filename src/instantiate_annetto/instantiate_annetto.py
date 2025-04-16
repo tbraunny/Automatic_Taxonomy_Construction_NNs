@@ -1499,28 +1499,28 @@ def instantiate_annetto(
     )
     return ontology_output_filepath
 
-# TODO: This is a temporary solution to add classes to the ontology.
-def __addclasses(ontology:Ontology) -> None:
-    """Adds new predefined classes to the ontology."""
+# # TODO: This is a temporary solution to add classes to the ontology.
+# def __addclasses(ontology:Ontology) -> None:
+#     """Adds new predefined classes to the ontology."""
 
-    # Add hasWeightInitialization
-    create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
-    ######
+#     # Add hasWeightInitialization
+#     create_class_object_property(self.ontology, "hasWeightInitialization", self.ontology.TrainingSingle, self.ontology.WeightInitialization)
+#     ######
 
-    # Add tasks
-    new_classes = {
-        "Self-Supervised Classification": self.ontology.TaskCharacterization,
-        "Unsupervised Classification": self.ontology.TaskCharacterization,
-    }
+#     # Add tasks
+#     new_classes = {
+#         "Self-Supervised Classification": self.ontology.TaskCharacterization,
+#         "Unsupervised Classification": self.ontology.TaskCharacterization,
+#     }
 
-    for name, parent in new_classes.items():
-        try:
-            create_subclass(self.ontology, name, parent)
-        except Exception as e:
-            self.logger.error(
-                f"Error creating new class {name}: {e}", exc_info=True
-            )
-    #######
+#     for name, parent in new_classes.items():
+#         try:
+#             create_subclass(self.ontology, name, parent)
+#         except Exception as e:
+#             self.logger.error(
+#                 f"Error creating new class {name}: {e}", exc_info=True
+#             )
+#     #######
 
 # For standalone testing
 if __name__ == "__main__":
