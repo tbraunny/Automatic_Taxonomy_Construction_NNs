@@ -107,8 +107,13 @@ def is_subclass_of_class(cls: Union[ThingClass,Thing], parent_cls: ThingClass) -
     :param: parent_cls: The class to check against.
     :return: True if cls is a subclass of parent_cls, False otherwise.
     """
+<<<<<<< HEAD
     if not isinstance(cls, (ThingClass, Thing)):
         raise TypeError(f"The provided class '{cls}' is not a ThingClass or Thing.")
+=======
+    if not isinstance(cls, (ThingClass , Thing)):
+        raise TypeError(f"The provided class '{cls}' is not a ThingClass.")
+>>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
     if not isinstance(parent_cls, ThingClass):
         raise TypeError(
             f"The provided parent class '{parent_cls}' is not a ThingClass."

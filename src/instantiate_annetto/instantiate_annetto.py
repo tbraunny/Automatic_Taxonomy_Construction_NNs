@@ -31,6 +31,8 @@ from utils.owl_utils import (
     create_class_data_property,
     link_data_property_to_instance,
     create_class_object_property,
+    list_owl_object_properties,
+    is_subclass_of_class,
 )
 
 # Initialize logger
@@ -188,10 +190,17 @@ class OntologyInstantiator:
         """
         if not isinstance(instance_name, str):
             raise TypeError("Expected instance_name to be a string.", exc_info=True)
+<<<<<<< HEAD
         # if not all(isinstance(cls, ThingClass) for cls in classes):
         #     raise TypeError(
         #         "Expected classes to be a list of ThingClass objects.", exc_info=True
         #     )
+=======
+        if not all(isinstance(cls, (ThingClass, Thing)) for cls in classes):
+            raise TypeError(
+                "Expected classes to be a list of ThingClass objects.", exc_info=True
+            )
+>>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
         if not all(isinstance(cls.name, str) for cls in classes):
             raise TypeError(
                 "Expected classes to have string names. ######", exc_info=True
@@ -210,12 +219,12 @@ class OntologyInstantiator:
         return class_name_map[match] if score >= threshold else None
 
     def _fuzzy_match_list(
-        self, class_names: List[str], threshold: int = 80
+        self, name: str, class_names: List[str], threshold: int = 80
     ) -> Optional[str]:
         """
         Perform fuzzy matching to find the best match for an instance in a list of strings.
 
-        :param instance_name: The instance name.
+        :param name: The item name.
         :param class_names: A list of string names to match with.
         :param threshold: The minimum score required for a match.
         :return: The best-matching string or None if no good match is found.
@@ -229,7 +238,7 @@ class OntologyInstantiator:
 
         class_names_lower = [name.lower() for name in class_names]
         match, score, _ = process.extractOne(
-            self.ann_config_name.lower(), class_names_lower, scorer=fuzz.ratio
+            name.lower(), class_names_lower, scorer=fuzz.ratio
         )
         # capitalized_string = string[0].upper() + string[1:]
 
@@ -508,7 +517,7 @@ class OntologyInstantiator:
         :return None
         """
         # list of activation functions (append to as needed)
-        activation_functions = [
+        known_activation_functions = [
             "Softmax",
             "ReLU",
             "Tanh",
@@ -572,12 +581,12 @@ class OntologyInstantiator:
                 return 0
 
             layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
+            actlayer_subclasses: list = get_all_subclasses(self.ontology.ActivationLayer)
             for file in json_files:
                 with open(file , "r") as f:
-                    network_data: dict = json.loads(f)
+                    network_data: dict = json.load(f)
 
                 nodes = network_data.get("graph" , {}).get("node" , [])
-
                 if nodes is None:
                     warnings.warn("No parsed code available for given network")
 
@@ -590,13 +599,22 @@ class OntologyInstantiator:
                     layer_name = layer.get('name')
                     layer_type = layer.get('op_type')
                     layer_params = layer.get('num_params')
+                    self.logger.info(f"Instantiating layer {layer_name} in model {self.ann_config_name}")
+                    self.logger.info(f"{layer_name} INFO: type {layer_type} , params {layer_params}")
 
-                    best_actfunc_match = self._fuzzy_match_class(layer_type , activation_functions , 70)
-                    #best_actfunc_match = self._fuzzy_match_class(layer_type , actfunc_subclasses , 70)
-
+                    if not layer_type:
+                        continue
+                    
+                    best_actfunc_match = self._fuzzy_match_list(layer_type , known_activation_functions , 70) # find activation function in know list
                     if best_actfunc_match: # if activation function present
-                        actfunc_instance = self._instantiate_and_format_class(best_actfunc_match , layer_name)
-                        self._link_instances(network_instance , actfunc_instance , self.ontology.hasActivationFunction)
+
+                        actfunc_ontology = self._fuzzy_match_class(layer_type , actlayer_subclasses , 70) # check the ontology for activation function
+                        if not actfunc_ontology:
+                            actfunc_ontology = create_subclass(self.ontology , layer_type , self.ontology.ActivationFunction)
+                            layer_subclasses.append(actfunc_ontology)
+                            self.logger.info(f"Activation layer {layer_name} subclass created in the ontology")
+
+                        actfunc_instance = self._instantiate_and_format_class(actfunc_ontology , layer_name)
                         name_to_instance[layer_name] = actfunc_instance
                     else: 
                         best_layer_match = self._fuzzy_match_class(layer_type , layer_subclasses , 70)
@@ -609,33 +627,51 @@ class OntologyInstantiator:
 
                         # attach number of parameters to layer
                         if layer_params:
-                            self._link_data_property(layer_instance , self.ontology.Layer.layer_num_units , layer_params)
+                            self._link_data_property(layer_instance , self.ontology.layer_num_units , layer_params)
                         else:
                             self.logger.warning(f"Layer {layer_name} does not have a number of parameters.")
                         name_to_instance[layer_name] = layer_instance
 
                 # second run for instantiating next, prev, and other linkages
-                for layer in network_data:
+                for layer in nodes:
                     layer_name = layer.get('name')
                     layer_type = layer.get('op_type')
                     prev_layer = layer.get('input' , [])
                     next_layer = layer.get('target' , [])
 
+                    self.logger.info(f"I/O instantiation for layer {layer_name} in model {self.ann_config_name}")
+                    self.logger.info(f"{layer_name} INFO: input(s) {prev_layer} , output(s) {next_layer}")
+
                     layer_instance = name_to_instance.get(layer_name)
                     if not layer_instance:
                         self.logger.error(f"Layer instance not found for {layer_name} , linkage unsuccessful")
+                        continue
+
+                    check_actfunc: bool = is_subclass_of_class(type(layer_instance) , self.ontology.ActivationFunction)
 
                     for prev in prev_layer: # link nextLayer & hasInputLayer
                         prev_layer_instance = name_to_instance.get(prev)
+                        check_prev_actfunc: bool = is_subclass_of_class(type(prev_layer_instance) , self.ontology.ActivationFunction)
+
                         if prev_layer_instance:
+                            if check_actfunc: # if activation function
+                                self._link_instances(prev_layer_instance , layer_instance , self.ontology.hasActivationFunction)
+                                continue
+                            if check_prev_actfunc:
+                                continue
+
                             self._link_instances(layer_instance , prev_layer_instance , self.ontology.previousLayer)
-                            self._link_instances(network_instance , layer_instance , self.ontology.hasInputLayer)
                         else:
                             self.logger.error(f"Previous layer {prev} of {layer} not instantiated")
                     
                     for next in next_layer: # link prevLayer & hasOutputLayer
                         next_layer_instance = name_to_instance.get(next)
+                        check_next_actfunc: bool = is_subclass_of_class(type(next_layer_instance) , self.ontology.ActivationFunction)
+
                         if next_layer_instance:
+                            if check_actfunc or check_next_actfunc:
+                                continue
+
                             self._link_instances(layer_instance , next_layer_instance , self.ontology.nextLayer)
                             self._link_instances(network_instance , layer_instance , self.ontology.hasOutputLayer)
                         else:
@@ -968,11 +1004,17 @@ A **subnetwork** is a block that\n
                         self.ontology.ANNConfiguration, arch_name
                     )
                 )
+
                 # # Process layers via code
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
                 if parse_code_layers:
                     print("hi")
+<<<<<<< HEAD
                     self._process_parsed_code(ann_config_instance) # TODO: pass through a 
+=======
+                    print("CALLING code parsing: " , ann_config_instances[-1])
+                    self._process_parsed_code(ann_config_instances[-1])
+>>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
                     layers_parsed = True
                 # ##############
 
@@ -1461,6 +1503,10 @@ def instantiate_annetto(
         ontology=ontology,
         ontology_output_filepath=ontology_output_filepath,
     )
+<<<<<<< HEAD
+=======
+    instantiator.run(ann_path)
+>>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
     instantiator.save_ontology()
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
