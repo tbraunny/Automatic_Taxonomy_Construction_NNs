@@ -61,10 +61,10 @@ class DBUtils:
     
     def fetch_all_models(self) -> list:
         """
-        Fetch all models in database by id & name
+        Fetch all models in database by name
 
         :param None
-        :return model_list: List of models by id & name
+        :return model_list: List of models by name
         """
         try:
             query = text("SELECT model_name FROM model")
@@ -76,7 +76,7 @@ class DBUtils:
 
         return self.model_list
     
-    def insert_model(self , name: str , model_type: str , graph: json , avg_embedding) -> int:
+    def insert_model(self , name: str , graph: json , avg_embedding , model_type: str=None) -> int:
         """
         Insert a model into the database
 
@@ -113,6 +113,23 @@ class DBUtils:
             logging.exception(f"Failed to insert model {name} into the database: {e}")
 
         return model_id
+
+    def insert_model_type(self , model_id: int , model_type: str) -> None:
+        """
+        Insert model type into the db if it was not previously known
+        """
+        try:
+            query = text("""INERT INTO model (type) 
+                         VALUES (:model_type) 
+                         WHERE model_id = :model_id""")
+            self.session.execute(query , {
+                "model_type": model_type,
+                "model_id": model_id
+            })
+            self.session.commit()
+        except Exception as e:
+            logging.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
+
     
     def insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
@@ -226,14 +243,16 @@ class DBUtils:
                 "model_id": model_id
             })
             model = result.fetchone()
-        elif name:
-            # fuzzy match for the name
-            pass
+        elif name: # fuzzy match for similar name
+            name = name.lower()
+            model_list: list = self.fetch_all_models()
+            model , _ , _ = process.extractOne(name , model_list , score_cutoff=90)
         else:
             raise "name or model_id params requried"
 
         return model
 
+# example of how a model is inserted into the database
 def insert_model(ann_name: str , model_json: json) -> None:
     """
     Insert a model into the database given its symbolic graph (json)
@@ -259,9 +278,10 @@ def insert_model(ann_name: str , model_json: json) -> None:
         shape = layer.get('kernel')
 
         if layer_id and shape:
-            insert.insert_parameter(layer_id , 'kerne;' , shape)
+            insert.insert_parameter(layer_id , 'kernel' , shape)
 
     
 if __name__ == '__main__': # example usage
     ann_name = "alexnet"
     runner = DBUtils()
+    print(runner.find_model("alexnet"))
