@@ -190,17 +190,10 @@ class OntologyInstantiator:
         """
         if not isinstance(instance_name, str):
             raise TypeError("Expected instance_name to be a string.", exc_info=True)
-<<<<<<< HEAD
-        # if not all(isinstance(cls, ThingClass) for cls in classes):
-        #     raise TypeError(
-        #         "Expected classes to be a list of ThingClass objects.", exc_info=True
-        #     )
-=======
         if not all(isinstance(cls, (ThingClass, Thing)) for cls in classes):
             raise TypeError(
                 "Expected classes to be a list of ThingClass objects.", exc_info=True
             )
->>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
         if not all(isinstance(cls.name, str) for cls in classes):
             raise TypeError(
                 "Expected classes to have string names. ######", exc_info=True
@@ -1009,12 +1002,8 @@ A **subnetwork** is a block that\n
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
                 if parse_code_layers:
                     print("hi")
-<<<<<<< HEAD
-                    self._process_parsed_code(ann_config_instance) # TODO: pass through a 
-=======
                     print("CALLING code parsing: " , ann_config_instances[-1])
                     self._process_parsed_code(ann_config_instances[-1])
->>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
                     layers_parsed = True
                 # ##############
 
@@ -1503,10 +1492,7 @@ def instantiate_annetto(
         ontology=ontology,
         ontology_output_filepath=ontology_output_filepath,
     )
-<<<<<<< HEAD
-=======
     instantiator.run(ann_path)
->>>>>>> 73605edbe925a17f5e0c4b54f9efebec0f9fd2ff
     instantiator.save_ontology()
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
