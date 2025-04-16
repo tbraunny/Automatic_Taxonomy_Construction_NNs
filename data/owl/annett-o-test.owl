@@ -406,12 +406,6 @@
   <rdfs:range rdf:resource="TrainingStrategy"/>
 </owl:ObjectProperty>
 
-<owl:ObjectProperty rdf:about="hasWeightInitialization">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="TrainingSingle"/>
-  <rdfs:range rdf:resource="WeightInitialization"/>
-</owl:ObjectProperty>
-
 <owl:DatatypeProperty rdf:about="batch_size">
   <rdfs:domain rdf:resource="TrainingSingle"/>
   <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
@@ -573,23 +567,6 @@
 <owl:DatatypeProperty rdf:about="trained_weights_array">
   <rdfs:domain rdf:resource="TrainedWeights"/>
   <rdfs:range rdf:resource="http://www.dmg.org/PMML-4_3#Array"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="hasTitle">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="ANNConfiguration"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="hasPaperPath">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-  <rdfs:domain rdf:resource="ANNConfiguration"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-</owl:DatatypeProperty>
-
-<owl:DatatypeProperty rdf:about="source">
-  <rdfs:domain rdf:resource="Network"/>
-  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 </owl:DatatypeProperty>
 
 <owl:Class rdf:about="Dataset">
@@ -1462,14 +1439,6 @@
 
 <owl:Class rdf:about="ZerosInitialization">
   <rdfs:subClassOf rdf:resource="Constant"/>
-</owl:Class>
-
-<owl:Class rdf:about="Self-Supervised Classification">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
-</owl:Class>
-
-<owl:Class rdf:about="Unsupervised Classification">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
 <owl:NamedIndividual rdf:about="AAE">
@@ -3275,30 +3244,6 @@
 
 <owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_convolutional_network"/>
-  <hasTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet Classification with Deep Convolutional Neural Networks</hasTitle>
-  <hasPaperPath rdf:datatype="http://www.w3.org/2001/XMLSchema#string">data/alexnet/alexnet.pdf</hasPaperPath>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_convolutional_network">
-  <rdf:type rdf:resource="Network"/>
-  <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_pulseformer">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_pulseencoder"/>
-  <hasNetwork rdf:resource="709942bd_pulseflow"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_pulseencoder">
-  <rdf:type rdf:resource="Network"/>
-  <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_pulseflow">
-  <rdf:type rdf:resource="Network"/>
-  <source rdf:datatype="http://www.w3.org/2001/XMLSchema#string">paper</source>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

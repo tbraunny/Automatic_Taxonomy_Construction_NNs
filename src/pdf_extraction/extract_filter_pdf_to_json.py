@@ -3,26 +3,61 @@ This script extracts text from a PDF, filters out unwanted sections based on fuz
 and saves the processed content as a JSON file. The title and each section’s header is stored in the document metadata.
 Document objects are stored as json for persistence.
 
-
 Example usage:
-    python3 input_pdf_name.pdf output_json_name.json
-        i.e. python3 extract_filter_pdf_to_json.py data/resnet/resnet.pdf data/resnet/filtered_resnet.json
+    python3 extract_filter_pdf_to_json.py --pdf_path input_pdf_name.pdf
+        i.e. python3 src/pdf_extraction/extract_filter_pdf_to_json.py --pdf_path data/alexnet/alexnet.pdf
 
     Note: After extraction, load_documents_from_json() from utils/document_json_utils.py can be used to load the JSON file back into Document objects.
-
-Required dependencies:
-    - python-Levenshtein
-    - fuzzywuzzy
-    - langchain_core
 """
 
 import re
 import argparse
 import logging
+import glob
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
 from src.pdf_extraction.utils.docling_pdf_loader import DoclingPDFLoader
-from utils.document_json_utils import save_documents_to_json
+
+import json
+from langchain_core.documents.base import Document
+
+def save_documents_to_json(documents: list, output_path: str):
+    """
+    Saves a list of Document objects to a JSON file.
+    
+    :param documents: List of Document objects.
+    :param output_path: Path to save the JSON file.
+    """
+    json_data = []
+
+    for doc in documents:
+        json_data.append({
+            "page_content": doc.page_content,
+            "metadata": doc.metadata  # Preserve metadata
+        })
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(json_data, f, indent=4, ensure_ascii=False)
+
+    print(f"Documents saved successfully to {output_path}")
+    
+def load_documents_from_json(input_path: str) -> list:
+    """
+    Loads a list of Document objects from a JSON file.
+    
+    :param input_path: Path to the JSON file.
+    :return: List of reconstructed Document objects.
+    """
+    with open(input_path, "r", encoding="utf-8") as f:
+        json_data = json.load(f)
+
+    documents = [
+        Document(page_content=doc["page_content"], metadata=doc["metadata"])
+        for doc in json_data
+    ]
+
+    print(f"Documents loaded successfully from {input_path}")
+    return documents
 
 ### Utils for debugging
 def write_list_to_txt(list, output_path = 'pdf_extract_test.txt'):
@@ -137,11 +172,15 @@ def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
     loader = DoclingPDFLoader(file_path=pdf_path)
     docs = loader.load()
 
-    output_path = pdf_path.replace(".pdf" , "_doc.json")
+    if not pdf_path:
+        raise ValueError("PDF path is required.")
+    if not pdf_path.endswith(".pdf"):
+        raise ValueError("Input file must be a PDF.")
     
+    output_path = pdf_path.replace(".pdf" , "_doc.json")
     logger.info("Filtering sections from extracted documents...")
     filtered_docs = filter_sections_from_documents(docs, EXCLUDED_SECTIONS)
-    
+        
     logger.info(f"Saving filtered documents to JSON: {output_path}")
     save_documents_to_json(filtered_docs, output_path)
 
@@ -151,10 +190,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Extract, filter, and convert PDF content to JSON."
     )
-    parser.add_argument("--pdf_path", type=str, help="Path to the input PDF file.")
+    parser.add_argument("--pdf_path", required=True ,type=str, help="Path to the input PDF file.")
     args = parser.parse_args()
     if not args.pdf_path:
         raise ValueError("PDF path is required.")
     
     extract_filter_pdf_to_json(args.pdf_path)
-
+# python3 src/pdf_extraction/extract_filter_pdf_to_json.py --pdf_path data/gan/gan.pdf

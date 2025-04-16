@@ -846,7 +846,7 @@ class OntologyProcessor:
     def _process_network(self, ann_config_instance: Thing) -> None:
         """
         Process the network class and it's components.
-        """
+        """ # TODO: 
         try:
             if not isinstance(ann_config_instance, Thing):
                 logger.error("Invalid ANN Configuration instance.", exc_info=True)
@@ -987,6 +987,7 @@ A **subnetwork** is a block that\n
                     network_instance = self._instantiate_and_format_class(
                         self.ontology.Network, sub_name, "paper"
                     )
+                    print( type(ann_config_instances[-1]), "hereeee")
                     self._link_instances(
                         ann_config_instances[-1],
                         network_instance,
@@ -1345,20 +1346,19 @@ A **subnetwork** is a block that\n
         try:
             with self.ontology:
                 def _add_ann_metadata(ann_config_instance: Thing, titles: List[str], paper_paths: List[str]) -> None:
-
-                    if not class_exists(self.ontology, "hasTitle"):
+                    if not entitiy_exists(self.ontology, "hasTitle"):
                         create_class_data_property(
                             self.ontology, "hasTitle", self.ontology.ANNConfiguration, str, True
                         )
                         for title in titles:
                             ann_config_instance.hasTitle = title
 
-                    if not 
-                    create_class_data_property(
-                        self.ontology, "hasPaperPath", self.ontology.ANNConfiguration, str, True
-                    )
-                    for path in paper_paths:
-                        ann_config_instance.hasPaperPath = path
+                    if not entitiy_exists(self.ontology, "hasPaperPath"):
+                        create_class_data_property(
+                            self.ontology, "hasPaperPath", self.ontology.ANNConfiguration, str, True
+                        )
+                        for path in paper_paths:
+                            ann_config_instance.hasPaperPath = path
                 def _extract_titles_from_docs(json_doc_paths: List[str]) -> List[str]:
                     unique_titles = set()
                     for file in json_doc_paths:
@@ -1372,14 +1372,15 @@ A **subnetwork** is a block that\n
 
 
                 start_time = time.time()
-                self.ann_path = ann_path
 
-                list_pdf_paths = glob.glob(f"{ann_path}/*.pdf")
-                list_json_doc_paths = glob.glob(f"{ann_path}/*doc*.json")
+                list_json_doc_paths = glob.glob(f"{self.ann_path}/*doc*.json") # Grabs all pdf doc json's
+                if not list_json_doc_paths:
+                    raise FileNotFoundError(f"No JSON doc files found in {self.ann_path}.")
 
                 if not hasattr(self.ontology, "ANNConfiguration"):
                     raise AttributeError("Class 'ANNConfiguration' not found in ontology.")
 
+                print (list_json_doc_paths)
                 for j in list_json_doc_paths:
                     init_engine(self.ann_config_name, j)
 
