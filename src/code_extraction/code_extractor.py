@@ -88,6 +88,7 @@ class CodeProcessor(ast.NodeVisitor):
         Visits nodes that are a class traversing down tree from given node
         Also checks for class that instantiates PyTorch model
         """
+        print("Visted class")
         for base in node.bases:
             # PyTorch check
             if base.attr == "Module" and ( # check for nn.Module base class
@@ -261,7 +262,6 @@ def process_code_file(file_path) -> int:
                 # for node in ast.walk(tree): # track nodes
                 #     for child in ast.iter_child_nodes(node):
                 #         child.parent = node  # set reference nodes (ex. node.parent)
-                
                 processor = CodeProcessor(code)
                 processor.visit(tree)
 

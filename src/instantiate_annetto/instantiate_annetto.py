@@ -17,7 +17,7 @@ from owlready2 import (
 )
 
 from utils.constants import Constants as C
-from utils.onnx_db import OnnxAddition
+#from utils.onnx_db import OnnxAddition
 from utils.annetto_utils import load_annetto_ontology
 from utils.util import get_sanitized_attr
 from utils.llm_service import init_engine, query_llm
@@ -664,7 +664,7 @@ class OntologyProcessor:
         """
         try:
             # fetch info from database
-            onn = OnnxAddition()
+            onn = None
             onn.init_engine()
             models_list = onn.fetch_models()
             num_models = len(models_list)
