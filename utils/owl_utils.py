@@ -107,7 +107,7 @@ def is_subclass_of_class(cls: ThingClass, parent_cls: ThingClass) -> bool:
     :param: parent_cls: The class to check against.
     :return: True if cls is a subclass of parent_cls, False otherwise.
     """
-    if not isinstance(cls, ThingClass):
+    if not isinstance(cls, (ThingClass , Thing)):
         raise TypeError(f"The provided class '{cls}' is not a ThingClass.")
     if not isinstance(parent_cls, ThingClass):
         raise TypeError(
