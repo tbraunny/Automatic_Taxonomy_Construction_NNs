@@ -2,7 +2,7 @@ import os
 import glob
 
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
-from src.code_extraction.code_extractor import process_code_file
+from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
 
 from utils.annetto_utils import load_annetto_ontology
@@ -42,9 +42,9 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str) -> str:
         raise FileNotFoundError(f"ANN path {ann_path} does not exist.")
 
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
-    py_files = glob.glob(f"{ann_path}/*.py")
-    onnx_files = glob.glob(f"{ann_path}/*.onnx")
-    pb_files = glob.glob(f"{ann_path}/*.pb")
+    py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
+    onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
+    pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
 
     # Check if any files were found
     if not ann_pdf_files and not py_files and not onnx_files and not pb_files:
@@ -56,8 +56,11 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str) -> str:
             extract_filter_pdf_to_json(pdf_file, ann_path)
 
     # Extract code (give file path, glob is processed in the function), if any
+    process_code = CodeExtractor()
+    pytorch_module_names: list = []
     if py_files or onnx_files or pb_files:
-        process_code_file(ann_path)
+        process_code.process_code_file(ann_path)
+        pytorch_module_names = process_code.pytorch_module_names # for richie
 
     # Check if the output ontology path exists
     # If it doesn't, create it using the stable ontology

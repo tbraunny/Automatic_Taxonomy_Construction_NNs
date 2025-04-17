@@ -40,7 +40,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class CodeProcessor(ast.NodeVisitor):
+class _CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
         self.code_lines = code.split("\n")
         self.sections = [] # classes / functions / global vars
@@ -203,7 +203,7 @@ class CodeExtractor():
         :return List of the pytorch module names
         """
         try:
-            processor = CodeProcessor(code)
+            processor = _CodeProcessor(code)
 
             file_path  = os.path.normpath(file_path)
             py_files = glob.glob(f"{file_path}/**/*.py" , recursive=True)
@@ -225,12 +225,6 @@ class CodeExtractor():
                     #output_json = file.replace(".pb" , f"_pbcode_{count}.json")
                     pb_graph = PBExtractor.extract_compute_graph(file)
                     self.save_json(file.replace(".pb" , f"_pb_{count}.json") , pb_graph)
-            # if pt_files:
-            #     logger.info(f"PyTorch weights & biases detected: {pt_files}")
-            #     for count , file in enumerate(pt_files):
-            #         logger.info(f"Parsing PyTorch file {file}...")
-            #         output_json = file.replace(".pt" , f"_ptcode{count}.json")
-            #         PTExtractor.extract_compute_graph(file , output_json)
             if py_files: # informational
                 logger.info(f"Python file(s) detected: {py_files}")
                 for count , file in enumerate(py_files):
