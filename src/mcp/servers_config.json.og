@@ -1,0 +1,20 @@
+{
+    "mcpServers": {
+      "adder": {
+        "command": "python",
+        "args": ["server.py"]
+      },     
+      "owl": {
+        "command": "python",
+        "args": ["owlserver.py"]
+      },
+      "filesystem": {
+	      "command": "npx",
+	      "args": [
+		"-y",
+		"@modelcontextprotocol/server-filesystem",
+		"./ontology"
+	      ] 
+    	}
+    }
+  }
