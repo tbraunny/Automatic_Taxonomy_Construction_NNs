@@ -9,6 +9,7 @@ from rdflib.extras.external_graph_libs import rdflib_to_networkx_graph
 from rdflib import Graph, URIRef
 
 import time
+import sys
 
 #from ... import *
 #from taxonomy import llm_service,criteria,create_taxonomy
@@ -22,15 +23,8 @@ from src.taxonomy import llm_service,create_taxonomy
 # Create an MCP server named "OWL Server
 mcp = FastMCP("OWL Server")
 
-# Load the ontology using rdflib.
-# Adjust "ontology.owl" and its format as needed.
-g = rdflib.Graph()
-g.parse("./data/owl/annett-o-0.1.owl", format="xml")
 
-
-onto = get_ontology("./data/owl/annett-o-0.1.owl").load()
-
-options = glob.glob('./data/owl/*.owl')
+ontology_path = './data/owl'
 
 
 def extract_subgraph(graph: Graph, root_iri: str) -> Graph:
@@ -77,7 +71,7 @@ def extract_subgraph(graph: Graph, root_iri: str) -> Graph:
 @mcp.tool()
 def list_available_options() -> str:
     """Lists available options that can be loaded that has option to file."""
-    options = glob.glob('./ontology/*.owl')
+    options = glob.glob(f'{ontology_path}/*.owl')
     options = { index : option for index, option in enumerate(options)}
     return str(options)
 
@@ -173,12 +167,22 @@ def app_name() -> str:
     """
     return "OWL Server"
 
+
 if __name__ == "__main__":
-    start_time = time.time()
-    #print('testing')
-    #print(create_taxonomy_tool('create a taxonomy of neural network layers'))
-    #print('after')
-    #print(time.time() - start_time)
+    
+    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+        ontology_path = sys.argv[1]
+    
+    options = glob.glob(ontology_path + '/*.owl') 
+    option = options[0]
+
+    # Load the ontology using rdflib.
+    # Adjust "ontology.owl" and its format as needed.
+    g = rdflib.Graph()
+    g.parse(option, format="xml")
+    
+    onto = get_ontology(option).load()
+    
     # Run the MCP server.
     mcp.run()
 
