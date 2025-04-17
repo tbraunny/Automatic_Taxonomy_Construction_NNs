@@ -28,6 +28,9 @@ from src.taxonomy.visualizeutils import visualizeTaxonomy
 from src.taxonomy.clustering import kmeans_clustering,agglomerative_clustering
 from src.taxonomy.criteria import *
 
+from src.graph_extraction.graphautoencoder.owlinference import get_embedding
+from src.graph_extraction.graphautoencoder.model import GraphAutoencoder,GraphBertAutoencoder
+
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -41,20 +44,16 @@ def find_paths_to_classes(onto):
     classmapping = {}
     while len(stack) > 0:
         #print(stack)
-        #input('next')
         current,path = stack[0]
         visited.append(stack[0])
-        #input('has available')
         del stack[0]
         #path.append(current)
         for prop in onto.object_properties():
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
             #print(prop.name,searchdomain, current in searchdomain)
             #print(type(current))
-            #input('bark1')
             if current in searchdomain:
                 #if 'hasTrainingOptimizer' in str(prop):
-                #    input('here2')
                 copypath = list(path)
                 copypath.append(prop)
                 mapping[prop] = path
@@ -70,7 +69,6 @@ def find_paths_to_classes(onto):
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
             #print(prop.name,searchdomain, current in searchdomain)
             #print(type(current))
-            #input('bark1')
             if current in searchdomain:
 
                 copypath = list(path)
@@ -84,7 +82,6 @@ def find_paths_to_classes(onto):
                     if not prop.range[0] in stack and not prop.range[0] in visited and not prop.range[0] in ignored:
                         stack.append((prop.range[0], copypath))
                         visited.append(prop.range[0])
-        #input('waiting')
 
     #print(mapping)
     #print(list(mapping.keys()))
@@ -92,7 +89,6 @@ def find_paths_to_classes(onto):
     #print(list(classmapping.keys()))
     #print(classmapping[onto.Layer])
     #print(mapping[classmapping[onto.Layer]])
-    #input('done')
     return classmapping, mapping
 
 def parse_function(text):
@@ -117,6 +113,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
         found: a list of found elements associate to has_property
         visisted: all nodes that have been visisted
     '''
+
     if visited is None:
         visited = set()
     if instance in visited:
@@ -221,7 +218,6 @@ def find_instances(annConfig, ontology, query):
                                 newstack.append(toinsert)
                     except Exception as e:
                         logger.warning(f'Problem found with {query} with error: {e}')
-                        input(e)
                 stack = newstack
                 #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
         if searchFound:
@@ -607,12 +603,28 @@ class TaxonomyCreator:
             for ann_config in ann_configurations:
                 vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, ontology, vectorize=True)
                 clustervecs.append(vector)
+            # do graph clustering here
+            #try:
+            print(clusterop.Type)
+            if clusterop.Type != None and 'graph' in clusterop.Type.Name: 
+
+                embedding_vecs = get_embedding(ontology)
+                
+                # converting to hash types -- #TODO should probably make a class to contain these
+                outvecs = [ {'type': ann_config.name, 'value': float(embedding_vecs[ann_config.name]), 'name': ann_config.name, 'found': True} for ann_config in ann_configurations]
+                for index,item in enumerate(outvecs):
+                    clustervecs[index].append([item['value']])
+
+            #except Exception as e:
+            #    logger.warn(f"something went wrong with the graph clustering: {e}")
 
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 
                 # fill in values that have nothing with a negative one
-                if clusterop.Type != None and ('kmeans' in clusterop.Type.Name or 'agg' in clusterop.Type.Name):
-                    
+                if clusterop.Type != None and ('kmeans' in clusterop.Type.Name or 'agg' in clusterop.Type.Name or 'graph' in clusterop.Type.Name):
+                    if clusterop.Type.Name == 'graph':
+                        logger.warn('by default a graph will use kmeans')
+                        
                     centroids=10
                     if len(clusterop.Type.Arguments) == 2:
                         centroids = int(clusterop.Type.Arguments[0])
@@ -657,10 +669,12 @@ class TaxonomyCreator:
                     maxdimension = max(map(len,inputclustervecs))
                     
                     if maxdimension != 0:
-                        if 'kmeans' in clusterop.Type.Name:
+                        if 'kmeans' in clusterop.Type.Name or 'graph' in clusterop.Type.Name:
                             centers = kmeans_clustering(inputclustervecs, centroids=centroids )
-                        if 'agg' in clusterop.Type.Name:
+                        elif 'agg' in clusterop.Type.Name:
                             centers = agglomerative_clustering(inputclustervecs, centroids=centroids)
+                        else:
+                            logging.warning(f"not supported: {clusterop.Type.Name}")
                     else:
                         logging.warn("clustering received vectors with zero dimensionality")
                         centers = []
@@ -697,12 +711,6 @@ class TaxonomyCreator:
                         item['hash'] = item[crit.HashOn]
                     else:
                         logging.warn(f'item is missing: {item} and {crit.HashOn}')
-                        print(crit.HashOn,item)
-                        print(item)
-                        print(type(item))
-                        print('test')
-                        print(crit)
-                        input()
 
                 found += items
             
@@ -807,7 +815,8 @@ def main():
     #ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
     #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    #op = SearchOperator(Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Cluster="cluster", Type=TypeOperator(Name="graph"), Value=[ValueOperator(Name="hasActivationFunction",Value=[],Op="name")],Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
 
@@ -815,16 +824,16 @@ def main():
     #criteria2 = Criteria(Name='HasTaskType')
     #criteria2.add(op2)
    
-    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='agg', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
+    #op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='agg', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
 
-    criteria3 = Criteria(Name='KMeans Clustering')
-    criteria3.add(op3)
+    #criteria3 = Criteria(Name='KMeans Clustering')
+    #criteria3.add(op3)
 
     #op3 = SearchOperator(has=[HasLoss] )
     #criteria3 = Criteria()
     #criteria3.add(op3)
     
-    criterias = [criteria,criteria3]
+    criterias = [criteria]
     print('before load')
     ontology = load_ontology(ontology_path=ontology_path)
     print('after load')
@@ -835,15 +844,14 @@ def main():
 
     logger.info("Creating taxonomy from Annetto annotations.")
 
-    criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "hasLoss", "Op": "has", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
-    criteriatest2 = '{"criteriagroup": [{"Searchs": [{"Type": null, "Name": "hasNetwork", "Cluster": "none", "Value": [{"Name": "hasNetwork", "Op": "has", "Value": []}], "HashOn": "type"}], "Name": "Network Existence"}, {"Searchs": [{"Type": null, "Name": "layer_num_units", "Cluster": "none", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": [600, 3001]}], "HashOn": "found"}], "Name": "Layer Num Units"}, {"Searchs": [{"Type": null, "Name": "dropout_rate", "Cluster": "none", "Value": [{"Name": "dropout_rate", "Op": "none", "Value": [0.2, 0.5]}], "HashOn": "found"}], "Name": "Dropout Rate"}, {"Searchs": [{"Type": null, "Name": "activation_function", "Cluster": "none", "Value": [{"Name": "activation_function", "Op": "none", "Value": ["relu", "tanh"]}], "HashOn": "found"}], "Name": "Activation Function"}, {"Searchs": [{"Type": null, "Name": "learning_rate", "Cluster": "none", "Value": [{"Name": "learning_rate", "Op": "none", "Value": [0.01, 0.1]}], "HashOn": "found"}], "Name": "Learning Rate"}], "description": "A taxonomy representing all neural networks, including existence, layer number of units, dropout rate, activation function, and learning rate."}'
+    #criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "hasLoss", "Op": "has", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
+    #criteriatest2 = '{"criteriagroup": [{"Searchs": [{"Type": null, "Name": "hasNetwork", "Cluster": "none", "Value": [{"Name": "hasNetwork", "Op": "has", "Value": []}], "HashOn": "type"}], "Name": "Network Existence"}, {"Searchs": [{"Type": null, "Name": "layer_num_units", "Cluster": "none", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": [600, 3001]}], "HashOn": "found"}], "Name": "Layer Num Units"}, {"Searchs": [{"Type": null, "Name": "dropout_rate", "Cluster": "none", "Value": [{"Name": "dropout_rate", "Op": "none", "Value": [0.2, 0.5]}], "HashOn": "found"}], "Name": "Dropout Rate"}, {"Searchs": [{"Type": null, "Name": "activation_function", "Cluster": "none", "Value": [{"Name": "activation_function", "Op": "none", "Value": ["relu", "tanh"]}], "HashOn": "found"}], "Name": "Activation Function"}, {"Searchs": [{"Type": null, "Name": "learning_rate", "Cluster": "none", "Value": [{"Name": "learning_rate", "Op": "none", "Value": [0.01, 0.1]}], "HashOn": "found"}], "Name": "Learning Rate"}], "description": "A taxonomy representing all neural networks, including existence, layer number of units, dropout rate, activation function, and learning rate."}'
 
-    output = Criteria.model_validate_json(criteriatest)
-    output = OutputCriteria.model_validate_json(criteriatest2)
+    #output = Criteria.model_validate_json(criteriatest)
+    #output = OutputCriteria.model_validate_json(criteriatest2)
     #print(output)
-    #input()
     #criterias = [output]
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=output.criteriagroup)
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
 
     format='json'
 
