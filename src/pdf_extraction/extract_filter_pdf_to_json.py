@@ -196,4 +196,4 @@ if __name__ == "__main__":
         raise ValueError("PDF path is required.")
     
     extract_filter_pdf_to_json(args.pdf_path)
-# python3 src/pdf_extraction/extract_filter_pdf_to_json.py --pdf_path data/gan/gan.pdf
+# python3 src/pdf_extraction/extract_filter_pdf_to_json.py --pdf_path data/transformer/transformer.pdf
