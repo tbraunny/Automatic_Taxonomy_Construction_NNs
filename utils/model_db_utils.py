@@ -1,6 +1,7 @@
 import sqlalchemy as db
 import logging
 import json
+import glob
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from rapidfuzz import process , fuzz
@@ -9,7 +10,7 @@ class DBUtils:
     """
     Utils for accessing, fetching & inserting data into remote Postgres server
 
-    Must be run from WPEB machine to access server automatically
+    Must be run from WPEB machine to access server automatically (Tailscale network)
     """
     def __init__(self):
         self.engine , self.session = self._init_engine()
@@ -42,7 +43,7 @@ class DBUtils:
     def __del__(self):
         self.session.close()
         
-    def fetch_layers(self , network: str) -> list:
+    def _fetch_layers(self , network: str) -> list:
         """
         Fetch all relevant layer information from graphdb
 
@@ -59,7 +60,7 @@ class DBUtils:
 
         return self.layer_list
     
-    def fetch_all_models(self) -> list:
+    def _fetch_all_models(self) -> list:
         """
         Fetch all models in database by name
 
@@ -76,7 +77,7 @@ class DBUtils:
 
         return self.model_list
     
-    def insert_model(self , name: str , graph: json , avg_embedding , model_type: str=None) -> int:
+    def _insert_model(self , name: str , graph: json , avg_embedding , model_type: str=None) -> int:
         """
         Insert a model into the database
 
@@ -130,8 +131,7 @@ class DBUtils:
         except Exception as e:
             logging.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
 
-    
-    def insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
+    def _insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
         Inserts layer into the database for a specific model
 
@@ -159,7 +159,7 @@ class DBUtils:
             
         return layer_id
     
-    def insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding) -> None:
+    def _insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding) -> None:
         """
         Insert parameter into the database
 
@@ -252,36 +252,48 @@ class DBUtils:
 
         return model
 
-# example of how a model is inserted into the database
-def insert_model(ann_name: str , model_json: json) -> None:
-    """
-    Insert a model into the database given its symbolic graph (json)
+    def insert_model_components(self , ann_path: str) -> int:
+        """
+        Insert a model into the database given its symbolic graph (json) & components
 
-    :param ann_name: Name of model/network
-    :param model_json: JSON file of model to be inserted
-    :return None
-    """
-    insert = DBUtils()
-    network_data: dict = json.loads(model_json)
-    nodes = network_data.get('graph' , {}).get('node' , {})
+        :param ann_name: Name of model/network
+        :return model_id: ID of the inserted model
+        """
+        json_files: list = [] # fetch relevant jsons from ann_path
+        json_files.extend(glob.glob(f"{ann_path}/**/*torch*.json" , recursive=True))
+        json_files.extend(glob.glob(f"{ann_path}/**/*pb*.json" , recursive=True))
+        json_files.extend(glob.glob(f"{ann_path}/**/*onnx*.json" , recursive=True))
 
-    model_type = None
+        if not json_files:
+            raise FileNotFoundError
 
-    model_id: int = insert.insert_model(ann_name , model_type , model_json)
+        for file in json_files:
+            network_data: dict = {}
 
-    for layer in nodes:
-        layer_name = layer.get('name')
-        layer_type = layer.get('op_type')
-        layer_attr = layer.get('attributes')
+            with open(file , 'r') as f:
+                network_data: dict = json.load()
 
-        layer_id = insert.insert_layer(model_id , layer_name , layer_type , layer_attr)
-        shape = layer.get('kernel')
+            nodes = network_data.get("graph" , {}).get("node" , {})
+            model_type = None
+            model_id: int = self.insert_model(ann_name , model_type , network_data)
 
-        if layer_id and shape:
-            insert.insert_parameter(layer_id , 'kernel' , shape)
+            for layer in nodes:
+                layer_name = layer.get('name')
+                layer_type = layer.get('op_type')
+                layer_attr = layer.get('attributes')
+
+                layer_id = self.insert_layer(model_id , layer_name , layer_type , layer_attr)
+                shape = layer.get('kernel')
+
+                if layer_id and layer_attr:
+                    for attr in layer_attr:
+                        param_name: str = attr.get('name')
+                        shape: list = attr.get('ints')
+                        self.insert_parameter(layer_id , param_name , shape)
 
     
-if __name__ == '__main__': # example usage
+if __name__ == '__main__':
     ann_name = "alexnet"
     runner = DBUtils()
     print(runner.find_model("alexnet"))
+    print(runner.insert_model_components("alexnet"))

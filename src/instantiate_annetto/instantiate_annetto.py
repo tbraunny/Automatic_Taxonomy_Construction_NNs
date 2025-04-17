@@ -531,6 +531,7 @@ class OntologyProcessor:
             json_files.extend(glob.glob(f"{self.ann_path}/**/*onnx*.json" , recursive=True))
             
             if not json_files:
+                self.logger.error("No relevant JSON files found")
                 return 0
 
             layer_subclasses: list = get_all_subclasses(self.ontology.Layer)

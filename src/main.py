@@ -4,6 +4,7 @@ import glob
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
+from utils.model_db_utils import DBUtils
 
 from utils.annetto_utils import load_annetto_ontology
 
@@ -61,6 +62,10 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str) -> str:
     if py_files or onnx_files or pb_files:
         process_code.process_code_file(ann_path)
         pytorch_module_names = process_code.pytorch_module_names # for richie
+
+    # insert model into db
+    db_runner = DBUtils()
+    model_id = db_runner.insert_model_components(ann_path) # returns id of inserted model
 
     # Check if the output ontology path exists
     # If it doesn't, create it using the stable ontology
