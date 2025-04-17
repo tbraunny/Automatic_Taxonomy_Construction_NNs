@@ -153,7 +153,7 @@ def find_inverse_path(onto, target):
                 output.append(item)
     return output
 
-def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None):
+def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None, filter_condition=None):
     """
     Build and execute a SPARQL query that retrieves the target values by traversing the property chain 
     from ANNConfiguration to the target property.
@@ -196,15 +196,20 @@ def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None):
         patterns += f"{current_var} <{prop}> {next_var} .\n"
         current_var = next_var
 
+    filter_clause = ""
+    if filter_condition:
+        filter_clause = f"FILTER({filter_condition})\n"
+
     # Build the full query.
     query = prefix + f"""
-SELECT ?annConfig (GROUP_CONCAT(?value; separator=", ") AS ?values)
-WHERE {{
-  {ann_config_clause}
-  {patterns}
-}}
-GROUP BY ?annConfig
-"""
+    SELECT ?annConfig (GROUP_CONCAT(?value; separator=", ") AS ?values)
+    WHERE {{
+        {ann_config_clause}
+        {patterns}
+        {filter_clause}
+    }}
+    GROUP BY ?annConfig
+    """
     graph = default_world.as_rdflib_graph()
     # Execute the query using Owlready2's SPARQL engine.
     results = list(onto.world.sparql(query))
