@@ -1503,25 +1503,6 @@ def instantiate_annetto(
     )
     return ontology_output_filepath
 
-def add_initial_classes(ontology:Ontology, logger) -> None:
-    """Adds new predefined classes to the ontology."""
-
-    # Add object properties
-    create_class_object_property(
-        ontology, "hasWeightInitialization",
-        ontology.TrainingSingle, ontology.WeightInitialization
-    )
-    # Add new subclasses
-    new_classes = {
-        "Self-Supervised Classification": ontology.TaskCharacterization,
-        "Unsupervised Classification": ontology.TaskCharacterization,
-    }
-    for name, parent in new_classes.items():
-        try:
-            create_subclass(ontology, name, parent)
-        except Exception as e:
-            logger.error(f"Error creating new class {name}: {e}", exc_info=True)
-
 # For standalone testing
 if __name__ == "__main__":
     time_start = time.time()

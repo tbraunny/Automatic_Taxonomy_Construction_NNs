@@ -78,7 +78,7 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
     db_runner = DBUtils()
     model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
     paper_id: int = db_runner.insert_papers(ann_path)
-    print(model_id , paper_id)
+    print(model_id ,)
     translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
