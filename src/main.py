@@ -5,8 +5,10 @@ import glob
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
+from src.instantiate_annetto.initialize_annetto import initialize_annetto
 from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
+from utils.constants import Constants as C
 
 from utils.annetto_utils import load_annetto_ontology
 from utils.constants import Constants as C
@@ -74,9 +76,12 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
     #     process_code.process_code_file(ann_path)
     #     pytorch_module_names = process_code.pytorch_module_names # for richie
 
-    # # insert model into db
-    # db_runner = DBUtils()
-    # model_id = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # insert model into db
+    db_runner = DBUtils()
+    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    paper_id: int = db_runner.insert_papers(ann_path)
+    print(model_id ,)
+    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
     if not use_user_owl:
@@ -85,9 +90,10 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
         input_ontology = load_annetto_ontology(
             return_onto_from_path=output_ontology_filepath
         )
+
+    initialize_annetto(input_ontology)
     # Instantiate Annett-o
     hashed_ann_name = instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath)
-    
     # Returns the hashed ANN name
     if not hashed_ann_name:
         raise ValueError("Failed to instantiate Annett-o.")
