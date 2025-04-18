@@ -1,7 +1,7 @@
 from owlready2 import *
 from typing import List
 import warnings
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Type
 
 def load_ontology(ontology_path):
     return get_ontology(ontology_path).load()

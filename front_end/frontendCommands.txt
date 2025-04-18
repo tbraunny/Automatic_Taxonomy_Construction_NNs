@@ -1,0 +1,13 @@
+
+
+sudo systemctl start neo4j
+
+sudo systemctl stop ollama
+
+ollama serve
+
+streamlit run front_end/streamlit/app.py
+
+voila front_end/voila/yfiles_graph.ipynb --Voila.tornado_settings="{'headers':{'Content-Security-Policy':'frame-ancestors *'}}"
+
+

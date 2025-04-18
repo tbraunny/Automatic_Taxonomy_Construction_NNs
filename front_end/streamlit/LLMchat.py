@@ -1,5 +1,5 @@
 import streamlit as st
-from instances import list_of_class_instances
+
 
 def chat_page():
     import re
@@ -10,7 +10,8 @@ def chat_page():
     from langchain_ollama.llms import OllamaLLM
     from langchain.prompts import PromptTemplate
     from langchain_neo4j import GraphCypherQAChain
-
+    from instances import list_of_class_instances
+    
     # Helper to remove internal thoughts
     def strip_think_block(text):
         """Remove <think>...</think> blocks from LLM output."""
