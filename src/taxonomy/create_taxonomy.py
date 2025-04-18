@@ -60,7 +60,8 @@ def querytacular(search, ontology):
             if key in outputDictionary:
                 vals = []
                 for val in out[1].split(','):
-                    vals.append({'type': str(type(val)), 'value': val, 'name': value.Name, 'found': True} )
+                    obj = ontology[value.Name]
+                    vals.append({'type': str(obj.name) if isinstance(ontology[value.Name] , ThingClass) else obj.domain[0].name, 'value': val, 'name': value.Name, 'found': True} )
                 inserts.append(vals)
             else:
                 inserts.append([])
@@ -810,9 +811,6 @@ class TaxonomyCreator:
         # Get all ANNConfiguration Objects
         logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
         
-        #self.ontology.load()
-        print('test',self.ontology.ANNConfiguration)
-        print(list(self.ontology.classes()))
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
 
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
@@ -916,13 +914,9 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
 def main():
     logging.getLogger().setLevel(logging.WARNING)
     logger.info("Loading ontology.")
-    #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
-    #ontology_path = f"./data/Annett-o/annett-o-test.owl"
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
-    #ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
-    #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op2 = SearchOperator(HashOn="type",Value=[ValueOperator(Name='layer_num_units',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     
@@ -931,18 +925,6 @@ def main():
     #criteria.add(op)
     criteria.add(op2)
 
-    #op2 = SearchOperator(HasType=HasTaskType )
-    #criteria2 = Criteria(Name='HasTaskType')
-    #criteria2.add(op2)
-   
-    #op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='agg', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
-
-    #criteria3 = Criteria(Name='KMeans Clustering')
-    #criteria3.add(op3)
-
-    #op3 = SearchOperator(has=[HasLoss] )
-    #criteria3 = Criteria()
-    #criteria3.add(op3)
     
     criterias = [criteria]
     print('before load')
@@ -955,39 +937,14 @@ def main():
 
     logger.info("Creating taxonomy from Annetto annotations.")
 
-    #criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "hasLoss", "Op": "has", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
-    #criteriatest2 = '{"criteriagroup": [{"Searchs": [{"Type": null, "Name": "hasNetwork", "Cluster": "none", "Value": [{"Name": "hasNetwork", "Op": "has", "Value": []}], "HashOn": "type"}], "Name": "Network Existence"}, {"Searchs": [{"Type": null, "Name": "layer_num_units", "Cluster": "none", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": [600, 3001]}], "HashOn": "found"}], "Name": "Layer Num Units"}, {"Searchs": [{"Type": null, "Name": "dropout_rate", "Cluster": "none", "Value": [{"Name": "dropout_rate", "Op": "none", "Value": [0.2, 0.5]}], "HashOn": "found"}], "Name": "Dropout Rate"}, {"Searchs": [{"Type": null, "Name": "activation_function", "Cluster": "none", "Value": [{"Name": "activation_function", "Op": "none", "Value": ["relu", "tanh"]}], "HashOn": "found"}], "Name": "Activation Function"}, {"Searchs": [{"Type": null, "Name": "learning_rate", "Cluster": "none", "Value": [{"Name": "learning_rate", "Op": "none", "Value": [0.01, 0.1]}], "HashOn": "found"}], "Name": "Learning Rate"}], "description": "A taxonomy representing all neural networks, including existence, layer number of units, dropout rate, activation function, and learning rate."}'
-
-    #output = Criteria.model_validate_json(criteriatest)
-    #output = OutputCriteria.model_validate_json(criteriatest2)
-    #print(output)
-    #criterias = [output]
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
     
     annconfigs = ontology.ANNConfiguration.instances() 
-    #for ann in annconfigs:
-    #    print(ann)
-    #out = querytacular(criterias[0], ontology)
-        #if len(out) > 0:
-        #    print(out)
 
     format='json'
 
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
     print(facetedTaxonomy)
-    #print (json.dumps(serialize(facetedTaxonomy)))
-
-    #with open('test.json', 'w') as handle:
-    #    handle.write(json.dumps(serialize(facetedTaxonomy)))
-
-    # print(output)
-    # with open('test.xml','w') as handle:
-    #     handle.write(output)
-
-    # if format == 'graphml':
-    #     visualizeTaxonomy(output)
-    #     print(output)
-    # logger.info("Finished creating taxonomy.")
 
 
 if __name__ == "__main__":
