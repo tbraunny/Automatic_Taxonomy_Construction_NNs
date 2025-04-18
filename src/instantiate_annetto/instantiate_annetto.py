@@ -37,6 +37,7 @@ from utils.owl_utils import (
     create_class_object_property,
     entitiy_exists,
     is_subclass_of_class,
+    create_generic_data_property,
 )
 
 # Initialize logger
@@ -124,17 +125,18 @@ class OntologyProcessor:
         Uses the ANN configuration hash as a prefix for uniqueness.
         :param cls: The ontology class to instantiate.
         :param instance_name: The name of the instance to create.
-        :param source: Optional source for the instance (i.e. 'code' or 'paper').
+        :param source: Optional source for the instance (i.e. 'default', 'code', 'llm').
         :return: The instantiated Thing object.
         """
         try:
             unique_name = self._format_instance_name(instance_name)
+            print(f"cls: {cls}, instance_name: {instance_name}, unique_name: {unique_name}")
             instance = create_cls_instance(self.ontology, cls, unique_name)
             if not isinstance(instance, Thing):
                 raise TypeError(f"Instance is not of type Thing: {type(instance)}")
             self.logger.info(f"Instantiated {cls.name} as {self._unformat_instance_name(unique_name)}.")
-            if source:
-                self._add_data_property(instance, "source", source)
+            # if source:
+            #     self._add_generic_data_property(instance, "source", source)
             return instance
         except Exception as e:
             self.logger.error(f"Error instantiating {cls.name} with name '{instance_name}'.", exc_info=True)
@@ -220,6 +222,22 @@ class OntologyProcessor:
         self.logger.info(
             f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
         )
+    
+    def _add_generic_data_property(
+        self, instance: Thing, data_property: DataPropertyClass, value: Any
+    ) -> None:
+        """
+        Add a generic data property to an instance.
+        """
+        try:
+            generic_property = create_generic_data_property(
+                self.ontology, data_property.name, type(instance), str, False
+            )
+        except Exception as e:
+            self.logger.warning(
+                f"Error creating generic data property: {e}", exc_info=True
+            )
+        self._link_data_property(instance, generic_property, value)
 
     def _link_data_property(
         self, instance: Thing, data_property: DataPropertyClass, value: Any
@@ -396,13 +414,13 @@ class OntologyProcessor:
                 else self.ontology.MaxObjectiveFunction
             )
             obj_instance = self._instantiate_and_format_class(
-                obj_cls, f"{obj_type} Objective Function"
+                obj_cls, f"{obj_type} Objective Function", "default"
             )
             self._link_instances(network_instance, obj_instance, self.ontology.hasObjective)
         else:
             obj_cls = self.ontology.MinObjectiveFunction
             obj_instance = self._instantiate_and_format_class(
-                obj_cls, f"Min Objective Function"
+                obj_cls, f"Min Objective Function", "llm"
             )
             self.logger.warning(f"No objective type specified for {network_name}. Defaulting to MinObjectiveFunction.")
 
@@ -414,9 +432,9 @@ class OntologyProcessor:
                 loss_name, known_losses, 90
             ) or create_subclass(self.ontology, loss_name, self.ontology.LossFunction)
             cost_instance = self._instantiate_and_format_class(
-                self.ontology.CostFunction, "cost function"
+                self.ontology.CostFunction, "cost function", "default"
             )
-            loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name)
+            loss_instance = self._instantiate_and_format_class(best_loss_match, loss_name, "llm")
             self._link_instances(obj_instance, cost_instance, self.ontology.hasCost)
             self._link_instances(cost_instance, loss_instance, self.ontology.hasLoss)
         
@@ -431,7 +449,7 @@ class OntologyProcessor:
             ) or create_subclass(
                 self.ontology, reg_name, self.ontology.RegularizerFunction
             )
-            reg_instance = self._instantiate_and_format_class(best_reg_match, reg_name)
+            reg_instance = self._instantiate_and_format_class(best_reg_match, reg_name, "llm")
             self._link_instances(
                 cost_instance, reg_instance, self.ontology.hasRegularizer
             )
@@ -626,7 +644,7 @@ class OntologyProcessor:
                     self.logger.info(f"I/O instantiation for layer {layer_name} in model {self.ann_config_name}")
                     self.logger.info(f"{layer_name} INFO: input(s) {prev_layers} , output(s) {next_layers}")
 
-                    layer_instance = name_to_instance.get(layer_name).get("
+                    layer_instance = name_to_instance.get(layer_name)
                     if not layer_instance:
                         self.logger.warning(f"Layer instance not found for {layer_name} , linkage unsuccessful")
                         continue
@@ -763,13 +781,12 @@ class OntologyProcessor:
                     self.logger.info(f"Processing model {model_id} / {num_models}")
                     self.logger.info(f"Model name {model_name}, subclass match {best_subclass_match}")
 
-                layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name)
+                layer_instance = self._instantiate_and_format_class(best_subclass_match , layer_name, "db")
                 self._link_instances(network_instance , layer_instance , self.ontology.hasLayer)
 
             self.logger.info(f"All layers of {model_name} successfully processed")
 
         except Exception as e:
-            print("ERROR")
             self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
 
     def _process_task_characterization(self, network_instance: Thing) -> None:
@@ -868,8 +885,7 @@ class OntologyProcessor:
                 return
             
             task_type_name = get_sanitized_attr(response, "answer.task_type")
-            task_type_def = get_sanitized_attr(response, "answer.task_type.definition")
-            
+            # task_type_def = get_sanitized_attr(response, "answer.task_type.definition")
             # task_type_name = str(response.answer.task_type.name)
             # task_type_def = str(response.answer.task_type.definition)
 
@@ -896,18 +912,18 @@ class OntologyProcessor:
                 )
 
             task_type_instance = self._instantiate_and_format_class(
-                best_match_task_type, task_type_name
+                best_match_task_type, task_type_name, "llm"
             )
 
             self._link_instances(
                 network_instance, task_type_instance, self.ontology.hasTaskType
             )
 
-            # Task definition handling
-            if task_type_def:
-                self._add_definition_data_property(
-                    task_type_instance, task_type_def
-                )
+            # # Task definition handling
+            # if task_type_def:
+            #     self._add_definition_data_property(
+            #         task_type_instance, task_type_def
+            #     )
 
             self.logger.info(
                 f"Processed task characterization for {network_name}: Task Type: {task_type_name}."
@@ -1012,7 +1028,6 @@ A **subnetwork** is a block that\n
             prompt = self.build_prompt(
                 task, query, instructions, examples, extra_instructions
             )
-
             response = self._query_llm(prompt, NetworkResponse)
             if not response or not response.answer.architectures:
                 # self.logger.warning(f"No architectures found in network {network_name}.")
@@ -1029,18 +1044,18 @@ A **subnetwork** is a block that\n
                 # Instatiate ANN Config instance
                 ann_config_instances.append(
                     self._instantiate_and_format_class(
-                        self.ontology.ANNConfiguration, arch_name
+                        self.ontology.ANNConfiguration, arch_name, "llm"
                     )
                 )
 
                 # # Process layers via code
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
 
-                # TODO: pass in a network instance that is fuzzy matched with a pt module name
-                if parse_code_layers:
-                    self._process_parsed_code(ann_config_instances[-1])
-                    layers_parsed = True
-                # ##############
+                # # TODO: pass in a network instance that is fuzzy matched with a pt module name
+                # if parse_code_layers:
+                #     self._process_parsed_code(ann_config_instances[-1])
+                #     layers_parsed = True
+                # # ##############
 
                 for subnetwork in architecture.subnetworks:
                     sub_name = subnetwork.name
@@ -1061,9 +1076,8 @@ A **subnetwork** is a block that\n
 
                     # Instantiate subnetwork instance
                     network_instance = self._instantiate_and_format_class(
-                        self.ontology.Network, sub_name, "paper"
+                        self.ontology.Network, sub_name, "llm"
                     )
-                    print( type(ann_config_instances[-1]), "hereeee")
                     self._link_instances(
                         ann_config_instances[-1],
                         network_instance,
@@ -1071,9 +1085,11 @@ A **subnetwork** is a block that\n
                     )
                     # if not layers_parsed:
                         # self._process_layers(network_instance)
-                    # self._process_objective_functions(network_instance)
-                    # self._process_task_characterization(network_instance)
+                    self._process_objective_functions(network_instance)
+                    self._process_task_characterization(network_instance)
                     self.logger.info(f"Successfully processed network instance: {network_instance.name}")
+                self.logger.info(f"Successfully processed all Network instances for  ANN '{ann_config_instances[-1]}'.")
+            return ann_config_instances
 
             # # Here is where logic for processing the network instance would go.
             # network_instances.append(
@@ -1173,7 +1189,7 @@ A **subnetwork** is a block that\n
 
                 # Link Training Single to new DataPipe
                 dataset_pipe_instance = self._instantiate_and_format_class(
-                    self.ontology.DatasetPipe, f"Dataset Pipe {counter}"
+                    self.ontology.DatasetPipe, f"Dataset Pipe {counter}", "default"
                 )
                 self._link_instances(
                     training_step_instance,
@@ -1184,11 +1200,11 @@ A **subnetwork** is a block that\n
                 # Check if dataset name exists, otherwise give a placeholder name
                 if dataset.dataset_name:
                     dataset_instance = self._instantiate_and_format_class(
-                        self.ontology.Dataset, dataset.dataset_name
+                        self.ontology.Dataset, dataset.dataset_name, "llm"
                     )
                 else:
                     dataset_instance = self._instantiate_and_format_class(
-                        self.ontology.Dataset, f"Unknown Dataset {counter}"
+                        self.ontology.Dataset, f"Unknown Dataset {counter}", "default"
                     )
 
                 self._link_instances(
@@ -1219,7 +1235,7 @@ A **subnetwork** is a block that\n
 
                 # Instantiate Label set for labeled data information
                 label_set_instance = self._instantiate_and_format_class(
-                    self.ontology.Labelset, "Label Set"
+                    self.ontology.Labelset, "Label Set", "default"
                 )
                 self._link_instances(
                     dataset_instance,
@@ -1238,7 +1254,7 @@ A **subnetwork** is a block that\n
                 if best_match:
                     self.logger.info(f"Matched DataType subclass: {best_match}")
                     data_type_instance = self._instantiate_and_format_class(
-                        best_match, "Data Type"
+                        best_match, "Data Type", "default"
                     )
                     self._link_instances(
                         dataset_instance, data_type_instance, self.ontology.hasDataType
@@ -1265,7 +1281,7 @@ A **subnetwork** is a block that\n
 
         try:
             strategy_instance = self._instantiate_and_format_class(
-                self.ontology.TrainingStrategy, "Training Strategy"
+                self.ontology.TrainingStrategy, "Training Strategy", "default"
             )
             self._link_instances(
                 ann_config_instance,
@@ -1274,7 +1290,7 @@ A **subnetwork** is a block that\n
             )
 
             session_instance = self._instantiate_and_format_class(
-                self.ontology.TrainingSession, "Training Session"
+                self.ontology.TrainingSession, "Training Session", "default"
             )
             self._link_instances(
                 strategy_instance,
@@ -1298,7 +1314,7 @@ A **subnetwork** is a block that\n
 
         try:
             training_step_instance = self._instantiate_and_format_class(
-                self.ontology.TrainingSingle, "Training Single"
+                self.ontology.TrainingSingle, "Training Single", "default"
             )
             self._link_instances(
                 session_instance,
@@ -1421,6 +1437,7 @@ A **subnetwork** is a block that\n
     def run(self, ann_path: List[str]) -> None:
         try:
             with self.ontology:
+                start_time = time.time()
                 def _add_ann_metadata(ann_config_instance: Thing, titles: List[str], paper_paths: List[str]) -> None:
                     if not entitiy_exists(self.ontology, "hasTitle"):
                         create_class_data_property(
@@ -1446,24 +1463,25 @@ A **subnetwork** is a block that\n
                                     unique_titles.add(title)
                     return list(unique_titles)
 
-
-                start_time = time.time()
-
                 list_json_doc_paths = glob.glob(f"{self.ann_path}/*doc*.json") # Grabs all pdf doc json's
                 if not list_json_doc_paths:
                     raise FileNotFoundError(f"No JSON doc files found in {self.ann_path}.")
-
+                if not all(item.endswith(".json") for item in list_json_doc_paths):
+                    raise ValueError("All items in list_json_doc_paths must end with .json")
+                
                 if not hasattr(self.ontology, "ANNConfiguration"):
                     raise AttributeError("Class 'ANNConfiguration' not found in ontology.")
-
-                print (list_json_doc_paths)
+                
+                # Add docs to llm engine for RAG
                 for j in list_json_doc_paths:
                     init_engine(self.ann_config_name, j)
 
+                # Instantiate ANN Configuration instance using parameter passed name
                 ann_config_instance = self._instantiate_and_format_class(
-                    self.ontology.ANNConfiguration, self.ann_config_name
+                    self.ontology.ANNConfiguration, self.ann_config_name, "user"
                 )
 
+                # Extract metadata and attach to ANNConfiguration instance
                 titles = _extract_titles_from_docs(list_json_doc_paths)
                 _add_ann_metadata(ann_config_instance, titles, ann_path)
                 self._process_parsed_code(ann_config_instance)
@@ -1473,10 +1491,11 @@ A **subnetwork** is a block that\n
                 minutes, seconds = divmod(time.time() - start_time, 60)
                 self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")
                 self.logger.info(f"Ontology instantiation completed for {self.ann_config_name}.\n")
+                self.save_ontology()
+
         except Exception as e:
             self.logger.error(f"Error during ontology instantiation: {e}", exc_info=True)
-            raise
-
+            raise  
 
 def instantiate_annetto(
     ann_name: str, ann_path: str, ontology: Ontology, ontology_output_filepath:str):
@@ -1506,47 +1525,86 @@ def instantiate_annetto(
         ontology_output_filepath=ontology_output_filepath,
     )
     instantiator.run(ann_path)
-    instantiator.save_ontology()
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
     )
     return ontology_output_filepath
 
-def add_initial_classes(ontology:Ontology, logger) -> None:
-    """Adds new predefined classes to the ontology."""
-
-    # Add object properties
-    create_class_object_property(
-        ontology, "hasWeightInitialization",
-        ontology.TrainingSingle, ontology.WeightInitialization
-    )
-    # Add new subclasses
-    new_classes = {
-        "Self-Supervised Classification": ontology.TaskCharacterization,
-        "Unsupervised Classification": ontology.TaskCharacterization,
-    }
-    for name, parent in new_classes.items():
-        try:
-            create_subclass(ontology, name, parent)
-        except Exception as e:
-            logger.error(f"Error creating new class {name}: {e}", exc_info=True)
-
 # For standalone testing
 if __name__ == "__main__":
     time_start = time.time()
 
-    for model_name in [
-        "alexnet",
-        # "resnet",
-        # "vgg16",
-        # "gan",  # Assume we can model name from user or something
-    ]:
+    ###################################################################
+    def mass_instantiation(root_path: str, ontology: Ontology) -> None:
+        """
+        Mass instantiation of ANN configurations from a given root path.
+        Expects a directory structure where each subdirectory contains ANN configuration files.
+        """
+        def get_subdirectories(path):
+            return [f.name for f in os.scandir(path) if f.is_dir()]
+        
+        subdirectories = get_subdirectories(root_path)
+
+        model_names_from_directory = [
+            os.path.basename(subdirectory) for subdirectory in subdirectories
+        ]
+        from utils.owl_utils import save_ontology
+        save_ontology(ontology, C.ONTOLOGY.TEST_ONTOLOGY_PATH)
+        curr_ontology = load_annetto_ontology(return_onto_from_release='test')
+
+        for model_name in model_names_from_directory:
+            print(f"Model name: {model_name}, Path: {os.path.join(root_path, model_name)}")
+            try:
+                instantiate_annetto(
+                model_name,
+                os.path.join(root_path, model_name),
+                curr_ontology,
+                C.ONTOLOGY.TEST_ONTOLOGY_PATH)
+
+            except Exception as e:
+                print(f"Error instantiating {model_name}: {e}")
+        
+    def single_instantiation(model_name: str, ontology: Ontology) -> None:
+        """
+        Single instantiation of an ANN configuration.
+        """
+        ann_path = os.path.join("data", model_name)
         instantiate_annetto(
             model_name,
-            f"data/{model_name}",
-            load_annetto_ontology(return_onto_from_release="base"),
+            ann_path,
+            ontology,
             C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         )
+    ###################################################################
+
+    ontology = load_annetto_ontology(return_onto_from_release='base')
+
+    """
+    Comment out the following blocks if you want to add new classes to the ontology at mass or little at a time.
+    """
+
+    
+    # For single testing
+    # for model_name in [
+    #     "alexnet",
+    #     # "resnet",
+    #     # "vgg16",
+    #     # "gan",  # Assume we can model name from user or something
+    # ]:
+    #     single_instantiation(model_name, ontology)
+
+    # For mass instantiation from a root dir
+    mass_instantiation("data/more_papers", ontology)
+
+    from utils.owl_utils import get_class_instances
+
+    classes = get_class_instances(ontology.Network)
+
+    print( len(classes), classes)
+
+
+
+
     time_end = time.time()
     minutes, seconds = divmod(time_end - time_start, 60)
     print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds.")

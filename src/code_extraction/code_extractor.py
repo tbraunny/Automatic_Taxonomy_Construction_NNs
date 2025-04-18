@@ -228,10 +228,13 @@ class CodeExtractor():
                 for count , file in enumerate(py_files):
                     logger.info(f"Parsing python file {file}...")
 
+                    code = 0
                     with open(file , "r") as f:
                         code = f.read()
                     tree = ast.parse(code)
                     output_file = file.replace(".py", f"_code_{count}.json")
+                    processor = _CodeProcessor(code)
+
                     processor = _CodeProcessor(code)
 
                     # for node in ast.walk(tree): # track nodes

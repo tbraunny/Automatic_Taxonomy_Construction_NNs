@@ -1,0 +1,226 @@
+[
+    {
+        "page_content": "## ABSTRACT\n\nWe present a scalable approach for semi-supervised learning on graph-structured data that is based on an efficient variant of convolutional neural networks which operate directly on graphs. We motivate the choice of our convolutional architecture via a localized first-order approximation of spectral graph convolutions. Our model scales linearly in the number of graph edges and learns hidden layer representations that encode both local graph structure and features of nodes. In a number of experiments on citation networks and on a knowledge graph dataset we demonstrate that our approach outperforms related methods by a significant margin.",
+        "metadata": {
+            "section_header": "ABSTRACT",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 1 INTRODUCTION\n\nWe consider the problem of classifying nodes (such as documents) in a graph (such as a citation network), where labels are only available for a small subset of nodes. This problem can be framed as graph-based semi-supervised learning, where label information is smoothed over the graph via some form of explicit graph-based regularization (Zhu et al., 2003; Zhou et al., 2004; Belkin et al., 2006; Weston et al., 2012), e.g. by using a graph Laplacian regularization term in the loss function:\n\n<!-- formula-not-decoded -->\n\nHere, L 0 denotes the supervised loss w.r.t. the labeled part of the graph, f ( ) · can be a neural networklike differentiable function, λ is a weighing factor and X is a matrix of node feature vectors X i . ∆ = D -A denotes the unnormalized graph Laplacian of an undirected graph G = ( V E , ) with N nodes v i ∈ V , edges ( v , v i j ) ∈ E , an adjacency matrix A ∈ R N × N (binary or weighted) and a degree matrix D ii = ∑ j A ij . The formulation of Eq. 1 relies on the assumption that connected nodes in the graph are likely to share the same label. This assumption, however, might restrict modeling capacity, as graph edges need not necessarily encode node similarity, but could contain additional information.\n\nIn this work, we encode the graph structure directly using a neural network model f ( X,A ) and train on a supervised target L 0 for all nodes with labels, thereby avoiding explicit graph-based regularization in the loss function. Conditioning f ( ) · on the adjacency matrix of the graph will allow the model to distribute gradient information from the supervised loss L 0 and will enable it to learn representations of nodes both with and without labels.\n\nOur contributions are two-fold. Firstly, we introduce a simple and well-behaved layer-wise propagation rule for neural network models which operate directly on graphs and show how it can be motivated from a first-order approximation of spectral graph convolutions (Hammond et al., 2011). Secondly, we demonstrate how this form of a graph-based neural network model can be used for fast and scalable semi-supervised classification of nodes in a graph. Experiments on a number of datasets demonstrate that our model compares favorably both in classification accuracy and efficiency (measured in wall-clock time) against state-of-the-art methods for semi-supervised learning.",
+        "metadata": {
+            "section_header": "INTRODUCTION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 2 FAST APPROXIMATE CONVOLUTIONS ON GRAPHS\n\nIn this section, we provide theoretical motivation for a specific graph-based neural network model f ( X,A ) that we will use in the rest of this paper. We consider a multi-layer Graph Convolutional Network (GCN) with the following layer-wise propagation rule:\n\n<!-- formula-not-decoded -->\n\nHere, ˜ = A A + I N is the adjacency matrix of the undirected graph G with added self-connections. I N is the identity matrix, ˜ D ii = ∑ j ˜ A ij and W ( ) l is a layer-specific trainable weight matrix. σ ( ) · denotes an activation function, such as the ReLU( ) = max(0 · , · ) . H ( ) l ∈ R N × D is the matrix of activations in the l th layer; H (0) = X . In the following, we show that the form of this propagation rule can be motivated 1 via a first-order approximation of localized spectral filters on graphs (Hammond et al., 2011; Defferrard et al., 2016).",
+        "metadata": {
+            "section_header": "FAST APPROXIMATE CONVOLUTIONS ON GRAPHS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 2.1 SPECTRAL GRAPH CONVOLUTIONS\n\nWe consider spectral convolutions on graphs defined as the multiplication of a signal x ∈ R N (a scalar for every node) with a filter g θ = diag ( θ ) parameterized by θ ∈ R N in the Fourier domain, i.e.:\n\n<!-- formula-not-decoded -->\n\nwhere U is the matrix of eigenvectors of the normalized graph Laplacian L = I N -D -1 2 AD -1 2 = U Λ U glyph[latticetop] , with a diagonal matrix of its eigenvalues Λ and U glyph[latticetop] x being the graph Fourier transform of x . We can understand g θ as a function of the eigenvalues of L , i.e. g θ (Λ) . Evaluating Eq. 3 is computationally expensive, as multiplication with the eigenvector matrix U is O ( N 2 ) . Furthermore, computing the eigendecomposition of L in the first place might be prohibitively expensive for large graphs. To circumvent this problem, it was suggested in Hammond et al. (2011) that g θ (Λ) can be well-approximated by a truncated expansion in terms of Chebyshev polynomials T k ( x ) up to K th order:\n\n<!-- formula-not-decoded -->\n\nwith a rescaled ˜ Λ = 2 λ max Λ -I N . λ max denotes the largest eigenvalue of L . θ ′ ∈ R K is now a vector of Chebyshev coefficients. The Chebyshev polynomials are recursively defined as T k ( x ) = 2 xT k -1 ( x ) -T k -2 ( x ) , with T 0 ( x ) = 1 and T 1 ( x ) = x . The reader is referred to Hammond et al. (2011) for an in-depth discussion of this approximation.\n\nGoing back to our definition of a convolution of a signal x with a filter g θ ′ , we now have:\n\n<!-- formula-not-decoded -->\n\nwith ˜ = L 2 λ max L -I N ; as can easily be verified by noticing that ( U Λ U glyph[latticetop] ) k = U Λ k U glyph[latticetop] . Note that this expression is now K -localized since it is a K th -order polynomial in the Laplacian, i.e. it depends only on nodes that are at maximum K steps away from the central node ( K th -order neighborhood). The complexity of evaluating Eq. 5 is O |E| ( ) , i.e. linear in the number of edges. Defferrard et al. (2016) use this K -localized convolution to define a convolutional neural network on graphs.",
+        "metadata": {
+            "section_header": "SPECTRAL GRAPH CONVOLUTIONS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 2.2 LAYER-WISE LINEAR MODEL\n\nA neural network model based on graph convolutions can therefore be built by stacking multiple convolutional layers of the form of Eq. 5, each layer followed by a point-wise non-linearity. Now, imagine we limited the layer-wise convolution operation to K = 1 (see Eq. 5), i.e. a function that is linear w.r.t. L and therefore a linear function on the graph Laplacian spectrum.\n\n1 We provide an alternative interpretation of this propagation rule based on the Weisfeiler-Lehman algorithm (Weisfeiler &amp; Lehmann, 1968) in Appendix A.\n\nIn this way, we can still recover a rich class of convolutional filter functions by stacking multiple such layers, but we are not limited to the explicit parameterization given by, e.g., the Chebyshev polynomials. We intuitively expect that such a model can alleviate the problem of overfitting on local neighborhood structures for graphs with very wide node degree distributions, such as social networks, citation networks, knowledge graphs and many other real-world graph datasets. Additionally, for a fixed computational budget, this layer-wise linear formulation allows us to build deeper models, a practice that is known to improve modeling capacity on a number of domains (He et al., 2016).\n\nIn this linear formulation of a GCN we further approximate λ max ≈ 2 , as we can expect that neural network parameters will adapt to this change in scale during training. Under these approximations Eq. 5 simplifies to:\n\n<!-- formula-not-decoded -->\n\nwith two free parameters θ ′ 0 and θ ′ 1 . The filter parameters can be shared over the whole graph. Successive application of filters of this form then effectively convolve the k th -order neighborhood of a node, where k is the number of successive filtering operations or convolutional layers in the neural network model.\n\nIn practice, it can be beneficial to constrain the number of parameters further to address overfitting and to minimize the number of operations (such as matrix multiplications) per layer. This leaves us with the following expression:\n\n<!-- formula-not-decoded -->\n\nwith a single parameter θ = θ ′ 0 = -θ ′ 1 . Note that I N + D -1 2 AD -1 2 now has eigenvalues in the range [0 , 2] . Repeated application of this operator can therefore lead to numerical instabilities and exploding/vanishing gradients when used in a deep neural network model. To alleviate this problem, we introduce the following renormalization trick : I N + D -1 2 AD -1 2 → ˜ D -1 2 ˜ ˜ AD -1 2 , with ˜ = A A + I N and ˜ D ii = ∑ j ˜ A ij .\n\nWecan generalize this definition to a signal X ∈ R N × C with C input channels (i.e. a C -dimensional feature vector for every node) and F filters or feature maps as follows:\n\n<!-- formula-not-decoded -->\n\nwhere Θ ∈ R C × F is now a matrix of filter parameters and Z ∈ R N × F is the convolved signal matrix. This filtering operation has complexity O |E| ( FC ) , as ˜ AX can be efficiently implemented as a product of a sparse matrix with a dense matrix.",
+        "metadata": {
+            "section_header": "LAYER-WISE LINEAR MODEL",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 3 SEMI-SUPERVISED NODE CLASSIFICATION\n\nHaving introduced a simple, yet flexible model f ( X,A ) for efficient information propagation on graphs, we can return to the problem of semi-supervised node classification. As outlined in the introduction, we can relax certain assumptions typically made in graph-based semi-supervised learning by conditioning our model f ( X,A ) both on the data X and on the adjacency matrix A of the underlying graph structure. We expect this setting to be especially powerful in scenarios where the adjacency matrix contains information not present in the data X , such as citation links between documents in a citation network or relations in a knowledge graph. The overall model, a multi-layer GCN for semi-supervised learning, is schematically depicted in Figure 1.",
+        "metadata": {
+            "section_header": "SEMI-SUPERVISED NODE CLASSIFICATION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 3.1 EXAMPLE\n\nIn the following, we consider a two-layer GCN for semi-supervised node classification on a graph with a symmetric adjacency matrix A (binary or weighted). We first calculate ˆ = A ˜ D -1 2 ˜ ˜ AD -1 2 in a pre-processing step. Our forward model then takes the simple form:\n\n<!-- formula-not-decoded -->\n\n\n\n(a) Graph Convolutional Network\n\n<!-- image -->\n\n(b) Hidden layer activations\n\n\n\n      Figure 1: Left : Schematic depiction of multi-layer Graph Convolutional Network (GCN) for semisupervised learning with C input channels and F feature maps in the output layer. The graph structure (edges shown as black lines) is shared over layers, labels are denoted by Y i . Right : t-SNE (Maaten &amp; Hinton, 2008) visualization of hidden layer activations of a two-layer GCN trained on the Cora dataset (Sen et al., 2008) using 5% of labels. Colors denote document class.\n\nHere, W (0) ∈ R C × H is an input-to-hidden weight matrix for a hidden layer with H feature maps. W (1) ∈ R H × F is a hidden-to-output weight matrix. The softmax activation function, defined as softmax( x i ) = 1 Z exp( x i ) with Z = ∑ i exp( x i ) , is applied row-wise. For semi-supervised multiclass classification, we then evaluate the cross-entropy error over all labeled examples:\n\n<!-- formula-not-decoded -->\n\nwhere Y L is the set of node indices that have labels.\n\nThe neural network weights W (0) and W (1) are trained using gradient descent. In this work, we perform batch gradient descent using the full dataset for every training iteration, which is a viable option as long as datasets fit in memory. Using a sparse representation for A , memory requirement is O |E| ( ) , i.e. linear in the number of edges. Stochasticity in the training process is introduced via dropout (Srivastava et al., 2014). We leave memory-efficient extensions with mini-batch stochastic gradient descent for future work.",
+        "metadata": {
+            "section_header": "EXAMPLE",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 3.2 IMPLEMENTATION\n\nIn practice, we make use of TensorFlow (Abadi et al., 2015) for an efficient GPU-based implementation 2 of Eq. 9 using sparse-dense matrix multiplications. The computational complexity of evaluating Eq. 9 is then O |E| ( CHF ) , i.e. linear in the number of graph edges.",
+        "metadata": {
+            "section_header": "IMPLEMENTATION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 4.1 GRAPH-BASED SEMI-SUPERVISED LEARNING\n\nA large number of approaches for semi-supervised learning using graph representations have been proposed in recent years, most of which fall into two broad categories: methods that use some form of explicit graph Laplacian regularization and graph embedding-based approaches. Prominent examples for graph Laplacian regularization include label propagation (Zhu et al., 2003), manifold regularization (Belkin et al., 2006) and deep semi-supervised embedding (Weston et al., 2012).\n\n2 Code to reproduce our experiments is available at https://github.com/tkipf/gcn .\n\n\n\nRecently, attention has shifted to models that learn graph embeddings with methods inspired by the skip-gram model (Mikolov et al., 2013). DeepWalk (Perozzi et al., 2014) learns embeddings via the prediction of the local neighborhood of nodes, sampled from random walks on the graph. LINE (Tang et al., 2015) and node2vec (Grover &amp; Leskovec, 2016) extend DeepWalk with more sophisticated random walk or breadth-first search schemes. For all these methods, however, a multistep pipeline including random walk generation and semi-supervised training is required where each step has to be optimized separately. Planetoid (Yang et al., 2016) alleviates this by injecting label information in the process of learning embeddings.",
+        "metadata": {
+            "section_header": "GRAPH-BASED SEMI-SUPERVISED LEARNING",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 4.2 NEURAL NETWORKS ON GRAPHS\n\nNeural networks that operate on graphs have previously been introduced in Gori et al. (2005); Scarselli et al. (2009) as a form of recurrent neural network. Their framework requires the repeated application of contraction maps as propagation functions until node representations reach a stable fixed point. This restriction was later alleviated in Li et al. (2016) by introducing modern practices for recurrent neural network training to the original graph neural network framework. Duvenaud et al. (2015) introduced a convolution-like propagation rule on graphs and methods for graph-level classification. Their approach requires to learn node degree-specific weight matrices which does not scale to large graphs with wide node degree distributions. Our model instead uses a single weight matrix per layer and deals with varying node degrees through an appropriate normalization of the adjacency matrix (see Section 3.1).\n\nArelated approach to node classification with a graph-based neural network was recently introduced in Atwood &amp; Towsley (2016). They report O ( N 2 ) complexity, limiting the range of possible applications. In a different yet related model, Niepert et al. (2016) convert graphs locally into sequences that are fed into a conventional 1D convolutional neural network, which requires the definition of a node ordering in a pre-processing step.\n\nOur method is based on spectral graph convolutional neural networks, introduced in Bruna et al. (2014) and later extended by Defferrard et al. (2016) with fast localized convolutions. In contrast to these works, we consider here the task of transductive node classification within networks of significantly larger scale. We show that in this setting, a number of simplifications (see Section 2.2) can be introduced to the original frameworks of Bruna et al. (2014) and Defferrard et al. (2016) that improve scalability and classification performance in large-scale networks.",
+        "metadata": {
+            "section_header": "NEURAL NETWORKS ON GRAPHS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 5 EXPERIMENTS\n\nWe test our model in a number of experiments: semi-supervised document classification in citation networks, semi-supervised entity classification in a bipartite graph extracted from a knowledge graph, an evaluation of various graph propagation models and a run-time analysis on random graphs.",
+        "metadata": {
+            "section_header": "EXPERIMENTS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 5.1 DATASETS\n\nWe closely follow the experimental setup in Yang et al. (2016). Dataset statistics are summarized in Table 1. In the citation network datasets-Citeseer, Cora and Pubmed (Sen et al., 2008)-nodes are documents and edges are citation links. Label rate denotes the number of labeled nodes that are used for training divided by the total number of nodes in each dataset. NELL (Carlson et al., 2010; Yang et al., 2016) is a bipartite graph dataset extracted from a knowledge graph with 55,864 relation nodes and 9,891 entity nodes.\n\nTable 1: Dataset statistics, as reported in Yang et al. (2016).\n\n| Dataset   | Type             | Nodes   | Edges   |   Classes | Features   | Label rate   |\n|-----------|------------------|---------|---------|-----------|------------|--------------|\n| Citeseer  | Citation network | 3,327   | 4,732   |         6 | 3,703      | 0 . 036      |\n| Cora      | Citation network | 2,708   | 5,429   |         7 | 1,433      | 0 . 052      |\n| Pubmed    | Citation network | 19,717  | 44,338  |         3 | 500        | 0 . 003      |\n| NELL      | Knowledge graph  | 65,755  | 266,144 |       210 | 5,414      | 0 . 001      |\n\nCitation networks We consider three citation network datasets: Citeseer, Cora and Pubmed (Sen et al., 2008). The datasets contain sparse bag-of-words feature vectors for each document and a list of citation links between documents. We treat the citation links as (undirected) edges and construct a binary, symmetric adjacency matrix A . Each document has a class label. For training, we only use 20 labels per class, but all feature vectors.\n\nNELL NELL is a dataset extracted from the knowledge graph introduced in (Carlson et al., 2010). A knowledge graph is a set of entities connected with directed, labeled edges (relations). We follow the pre-processing scheme as described in Yang et al. (2016). We assign separate relation nodes r 1 and r 2 for each entity pair ( e , r, e 1 2 ) as ( e , r 1 1 ) and ( e , r 2 2 ) . Entity nodes are described by sparse feature vectors. We extend the number of features in NELL by assigning a unique one-hot representation for every relation node, effectively resulting in a 61,278-dim sparse feature vector per node. The semi-supervised task here considers the extreme case of only a single labeled example per class in the training set. We construct a binary, symmetric adjacency matrix from this graph by setting entries A ij = 1 , if one or more edges are present between nodes i and j .\n\nRandom graphs We simulate random graph datasets of various sizes for experiments where we measure training time per epoch. For a dataset with N nodes we create a random graph assigning 2 N edges uniformly at random. We take the identity matrix I N as input feature matrix X , thereby implicitly taking a featureless approach where the model is only informed about the identity of each node, specified by a unique one-hot vector. We add dummy labels Y i = 1 for every node.",
+        "metadata": {
+            "section_header": "DATASETS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 5.2 EXPERIMENTAL SET-UP\n\nUnless otherwise noted, we train a two-layer GCN as described in Section 3.1 and evaluate prediction accuracy on a test set of 1,000 labeled examples. We provide additional experiments using deeper models with up to 10 layers in Appendix B. We choose the same dataset splits as in Yang et al. (2016) with an additional validation set of 500 labeled examples for hyperparameter optimization (dropout rate for all layers, L2 regularization factor for the first GCN layer and number of hidden units). We do not use the validation set labels for training.\n\nFor the citation network datasets, we optimize hyperparameters on Cora only and use the same set of parameters for Citeseer and Pubmed. We train all models for a maximum of 200 epochs (training iterations) using Adam (Kingma &amp; Ba, 2015) with a learning rate of 0 01 . and early stopping with a window size of 10 , i.e. we stop training if the validation loss does not decrease for 10 consecutive epochs. We initialize weights using the initialization described in Glorot &amp; Bengio (2010) and accordingly (row-)normalize input feature vectors. On the random graph datasets, we use a hidden layer size of 32 units and omit regularization (i.e. neither dropout nor L2 regularization).",
+        "metadata": {
+            "section_header": "EXPERIMENTAL SET-UP",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 5.3 BASELINES\n\nWe compare against the same baseline methods as in Yang et al. (2016), i.e. label propagation (LP) (Zhu et al., 2003), semi-supervised embedding (SemiEmb) (Weston et al., 2012), manifold regularization (ManiReg) (Belkin et al., 2006) and skip-gram based graph embeddings (DeepWalk) (Perozzi et al., 2014). We omit TSVM (Joachims, 1999), as it does not scale to the large number of classes in one of our datasets.\n\nWe further compare against the iterative classification algorithm (ICA) proposed in Lu &amp; Getoor (2003) in conjunction with two logistic regression classifiers, one for local node features alone and one for relational classification using local features and an aggregation operator as described in Sen et al. (2008). We first train the local classifier using all labeled training set nodes and use it to bootstrap class labels of unlabeled nodes for relational classifier training. We run iterative classification (relational classifier) with a random node ordering for 10 iterations on all unlabeled nodes (bootstrapped using the local classifier). L2 regularization parameter and aggregation operator ( count vs. prop , see Sen et al. (2008)) are chosen based on validation set performance for each dataset separately.\n\nLastly, we compare against Planetoid (Yang et al., 2016), where we always choose their bestperforming model variant (transductive vs. inductive) as a baseline.",
+        "metadata": {
+            "section_header": "BASELINES",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 6 RESULTS",
+        "metadata": {
+            "section_header": "RESULTS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 6.1 SEMI-SUPERVISED NODE CLASSIFICATION\n\nResults are summarized in Table 2. Reported numbers denote classification accuracy in percent. For ICA, we report the mean accuracy of 100 runs with random node orderings. Results for all other baseline methods are taken from the Planetoid paper (Yang et al., 2016). Planetoid* denotes the best model for the respective dataset out of the variants presented in their paper.\n\nTable 2: Summary of results in terms of classification accuracy (in percent).\n\n| Method             | Citeseer       | Cora           | Pubmed         | NELL           |\n|--------------------|----------------|----------------|----------------|----------------|\n| ManiReg [3]        | 60 . 1         | 59 . 5         | 70 . 7         | 21 . 8         |\n| SemiEmb [28]       | 59 . 6         | 59 . 0         | 71 . 1         | 26 . 7         |\n| LP [32]            | 45 . 3         | 68 . 0         | 63 . 0         | 26 . 5         |\n| DeepWalk [22]      | 43 . 2         | 67 . 2         | 65 . 3         | 58 . 1         |\n| ICA [18]           | 69 . 1         | 75 . 1         | 73 . 9         | 23 . 1         |\n| Planetoid* [29]    | 64 . 7 (26s)   | 75 . 7 (13s)   | 77 . 2 (25s)   | 61 . 9 (185s)  |\n| GCN (this paper)   | 70 . 3 (7s)    | 81 . 5 (4s)    | 79 . 0 (38s)   | 66 . 0 (48s)   |\n| GCN (rand. splits) | 67 . 9 ± 0 . 5 | 80 . 1 ± 0 . 5 | 78 . 9 ± 0 . 7 | 58 . 4 ± 1 . 7 |\n\nWe further report wall-clock training time in seconds until convergence (in brackets) for our method (incl. evaluation of validation error) and for Planetoid. For the latter, we used an implementation provided by the authors 3 and trained on the same hardware (with GPU) as our GCN model. We trained and tested our model on the same dataset splits as in Yang et al. (2016) and report mean accuracy of 100 runs with random weight initializations. We used the following sets of hyperparameters for Citeseer, Cora and Pubmed: 0.5 (dropout rate), 5 · 10 -4 (L2 regularization) and 16 (number of hidden units); and for NELL: 0.1 (dropout rate), 1 · 10 -5 (L2 regularization) and 64 (number of hidden units).\n\nIn addition, we report performance of our model on 10 randomly drawn dataset splits of the same size as in Yang et al. (2016), denoted by GCN (rand. splits). Here, we report mean and standard error of prediction accuracy on the test set split in percent.",
+        "metadata": {
+            "section_header": "SEMI-SUPERVISED NODE CLASSIFICATION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 6.2 EVALUATION OF PROPAGATION MODEL\n\nWe compare different variants of our proposed per-layer propagation model on the citation network datasets. We follow the experimental set-up described in the previous section. Results are summarized in Table 3. The propagation model of our original GCN model is denoted by renormalization trick (in bold). In all other cases, the propagation model of both neural network layers is replaced with the model specified under propagation model . Reported numbers denote mean classification accuracy for 100 repeated runs with random weight matrix initializations. In case of multiple variables Θ i per layer, we impose L2 regularization on all weight matrices of the first layer.\n\nTable 3: Comparison of propagation models.\n\n| Description                      | Propagation model              | Citeseer      | Cora          | Pubmed        |\n|----------------------------------|--------------------------------|---------------|---------------|---------------|\n| Chebyshev filter (Eq. 5) K = K = | ∑ K k =0 T k ( ˜ L ) X Θ k     | 69 . 8 69 . 6 | 79 . 5 81 . 2 | 74 . 4 73 . 8 |\n| 1 st -order model (Eq. 6)        | X Θ 0 + D - 1 2 AD - 1 2 X Θ 1 | 68 . 3        | 80 . 0        | 77 . 5        |\n| Single parameter (Eq. 7)         | ( I N + D - 1 2 AD - 1 2 ) X Θ | 69 . 3        | 79 . 2        | 77 . 4        |\n| Renormalization trick (Eq. 8)    | ˜ D - 1 2 ˜ AD ˜ - 1 2 X Θ     | 70 . 3        | 81 . 5        | 79 . 0        |\n| 1 st -order term only            | D - 1 2 AD - 1 2 X Θ           | 68 . 7        | 80 . 5        | 77 . 8        |\n| Multi-layer perceptron           | X Θ                            | 46 . 5        | 55 . 1        | 71 . 4        |\n\n3 https://github.com/kimiyoung/planetoid",
+        "metadata": {
+            "section_header": "EVALUATION OF PROPAGATION MODEL",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 6.3 TRAINING TIME PER EPOCH\n\nHere, we report results for the mean training time per epoch (forward pass, cross-entropy calculation, backward pass) for 100 epochs on simulated random graphs, measured in seconds wall-clock time. See Section 5.1 for a detailed description of the random graph dataset used in these experiments. We compare results on a GPU and on a CPU-only implementation 4 in TensorFlow (Abadi et al., 2015). Figure 2 summarizes the results.",
+        "metadata": {
+            "section_header": "TRAINING TIME PER EPOCH",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 7 DISCUSSION",
+        "metadata": {
+            "section_header": "DISCUSSION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 7.1 SEMI-SUPERVISED MODEL\n\nIn the experiments demonstrated here, our method for semi-supervised node classification outperforms recent related methods by a significant margin. Methods based on graph-Laplacian regularization (Zhu et al., 2003; Belkin et al., 2006; Weston et al., 2012) are most likely limited due to their assumption that edges encode mere similarity of nodes. Skip-gram based methods on the other hand are limited by the fact that they are based on a multi-step pipeline which is difficult to optimize. Our proposed model can overcome both limitations, while still comparing favorably in terms of efficiency (measured in wall-clock time) to related methods. Propagation of feature information from neighboring nodes in every layer improves classification performance in comparison to methods like ICA (Lu &amp; Getoor, 2003), where only label information is aggregated.\n\nWe have further demonstrated that the proposed renormalized propagation model (Eq. 8) offers both improved efficiency (fewer parameters and operations, such as multiplication or addition) and better predictive performance on a number of datasets compared to a na¨ ıve 1 st -order model (Eq. 6) or higher-order graph convolutional models using Chebyshev polynomials (Eq. 5).",
+        "metadata": {
+            "section_header": "SEMI-SUPERVISED MODEL",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 7.2 LIMITATIONS AND FUTURE WORK\n\nHere, we describe several limitations of our current model and outline how these might be overcome in future work.\n\nMemory requirement In the current setup with full-batch gradient descent, memory requirement grows linearly in the size of the dataset. We have shown that for large graphs that do not fit in GPU memory, training on CPU can still be a viable option. Mini-batch stochastic gradient descent can alleviate this issue. The procedure of generating mini-batches, however, should take into account the number of layers in the GCN model, as the K th -order neighborhood for a GCN with K layers has to be stored in memory for an exact procedure. For very large and densely connected graph datasets, further approximations might be necessary.\n\nDirected edges and edge features Our framework currently does not naturally support edge features and is limited to undirected graphs (weighted or unweighted). Results on NELL however show that it is possible to handle both directed edges and edge features by representing the original directed graph as an undirected bipartite graph with additional nodes that represent edges in the original graph (see Section 5.1 for details).\n\nLimiting assumptions Through the approximations introduced in Section 2, we implicitly assume locality (dependence on the K th -order neighborhood for a GCN with K layers) and equal importance of self-connections vs. edges to neighboring nodes. For some datasets, however, it might be beneficial to introduce a trade-off parameter λ in the definition of ˜ A :\n\n<!-- formula-not-decoded -->\n\n4 Hardware used: 16-core Intel R © Xeon R © CPU E5-2640 v3 @ 2.60GHz, GeForce R © GTX TITAN X\n\nFigure 2: Wall-clock time per epoch for random graphs. (*) indicates out-of-memory error.\n\n<!-- image -->\n\nThis parameter now plays a similar role as the trade-off parameter between supervised and unsupervised loss in the typical semi-supervised setting (see Eq. 1). Here, however, it can be learned via gradient descent.",
+        "metadata": {
+            "section_header": "LIMITATIONS AND FUTURE WORK",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## 8 CONCLUSION\n\nWe have introduced a novel approach for semi-supervised classification on graph-structured data. Our GCN model uses an efficient layer-wise propagation rule that is based on a first-order approximation of spectral convolutions on graphs. Experiments on a number of network datasets suggest that the proposed GCN model is capable of encoding both graph structure and node features in a way useful for semi-supervised classification. In this setting, our model outperforms several recently proposed methods by a significant margin, while being computationally efficient.",
+        "metadata": {
+            "section_header": "CONCLUSION",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## ACKNOWLEDGMENTS\n\nWe would like to thank Christos Louizos, Taco Cohen, Joan Bruna, Zhilin Yang, Dave Herman, Pramod Sinha and Abdul-Saboor Sheikh for helpful discussions. This research was funded by SAP.",
+        "metadata": {
+            "section_header": "ACKNOWLEDGMENTS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## A RELATION TO WEISFEILER-LEHMAN ALGORITHM\n\nA neural network model for graph-structured data should ideally be able to learn representations of nodes in a graph, taking both the graph structure and feature description of nodes into account. A well-studied framework for the unique assignment of node labels given a graph and (optionally) discrete initial node labels is provided by the 1-dim Weisfeiler-Lehman (WL-1) algorithm (Weisfeiler &amp;Lehmann, 1968):",
+        "metadata": {
+            "section_header": "A RELATION TO WEISFEILER-LEHMAN ALGORITHM",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## Algorithm 1: WL-1 algorithm (Weisfeiler &amp; Lehmann, 1968)\n\nInput: Initial node coloring ( h (0) 1 , h (0) 2 , ..., h (0) N ) Output: Final node coloring ( h ( T ) 1 , h ( T ) 2 , ..., h ( T ) N ) t ← 0;\n\nrepeat\n\n<!-- formula-not-decoded -->\n\nuntil stable node coloring is reached ;\n\nHere, h ( ) t i denotes the coloring (label assignment) of node v i (at iteration t ) and N i is its set of neighboring node indices (irrespective of whether the graph includes self-connections for every node or not). hash( ) · is a hash function. For an in-depth mathematical discussion of the WL-1 algorithm see, e.g., Douglas (2011).\n\nWe can replace the hash function in Algorithm 1 with a neural network layer-like differentiable function with trainable parameters as follows:\n\n<!-- formula-not-decoded -->\n\nwhere c ij is an appropriately chosen normalization constant for the edge ( v , v i j ) . Further, we can take h ( ) l i now to be a vector of activations of node i in the l th neural network layer. W ( ) l is a layer-specific weight matrix and σ ( ) · denotes a differentiable, non-linear activation function.\n\nBy choosing c ij = √ d d i j , where d i = |N | i denotes the degree of node v i , we recover the propagation rule of our Graph Convolutional Network (GCN) model in vector form (see Eq. 2) . 5\n\nThis-loosely speaking-allows us to interpret our GCN model as a differentiable and parameterized generalization of the 1-dim Weisfeiler-Lehman algorithm on graphs.",
+        "metadata": {
+            "section_header": "Algorithm 1: WL-1 algorithm (Weisfeiler &amp; Lehmann, 1968)",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## A.1 NODE EMBEDDINGS WITH RANDOM WEIGHTS\n\nFrom the analogy with the Weisfeiler-Lehman algorithm, we can understand that even an untrained GCN model with random weights can serve as a powerful feature extractor for nodes in a graph. As an example, consider the following 3-layer GCN model:\n\n<!-- formula-not-decoded -->\n\nwith weight matrices W ( ) l initialized at random using the initialization described in Glorot &amp; Bengio (2010). ˆ A X , and Z are defined as in Section 3.1.\n\nWe apply this model on Zachary's karate club network (Zachary, 1977). This graph contains 34 nodes, connected by 154 (undirected and unweighted) edges. Every node is labeled by one of four classes, obtained via modularity-based clustering (Brandes et al., 2008). See Figure 3a for an illustration.\n\n5 Note that we here implicitly assume that self-connections have already been added to every node in the graph (for a clutter-free notation).\n\nFigure 3: Left : Zachary's karate club network (Zachary, 1977), colors denote communities obtained via modularity-based clustering (Brandes et al., 2008). Right : Embeddings obtained from an untrained 3-layer GCN model (Eq. 13) with random weights applied to the karate club network. Best viewed on a computer screen.\n\n<!-- image -->\n\n<!-- image -->\n\nWe take a featureless approach by setting X = I N , where I N is the N by N identity matrix. N is the number of nodes in the graph. Note that nodes are randomly ordered (i.e. ordering contains no information). Furthermore, we choose a hidden layer dimensionality 6 of 4 and a two-dimensional output (so that the output can immediately be visualized in a 2-dim plot).\n\nFigure 3b shows a representative example of node embeddings (outputs Z ) obtained from an untrained GCN model applied to the karate club network. These results are comparable to embeddings obtained from DeepWalk (Perozzi et al., 2014), which uses a more expensive unsupervised training procedure.",
+        "metadata": {
+            "section_header": "A.1 NODE EMBEDDINGS WITH RANDOM WEIGHTS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## A.2 SEMI-SUPERVISED NODE EMBEDDINGS\n\nOn this simple example of a GCN applied to the karate club network it is interesting to observe how embeddings react during training on a semi-supervised classification task. Such a visualization (see Figure 4) provides insights into how the GCN model can make use of the graph structure (and of features extracted from the graph structure at later layers) to learn embeddings that are useful for a classification task.\n\nWe consider the following semi-supervised learning setup: we add a softmax layer on top of our model (Eq. 13) and train using only a single labeled example per class (i.e. a total number of 4 labeled nodes). We train for 300 training iterations using Adam (Kingma &amp; Ba, 2015) with a learning rate of 0 01 . on a cross-entropy loss.\n\nFigure 4 shows the evolution of node embeddings over a number of training iterations. The model succeeds in linearly separating the communities based on minimal supervision and the graph structure alone. A video of the full training process can be found on our website 7 .\n\n6 Weoriginally experimented with a hidden layer dimensionality of 2 (i.e. same as output layer), but observed that a dimensionality of 4 resulted in less frequent saturation of tanh( ) · units and therefore visually more pleasing results.\n\n7 http://tkipf.github.io/graph-convolutional-networks/\n\nFigure 4: Evolution of karate club network node embeddings obtained from a GCN model after a number of semi-supervised training iterations. Colors denote class. Nodes of which labels were provided during training (one per class) are highlighted (grey outline). Grey links between nodes denote graph edges. Best viewed on a computer screen.\n\n<!-- image -->",
+        "metadata": {
+            "section_header": "A.2 SEMI-SUPERVISED NODE EMBEDDINGS",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    },
+    {
+        "page_content": "## B EXPERIMENTS ON MODEL DEPTH\n\nIn these experiments, we investigate the influence of model depth (number of layers) on classification performance. We report results on a 5-fold cross-validation experiment on the Cora, Citeseer and Pubmed datasets (Sen et al., 2008) using all labels. In addition to the standard GCN model (Eq. 2), we report results on a model variant where we use residual connections (He et al., 2016) between hidden layers to facilitate training of deeper models by enabling the model to carry over information from the previous layer's input:\n\n<!-- formula-not-decoded -->\n\nOn each cross-validation split, we train for 400 epochs (without early stopping) using the Adam optimizer (Kingma &amp; Ba, 2015) with a learning rate of 0 01 . . Other hyperparameters are chosen as follows: 0.5 (dropout rate, first and last layer), 5 · 10 -4 (L2 regularization, first layer), 16 (number of units for each hidden layer) and 0.01 (learning rate). Results are summarized in Figure 5.\n\n<!-- image -->\n\n⊗√⌉̂˜√(}˜(⌈∐glyph[arrowbt]˜√√\n\n<!-- image -->\n\n⊗√⌉̂˜√(}˜(⌈∐glyph[arrowbt]˜√√\n\n<!-- image -->\n\n⊗√⌉̂˜√(}˜(⌈∐glyph[arrowbt]˜√√\n\nFigure 5: Influence of model depth (number of layers) on classification performance. Markers denote mean classification accuracy (training vs. testing) for 5-fold cross-validation. Shaded areas denote standard error. We show results both for a standard GCN model (dashed lines) and a model with added residual connections (He et al., 2016) between hidden layers (solid lines).\n\nFor the datasets considered here, best results are obtained with a 2- or 3-layer model. We observe that for models deeper than 7 layers, training without the use of residual connections can become difficult, as the effective context size for each node increases by the size of its K th -order neighborhood (for a model with K layers) with each additional layer. Furthermore, overfitting can become an issue as the number of parameters increases with model depth.",
+        "metadata": {
+            "section_header": "B EXPERIMENTS ON MODEL DEPTH",
+            "title": "SEMI-SUPERVISED CLASSIFICATION WITH GRAPH CONVOLUTIONAL NETWORKS",
+            "type": "paper"
+        }
+    }
+]

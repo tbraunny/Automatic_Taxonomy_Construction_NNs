@@ -182,7 +182,7 @@ class DBUtils:
         except Exception as e:
             logging.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
 
-    def insert_papers(self , paper_name: str , contents: str) -> int:
+    def insert_papers(self , ann_path: str) -> int:
         """
         Insert paper for model into the database
 
@@ -192,17 +192,24 @@ class DBUtils:
         """
         paper_id = -1
         try:
-            query = text("""INSERT INTO paper (paper_name , contents)
-                         VALUES (:paper_name , :contents)
-                         RETURNING paper_id""")
-            result = self.session.execute(query , {
-                "paper_name": paper_name,
-                "contents": contents
-            })
-            paper_id = result.scalar()
-            self.session.commit()
+            pdf_files: list = glob.glob(f"{ann_path}/**/*doc*.pdf" , recursive=True)
+
+            for pdf in pdf_files:
+                contents: dict = {}
+                with open(pdf , 'r') as f:
+                    contents = json.load(f)
+
+                query = text("""INSERT INTO paper (paper_name , contents)
+                            VALUES (:paper_name , :contents)
+                            RETURNING paper_id""")
+                result = self.session.execute(query , {
+                    "paper_name": ann_path,
+                    "contents": contents
+                })
+                paper_id = result.scalar()
+                self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert paper {paper_name} into database: {e}")
+            logging.exception(f"Failed to insert paper {ann_path} into database: {e}")
 
         return paper_id
     
@@ -270,12 +277,14 @@ class DBUtils:
         for file in json_files:
             network_data: dict = {}
 
+            print(file)
+
             with open(file , 'r') as f:
                 network_data: dict = json.load(f)
 
             nodes = network_data.get("graph" , {}).get("node" , {})
             model_type = None
-            model_id: int = self._insert_model(ann_name , model_type , network_data)
+            model_id: int = self._insert_model(ann_path , model_type , network_data)
 
             for layer in nodes:
                 layer_name = layer.get('name')
@@ -285,14 +294,10 @@ class DBUtils:
                 layer_id = self._insert_layer(model_id , layer_name , layer_type , layer_attr)
                 shape = layer.get('kernel')
 
-                if layer_id and layer_attr:
-                    for attr in layer_attr:
-                        if isinstance(attr , list):
-                            pass
-                        if isinstance(attr , dict):
-                            pass
-                        else:
-                            self._insert_parameter(layer_id , attr , None)
+                # if layer_id and layer_attr:
+                #     for param_name in layer_attr:
+                #         shape: list = param_name.get('ints')
+                #         self._insert_parameter(layer_id , param_name , shape)
 
     
 if __name__ == '__main__':
