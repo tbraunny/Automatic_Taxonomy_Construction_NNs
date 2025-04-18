@@ -1,0 +1,2141 @@
+{
+   "name": "light_resnet50",
+   "library": "onnx",
+   "network": [
+      {
+         "name": "n0",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               3,
+               3,
+               3,
+               3
+            ],
+            "kernel_shape": [
+               7,
+               7
+            ],
+            "strides": [
+               2,
+               2
+            ]
+         }
+      },
+      {
+         "name": "n1",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n2",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n3",
+         "type": "MaxPool",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               2,
+               2
+            ]
+         }
+      },
+      {
+         "name": "n4",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n5",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n6",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n7",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n8",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n9",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n10",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n11",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n12",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "strides": [
+               1,
+               1
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n13",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n14",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n15",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n16",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n17",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n18",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n19",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n20",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n21",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n22",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n23",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n24",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n25",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n26",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n27",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n28",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n29",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n30",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n31",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n32",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n33",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n34",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n35",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n36",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n37",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n38",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n39",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               2,
+               2
+            ]
+         }
+      },
+      {
+         "name": "n40",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n41",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n42",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n43",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n44",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "strides": [
+               2,
+               2
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n45",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n46",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n47",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n48",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n49",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n50",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n51",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n52",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n53",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n54",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n55",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n56",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n57",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n58",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n59",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n60",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n61",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n62",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n63",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n64",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n65",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n66",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n67",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n68",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n69",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n70",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n71",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n72",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n73",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n74",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n75",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n76",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n77",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n78",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n79",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n80",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n81",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               2,
+               2
+            ]
+         }
+      },
+      {
+         "name": "n82",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n83",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n84",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n85",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n86",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "strides": [
+               2,
+               2
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n87",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n88",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n89",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n90",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n91",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n92",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n93",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n94",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n95",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n96",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n97",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n98",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n99",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n100",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n101",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n102",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n103",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n104",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n105",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n106",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n107",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n108",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n109",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n110",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n111",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n112",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n113",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n114",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n115",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n116",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n117",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n118",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n119",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n120",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n121",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n122",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n123",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n124",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n125",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n126",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n127",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n128",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n129",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n130",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n131",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n132",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n133",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n134",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n135",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n136",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n137",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n138",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n139",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n140",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n141",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n142",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n143",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               2,
+               2
+            ]
+         }
+      },
+      {
+         "name": "n144",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n145",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n146",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n147",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n148",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "strides": [
+               2,
+               2
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n149",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n150",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n151",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n152",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n153",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n154",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n155",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n156",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n157",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n158",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n159",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n160",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n161",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n162",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n163",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n164",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n165",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               1,
+               1,
+               1,
+               1
+            ],
+            "kernel_shape": [
+               3,
+               3
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n166",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n167",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n168",
+         "type": "Conv",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "pads": [
+               0,
+               0,
+               0,
+               0
+            ],
+            "kernel_shape": [
+               1,
+               1
+            ],
+            "strides": [
+               1,
+               1
+            ]
+         }
+      },
+      {
+         "name": "n169",
+         "type": "BatchNormalization",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "epsilon": 1.0000000656873453e-05
+         }
+      },
+      {
+         "name": "n170",
+         "type": "Sum",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n171",
+         "type": "Relu",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n172",
+         "type": "AveragePool",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "strides": [
+               1,
+               1
+            ],
+            "kernel_shape": [
+               7,
+               7
+            ]
+         }
+      },
+      {
+         "name": "n173",
+         "type": "Reshape",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      },
+      {
+         "name": "n174",
+         "type": "Gemm",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {
+            "transB": 1
+         }
+      },
+      {
+         "name": "n175",
+         "type": "Softmax",
+         "parameters": [],
+         "attribute": {},
+         "attributes": {}
+      }
+   ]
+}
