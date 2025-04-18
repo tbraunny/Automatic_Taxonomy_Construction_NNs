@@ -19,6 +19,10 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
       A list of chains, where each chain is a list of property names (strings) that, when
       applied in order from the start, reach a triple using target_prop.
     """
+    if target_prop == None:
+        returnlist = list(ontology.object_properties()) # return everything if a target_prop was not specified
+        returnlist = [str(item.iri) for item in returnlist]
+        return returnlist
     target_iri = str(target_prop.iri)
     queue = deque([(start, [])])
     found_chains = []  
@@ -119,6 +123,9 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
     '''
     this is for only one prop at a time.
     '''
+    if len(property_chain) == 0:
+        property_chain = onto.object_properties()
+        property_chain = [str(item.iri) for item in property_chain]
     property_chain = " | ".join(property_chain)
 
     filter_clause = ""

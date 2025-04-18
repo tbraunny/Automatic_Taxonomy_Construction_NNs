@@ -61,7 +61,12 @@ def querytacular(search, ontology):
                 vals = []
                 for val in out[1].split(','):
                     obj = ontology[value.Name]
-                    vals.append({'type': str(obj.name) if isinstance(ontology[value.Name] , ThingClass) else obj.domain[0].name, 'value': val, 'name': value.Name, 'found': True} )
+                    irisearch = list(ontology.search(iri=val.strip())) 
+                    if len(irisearch) > 0:
+                        typeinsert = irisearch[0].is_a[0]
+                    else:
+                        typeinsert = str(obj.name) if isinstance(ontology[value.Name] , ThingClass) else obj.domain[0].name
+                    vals.append({'type': typeinsert, 'value': val, 'name': value.Name, 'found': True} )
                 inserts.append(vals)
             else:
                 inserts.append([])

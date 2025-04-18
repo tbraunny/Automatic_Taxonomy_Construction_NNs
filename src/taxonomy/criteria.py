@@ -53,7 +53,7 @@ class SearchOperator(BaseModel):
     Name: str = Field("")
     Cluster: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
     Value: List[ValueOperator] = []
-    HashOn: Literal["type", "found"] = "type"
+    HashOn: Literal["type", "found", "name", "value"] = "name"
     #has: Optional [ List ] = []
     #equals: Optional[ List ] = []
 
