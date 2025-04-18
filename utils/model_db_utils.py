@@ -159,14 +159,14 @@ class DBUtils:
             
         return layer_id
     
-    def _insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding) -> None:
+    def _insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding=None) -> None:
         """
         Insert parameter into the database
 
         :param layer_id: Layer ID
         :param name: Name of the parameter
         :param shape: Shape of the parameter
-        :param weight_embedding: Weight embedding vector of the parameter
+        :param weight_embedding: (Optional) Weight embedding vector of the parameter
         :return None
         """
         try:
@@ -294,10 +294,10 @@ class DBUtils:
                 layer_id = self._insert_layer(model_id , layer_name , layer_type , layer_attr)
                 shape = layer.get('kernel')
 
-                # if layer_id and layer_attr:
-                #     for param_name in layer_attr:
-                #         shape: list = param_name.get('ints')
-                #         self._insert_parameter(layer_id , param_name , shape)
+                if layer_id and layer_attr:
+                    for attr in layer_attr:
+                        for shape in attr:
+                            self._insert_parameter(layer_id , attr , shape)
 
     
 if __name__ == '__main__':

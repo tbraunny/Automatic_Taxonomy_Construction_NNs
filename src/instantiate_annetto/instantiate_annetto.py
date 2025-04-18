@@ -332,7 +332,7 @@ class OntologyProcessor:
             return self.llm_cache[prompt]
         try:
             # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
-            response = self._query_llm(
+            response = self.query_llm(
                 self.ann_config_name,
                 prompt,
                 pydantic_type_schema,
@@ -563,12 +563,10 @@ class OntologyProcessor:
                                 self.logger.info(f"Activation layer {layer_name} subclass created in the ontology")
 
                             actfunc_instance = self._instantiate_and_format_class(actfunc_ontology , layer_name)
-                            name_to_instance[layer_name] = {
-                                "instance": actfunc_instance,
-                                "layer_type": "activation"
-                            }
+                            name_to_instance[layer_name]["instance"] = actfunc_instance
+                            name_to_instance[layer_name]["layer_type"] = "activation"
                         except Exception as e:
-                            self.logger.error(f"Error instantiating Activation function {layer_name}: {e}")
+                            self.logger.error(f"Error instantiating Activation layer {layer_name}: {e}" , exc_info=True)
 
                     elif best_pooling_match:
                         try:
@@ -577,19 +575,16 @@ class OntologyProcessor:
                                 pooling_ontology = create_subclass(
                                     self.ontology , 
                                     layer_type , 
-                                    self.ontology.PoolingLayer
+                                    self.ontology.AggregationLayer.PoolingLayer
                                 )
                                 pooling_subclasses.append(pooling_ontology)
                                 self.logger.info(f"Pooling layer {layer_name} subclass created in the ontology")
                             
                             pooling_instance = self._instantiate_and_format_class(pooling_ontology , layer_name)
-                            self._link_instances(network_instance , pooling_instance , self.ontology.hasLayer)
-                            name_to_instance[layer_name] = {
-                                "instance": pooling_instance,
-                                "layer_type": "pooling"
-                            }
+                            name_to_instance[layer_name]["instance"] = pooling_instance
+                            name_to_instance[layer_name]["layer_type"] = "pooling"
                         except Exception as e:
-                            self.logger.error(f"Error instantiating Pooling layer {layer_name}: {e}")
+                            self.logger.error(f"Error instantiating Pooling layer {layer_name}: {e}" , exc_info=True)
 
                     elif best_norm_match:
                         try:
@@ -604,13 +599,10 @@ class OntologyProcessor:
                                 self.logger.info(f"Normalization layer {layer_name} subclass created in the ontology")
 
                             norm_instance = self._instantiate_and_format_class(norm_instance , layer_name)
-                            self._link_instances(network_instance , norm_instance , self.ontology.hasLayer)
-                            name_to_instance[layer_name] = {
-                                "instance": norm_instance,
-                                "layer_type": "norm"
-                            }
+                            name_to_instance[layer_name]["instance"] = norm_instance
+                            name_to_instance[layer_name]["layer_type"] = "norm"
                         except Exception as e:
-                            self.logger.error(f"Error instantating Normalization layer {layer_name}: {e}")
+                            self.logger.error(f"Error instantiating Normalization layer {layer_name}: {e}" , exc_info=True)
                     
                     else: 
                         try:
@@ -1486,7 +1478,7 @@ A **subnetwork** is a block that\n
                 _add_ann_metadata(ann_config_instance, titles, ann_path)
                 self._process_parsed_code(ann_config_instance)
 
-                #self._process_network(ann_config_instance)
+                self._process_network(ann_config_instance)
 
                 minutes, seconds = divmod(time.time() - start_time, 60)
                 self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")
