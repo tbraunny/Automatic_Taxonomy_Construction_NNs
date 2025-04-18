@@ -6,6 +6,8 @@ import sys
 import re
 from typing import Optional
 
+os.environ['KERAS_BACKEND'] = 'torch'
+
 from pathlib import Path
 import logging
 import json
