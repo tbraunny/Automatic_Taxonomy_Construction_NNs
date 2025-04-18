@@ -6,6 +6,7 @@ from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
 from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
+from utils.constants import Constants as C
 
 from utils.annetto_utils import load_annetto_ontology
 
