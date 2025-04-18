@@ -1499,18 +1499,61 @@ def add_initial_classes(ontology:Ontology, logger) -> None:
 if __name__ == "__main__":
     time_start = time.time()
 
-    for model_name in [
-        "alexnet",
-        # "resnet",
-        # "vgg16",
-        # "gan",  # Assume we can model name from user or something
-    ]:
-        instantiate_annetto(
+    ###################################################################
+    def mass_instantiation(root_path: str, ontology: Ontology) -> None:
+        """
+        Mass instantiation of ANN configurations from a given root path.
+        Expects a directory structure where each subdirectory contains ANN configuration files.
+        """
+        def get_subdirectories(path):
+            return [f.name for f in os.scandir(path) if f.is_dir()]
+        
+        subdirectories = get_subdirectories(root_path)
+
+        model_names_from_directory = [
+            os.path.basename(subdirectory) for subdirectory in subdirectories
+        ]
+        for model_name in model_names_from_directory:
+            instantiate_annetto(
             model_name,
-            f"data/{model_name}",
-            load_annetto_ontology(return_onto_from_release="base"),
+            os.joinpath(root_path, model_name),
+            ontology,
             C.ONTOLOGY.TEST_ONTOLOGY_PATH,
         )
+        
+    def single_instantiation(model_name: str, ontology: Ontology) -> None:
+        """
+        Single instantiation of an ANN configuration.
+        """
+        ann_path = os.path.join("data", model_name)
+        instantiate_annetto(
+            model_name,
+            ann_path,
+            ontology,
+            C.ONTOLOGY.TEST_ONTOLOGY_PATH,
+        )
+    ###################################################################
+
+    ontology = load_annetto_ontology(return_onto_from_release='base')
+
+    """
+    Comment out the following blocks if you want to add new classes to the ontology at mass or little at a time.
+    """
+
+    # # For single testing
+    # for model_name in [
+    #     "alexnet",
+    #     # "resnet",
+    #     # "vgg16",
+    #     # "gan",  # Assume we can model name from user or something
+    # ]:
+    #     single_instantiation(model_name, ontology)
+
+    # For mass instantiation from a root dir
+    mass_instantiation("data/more_papers", ontology)
+
+
+
     time_end = time.time()
     minutes, seconds = divmod(time_end - time_start, 60)
     print(f"Total time taken: {int(minutes)} minutes and {seconds:.2f} seconds.")
