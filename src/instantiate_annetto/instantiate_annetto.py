@@ -213,7 +213,7 @@ class OntologyProcessor:
             parent_instance, child_instance, object_property
         )
         self.logger.info(
-            f"Linked {self._unhash_and_format_instance_name(parent_instance.name)} and {self._unhash_and_format_instance_name(child_instance.name)} via {object_property.name}."
+            f"Linked {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)} via {object_property.name}."
         )
 
     def _link_data_property(
@@ -439,8 +439,7 @@ class OntologyProcessor:
 
     def _extract_network_data(self) -> list:
         """
-        DEPRECATED
-        Extract relevant model data from parsed JSON's
+        Extract name & type for each layer found within relevant parsed code
 
         :return List of dictionaries containing name & type per layer
         """
@@ -679,9 +678,8 @@ class OntologyProcessor:
         self.logger.error("Process layers with LLM not implemented yet.")
         raise NotImplementedError("Process layers with LLM not implemented yet.")
 
-    def _process_db_layers(self, network_instance: Thing) -> None:
+    def _process_layers(self, network_instance: Thing) -> None:
         """
-        DEPRECATED
         Process the different layers (input, output, activation, noise, and modification) of it's network instance.
 
         :param network_instance: the network instance
@@ -739,14 +737,6 @@ class OntologyProcessor:
             print("ERROR")
             self.logger.error(f"Error in _process_layers: {e}",exc_info=True)
 
-    def _llm_process_layers(self, network_instance: str) -> None:
-        """
-        Process the different layers (input, output, activation, noise, and modification) of it's network instance.
-        """
-
-        self.logger.error("Process layers with LLM not implemented yet.")
-        raise NotImplementedError("Process layers with LLM not implemented yet.")
-    
     def _process_task_characterization(self, network_instance: Thing) -> None:
         network_name = self._unformat_instance_name(network_instance.name)
 
@@ -1010,9 +1000,9 @@ A **subnetwork** is a block that\n
 
                 # # Process layers via code
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
+
+                # TODO: pass in a network instance that is fuzzy matched with a pt module name
                 if parse_code_layers:
-                    print("hi")
-                    print("CALLING code parsing: " , ann_config_instances[-1])
                     self._process_parsed_code(ann_config_instances[-1])
                     layers_parsed = True
                 # ##############
