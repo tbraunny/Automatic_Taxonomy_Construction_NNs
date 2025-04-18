@@ -9,6 +9,7 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 
 from utils.annetto_utils import load_annetto_ontology
+from utils.constants import Constants as C
 
 def remove_ann_config_from_user_owl(hashed_ann_name: str, ann_path: str) -> None:
     """
@@ -30,7 +31,7 @@ def remove_ann_config_from_user_owl(hashed_ann_name: str, ann_path: str) -> None
     if not owl_file:
         raise ValueError("No owl file found in the ANN path.")
     
-    ontology = load_annetto_ontology(return_onto_from_path=owl_file)
+    ontology = load_annetto_ontology(return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME)
     with ontology:
         delete_ann_configuration(hashed_ann_name)
         save_ontology(owl_file)
@@ -66,16 +67,16 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
         for pdf_file in ann_pdf_files:
             extract_filter_pdf_to_json(pdf_file, ann_path)
 
-    # Extract code (give file path, glob is processed in the function), if any
-    process_code = CodeExtractor()
-    pytorch_module_names: list = []
-    if py_files or onnx_files or pb_files:
-        process_code.process_code_file(ann_path)
-        pytorch_module_names = process_code.pytorch_module_names # for richie
+    # # Extract code (give file path, glob is processed in the function), if any
+    # process_code = CodeExtractor()
+    # pytorch_module_names: list = []
+    # if py_files or onnx_files or pb_files:
+    #     process_code.process_code_file(ann_path)
+    #     pytorch_module_names = process_code.pytorch_module_names # for richie
 
-    # insert model into db
-    db_runner = DBUtils()
-    model_id = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # # insert model into db
+    # db_runner = DBUtils()
+    # model_id = db_runner.insert_model_components(ann_path) # returns id of inserted model
 
     output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
     if not use_user_owl:

@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 from utils.join_unique_dir_util import join_unique_dir
-# from src.main import main
+from src.main import main, remove_ann_config_from_user_owl
 import time
 import os
 import shutil
@@ -53,8 +53,10 @@ def ontology_import():
                 else:
                     st.warning(f"Unsupported file type: {uploaded_file.name}")
             
-            user_owl_output = os.path.join(ann_path, user_ann_name + ".owl")
-            # main(user_ann_name, ann_path, user_owl_output)
+            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
+            
+            # # delete_ann_name =  ""# you need to passs this from the user
+            # remove_ann_config_from_user_owl(hashed_delete_ann_name)
         else:
             st.error("Please enter a neural network architecture before uploading files.")
 

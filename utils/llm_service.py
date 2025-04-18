@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 T = TypeVar("T", bound=BaseModel)
 
 load_dotenv()
-
+os.environ["USE_LLM_API"] = "False"
 # In-memory embedding cache
 embedding_cache = {}
 
@@ -46,20 +46,20 @@ BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 OLLAMA_EMBEDDING_MODEL = os.environ.get("OLLAMA_EMBEDDING_MODEL", "bge-m3")
 OLLAMA_GENERATION_MODEL = os.environ.get(
-    "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M"
+    "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b"
 )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
 
-# OpenAI Specific:
-OPENAI_EMBEDDING_MODEL = os.environ.get(
-    "OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"
-)
-OPENAI_GENERATION_MODEL = os.environ.get(
-    "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
-)
+# # OpenAI Specific:
+# OPENAI_EMBEDDING_MODEL = os.environ.get(
+#     "OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"
+# )
+# OPENAI_GENERATION_MODEL = os.environ.get(
+#     "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
+# )
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+# OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
 logger = get_logger("llm_service")
 
@@ -210,7 +210,7 @@ class LLMQueryEngine:
 
         # Log LLMQueryEngine Inputs
         self.logger.info(
-            f"Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"
+            f"""Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"""
         )
 
         # Load and chunk documents
