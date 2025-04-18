@@ -29,9 +29,9 @@ EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
 # )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
-#GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
 
 logger = get_logger("llm_service")
 
@@ -387,7 +387,6 @@ class LLMQueryEngine:
 # Engine instance management
 _engine_instances = {}
 
-
 def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     """Initialize and cache an LLMQueryEngine instance."""
     if model_name not in _engine_instances:
@@ -409,7 +408,6 @@ def query_llm(
         )
     engine = _engine_instances[model_name]
     return engine.query_structured(query, cls_schema, token_budget, max_chunks)
-
 
 # Example Pydantic models for testing
 class Layer(BaseModel):

@@ -31,6 +31,7 @@
                 - Data Prop: layer_num_units (atomic)
                 - Subclass: InOutLayer
                 - Subclass: HiddenLayer
+                        TEST- Subclass: ActivationFunctionLayer
                         - Subclass: ActivationLayer
                                 - Data Prop: has_bias (atomic)
                                 - Connected Class: ActivationFunction on prop [annett-o-test.hasActivationFunction]
