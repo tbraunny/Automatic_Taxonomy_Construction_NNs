@@ -749,25 +749,69 @@ def list_owl_data_properties(onto: Ontology) -> List[DataPropertyClass]:
     # return all data properties of the ontology
     return [prop for prop in onto.data_properties()]
 
+def save_ontology(ontology: Ontology, file_path: str, format: str = "rdfxml"):
+    """
+    Save the ontology to a specified file path in the given format.
+
+    :param ontology: The ontology object to save.
+    :param file_path: The file path where the ontology should be saved.
+    :param format: The format in which to save the ontology (default is "rdfxml").
+    """
+    if not isinstance(ontology, Ontology):
+        raise TypeError(f"Ontology '{ontology}' must be an Ontology.")
+    if not isinstance(file_path, str):
+        raise TypeError(f"File path '{file_path}' must be a string.")
+    if not file_path.endswith(".owl"):
+        raise ValueError(f"File path '{file_path}' must end with '.owl'.")
+    if not isinstance(format, str):
+        raise TypeError(f"Format '{format}' must be a string.")
+
+    # make sure the directory exists
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    # Save the ontology
+    ontology.save(file=file_path, format=format)
+
+def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
+    """
+    Deletes an ANNConfiguration instance and all instances connected to it.
+
+    :param ontology: The owlready2 ontology object.
+    :param ann_config_name: The name of the ANNConfiguration instance to remove.
+    """
+    ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
+    
+    if not ann_config_instance:
+        print(f"No instance found with name {ann_config_name}")
+        return
+    
+    # Set to store all instances to be deleted
+    instances_to_delete = set()
+
+    # DFS to collect all connected individuals
+    def collect_instances(instance):
+        if instance not in instances_to_delete:
+            instances_to_delete.add(instance)
+            for prop in instance.get_properties():
+                for value in prop[instance]:
+                    if isinstance(value, Thing):
+                        collect_instances(value)
+
+    collect_instances(ann_config_instance)
+
+    # Now, destroy all collected instances
+    for inst in instances_to_delete:
+        destroy_entity(inst)
+
+    print(f"Deleted {len(instances_to_delete)} instances linked to {ann_config_name}.")
+
+
+
 
 if __name__ == "__main__":
+    from constants import Constants as C
 
-    ontology = load_annetto_ontology("test")
+    ontology = load_annetto_ontology(return_onto_from_release="test")
 
-    list_owl_props = list_owl_data_properties(ontology)
-    print()
+    with ontology:
 
-
-    # with ontology:
-    #     p3 = create_class(ontology, "Person", base_class=ontology.Network)
-    #     p2 = create_class(ontology, "Person2", base_class=ontology.TaskCharacterization)
-    #     p4 = create_subclass(ontology, "Person", p2)
-    #     print(p3, p2, p4)
-
-    # instance1 = create_cls_instance(ontology.Network, "Conv Network")
-    # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
-
-    # classes = ontology.CostFunction.is_a
-    # print(classes)
-
-    # classes = assign_object_property_relationship(ontology, instance1, instance2)
+        save_ontology(ontology, C.ONTOLOGY.TEST_ONTOLOGY_PATH, format="rdfxml")

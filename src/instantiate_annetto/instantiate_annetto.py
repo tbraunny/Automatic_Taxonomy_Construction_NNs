@@ -959,9 +959,9 @@ A **subnetwork** is a block that\n
 
                 # # Process layers via code
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
+
+                # TODO: pass in a network instance that is fuzzy matched with a pt module name
                 if parse_code_layers:
-                    print("hi")
-                    print("CALLING code parsing: " , ann_config_instances[-1])
                     self._process_parsed_code(ann_config_instances[-1])
                     layers_parsed = True
                 # ##############
