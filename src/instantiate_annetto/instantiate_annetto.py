@@ -591,7 +591,7 @@ class OntologyProcessor:
                     layer_name = layer.get('name')
                     layer_type = layer.get('op_type')
                     prev_layer = layer.get('input' , [])
-                    next_layer = layer.get('target' , [])
+                    next_layer = layer.get('output' , [])
 
                     self.logger.info(f"I/O instantiation for layer {layer_name} in model {self.ann_config_name}")
                     self.logger.info(f"{layer_name} INFO: input(s) {prev_layer} , output(s) {next_layer}")
@@ -663,16 +663,28 @@ class OntologyProcessor:
         except Exception as e:
             self.logger.error(f"Error processing parsed code {e}" , exc_info=True)
 
-    def _reassign_layer_linkage(self , parent_layer: Thing , child_layer: Thing , stored_type: str) -> None:
+    def _reassign_layer_linkage(self , parent_layer: Thing , child_layer: Thing , stored_type: str , name_to_instance: dict) -> None:
         """
         Recursively reassign linkages between layer instances that are not layers
 
         :param parent_layer: The parent layer instance
         :param child_layer: Current layer under reassignment
         :param stored_type: The stored type from name_to_instance dictionary (for proper linkages)
+        :param name_to_instance: Dictionary of instances & types
         :return None
         """
+        # called if an activation function is found
+        self._link_instances(parent_layer , child_layer , self.ontology.hasActivationFunction)
 
+        while stored_type =='pooling':
+            next_layer = child_layer.get('output') 
+
+            for next in next_layer:
+                if name_to_instance[next]["layer_type"] == "pooling":
+                    self._reassign_layer_linkage(parent_layer , name_to_instance[next["instance"]] , "pooling" , name_to_instance) # recurse
+                next_instance: Thing = name_to_instance[next]["instance"]
+                self._link_instances(parent_layer , next_instance , self.ontology.nextLayer)
+                self._link_instances(next_instance , parent_layer , self.ontology.prevLayer)        
     
     def _llm_process_layers(self, network_instance: Thing) -> None:
         self.logger.error("Process layers with LLM not implemented yet.")
