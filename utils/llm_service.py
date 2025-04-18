@@ -4,44 +4,76 @@ import numpy as np
 import faiss
 import ollama
 import asyncio
-from typing import Type, Any, TypeVar
+from typing import Type, Any, TypeVar, List
 from pydantic import BaseModel
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from rank_bm25 import BM25Okapi
+from abc import ABC, abstractmethod
+
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_ollama import ChatOllama, OllamaEmbeddings
 
 from utils.doc_chunker import semantically_chunk_documents
 from utils.document_json_utils import load_documents_from_json
 from utils.logger_util import get_logger
+from langchain_core.callbacks.base import BaseCallbackHandler
+from utils.pydantic_models import *
+
+from dotenv import load_dotenv
 
 T = TypeVar("T", bound=BaseModel)
 
-from utils.pydantic_models import *
+load_dotenv()
 
 # In-memory embedding cache
 embedding_cache = {}
 
-# Configs
-CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", 1000))
-CHUNK_OVERLAP = int(os.environ.get("CHUNK_OVERLAP", 200))
-EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "bge-m3")
+# GENERAL CONFIG
+USE_LLM_API = (
+    os.environ.get("USE_LLM_API", "False").lower() == "true"
+)  # By default use local model
+
+DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
+BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
+
+# Ollama Specific:
+
 # GENERATION_MODEL = os.environ.get(
 #     "GENERATION_MODEL", "neuroexpert:latest"
 # )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
-#GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M")
+OLLAMA_EMBEDDING_MODEL = os.environ.get("OLLAMA_EMBEDDING_MODEL", "bge-m3")
+OLLAMA_GENERATION_MODEL = os.environ.get(
+    "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M"
+)
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
-GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
+# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
+
+# OpenAI Specific:
+OPENAI_EMBEDDING_MODEL = os.environ.get(
+    "OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"
+)
+OPENAI_GENERATION_MODEL = os.environ.get(
+    "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
+)
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
 logger = get_logger("llm_service")
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
+
 # async (wrappers for blocking API calls)
 async def async_embedding(model: str, prompt: str):
     loop = asyncio.get_running_loop()
-    return await loop.run_in_executor(None, lambda: ollama.embeddings(model=model, prompt=prompt))
+    return await loop.run_in_executor(
+        None, lambda: ollama.embeddings(model=model, prompt=prompt)
+    )
+
 
 def compute_hash(text: str) -> str:
     """Compute a SHA256 hash for a given text."""
@@ -49,25 +81,6 @@ def compute_hash(text: str) -> str:
 
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
-
-def get_embedding(text: str, model: str) -> list:
-    """Retrieve an embedding for the text, caching it in-memory."""
-    key = compute_hash(text)
-    if key in embedding_cache:
-        return embedding_cache[key]
-    
-
-    response = ollama.embeddings(model=model, prompt=text)
-    embedding = response.get("embedding")
-    if embedding:
-        embedding_cache[key] = embedding
-        return embedding
-    else:
-        logger.error("Embedding failed for text: %s", text[:30])
-        raise ValueError("Embedding failed")
-
-
-from langchain_core.callbacks.base import BaseCallbackHandler
 
 class DebugCallbackHandler(BaseCallbackHandler):
     def on_chat_model_start(self, serialized, prompts, **kwargs):
@@ -105,37 +118,106 @@ class DebugCallbackHandler(BaseCallbackHandler):
         print("Retry:", retry_state)
         print("\n\n\n")
 
-class LLMQueryEngine:
 
-    def __init__(
-        self,
-        json_file_path: str,
-        chunk_size: int = CHUNK_SIZE,
-        chunk_overlap: int = CHUNK_OVERLAP,
-        embedding_model: str = EMBEDDING_MODEL,
-        generation_model: str = GENERATION_MODEL,
-    ):
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
-        self.embedding_model = embedding_model
-        self.generation_model = generation_model
-        self.logger = logger
+# Abstract Base class for LLM Clients
+class BaseLLMClient(ABC):
+    @abstractmethod
+    def embedding(self, text: str) -> List[float]: ...
 
+    @abstractmethod
+    def generate(self, prompt: str) -> str: ...
+
+
+# LLM-Client Implementations
+
+
+class OllamaClient(BaseLLMClient):
+    def __init__(self, embed_model: str, gen_model: str):
+        self.embed_model = embed_model
+        self.gen_model = gen_model
         self.llm = ChatOllama(
-            # base_url="http://localhost:11434",
-            model=self.generation_model,
+            model=self.gen_model,
             temperature=0.2,
             seed=42,
             num_ctx=10000,
             # verbose=True,
             # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
+        self.embedder = OllamaEmbeddings(model=self.embed_model)
+
+    def embedding(self, text: str) -> List[float]:
+        return self.embedder.embed_query(text)
+
+    def generate(self, prompt: str) -> str:
+        response = self.llm.invoke(prompt)
+        return response.content.strip()
+
+
+class OpenAIClient(BaseLLMClient):
+    def __init__(self, embed_model: str, gen_model: str, api_key: str = None):
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY must be provided")
+
+        self.embed_model = embed_model
+        self.gen_model = gen_model
+        self.api_key = api_key
+
+        self.llm = ChatOpenAI(
+            model=self.gen_model,
+            openai_api_key=self.api_key,
+            temperature=0.2,
+            max_tokens=4096,
+            # verbose=True,
+            # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
+        )
+        self.embedder = OpenAIEmbeddings(
+            model=self.embed_model,
+            openai_api_key=self.api_key,
+        )
+
+    def embedding(self, text: str) -> list:
+        return self.embedder.embed_query(text)
+
+    def generate(self, prompt: str) -> str:
+        response = self.llm.invoke(prompt)
+        return response.content.strip()
+
+
+class LLMQueryEngine:
+
+    def __init__(
+        self,
+        json_file_path: str,
+        # chunk_size: int = CHUNK_SIZE,
+        # chunk_overlap: int = CHUNK_OVERLAP,
+        # embedding_model: str = EMBEDDING_MODEL,
+        # generation_model: str = GENERATION_MODEL,
+    ):
+
+        self.logger = logger
+
+        self.llm_client = (
+            OpenAIClient(
+                embed_model=OPENAI_EMBEDDING_MODEL,
+                gen_model=OPENAI_GENERATION_MODEL,
+                api_key=OPENAI_API_KEY,
+            )
+            if USE_LLM_API
+            else OllamaClient(
+                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL
+            )
+        )
+
+        # Log LLMQueryEngine Inputs
+        self.logger.info(
+            f"Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"
+        )
 
         # Load and chunk documents
         docs = load_documents_from_json(json_file_path)
         self.logger.info("Loaded %d documents from %s", len(docs), json_file_path)
         self.chunked_docs = semantically_chunk_documents(
-            docs, ollama_model=self.embedding_model
+            docs, embedder=self.llm_client.embedder
         )
         self.logger.info("Chunked documents into %d chunks", len(self.chunked_docs))
 
@@ -152,13 +234,27 @@ class LLMQueryEngine:
             "Built BM25 index for %d document chunks.", len(self.chunked_docs)
         )
 
+    def get_embedding(self, text: str) -> list:
+        """Retrieve an embedding for the text, caching it in-memory."""
+        key = compute_hash(text)
+        if key in embedding_cache:
+            return embedding_cache[key]
+
+        embedding = self.llm_client.embedding(text)
+        if embedding:
+            embedding_cache[key] = embedding
+            return embedding
+        else:
+            logger.error("Embedding failed for text: %s", text[:30])
+            raise ValueError("Embedding failed")
+
     def _build_faiss_index(self, documents: list):
         """Build an in-memory FAISS index for dense retrieval."""
         self.dense_embeddings = []
         self.dense_mapping = []
         for doc in documents:
             try:
-                emb = get_embedding(doc.page_content, self.embedding_model)
+                emb = self.get_embedding(doc.page_content)
                 self.dense_embeddings.append(emb)
                 self.dense_mapping.append(
                     {"content": doc.page_content, "metadata": doc.metadata}
@@ -185,7 +281,7 @@ class LLMQueryEngine:
         if not query or not isinstance(query, str):
             raise ValueError("Invalid query")
         try:
-            q_emb = get_embedding(query, self.embedding_model)
+            q_emb = self.get_embedding(query)
             q_emb_np = np.array(q_emb).astype("float32")
             q_emb_np = q_emb_np / np.maximum(np.linalg.norm(q_emb_np), 1e-10)
             q_emb_np = q_emb_np.reshape(1, -1)
@@ -208,6 +304,7 @@ class LLMQueryEngine:
         """Retrieve candidate chunks using BM25."""
         tokens = query.lower().split()
         scores = self.bm25_index.get_scores(tokens)
+
         top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[
             :max_chunks
         ]
@@ -223,9 +320,7 @@ class LLMQueryEngine:
             )
         return candidates
 
-    def merge_candidates(
-        self, dense_candidates: List, bm25_candidates: List
-    ) -> List:
+    def merge_candidates(self, dense_candidates: List, bm25_candidates: List) -> List:
         """Merge dense and BM25 candidates with weighted scoring."""
         merged = {}
         for candidate in dense_candidates:
@@ -275,11 +370,13 @@ class LLMQueryEngine:
     ) -> str:  # NOTE: Fixed duplicate chunk issue
         """Assemble context within token budget."""
         if not chunks:
-            self.logger.error("No chunks to assemble context from.",exc_info=True)
+            self.logger.error("No chunks to assemble context from.", exc_info=True)
             raise ValueError("No chunks to assemble context from.")
         if token_budget <= 1500:
             new_token_budget = 3000
-            self.logger.warning(f"Strangly small token budget of {token_budget}, changing to {new_token_budget} tokens.")
+            self.logger.warning(
+                f"Strangly small token budget of {token_budget}, changing to {new_token_budget} tokens."
+            )
             token_budget = new_token_budget
 
         context = ""
@@ -293,12 +390,16 @@ class LLMQueryEngine:
                     continue
                 content_hash = compute_hash(chunk["content"])
                 if content_hash in seen_content:
-                    self.logger.debug("Skipping duplicate chunk: %s out of total %s", chunk["content"][:30], skipped)
+                    self.logger.debug(
+                        "Skipping duplicate chunk: %s out of total %s",
+                        chunk["content"][:30],
+                        skipped,
+                    )
                     skipped += 1
                     continue
                 chunk_words = len(chunk["content"].split())
                 if total_words + chunk_words <= token_budget:
-                    
+
                     context += f"### {chunk['metadata'].get('section_header', 'No Header')}\n{chunk['content']}\n\n"
                     total_words += chunk_words
                     seen_content.add(content_hash)
@@ -313,7 +414,6 @@ class LLMQueryEngine:
             len(seen_content),
         )
         return context.strip()
-    
 
     def query_structured(
         self,
@@ -325,21 +425,21 @@ class LLMQueryEngine:
         """Query the LLM with structured output using ChatOllama."""
         start_time = time.time()
         candidates = self.retrieve_chunks(query, max_chunks)
-        self.logger.info(
-            f"Retrieved {len(candidates)} candidate chunks for query."
-        )
+        self.logger.info(f"Retrieved {len(candidates)} candidate chunks for query.")
         if not candidates:
-            self.logger.error(f"No candidate chunks retrieved for query: {query}", exc_info=True)
+            self.logger.error(
+                f"No candidate chunks retrieved for query: {query}", exc_info=True
+            )
             raise ValueError(f"No candidate chunks retrieved for query: {query}")
 
         context = self.assemble_context(candidates, token_budget)
 
         if not context:
-            self.logger.error("No context assembled for query: %s", query, exc_info=True)
+            self.logger.error(
+                "No context assembled for query: %s", query, exc_info=True
+            )
             raise ValueError("No context assembled for query: %s", query)
-        self.logger.info(
-            f"Assembled context for query."
-        )
+        self.logger.info(f"Assembled context for query.")
         prompt = (
             f"Goal: Answer the query based on the provided context.\n\n"
             f"Query: {query}\n\n"
@@ -351,7 +451,7 @@ class LLMQueryEngine:
             prompt,
         )
 
-        structured_llm = self.llm.with_structured_output(cls_schema)
+        structured_llm = self.llm_client.llm.with_structured_output(cls_schema)
         try:
             response = structured_llm.invoke(prompt)
 
@@ -411,57 +511,58 @@ def query_llm(
     return engine.query_structured(query, cls_schema, token_budget, max_chunks)
 
 
-# Example Pydantic models for testing
-class Layer(BaseModel):
-    type: str
-    size: int
+def main():
+    TEST_MODEL_NAME = "STANDALONE_TEST_MODEL"
 
+    # Example Pydantic models for testing
+    class Layer(BaseModel):
+        type: str
+        size: int
 
-class NeuralNetworkDetails(BaseModel):
-    layers: list[Layer]
+    class NeuralNetworkDetails(BaseModel):
+        layers: list[Layer]
 
+    json_file_path = "data/alexnet/alexnet_doc.json"
 
-# Standalone testing
-if __name__ == "__main__":
-    json_file_path = "data/alexnet/doc_alexnet.json"
+    # Initialize engine for this test model
     engine = init_engine(
-        model_name=GENERATION_MODEL,
+        model_name=TEST_MODEL_NAME,
         doc_json_file_path=json_file_path,
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
     )
 
+    # Define test queries
     queries = [
-        # ("""Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers""", 1024),
         (
-            """Name each layer of this neural network sequentially. Do not generalize internal layers and include modification and activation layers. Do not generalize internal layers and include modification and activation layers. Also, specify the size of each layer (number of neurons or filters).""",
+            "Name each layer of this neural network sequentially. Do not generalize internal layers and include "
+            "modification and activation layers. Also, specify the size of each layer (number of neurons or filters).",
             7000,
         ),
     ]
 
-    json_format_instructions = (
-        "Return a JSON object with a key 'layers'. The value should be a list of objects, "
-        "where each object represents one layer in the neural network. Each object must have exactly two keys: "
-        "'type' (a string, e.g., 'Convolution', 'ReLU', 'Pooling', 'FullyConnected', etc.) and "
-        "'size' (an integer representing the number of neurons/filters in that layer). "
-        "Ensure the response is valid JSON that matches this structure.\n"
-        "Example:\n"
-        '{"layers": [{"type": "Convolution", "size": 64}, {"type": "ReLU", "size": 64}]}'
-    )
-
-    for idx, (q, budget) in enumerate(queries, start=1):
+    # Loop through and run queries
+    for idx, (query, token_budget) in enumerate(queries, start=1):
         start_time = time.time()
-        answer = query_llm(
-            GENERATION_MODEL,
-            q,
-            json_format_instructions,
-            NeuralNetworkDetails,
-            token_budget=budget,
-        )
-        print("\n\nStructured Layer Details:\n")
+        try:
+            answer = query_llm(
+                model_name=TEST_MODEL_NAME,
+                query=query,
+                cls_schema=NeuralNetworkDetails,
+                token_budget=token_budget,
+            )
+        except Exception as e:
+            print(f"Query {idx} failed: {e}")
+            continue
+
+        print(f"\nStructured Layer Details (Example {idx}):\n")
         for i, layer in enumerate(answer.layers, start=1):
             layer = layer.model_dump()
             print(f"Layer {i}: Type = {layer['type']}, Size = {layer['size']}")
 
         elapsed = time.time() - start_time
+        print(f"\nCompleted in {elapsed:.2f} seconds\n{'-'*40}")
+
         print(f"Example {idx}:\nAnswer: {answer}\nTime: {elapsed:.2f} seconds\n\n\n")
+
+
+if __name__ == "__main__":
+    main()
