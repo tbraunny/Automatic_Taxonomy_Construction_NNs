@@ -34,21 +34,18 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
         # For each object property defined in the ontology (we assume these are the ones we care about).
         if type(current) != ThingClass:
             continue
-        for prop in list(ontology.object_properties()):
+        for prop in list(ontology.object_properties()) + list(ontology.data_properties()):
             # Only follow properties that start with 'has'
             #if not prop.name.startswith("has"):
             #    continue
             searchDomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
+            searchDomain = [get_highest_subclass_ancestor(item) for item in searchDomain] + searchDomain
             # If this property is the one we are looking for, record the chain.
             if current in searchDomain:
                 # Only add the chain if there is at least one value (i.e. the triple exists)
                 targetSearchDomain = target_prop.domain #[item for dom in target_prop.domain for item in dom.is_a] + target_prop.range 
                 targetSearchDomain = [get_highest_subclass_ancestor(item) for item in targetSearchDomain]
-                if get_highest_subclass_ancestor(current) in targetSearchDomain:
-                    #input('really found')
-                    #print(chain,current,target_prop)
-                    if not chain in found_chains:
-                        found_chains.append(chain)
+
 
                 # Otherwise, we follow the property edge if there are any values.
                 try:
@@ -57,6 +54,9 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
                 except Exception:
                     next_values = []
                 new_chain = list(chain + [str(prop.iri)])
+                if get_highest_subclass_ancestor(current) in targetSearchDomain and prop.iri == target_iri:
+                    if not new_chain in found_chains:
+                        found_chains.append(new_chain)
                 for next_node in next_values:
                     if prop not in visited:
                         visited.append(prop) #next_node)
@@ -69,20 +69,9 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
 def find_inverse_path(onto, target):
     annconfig = onto.ANNConfiguration
     
-    #previous = [item for dom in target.domain for item in dom.is_a] + target.domain
     previous = []
-    #for item in target.domain:
-    #    if type(item) == ThingClass:
-    #        previous += item.is_a
     if isinstance(target, DataPropertyClass):
-        #cla = target.domain[0]
-        #print(cla)
-        #for prop in onto.object_properties():
-        #    if not cla in prop.domain and cla in prop.range and not cla in previous and prop != target:
-        #        print(prop)
         previous += target.domain
-        #print(cla.ancestors(),cla,target.ancestors(),target)
-        #input('blabal')
     else:
         previous += target.domain
     previous = [get_highest_subclass_ancestor(item) if type(item) == ThingClass else item for item in previous]
@@ -90,7 +79,6 @@ def find_inverse_path(onto, target):
         return [[str(target.iri)]]
     queue = deque([(i, []) for i in previous])
     visited = []
-    #input()
     finalChains = []
     answer = []
     while queue:
@@ -102,15 +90,9 @@ def find_inverse_path(onto, target):
             searchRange += prop.domain
 
             searchRange = [get_highest_subclass_ancestor(item) if type(item) == ThingClass else item for item in searchRange ] + prop.domain
-            #input('test')
             if previous in searchRange:
-                #searchRange = [item for dom in previous.domain for item in dom.is_a] + previous.domain
-
-                #input()
                 new_chain = list(chain)
                 if annconfig in prop.range:
-                    #print(new_chain,previous,prop)
-                    #input('testing')
                     if not chain in finalChains:
                         finalChains.append(chain)
 
@@ -118,40 +100,56 @@ def find_inverse_path(onto, target):
 
                     new_chain.append(prop)
 
-
-                #if len(new_chain) > 1:
-                #    print('finding',new_chain, searchRange)
-                #    input()
                 searchRange = prop.domain #[item for dom in prop.domain for item in dom.is_a] + prop.domain
-                #print(searchRange)
-                #input()
                 for dom in searchRange:
                     if not dom in visited:
                         visited.append(dom)
                         queue.append((dom,new_chain))
-        #if previous == annconfig:
-        #    print(finalChains,previous)
-        #    input('poop')
-        #    break
     output = []
     for item in finalChains:
         adding = True
-        '''if len(item) > 0:
-            item.reverse()
-            print(item,item[0].domain,item[-1].range, target.range[0])
-            input('java')
-            if target.domain[0] == onto.ANNConfiguration and item[0] == target:
-                adding = True
-            if item[0].domain[0] == onto.ANNConfiguration and (item[-1].range[0] == target.domain[0]):
-                adding = True
-                print('here')
-                input(test)
-        '''
         item.reverse()
         if adding:
                 item = [str(ite.iri) for ite in item]
                 output.append(item)
     return output
+
+
+def query_generic(onto, prop, property_chain:list, filter_condition=None):
+    '''
+    this is for only one prop at a time.
+    '''
+    property_chain = " | ".join(property_chain)
+
+    filter_clause = ""
+    if filter_condition:
+        filter_clause = f"FILTER({filter_condition})\n"
+
+    #print(property_chain)
+    query= f"""
+        PREFIX ns0: <http://w3id.org/annett-o/>
+
+        SELECT   ?config (GROUP_CONCAT(?value; separator=", ") AS ?values)  
+        WHERE {{
+            ?config a ns0:ANNConfiguration .
+            ?config ( { property_chain } )*  ?test .
+
+            ?test ns0:{prop} $value .
+
+            {filter_clause}
+        }}
+        GROUP BY $config
+        """
+    #print(query)
+    #input()
+    graph = default_world.as_rdflib_graph()
+    results = list(graph.query(query))
+    #for i in results:
+    #    print(i[0])
+    #print(len(results))
+    #input('results')
+    return results
+    
 
 def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None, filter_condition=None):
     """
@@ -200,6 +198,8 @@ def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None, fi
     if filter_condition:
         filter_clause = f"FILTER({filter_condition})\n"
 
+    group_by_clause = "GROUP BY ?annConfig" if ann_config_iri == None else ""
+
     # Build the full query.
     query = prefix + f"""
     SELECT ?annConfig (GROUP_CONCAT(?value; separator=", ") AS ?values)
@@ -208,19 +208,20 @@ def query_annconfig_property_chain(onto, property_chain, ann_config_iri=None, fi
         {patterns}
         {filter_clause}
     }}
-    GROUP BY ?annConfig
+    {group_by_clause}
     """
     graph = default_world.as_rdflib_graph()
     # Execute the query using Owlready2's SPARQL engine.
-    results = list(onto.world.sparql(query))
+    #results = list(onto.world.sparql(query))
     results = list(graph.query(query))
-    print(results)
-    print(query)
+    #print(results)
+    #print(query)
     return results
+
 # ----------------- USAGE EXAMPLE ----------------- #
 if __name__ == "__main__":
     # Load your ontology
-    #onto = get_ontology("./data/owl/annett-o-0.2.owl").load()
+    onto = get_ontology("./data/owl/annett-o-0.2.owl").load()
     onto = get_ontology("./data/owl/fairannett-o.owl").load()
     
     # Get an ANNConfiguration individual. Adjust the search criteria as needed.
@@ -232,32 +233,47 @@ if __name__ == "__main__":
         # Suppose we want to find the property chain to the property 'layer_num_units'
         # (which might be a data property defined on layers).
         # You may have loaded it as, say, onto.layer_num_units:
-        for i in list(onto.data_properties()) + list(onto.object_properties()):
-            #if i != onto.hasTrainingOptimizer: #hasTrainingStrategy: #hasActivationFunction:
+        fulllist = list(onto.data_properties()) + list(onto.object_properties())
+        for index,i in enumerate(fulllist):
+            print(index,len(fulllist),i)
+            #if i != onto.hasActivationFunction: #hasTrainingStrategy: #hasActivationFunction:
             #    continue
             #print(i)
             target_prop = i#onto.layer_num_units
             chains1 = find_property_chain_to_property(onto, ann_config, target_prop, max_depth=10)
 
-            chains = find_inverse_path(onto, target_prop)
-            if len(chains1) > 0:
-                
-                print("Found property chains from annconfig to the target property:")
-                for chain in chains1:
-                    print(" -> ".join(chain))
-                print(i,chains)
-                for c in chains1:
-
-                    output=query_annconfig_property_chain(onto,c+[str(i.iri)])
-                    if len(output) > 0:
-                        print(output)
-                        #input()
-                #print(i,len(chains))
-                print(chains1,chains)
-                #input('here')
+            #chains = find_inverse_path(onto, target_prop)
+            fullchains1 = set([ "<"+ link+">" for chain in chains1 for link in chain])
+            #print(fullchains1)
+            #input()
+            if len(fullchains1) > 0:
+                query_generic_slow(onto, target_prop.name, fullchains1)
+                #input('waiting'+str(target_prop))
             else:
-                print(chains)
-                print(i)
-                print(chains1,chains)
-                #input('not here')
+                print('no path found' + target_prop.name)
+                #input('waiting'+str(target_prop))
+            # if len(chains1) > 0:
+                
+            #     print("Found property chains from annconfig to the target property:")
+            #     for chain in chains1:
+            #         print(" -> ".join(chain))
+            #     print(i,chains)
+            #     #for c in chains1:
+
+            #     #    output=query_annconfig_property_chain(onto,c+[str(i.iri)])
+            #     #    if len(output) > 0:
+            #     #        print(output)
+            #     #print(i,len(chains))
+            #     #print(chains1,chains)
+            #     for i in chains1:
+            #         output=query_annconfig_property_chain(onto,i)
+            #         print(i)
+            #         for out in output:
+            #             print(out[0])
+            #         print('=================')
+            #     input()
+            # else:
+            #     print(chains)
+            #     print(i)
+            #     print(chains1,chains)
 
