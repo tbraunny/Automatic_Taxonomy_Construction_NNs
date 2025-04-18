@@ -271,25 +271,28 @@ class DBUtils:
             network_data: dict = {}
 
             with open(file , 'r') as f:
-                network_data: dict = json.load()
+                network_data: dict = json.load(f)
 
             nodes = network_data.get("graph" , {}).get("node" , {})
             model_type = None
-            model_id: int = self.insert_model(ann_name , model_type , network_data)
+            model_id: int = self._insert_model(ann_name , model_type , network_data)
 
             for layer in nodes:
                 layer_name = layer.get('name')
                 layer_type = layer.get('op_type')
                 layer_attr = layer.get('attributes')
 
-                layer_id = self.insert_layer(model_id , layer_name , layer_type , layer_attr)
+                layer_id = self._insert_layer(model_id , layer_name , layer_type , layer_attr)
                 shape = layer.get('kernel')
 
                 if layer_id and layer_attr:
                     for attr in layer_attr:
-                        param_name: str = attr.get('name')
-                        shape: list = attr.get('ints')
-                        self.insert_parameter(layer_id , param_name , shape)
+                        if isinstance(attr , list):
+                            pass
+                        if isinstance(attr , dict):
+                            pass
+                        else:
+                            self._insert_parameter(layer_id , attr , None)
 
     
 if __name__ == '__main__':
