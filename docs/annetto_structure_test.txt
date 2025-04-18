@@ -1,0 +1,172 @@
+- Class: Network
+        - Connected Class: OutputLayer on prop [annett-o-test.hasOutputLayer]
+        - Connected Class: ObjectiveFunction on prop [annett-o-test.hasObjective]
+                - Connected Class: CostFunction on prop [annett-o-test.hasCost]
+                        - Connected Class: RegularizerFunction on prop [annett-o-test.hasRegularizer]
+                                - Subclass: L1L2RegularizerFunction
+                                - Subclass: L1RegularizerFunction
+                                - Subclass: L2RegularizerFunction
+                        - Connected Class: LossFunction on prop [annett-o-test.hasLoss]
+                                - Subclass: BinaryCrossEntropy
+                                - Subclass: CategoricalCrossEntropy
+                                - Subclass: MSE
+                                - Subclass: Multinomial Logistic Regression Loss
+                - Subclass: MaxObjectiveFunction
+                - Subclass: MinObjectiveFunction
+        - Connected Class: TaskCharacterization on prop [annett-o-test.hasTaskType]
+                - Subclass: Adversarial
+                - Subclass: Classification
+                        - Subclass: SemiSupervisedClassification
+                        - Subclass: SupervisedClassification
+                - Subclass: Clustering
+                - Subclass: Discrimination
+                - Subclass: Generation
+                - Subclass: Reconstruction
+                - Subclass: Regression
+                - Subclass: Self-Supervised Classification
+                - Subclass: Unsupervised Classification
+                - Subclass: name='Supervised Classification' definition='A machine learning task where the model is trained on labeled data to predict class labels for new, unseen instances.'
+        - Connected Class: InputLayer on prop [annett-o-test.hasInputLayer]
+        - Connected Class: Layer on prop [annett-o-test.hasLayer, annett-o-test.nextLayer, annett-o-test.previousLayer, annett-o-test.sameLayerAs, annett-o-test.trainedInLayer, annett-o-test.trainedOutLayer, annett-o-test.updatesLayer]
+                - Data Prop: layer_num_units (atomic)
+                - Subclass: InOutLayer
+                - Subclass: HiddenLayer
+                        - Subclass: ActivationLayer
+                                - Data Prop: has_bias (atomic)
+                                - Connected Class: ActivationFunction on prop [annett-o-test.hasActivationFunction]
+                                        - Subclass: NonDiff
+                                                - Subclass: Elu
+                                                - Subclass: Relu
+                                                - Subclass: Relu6
+                                        - Subclass: Linear
+                                        - Subclass: Regularization
+                                                - Subclass: RandomDropOut
+                                        - Subclass: Smooth
+                                                - Subclass: Sigmoid
+                                                - Subclass: SoftMax
+                                                - Subclass: SoftPlus
+                                                - Subclass: SoftSign
+                                                - Subclass: Tanh
+                                - Subclass: RNNLayer
+                                        - Data Prop: hasInitialState (atomic)
+                                        - Data Prop: sequence_length (atomic)
+                                        - Subclass: GRULayer
+                                        - Subclass: LSTMLayer
+                                - Subclass: ConvolutionLayer
+                                        - Subclass: SeparableConvolutionLayer
+                                - Subclass: DeconvolutionLayer
+                                        - Subclass: SeparableDeconvolutionLayer
+                                - Subclass: FullyConnectedLayer
+                        - Subclass: AggregationLayer
+                                - Subclass: BidirectionalRNNLayer
+                                - Subclass: ConcatLayer
+                                - Subclass: MultiplyLayer
+                                - Subclass: PoolingLayer
+                                - Subclass: SumLayer
+                                - Subclass: UpscaleLayer
+                        - Subclass: ModificationLayer
+                                - Subclass: NoiseLayer
+                                        - Connected Class: ProbabilityDistributionFunction on prop [annett-o-test.hasFunction, annett-o-test.noiseSamplesFrom]
+                                                - Subclass: Exponential
+                                                        - Data Prop: exponential_lambda (atomic)
+                                                - Subclass: Gaussian
+                                                        - Data Prop: normal_mu (atomic)
+                                                        - Data Prop: normal_sigma (atomic)
+                                                - Subclass: Normal
+                                                - Subclass: Categorical
+                                                - Subclass: Uniform
+                                - Subclass: DropoutLayer
+                                        - Data Prop: dropout_rate (atomic)
+                                - Subclass: BatchNormLayer
+                                - Subclass: FlattenLayer
+                        - Subclass: SeparationLayer
+                                - Subclass: CloneLayer
+                                - Subclass: SplitLayer
+- Class: TrainingStrategy
+        - Connected Class: TrainedModel on prop [annett-o-test.hasTrainedModel]
+                - Connected Class: TrainedWeights on prop [annett-o-test.hasWeights]
+                        - Data Prop: trained_weights_array (atomic)
+        - Connected Class: TrainingSession on prop [annett-o-test.hasPrimaryTrainingSession, annett-o-test.hasTrainingSession, annett-o-test.nextTrainingSession]
+                - Connected Class: TrainingStep on prop [annett-o-test.hasLoopTrainingStep, annett-o-test.hasPrimaryTrainingStep, annett-o-test.hasTrainingStep, annett-o-test.nextTrainingStep]
+                        - Subclass: TrainingLoop
+                                - Connected Class: StopCondition on prop [annett-o-test.hasStopCondition]
+                                        - Subclass: IterateUntil
+                                                - Data Prop: condition_value (atomic)
+                                                - Connected Class: ConditionalEvaluation on prop [annett-o-test.hasEvaluation]
+                                        - Subclass: IterateFor
+                                                - Data Prop: num_of_iterations (atomic)
+                        - Subclass: NetworkSpecific
+                                - Connected Class: TrainingOptimizer on prop [annett-o-test.hasTrainingOptimizer]
+                                        - Data Prop: learning_rate (atomic)
+                                        - Data Prop: momentum (atomic)
+                                        - Subclass: AdaDelta
+                                        - Subclass: AdaGrad
+                                        - Subclass: AdaGradDA
+                                        - Subclass: Adam
+                                        - Subclass: Ftrl
+                                        - Subclass: GradientDescent
+                                        - Subclass: Momentum
+                                        - Subclass: ProximalAdaGrad
+                                        - Subclass: ProximalGradientDescent
+                                        - Subclass: RMSProp
+                                - Connected Class: DatasetPipe on prop [annett-o-test.evaluatesUsingIOPipe, annett-o-test.trainingSingleHasIOPipe]
+                                        - Connected Class: Dataset on prop [annett-o-test.derivedFrom, annett-o-test.derivedTestDatasetFrom, annett-o-test.derivedTrainingDatasetFrom, annett-o-test.derivedXValDatasetFrom, annett-o-test.joinsDataSet]
+                                                - Data Prop: data_description (atomic)
+                                                - Data Prop: data_doi (atomic)
+                                                - Data Prop: data_location (atomic)
+                                                - Data Prop: data_sample_dimensionality (atomic)
+                                                - Data Prop: data_sample_features (atomic)
+                                                - Data Prop: data_samples (atomic)
+                                                - Data Prop: is_transient_dataset (atomic)
+                                                - Data Prop: dataset_name (atomic)
+                                                - Connected Class: DataType on prop [annett-o-test.hasDataType]
+                                                        - Subclass: Image
+                                                        - Subclass: MultiDimensionalCube
+                                                        - Subclass: Text
+                                                                - Subclass: SemistructuredText
+                                                                - Subclass: UnstructuredText
+                                                        - Subclass: Video
+                                                - Connected Class: Labelset on prop [annett-o-test.hasLabels]
+                                                        - Data Prop: labels_count (atomic)
+                                                        - Data Prop: labels_dtype (atomic)
+                                                - Connected Class: DataCharacterization on prop [annett-o-test.hasCharacteristicLabel]
+                                                        - Subclass: Science
+                                                                - Subclass: Physics
+                                                                        - Subclass: Astronomy
+                                                                        - Subclass: Climate
+                                                                        - Subclass: Weather
+                                                                - Subclass: Biology
+                                                        - Subclass: Urban
+                                                                - Subclass: Buildings
+                                                                - Subclass: Vehicles
+                                                        - Subclass: People
+                                                                - Subclass: Faces
+                                                        - Subclass: Nature
+                                                                - Subclass: Fauna
+                                                                - Subclass: Flora
+                                                                - Subclass: Scenery
+                                                        - Subclass: NumbersAndLetters
+                                                                - Subclass: NumericalDigits
+                                                                        - Subclass: HandWrittenDigits
+                                                                - Subclass: LettersDigits
+                                                - Subclass: RandomNoiseDataset
+                                - Subclass: TrainingSingle
+                                        - Data Prop: batch_size (atomic)
+                                        - Data Prop: learning_rate_decay (atomic)
+                                        - Data Prop: learning_rate_decay_epochs (atomic)
+                                        - Data Prop: number_of_epochs (atomic)
+                                        - Connected Class: WeightInitialization on prop [annett-o-test.hasWeightInitialization]
+                                                - Subclass: Constant
+                                                        - Subclass: OnesInitialization
+                                                        - Subclass: ZerosInitialization
+                                                - Subclass: He
+                                                - Subclass: Identity
+                                                - Subclass: LeCun
+                                                - Subclass: NormalInitialization
+                                                        - Subclass: TruncatedNormal
+                                                - Subclass: Orthogonal
+                                                - Subclass: UniformInitialization
+                                                - Subclass: UniformUnitScaling
+                                                - Subclass: VarianceScaling
+                                                - Subclass: Xavier
+                                - Subclass: TrainingSingleForwardOnly

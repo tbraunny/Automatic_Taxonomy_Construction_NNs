@@ -1,6 +1,6 @@
-from pydantic import BaseModel, ValidationError,Field
+from pydantic import BaseModel, ValidationError,Field, model_validator
 from typing import List, Optional, Dict, Literal
-
+from typing_extensions import Self
 
 AND = 'and'
 OR = 'or'
@@ -17,21 +17,43 @@ HasLoss = 'hasLoss'
 
 
 class TypeOperator(BaseModel):
-    Name: str = Field("")
-    Arguments: List[int|float|str] = Field([])
+    '''
+    Name: TypeOperator
+    Description: Is used to specify types and is mainly used with clustering.
+    '''
+    Name: Literal["","kmeans","agg"] = "" 
+    Arguments: List[int|float|str] = []
+
+    @model_validator(mode='after')
+    def check_proper_cluster(self) -> Self:
+        if (self.Name == 'kmeans' or self.Name == 'agg') and not (len(self.Arguments) == 2 or len(self.Arguments) == 0): 
+            raise ValueError("if name is kmeans or agg and arguments must have length of 2 or 0.")
+        if (self.Name == 'kmeans' or self.Name == 'agg') and len(self.Arguments) == 2 and type(self.Arguments[0])  != str and type(self.Arguments[1]) != str and not self.Arguments[0].numeric(): # enforcing
+            raise ValueError("if name is kmeans or agg and arguments must be numeric for first value and second argument must be string.")
+ 
+        return self
+
+class ValueOperator(BaseModel):
+    '''
+    Name: ValueOperator
+    Description: Is used to query for things in a ontology and has a number of different operators.
+    Name: Is a property of the knowledge base.
+    '''
+    Name: str = "" #Field("", description="A property of the knowledgebase that the values represent.")
+    Op: Literal["sequal","none","range","scomp","leq","less","greater","geq","name",'has'] = "none"
+    Value: List[str | int | float ] = []
 
 class SearchOperator(BaseModel):
     '''
     Name: SearchOperator
     Description: Has is for the edge properties like hasNetwork, hasLayer. Equals is for matching to specific names.
     '''
-    HasType: Optional[str] = Field("")
+    #HasType: Optional[str] = Field("")
     Type: Optional[TypeOperator] = None #Optional[str] = Field("")
-    Name: Optional[str] = Field("")
-    Op: Literal["cluster","sequal","none","range","scomp","leq","less","greater","geq"] = "none" #Optional[str] = Field("") 
-    Value: Optional[str | int | float | list ] = Field("")
-    HashOn: Optional[str] = Field("type")
-
+    Name: str = Field("")
+    Cluster: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
+    Value: List[ValueOperator] = []
+    HashOn: Literal["type", "found"] = "type"
     #has: Optional [ List ] = []
     #equals: Optional[ List ] = []
 

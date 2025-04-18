@@ -1,0 +1,13 @@
+# # *** HOW TO VENV ***
+
+# # Create virtual environment
+# python3 -m venv venv
+
+# # Activate venv in WSL
+# source venv/bin/activate
+
+# # Install requirements
+# pip install -r requirements.txt
+
+# # Deactivate virtual environment
+# deactivate

@@ -1,12 +1,9 @@
 from owlready2 import *
-from typing import List, Union, Optional, Any
+from typing import List, Union, Optional, Any, Type
 import warnings
 from builtins import TypeError
 
 from utils.annetto_utils import load_annetto_ontology
-
-def load_ontology(ontology_path):
-    return get_ontology(ontology_path).load()
 
 """ 1) Class Functions """
 
@@ -102,7 +99,7 @@ def get_onto_object_from_str(ontology: Ontology, class_name: str) -> ThingClass:
         return None
 
 
-def is_subclass_of_class(cls: ThingClass, parent_cls: ThingClass) -> bool:
+def is_subclass_of_class(cls: Union[ThingClass,Thing], parent_cls: ThingClass) -> bool:
     """
     Determines whether a given class is a subclass of another class.
 
@@ -110,8 +107,8 @@ def is_subclass_of_class(cls: ThingClass, parent_cls: ThingClass) -> bool:
     :param: parent_cls: The class to check against.
     :return: True if cls is a subclass of parent_cls, False otherwise.
     """
-    if not isinstance(cls, ThingClass):
-        raise TypeError(f"The provided class '{cls}' is not a ThingClass.")
+    if not isinstance(cls, (ThingClass, Thing)):
+        raise TypeError(f"The provided class '{cls}' is not a ThingClass or Thing.")
     if not isinstance(parent_cls, ThingClass):
         raise TypeError(
             f"The provided parent class '{parent_cls}' is not a ThingClass."
@@ -175,31 +172,44 @@ def get_connected_classes(
     cls: Union[ThingClass, Thing], ontology: Ontology
 ) -> Optional[List[ThingClass]]:
     """
-    Retrieves classes connected to the given class via object properties.
+    Retrieves classes connected to the given class or instance via object properties.
 
-    :param: cls: The class for which to find connected classes.
+    :param: cls: The class or instance for which to find connected classes.
     :param: ontology: The ontology containing the classes.
     :return: A list of connected classes, or None if no connections are found.
     """
     if not isinstance(cls, (Thing, ThingClass)):
-        raise TypeError(f"Invalid class type '{cls}'.")
+        raise TypeError(f"Invalid class or instance type for '{cls}'.")
     if not isinstance(ontology, Ontology):
-        raise TypeError(f"Invalid ontology type '{ontology}'.")
+        raise TypeError(f"Invalid ontology type for '{cls}'.")
+
     connected_classes = set()
-    object_properties = [
-        prop for prop in ontology.object_properties() if cls in prop.domain
-    ]
 
-    for prop in object_properties:
-        for range_cls in prop.range:
-            # Skip if the range is the same as cls
-            if range_cls == cls:
-                continue
-            if isinstance(range_cls, ThingClass):
-                connected_classes.add(range_cls)
-    connected_classes = list(connected_classes)
+    if isinstance(cls, ThingClass):
+        # For ThingClass, use the domain of object properties
+        object_properties = [
+            prop for prop in ontology.object_properties() if cls in prop.domain
+        ]
+        for prop in object_properties:
+            for range_cls in prop.range:
+                if range_cls != cls and isinstance(range_cls, ThingClass):
+                    connected_classes.add(range_cls)
+        return list(connected_classes) if connected_classes else None
 
-    return connected_classes if connected_classes != [] else None
+    elif isinstance(cls, Thing):
+        for prop in cls.get_properties():
+            if isinstance(prop, ObjectPropertyClass):  # Ensure it's an object property
+                values = cls.__getattr__(prop.name)
+                if isinstance(values, list):
+                    for value in values:
+                        if isinstance(value, Thing):
+                            print(value)
+                            connected_classes.add(value)
+                elif isinstance(values, Thing):
+                    print(values)
+                    connected_classes.add(values)
+
+        return list(connected_classes) if connected_classes else None
 
 
 def get_immediate_subclasses(
@@ -540,15 +550,28 @@ def assign_object_property_relationship(
             f"The 'object_property' argument '{object_property}' '{type(object_property)}' must of type ObjectPropertyClass."
         )
     # Connect the two Thing instances
-    object_property[domain].append(range)
-
-    # Check if the connection was successful
-    if not range in object_property[domain]:
+    try:
+        object_property[domain].append(range)
+    except Exception as e:
         raise ValueError(
-            f"Failed to connect {domain} to {range} via {object_property}",
-            exec_info=True,
+            f"Failed to assign object property {object_property} from {domain} to {range} (perhaps because it is functional?): {e}"
         )
 
+    # Check if the connection was successful
+    related_objects = list(object_property[domain])
+    if range not in related_objects:
+
+        raise ValueError(
+            f"Verification failed: {range} not found in {object_property}[{domain}]. Current values: {related_objects}"
+        )
+    
+def is_functional_property(property: DataPropertyClass) -> bool:
+    """
+    Determines if a given property is functional.
+    :param property: The DataPropertyClass to check.
+    :return: True if the property is functional, False otherwise.
+    """
+    return isinstance(property, FunctionalProperty)
 
 def link_data_property_to_instance(
     instance: Thing, data_property: DataPropertyClass, value: Any
@@ -568,15 +591,29 @@ def link_data_property_to_instance(
         raise TypeError(
             "The 'data_property' argument must be an instance of DataPropertyClass."
         )
-    # Set the data property value for the instance
-    instance.data_property = [value]
+    # setattr(instance, data_property.name, value)
+    setattr(instance, data_property.name, [value] if not isinstance(value, list) else value)
 
-    # Check if the value was set successfully
-    if not instance.data_property == value:
-        raise ValueError(
-            f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
-        )
-    #
+    # # Verify the value was set correctly
+    # if value not in getattr(instance, data_property.name, []):
+    #     raise ValueError(
+    #         f"Failed to set data property '{data_property.name}' to '{value}' for instance '{instance}'."
+    #     )
+    
+    if is_functional_property(data_property):
+        # Assign the value directly for functional properties
+        setattr(instance, data_property.name, value)
+    else:
+        # Assign the value as a list for non-functional properties
+        setattr(instance, data_property.name, [value] if not isinstance(value, list) else value)
+    # # Set the data property value for the instance
+    # instance.data_property = [value]
+
+    # # Check if the value was set successfully
+    # if not instance.data_property == value:
+    #     raise ValueError(
+    #         f"Failed to set data property '{data_property}' to '{value}' for instance '{instance}'."
+    #     )
 
 
 def create_class_data_property(
@@ -598,6 +635,8 @@ def create_class_data_property(
     :param functional: Boolean flag to set the property as functional
     :return: Created DataProperty class
     """
+    if hasattr(ontology, property_name): # need new logic to check if property exits for the given domain class
+        print(f"Property '{property_name}' already exists in the ontology. Error or unexepcted behavior may occur.")
     valid_range_types = {int, float, str, bool}
     if range_type not in valid_range_types:
         raise ValueError(
@@ -619,6 +658,82 @@ def create_class_data_property(
 
     return NewDataProperty
 
+def create_class_object_property(
+    ontology: Ontology,
+    property_name: str,
+    domain_class: Union[ThingClass, Thing],
+    range_class: Union[ThingClass, Thing],
+) -> Type[ObjectProperty]:
+    """
+    Dynamically creates an ObjectProperty for a class.
+    Must still assign the value of the property to an instance of the domain class.
+
+    A functional ObjectProperty means each subject can be linked to at most one object via the property.
+
+    :param ontology: The ontology
+    :param property_name: Name of the ObjectProperty to be created
+    :param domain_class: Class that serves as the domain
+    :param range_class: Class that serves as the range
+    :return: Created ObjectProperty class
+    """
+
+    # if functional:
+    NewObjectProperty = type(
+        property_name,
+        (ObjectProperty, FunctionalProperty),
+        {
+            "namespace": ontology,
+            "domain": [domain_class],
+            "range": [range_class],
+        },
+    )
+    # else:
+    #     NewObjectProperty = type(
+    #         property_name,
+    #         (ObjectProperty,),
+    #         {
+    #             "namespace": ontology,
+    #             "domain": [domain_class],
+    #             "range": [range_class],
+    #         },
+    #     )
+
+    return NewObjectProperty
+
+def is_functional_property_for(domain: Union[ThingClass, Thing], property_: Union[ObjectPropertyClass, DataPropertyClass]) -> bool:
+    """
+    Check if an ObjectProperty or DataProperty is functional for a given domain instance or class.
+
+    :param domain: The domain (Thing or ThingClass) to check against.
+    :param property_: The property (ObjectProperty or DataProperty) to inspect.
+    :return: True if functional, False otherwise.
+    """
+    if not isinstance(domain, (Thing, ThingClass)):
+        raise TypeError(f"'domain' must be a Thing or ThingClass, got {type(domain)}")
+
+    if not isinstance(property_, (ObjectPropertyClass, DataPropertyClass)):
+        raise TypeError(f"'property_' must be an ObjectPropertyClass or DataPropertyClass, got {type(property_)}")
+
+    # Check whether the property is functional at the ontology level
+    if issubclass(property_, FunctionalProperty):
+        return True
+
+    # In Owlready2, a property can also be declared functional per domain-class via .is_functional_for
+    try:
+        return property_.is_functional_for(domain)
+    except AttributeError:
+        return False
+
+def entitiy_exists(ontology: Ontology, name: str) -> bool:
+    """
+    Check if an entity (class, property, or instance) exists in the ontology.
+    :param ontology: The ontology to check.
+    :param name: The name of the entity to check.
+    :return: True if the entity exists, False otherwise.
+    """
+    if not isinstance(ontology, Ontology):
+        raise TypeError(f"Ontology '{ontology}' must be an Ontology.")
+    return hasattr(ontology, name)
 
 def list_owl_classes(onto: Ontology) -> List[ThingClass]:
     # Return list of all classes in ontology
@@ -634,21 +749,69 @@ def list_owl_data_properties(onto: Ontology) -> List[DataPropertyClass]:
     # return all data properties of the ontology
     return [prop for prop in onto.data_properties()]
 
+def save_ontology(ontology: Ontology, file_path: str, format: str = "rdfxml"):
+    """
+    Save the ontology to a specified file path in the given format.
+
+    :param ontology: The ontology object to save.
+    :param file_path: The file path where the ontology should be saved.
+    :param format: The format in which to save the ontology (default is "rdfxml").
+    """
+    if not isinstance(ontology, Ontology):
+        raise TypeError(f"Ontology '{ontology}' must be an Ontology.")
+    if not isinstance(file_path, str):
+        raise TypeError(f"File path '{file_path}' must be a string.")
+    if not file_path.endswith(".owl"):
+        raise ValueError(f"File path '{file_path}' must end with '.owl'.")
+    if not isinstance(format, str):
+        raise TypeError(f"Format '{format}' must be a string.")
+
+    # make sure the directory exists
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    # Save the ontology
+    ontology.save(file=file_path, format=format)
+
+def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
+    """
+    Deletes an ANNConfiguration instance and all instances connected to it.
+
+    :param ontology: The owlready2 ontology object.
+    :param ann_config_name: The name of the ANNConfiguration instance to remove.
+    """
+    ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
+    
+    if not ann_config_instance:
+        print(f"No instance found with name {ann_config_name}")
+        return
+    
+    # Set to store all instances to be deleted
+    instances_to_delete = set()
+
+    # DFS to collect all connected individuals
+    def collect_instances(instance):
+        if instance not in instances_to_delete:
+            instances_to_delete.add(instance)
+            for prop in instance.get_properties():
+                for value in prop[instance]:
+                    if isinstance(value, Thing):
+                        collect_instances(value)
+
+    collect_instances(ann_config_instance)
+
+    # Now, destroy all collected instances
+    for inst in instances_to_delete:
+        destroy_entity(inst)
+
+    print(f"Deleted {len(instances_to_delete)} instances linked to {ann_config_name}.")
+
+
+
 
 if __name__ == "__main__":
+    from constants import Constants as C
 
-    ontology = load_annetto_ontology("test")
+    ontology = load_annetto_ontology(return_onto_from_release="test")
 
     with ontology:
-        p3 = create_class(ontology, "Person", base_class=ontology.Network)
-        p2 = create_class(ontology, "Person2", base_class=ontology.TaskCharacterization)
-        p4 = create_subclass(ontology, "Person", p2)
-        print(p3, p2, p4)
 
-    # instance1 = create_cls_instance(ontology.Network, "Conv Network")
-    # instance2 = create_cls_instance(ontology.CostFunction, "Class1")
-
-    # classes = ontology.CostFunction.is_a
-    # print(classes)
-
-    # classes = assign_object_property_relationship(ontology, instance1, instance2)
+        save_ontology(ontology, C.ONTOLOGY.TEST_ONTOLOGY_PATH, format="rdfxml")

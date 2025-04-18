@@ -8,6 +8,8 @@ from owlready2 import *
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_graph
 from rdflib import Graph, URIRef
 
+import time
+import sys
 
 #from ... import *
 #from taxonomy import llm_service,criteria,create_taxonomy
@@ -21,15 +23,8 @@ from src.taxonomy import llm_service,create_taxonomy
 # Create an MCP server named "OWL Server
 mcp = FastMCP("OWL Server")
 
-# Load the ontology using rdflib.
-# Adjust "ontology.owl" and its format as needed.
-g = rdflib.Graph()
-g.parse("./data/owl/annett-o-0.1.owl", format="xml")
 
-
-onto = get_ontology("./data/owl/annett-o-0.1.owl").load()
-
-options = glob.glob('./data/owl/*.owl')
+ontology_path = './data/owl'
 
 
 def extract_subgraph(graph: Graph, root_iri: str) -> Graph:
@@ -76,7 +71,7 @@ def extract_subgraph(graph: Graph, root_iri: str) -> Graph:
 @mcp.tool()
 def list_available_options() -> str:
     """Lists available options that can be loaded that has option to file."""
-    options = glob.glob('./ontology/*.owl')
+    options = glob.glob(f'{ontology_path}/*.owl')
     options = { index : option for index, option in enumerate(options)}
     return str(options)
 
@@ -143,16 +138,19 @@ def get_classes() -> str:
     return ",".join(classes) if classes else "No classes found."
 
 @mcp.tool()
-def create_taxonomy(query: str) -> str():
+def create_taxonomy_tool(query: str) -> str():
     """
-    Takes in a sentence from the user that the llm clarifies and underneath a faceted taxonomy s returned
+    Takes in a sentence from the user that the llm clarifies and a faceted taxonomy is returned
     """
-    oc = llm_service.llm_create_taxonomy(query)
-    taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
-
-    format='json'
-
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    try:
+        oc = llm_service.llm_create_taxonomy(query, onto)
+        taxonomy_creator = create_taxonomy.TaxonomyCreator(  onto,criteria=oc.criteriagroup)
+        format='json'
+        topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+        #output = 'this is a test'
+    except Exception as e: 
+        return f"Error creating taxonomy: {e}"
+        
     return str(output)
 
 @mcp.resource("ontology://info")
@@ -169,7 +167,22 @@ def app_name() -> str:
     """
     return "OWL Server"
 
+
 if __name__ == "__main__":
+    
+    if len(sys.argv) > 1 and os.path.exists(sys.argv[1]):
+        ontology_path = sys.argv[1]
+    
+    options = glob.glob(ontology_path + '/*.owl') 
+    option = options[0]
+
+    # Load the ontology using rdflib.
+    # Adjust "ontology.owl" and its format as needed.
+    g = rdflib.Graph()
+    g.parse(option, format="xml")
+    
+    onto = get_ontology(option).load()
+    
     # Run the MCP server.
     mcp.run()
 
