@@ -10,3 +10,4 @@ tests/papers_rag/annett-o-test(2).owl
 .venv/
 utils/llm_service_paper_embeddings.py
 outdata/
+*.env

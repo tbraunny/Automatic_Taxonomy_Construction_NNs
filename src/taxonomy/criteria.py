@@ -21,14 +21,14 @@ class TypeOperator(BaseModel):
     Name: TypeOperator
     Description: Is used to specify types and is mainly used with clustering.
     '''
-    Name: Literal["","kmeans","agg"] = "" 
+    Name: Literal["","kmeans","agg","graph"] = Field("", description="A field to define the type of clustering: supported is kmeans, agglomerative, graph clustering on networks, and no clustering. ") 
     Arguments: List[int|float|str] = []
 
     @model_validator(mode='after')
     def check_proper_cluster(self) -> Self:
-        if (self.Name == 'kmeans' or self.Name == 'agg') and not (len(self.Arguments) == 2 or len(self.Arguments) == 0): 
+        if (self.Name == 'kmeans' or self.Name == 'agg'or self.Name == 'graph') and not (len(self.Arguments) == 2 or len(self.Arguments) == 0): 
             raise ValueError("if name is kmeans or agg and arguments must have length of 2 or 0.")
-        if (self.Name == 'kmeans' or self.Name == 'agg') and len(self.Arguments) == 2 and type(self.Arguments[0])  != str and type(self.Arguments[1]) != str and not self.Arguments[0].numeric(): # enforcing
+        if (self.Name == 'kmeans' or self.Name == 'agg' or self.Name == 'graph') and len(self.Arguments) == 2 and type(self.Arguments[0])  != str and type(self.Arguments[1]) != str and not self.Arguments[0].numeric(): # enforcing
             raise ValueError("if name is kmeans or agg and arguments must be numeric for first value and second argument must be string.")
  
         return self
@@ -53,7 +53,7 @@ class SearchOperator(BaseModel):
     Name: str = Field("")
     Cluster: Literal["cluster","none"] = "none" #Optional[str] = Field("") 
     Value: List[ValueOperator] = []
-    HashOn: Literal["type", "found"] = "type"
+    HashOn: Literal["type", "found", "name", "value"] = "name"
     #has: Optional [ List ] = []
     #equals: Optional[ List ] = []
 

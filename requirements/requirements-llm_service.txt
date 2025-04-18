@@ -7,3 +7,5 @@ faiss-cpu
 networkx
 tiktoken
 # llama-index-core
+openai
+langchain-openai

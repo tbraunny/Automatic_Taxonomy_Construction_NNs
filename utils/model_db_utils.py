@@ -1,6 +1,7 @@
 import sqlalchemy as db
 import logging
 import json
+import glob
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from rapidfuzz import process , fuzz
@@ -9,7 +10,7 @@ class DBUtils:
     """
     Utils for accessing, fetching & inserting data into remote Postgres server
 
-    Must be run from WPEB machine to access server automatically
+    Must be run from WPEB machine to access server automatically (Tailscale network)
     """
     def __init__(self):
         self.engine , self.session = self._init_engine()
@@ -42,7 +43,7 @@ class DBUtils:
     def __del__(self):
         self.session.close()
         
-    def fetch_layers(self , network: str) -> list:
+    def _fetch_layers(self , network: str) -> list:
         """
         Fetch all relevant layer information from graphdb
 
@@ -59,12 +60,12 @@ class DBUtils:
 
         return self.layer_list
     
-    def fetch_models(self) -> list:
+    def _fetch_all_models(self) -> list:
         """
-        Fetch all models in database by id & name
+        Fetch all models in database by name
 
         :param None
-        :return model_list: List of models by id & name
+        :return model_list: List of models by name
         """
         try:
             query = text("SELECT model_name FROM model")
@@ -76,7 +77,7 @@ class DBUtils:
 
         return self.model_list
     
-    def insert_model(self , name: str , type: str , graph: json , avg_embedding) -> int:
+    def _insert_model(self , name: str , graph: json , avg_embedding , model_type: str=None) -> int:
         """
         Insert a model into the database
 
@@ -90,20 +91,20 @@ class DBUtils:
         try:
             if not avg_embedding:
                 query = text("""INSERT INTO model (model_name , library , graph) 
-                            VALUES (:name , :type , :graph) 
+                            VALUES (:name , :model_type , :graph) 
                             RETURNING model_id""")
                 result = self.session.execute(query , {
                     "name": name,
-                    'type': type,
+                    'model_type': model_type,
                     "graph": graph
                 })
             else:
                 query = text("""INSERT INTO model (model_name , library , average_weight_embedding , graph) 
-                            VALUES (:name , :type , :graph , :avg_embedding) 
+                            VALUES (:name , :model_type , :graph , :avg_embedding) 
                             RETURNING model_id""")
                 result = self.session.execute(query , {
                     "name": name,
-                    'type': type,
+                    'model_type': model_type,
                     "avg_embedding": avg_embedding,
                     "graph": graph
                 })
@@ -113,8 +114,24 @@ class DBUtils:
             logging.exception(f"Failed to insert model {name} into the database: {e}")
 
         return model_id
-    
-    def insert_layer(self , model_id: int , name: str , type: str , attributes: dict) -> int:
+
+    def insert_model_type(self , model_id: int , model_type: str) -> None:
+        """
+        Insert model type into the db if it was not previously known
+        """
+        try:
+            query = text("""INERT INTO model (type) 
+                         VALUES (:model_type) 
+                         WHERE model_id = :model_id""")
+            self.session.execute(query , {
+                "model_type": model_type,
+                "model_id": model_id
+            })
+            self.session.commit()
+        except Exception as e:
+            logging.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
+
+    def _insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
         Inserts layer into the database for a specific model
 
@@ -127,11 +144,11 @@ class DBUtils:
         layer_id = -1
         try:
             query = text("""INSERT INTO layer (layer_name , known_type , model_id , attributes)
-                         VALUES (:name , :type , :model_id , :attributes)
+                         VALUES (:name , :layer_type , :model_id , :attributes)
                          RETURNING layer_id""")
             result = self.session.execute(query , {
                 "name": name,
-                "type": type,
+                "layer_type": layer_type,
                 "model_id": model_id,
                 "attributes": attributes
             })
@@ -142,7 +159,7 @@ class DBUtils:
             
         return layer_id
     
-    def insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding) -> None:
+    def _insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding) -> None:
         """
         Insert parameter into the database
 
@@ -165,7 +182,7 @@ class DBUtils:
         except Exception as e:
             logging.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
 
-    def insert_papers(self , paper_name: str , contents: str) -> int:
+    def insert_papers(self , ann_path: str) -> int:
         """
         Insert paper for model into the database
 
@@ -175,17 +192,24 @@ class DBUtils:
         """
         paper_id = -1
         try:
-            query = text("""INSERT INTO paper (paper_name , contents)
-                         VALUES (:paper_name , :contents)
-                         RETURNING paper_id""")
-            result = self.session.execute(query , {
-                "paper_name": paper_name,
-                "contents": contents
-            })
-            paper_id = result.scalar()
-            self.session.commit()
+            pdf_files: list = glob.glob(f"{ann_path}/**/*doc*.pdf" , recursive=True)
+
+            for pdf in pdf_files:
+                contents: dict = {}
+                with open(pdf , 'r') as f:
+                    contents = json.load(f)
+
+                query = text("""INSERT INTO paper (paper_name , contents)
+                            VALUES (:paper_name , :contents)
+                            RETURNING paper_id""")
+                result = self.session.execute(query , {
+                    "paper_name": ann_path,
+                    "contents": contents
+                })
+                paper_id = result.scalar()
+                self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert paper {paper_name} into database: {e}")
+            logging.exception(f"Failed to insert paper {ann_path} into database: {e}")
 
         return paper_id
     
@@ -211,9 +235,73 @@ class DBUtils:
             logging.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
 
         return paper_model_id
+
+    def find_model(self , name: str=None , model_id: int=None) -> str:
+        """
+        Find a model in the dataabase given its ID (if no ID, fuzzy match by name)
+
+        :param name: Name of the model
+        :param model_id: ID for the model
+        :return model name
+        """
+        if model_id:
+            query = text("""SELECT name FROM model WHERE model_id = :model_id""")
+            result = self.session.execute(query , {
+                "model_id": model_id
+            })
+            model = result.fetchone()
+        elif name: # fuzzy match for similar name
+            name = name.lower()
+            model_list: list = self.fetch_all_models()
+            model , _ , _ = process.extractOne(name , model_list , score_cutoff=90)
+        else:
+            raise "name or model_id params requried"
+
+        return model
+
+    def insert_model_components(self , ann_path: str) -> int:
+        """
+        Insert a model into the database given its symbolic graph (json) & components
+
+        :param ann_name: Name of model/network
+        :return model_id: ID of the inserted model
+        """
+        json_files: list = [] # fetch relevant jsons from ann_path
+        json_files.extend(glob.glob(f"{ann_path}/**/*torch*.json" , recursive=True))
+        json_files.extend(glob.glob(f"{ann_path}/**/*pb*.json" , recursive=True))
+        json_files.extend(glob.glob(f"{ann_path}/**/*onnx*.json" , recursive=True))
+
+        if not json_files:
+            raise FileNotFoundError
+
+        for file in json_files:
+            network_data: dict = {}
+
+            print(file)
+
+            with open(file , 'r') as f:
+                network_data: dict = json.load(f)
+
+            nodes = network_data.get("graph" , {}).get("node" , {})
+            model_type = None
+            model_id: int = self._insert_model(ann_path , model_type , network_data)
+
+            for layer in nodes:
+                layer_name = layer.get('name')
+                layer_type = layer.get('op_type')
+                layer_attr = layer.get('attributes')
+
+                layer_id = self._insert_layer(model_id , layer_name , layer_type , layer_attr)
+                shape = layer.get('kernel')
+
+                # if layer_id and layer_attr:
+                #     for param_name in layer_attr:
+                #         shape: list = param_name.get('ints')
+                #         self._insert_parameter(layer_id , param_name , shape)
+
     
-if __name__ == '__main__': # example usage
+if __name__ == '__main__':
     ann_name = "alexnet"
     runner = DBUtils()
-    print(runner.fetch_layers(network=ann_name))
-    print(runner.fetch_models())
+    print(runner.find_model("alexnet"))
+    print(runner.insert_model_components("alexnet"))
