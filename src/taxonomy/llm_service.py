@@ -204,7 +204,7 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     
     # constructing an example output criteria and search operator for the taxonomy
     op = SearchOperator(Value=[ValueOperator(Name=HasLoss,Op='has')])#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op2 = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 
     criteria1 = Criteria(Name='Has Loss Criteria')
     criteria1.add(op)
@@ -221,8 +221,8 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
     criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
-    model='qwq:32b'
-    #model = 'llama3.2:latest'
+    #model='qwq:32b'
+    model = 'llama3.2:latest'
     model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=5000)
 
     # a fixing parser if the original model doesnt work
@@ -267,8 +267,9 @@ if __name__ == '__main__':
     #ontology_path = f"./data/owl/annett-o-test.owl" 
     ontology = load_ontology(ontology_path=ontology_path)
 
-    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that preresents all neural network?', ontology)
+    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
     
+
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
     topnode, faceted, output = taxonomy_creator.create_taxonomy(format='graphml', faceted=True)
     

@@ -1,0 +1,41 @@
+{
+   "graph": {
+      "node": [
+         {
+            "name": "conv1",
+            "op_type": "Conv2D",
+            "op": "Layer",
+            "input": [],
+            "output": [
+               "flatten"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "flatten",
+            "op_type": "Flatten",
+            "op": "Layer",
+            "input": [
+               "conv1"
+            ],
+            "output": [
+               "dense"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "dense",
+            "op_type": "Dense",
+            "op": "Layer",
+            "input": [
+               "flatten"
+            ],
+            "output": [],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}
