@@ -46,7 +46,7 @@ BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 OLLAMA_EMBEDDING_MODEL = os.environ.get("OLLAMA_EMBEDDING_MODEL", "bge-m3")
 OLLAMA_GENERATION_MODEL = os.environ.get(
-    "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b"
+    "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M"
 )
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")

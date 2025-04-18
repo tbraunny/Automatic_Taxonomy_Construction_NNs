@@ -994,9 +994,10 @@ A **subnetwork** is a block that\n
                 task, query, instructions, examples, extra_instructions
             )
             response = self._query_llm(prompt, NetworkResponse)
+            print(f"response hello{response}")
             if not response or not response.answer.architectures:
                 # self.logger.warning(f"No architectures found in network {network_name}.")
-                return
+                return []
             ann_config_instances: List[ThingClass] = []
 
             for architecture in response.answer.architectures:
@@ -1017,10 +1018,10 @@ A **subnetwork** is a block that\n
                 parse_code_layers:bool = True # TODO: we need logic to determine if parsable code exist
 
                 # # TODO: pass in a network instance that is fuzzy matched with a pt module name
-                # if parse_code_layers:
-                #     self._process_parsed_code(ann_config_instances[-1])
-                #     layers_parsed = True
-                # # ##############
+                if parse_code_layers:
+                    self._process_parsed_code(ann_config_instances[-1])
+                    layers_parsed = True
+                # ##############
 
                 for subnetwork in architecture.subnetworks:
                     sub_name = subnetwork.name
