@@ -487,7 +487,6 @@ class LLMQueryEngine:
 # Engine instance management
 _engine_instances = {}
 
-
 def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryEngine:
     """Initialize and cache an LLMQueryEngine instance."""
     if model_name not in _engine_instances:
