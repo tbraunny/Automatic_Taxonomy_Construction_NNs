@@ -1,6 +1,14 @@
 import json
 from owlready2 import get_ontology
-from inferenceutils import loadModel,load_dataset,get_embedding_dataset 
+import os,sys
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+from src.graph_extraction.graphautoencoder.inferenceutils import loadModel,load_dataset,get_embedding_dataset 
+import src.graph_extraction.graphautoencoder.model as model
+import numpy as np
 
 def extract_layer_parameters(layer):
     """
@@ -50,8 +58,9 @@ def convert_network_to_json(network):
         ]
       }
     """
+    print(network.name)
     # Create the JSON structure
-    net_dict = {"model": network.name, "nodes": []}
+    net_dict = {"name": network.name, "nodes": []}
     
     # Get a list of layers.
     # (Assuming network has a property 'hasLayer'; adjust if needed.)
@@ -82,32 +91,62 @@ def convert_network_to_json(network):
         
     return net_dict
 
+
+
+def get_embedding(onto, modeltype='fixed', device='cuda'):
+    usemodel = loadModel(modeltype)
+    annconfigs = onto.search_one(is_a=onto.ANNConfiguration).instances()
+    embedding_dictionary = {}
+    for ann in annconfigs:
+        net_json = []
+        try:
+            for network in ann.__getattr__('hasNetwork'):
+                    
+                print(network)
+                net_json.append(convert_network_to_json(network))
+                    
+                # Convert the dictionary to a JSON string and print it.
+            json_str = json.dumps(net_json, indent=2)
+            parsed_networks,string_parsed_networks,dataset = load_dataset('blah',json_str)
+
+            embedding = [ np.mean(embed['embedding'].cpu().detach().numpy(), axis=0)   for embed in get_embedding_dataset(usemodel, modeltype, dataset)]
+            embedding_dictionary[ann.name] = np.mean(embedding)
+        except:
+            pass
+    return embedding_dictionary
+
 # ----------------------- USAGE EXAMPLE -----------------------
 if __name__ == "__main__":
     # Load your ontology (adjust path/URL accordingly)
     onto = get_ontology("/fastdata1/home/annett-o-0.1.owl").load()
-    device = 'cuda'
-    model = loadModel('fixed')
-    # Suppose you have an ANNConfiguration that has networks.
-    ann_config = onto.search_one(is_a=onto.ANNConfiguration).instances()
     
-    if not ann_config:
-        print("No ANNConfiguration instance found!")
-    else:
+    get_embedding(onto)
+
+    #device = 'cuda'
+    #model = loadModel('fixed')
+
+    
+
+    # Suppose you have an ANNConfiguration that has networks.
+    #ann_config = onto.search_one(is_a=onto.ANNConfiguration).instances()
+    
+    #if not ann_config:
+    #    print("No ANNConfiguration instance found!")
+    #else:
         # For demonstration, let's assume we take the first network from this configuration.
-        networks =   ann_config[0].__getattr__('hasNetwork') #list(ann_config.hasNetwork) if hasattr(ann_config, "hasNetwork") else []
-        if not networks:
-            print("No networks found under the ANNConfiguration!")
-        else:
-            for network in networks:
-                print(network)
-                net_json = [convert_network_to_json(network)]
+    #    networks =   ann_config[0].__getattr__('hasNetwork') #list(ann_config.hasNetwork) if hasattr(ann_config, "hasNetwork") else []
+    #    if not networks:
+    #        print("No networks found under the ANNConfiguration!")
+    #    else:
+    #        for network in networks:
+    #            print(network)
+    #            net_json = [convert_network_to_json(network)]
 
 
                 # Convert the dictionary to a JSON string and print it.
-                json_str = json.dumps(net_json, indent=2)
-                parsed_networks,string_parsed_networks,dataset = load_dataset('blah',json_str)
-                print(get_embedding_dataset(model, 'fixed', dataset))
-                print(json_str)
+    #            json_str = json.dumps(net_json, indent=2)
+    #            parsed_networks,string_parsed_networks,dataset = load_dataset('blah',json_str)
+    #            print(get_embedding_dataset(model, 'fixed', dataset))
+    #            print(json_str)
 
 

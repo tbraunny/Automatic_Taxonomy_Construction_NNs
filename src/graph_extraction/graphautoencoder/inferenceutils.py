@@ -6,7 +6,16 @@ from torch_geometric.data import Data, DataLoader
 from torch_geometric.nn import GCNConv, global_mean_pool
 from torch_geometric.utils import to_dense_batch
 
-from processing import parse_networks,LAYER_MAPPING,REVERSE_MAPPING,create_chain_graph
+
+import os,sys
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
+
+
+from src.graph_extraction.graphautoencoder.processing import parse_networks,LAYER_MAPPING,REVERSE_MAPPING,create_chain_graph
 
 
 
@@ -29,9 +38,9 @@ def load_dataset(filepath='./networks.json',passed_in_json=None,selected_model='
 
 def loadModel(selected_model,device='cuda'):
     if selected_model  == 'fixed':
-        path = 'test.pt'
+        path = 'src/graph_extraction/graphautoencoder/test.pt'
     else:
-        path = 'testbert.pt'
+        path = 'src/graph_extraction/graphautoencoder/testbert.pt'
     model = torch.load(path)#GraphAutoencoder(num_tokens=num_tokens, embed_dim=8, hidden_dim=16, latent_dim=8)
     model = model.to(device)
     model.eval()

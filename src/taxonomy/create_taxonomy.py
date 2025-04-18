@@ -33,7 +33,7 @@ from src.taxonomy.criteria import *
 from src.graph_extraction.graphautoencoder.owlinference import get_embedding
 from src.graph_extraction.graphautoencoder.model import GraphAutoencoder,GraphBertAutoencoder
 
-from src.taxonomy.testing import * 
+from src.taxonomy.querybuilder import * 
 
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
@@ -87,11 +87,8 @@ def find_paths_to_classes(onto):
         current,path = stack[0]
         visited.append(stack[0])
         del stack[0]
-        #path.append(current)
         for prop in onto.object_properties():
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
-            #print(prop.name,searchdomain, current in searchdomain)
-            #print(type(current))
             if current in searchdomain:
                 #if 'hasTrainingOptimizer' in str(prop):
                 copypath = list(path)
@@ -107,8 +104,6 @@ def find_paths_to_classes(onto):
                         visited.append(prop.range[0])
         for prop in onto.data_properties():
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
-            #print(prop.name,searchdomain, current in searchdomain)
-            #print(type(current))
             if current in searchdomain:
 
                 copypath = list(path)
@@ -123,12 +118,6 @@ def find_paths_to_classes(onto):
                         stack.append((prop.range[0], copypath))
                         visited.append(prop.range[0])
 
-    #print(mapping)
-    #print(list(mapping.keys()))
-
-    #print(list(classmapping.keys()))
-    #print(classmapping[onto.Layer])
-    #print(mapping[classmapping[onto.Layer]])
     return classmapping, mapping
 
 def parse_function(text):
@@ -224,10 +213,6 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
             pass
 
     return found
-
-
-
-backTrackMap = {}
 
 def find_instances(annConfig, ontology, query):
     found = [[] for value in query.Value]
@@ -924,7 +909,7 @@ def main():
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
     # Example Criteria...
-    op2 = SearchOperator(HashOn="type",Value=[ValueOperator(Name='layer_num_units',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     
     
