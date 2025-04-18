@@ -813,6 +813,5 @@ if __name__ == "__main__":
     ontology = load_annetto_ontology(return_onto_from_release="test")
 
     with ontology:
-        delete_ann_configuration(ontology, "709942bd_alexnet")
 
         save_ontology(ontology, C.ONTOLOGY.TEST_ONTOLOGY_PATH, format="rdfxml")
