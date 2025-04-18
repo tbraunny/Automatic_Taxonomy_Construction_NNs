@@ -2,8 +2,9 @@ import os
 import glob
 
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
-from src.code_extraction.code_extractor import process_code_file
+from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
+from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 
 from utils.annetto_utils import load_annetto_ontology
@@ -48,9 +49,9 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
         raise ValueError("ANN path must be a directory.")
 
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
-    py_files = glob.glob(f"{ann_path}/*.py")
-    onnx_files = glob.glob(f"{ann_path}/*.onnx")
-    pb_files = glob.glob(f"{ann_path}/*.pb")
+    py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
+    onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
+    pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
 
     # Check if any pdfs were found
     if not ann_pdf_files:
@@ -65,8 +66,15 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
             extract_filter_pdf_to_json(pdf_file, ann_path)
 
     # Extract code (give file path, glob is processed in the function), if any
+    process_code = CodeExtractor()
+    pytorch_module_names: list = []
     if py_files or onnx_files or pb_files:
-        process_code_file(ann_path)
+        process_code.process_code_file(ann_path)
+        pytorch_module_names = process_code.pytorch_module_names # for richie
+
+    # insert model into db
+    db_runner = DBUtils()
+    model_id = db_runner.insert_model_components(ann_path) # returns id of inserted model
 
     output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
     if not use_user_owl:

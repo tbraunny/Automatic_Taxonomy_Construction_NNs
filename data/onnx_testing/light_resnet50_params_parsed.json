@@ -1,0 +1,5363 @@
+{
+  "network": [
+    {
+      "name": "gpu_0/conv1_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/conv1_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/conv1_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/pred_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/pred_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/pred_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/pred_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/pred_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/pred_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch1_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch1_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch1_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch1_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch1_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch1_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch1_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch1_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch1_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch1_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch1_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch1_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch1_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch1_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch1_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_0_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_0_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_0_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_1_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_1_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_1_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res2_2_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res2_2_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res2_2_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch1_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch1_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch1_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch1_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch1_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch1_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch1_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch1_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch1_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch1_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch1_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch1_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch1_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch1_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch1_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_0_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_0_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_0_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_1_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_1_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_1_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_2_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_2_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_2_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res3_3_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res3_3_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res3_3_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch1_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch1_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch1_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch1_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch1_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch1_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch1_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch1_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch1_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch1_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch1_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch1_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch1_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch1_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch1_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_0_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_0_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_0_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_1_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_1_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_1_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_2_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_2_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_2_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_3_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_3_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_3_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_4_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_4_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_4_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res4_5_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res4_5_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res4_5_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch1_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch1_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch1_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch1_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch1_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch1_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch1_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch1_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch1_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch1_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch1_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch1_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch1_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch1_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch1_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_0_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_0_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_0_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_1_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_1_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_1_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2a_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2a_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2a_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2a_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2a_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2a_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2a_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2a_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2a_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2a_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2a_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2a_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2a_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2a_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2a_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2b_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2b_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2b_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2b_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2b_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2b_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2b_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2b_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2b_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2b_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2b_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2b_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2b_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2b_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2b_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2c_bn_b_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2c_bn_b_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2c_bn_b_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2c_bn_riv_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2c_bn_riv_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2c_bn_riv_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2c_bn_rm_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2c_bn_rm_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2c_bn_rm_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2c_bn_s_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2c_bn_s_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2c_bn_s_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "gpu_0/res5_2_branch2c_w_0",
+      "op_type": "ConstantOfShape",
+      "inputs": [
+        "gpu_0/res5_2_branch2c_w_0__SHAPE"
+      ],
+      "outputs": [
+        "gpu_0/res5_2_branch2c_w_0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n0",
+      "op_type": "Conv",
+      "inputs": [
+        "gpu_0/data_0",
+        "gpu_0/conv1_w_0"
+      ],
+      "outputs": [
+        "r0"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n1",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r0",
+        "gpu_0/res_conv1_bn_s_0",
+        "gpu_0/res_conv1_bn_b_0",
+        "gpu_0/res_conv1_bn_rm_0",
+        "gpu_0/res_conv1_bn_riv_0"
+      ],
+      "outputs": [
+        "r1"
+      ],
+      "parameters": {
+        "gpu_0/res_conv1_bn_s_0": [
+          64
+        ],
+        "gpu_0/res_conv1_bn_b_0": [
+          64
+        ],
+        "gpu_0/res_conv1_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res_conv1_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n2",
+      "op_type": "Relu",
+      "inputs": [
+        "r1"
+      ],
+      "outputs": [
+        "r2"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n3",
+      "op_type": "MaxPool",
+      "inputs": [
+        "r2"
+      ],
+      "outputs": [
+        "r3"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n4",
+      "op_type": "Conv",
+      "inputs": [
+        "r3",
+        "gpu_0/res2_0_branch2a_w_0"
+      ],
+      "outputs": [
+        "r4"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n5",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r4",
+        "gpu_0/res2_0_branch2a_bn_s_0",
+        "gpu_0/res2_0_branch2a_bn_b_0",
+        "gpu_0/res2_0_branch2a_bn_rm_0",
+        "gpu_0/res2_0_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r5"
+      ],
+      "parameters": {
+        "gpu_0/res2_0_branch2a_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2a_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2a_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2a_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n6",
+      "op_type": "Relu",
+      "inputs": [
+        "r5"
+      ],
+      "outputs": [
+        "r6"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n7",
+      "op_type": "Conv",
+      "inputs": [
+        "r6",
+        "gpu_0/res2_0_branch2b_w_0"
+      ],
+      "outputs": [
+        "r7"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n8",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r7",
+        "gpu_0/res2_0_branch2b_bn_s_0",
+        "gpu_0/res2_0_branch2b_bn_b_0",
+        "gpu_0/res2_0_branch2b_bn_rm_0",
+        "gpu_0/res2_0_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r8"
+      ],
+      "parameters": {
+        "gpu_0/res2_0_branch2b_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2b_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2b_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_0_branch2b_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n9",
+      "op_type": "Relu",
+      "inputs": [
+        "r8"
+      ],
+      "outputs": [
+        "r9"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n10",
+      "op_type": "Conv",
+      "inputs": [
+        "r9",
+        "gpu_0/res2_0_branch2c_w_0"
+      ],
+      "outputs": [
+        "r10"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n11",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r10",
+        "gpu_0/res2_0_branch2c_bn_s_0",
+        "gpu_0/res2_0_branch2c_bn_b_0",
+        "gpu_0/res2_0_branch2c_bn_rm_0",
+        "gpu_0/res2_0_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r11"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n12",
+      "op_type": "Conv",
+      "inputs": [
+        "r3",
+        "gpu_0/res2_0_branch1_w_0"
+      ],
+      "outputs": [
+        "r12"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n13",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r12",
+        "gpu_0/res2_0_branch1_bn_s_0",
+        "gpu_0/res2_0_branch1_bn_b_0",
+        "gpu_0/res2_0_branch1_bn_rm_0",
+        "gpu_0/res2_0_branch1_bn_riv_0"
+      ],
+      "outputs": [
+        "r13"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n14",
+      "op_type": "Sum",
+      "inputs": [
+        "r11",
+        "r13"
+      ],
+      "outputs": [
+        "r14"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n15",
+      "op_type": "Relu",
+      "inputs": [
+        "r14"
+      ],
+      "outputs": [
+        "r15"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n16",
+      "op_type": "Conv",
+      "inputs": [
+        "r15",
+        "gpu_0/res2_1_branch2a_w_0"
+      ],
+      "outputs": [
+        "r16"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n17",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r16",
+        "gpu_0/res2_1_branch2a_bn_s_0",
+        "gpu_0/res2_1_branch2a_bn_b_0",
+        "gpu_0/res2_1_branch2a_bn_rm_0",
+        "gpu_0/res2_1_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r17"
+      ],
+      "parameters": {
+        "gpu_0/res2_1_branch2a_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2a_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2a_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2a_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n18",
+      "op_type": "Relu",
+      "inputs": [
+        "r17"
+      ],
+      "outputs": [
+        "r18"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n19",
+      "op_type": "Conv",
+      "inputs": [
+        "r18",
+        "gpu_0/res2_1_branch2b_w_0"
+      ],
+      "outputs": [
+        "r19"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n20",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r19",
+        "gpu_0/res2_1_branch2b_bn_s_0",
+        "gpu_0/res2_1_branch2b_bn_b_0",
+        "gpu_0/res2_1_branch2b_bn_rm_0",
+        "gpu_0/res2_1_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r20"
+      ],
+      "parameters": {
+        "gpu_0/res2_1_branch2b_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2b_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2b_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_1_branch2b_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n21",
+      "op_type": "Relu",
+      "inputs": [
+        "r20"
+      ],
+      "outputs": [
+        "r21"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n22",
+      "op_type": "Conv",
+      "inputs": [
+        "r21",
+        "gpu_0/res2_1_branch2c_w_0"
+      ],
+      "outputs": [
+        "r22"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n23",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r22",
+        "gpu_0/res2_1_branch2c_bn_s_0",
+        "gpu_0/res2_1_branch2c_bn_b_0",
+        "gpu_0/res2_1_branch2c_bn_rm_0",
+        "gpu_0/res2_1_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r23"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n24",
+      "op_type": "Sum",
+      "inputs": [
+        "r23",
+        "r15"
+      ],
+      "outputs": [
+        "r24"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n25",
+      "op_type": "Relu",
+      "inputs": [
+        "r24"
+      ],
+      "outputs": [
+        "r25"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n26",
+      "op_type": "Conv",
+      "inputs": [
+        "r25",
+        "gpu_0/res2_2_branch2a_w_0"
+      ],
+      "outputs": [
+        "r26"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n27",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r26",
+        "gpu_0/res2_2_branch2a_bn_s_0",
+        "gpu_0/res2_2_branch2a_bn_b_0",
+        "gpu_0/res2_2_branch2a_bn_rm_0",
+        "gpu_0/res2_2_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r27"
+      ],
+      "parameters": {
+        "gpu_0/res2_2_branch2a_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2a_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2a_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2a_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n28",
+      "op_type": "Relu",
+      "inputs": [
+        "r27"
+      ],
+      "outputs": [
+        "r28"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n29",
+      "op_type": "Conv",
+      "inputs": [
+        "r28",
+        "gpu_0/res2_2_branch2b_w_0"
+      ],
+      "outputs": [
+        "r29"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n30",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r29",
+        "gpu_0/res2_2_branch2b_bn_s_0",
+        "gpu_0/res2_2_branch2b_bn_b_0",
+        "gpu_0/res2_2_branch2b_bn_rm_0",
+        "gpu_0/res2_2_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r30"
+      ],
+      "parameters": {
+        "gpu_0/res2_2_branch2b_bn_s_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2b_bn_b_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2b_bn_rm_0": [
+          64
+        ],
+        "gpu_0/res2_2_branch2b_bn_riv_0": [
+          64
+        ]
+      },
+      "num_params": 256
+    },
+    {
+      "name": "n31",
+      "op_type": "Relu",
+      "inputs": [
+        "r30"
+      ],
+      "outputs": [
+        "r31"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n32",
+      "op_type": "Conv",
+      "inputs": [
+        "r31",
+        "gpu_0/res2_2_branch2c_w_0"
+      ],
+      "outputs": [
+        "r32"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n33",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r32",
+        "gpu_0/res2_2_branch2c_bn_s_0",
+        "gpu_0/res2_2_branch2c_bn_b_0",
+        "gpu_0/res2_2_branch2c_bn_rm_0",
+        "gpu_0/res2_2_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r33"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n34",
+      "op_type": "Sum",
+      "inputs": [
+        "r33",
+        "r25"
+      ],
+      "outputs": [
+        "r34"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n35",
+      "op_type": "Relu",
+      "inputs": [
+        "r34"
+      ],
+      "outputs": [
+        "r35"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n36",
+      "op_type": "Conv",
+      "inputs": [
+        "r35",
+        "gpu_0/res3_0_branch2a_w_0"
+      ],
+      "outputs": [
+        "r36"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n37",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r36",
+        "gpu_0/res3_0_branch2a_bn_s_0",
+        "gpu_0/res3_0_branch2a_bn_b_0",
+        "gpu_0/res3_0_branch2a_bn_rm_0",
+        "gpu_0/res3_0_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r37"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n38",
+      "op_type": "Relu",
+      "inputs": [
+        "r37"
+      ],
+      "outputs": [
+        "r38"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n39",
+      "op_type": "Conv",
+      "inputs": [
+        "r38",
+        "gpu_0/res3_0_branch2b_w_0"
+      ],
+      "outputs": [
+        "r39"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n40",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r39",
+        "gpu_0/res3_0_branch2b_bn_s_0",
+        "gpu_0/res3_0_branch2b_bn_b_0",
+        "gpu_0/res3_0_branch2b_bn_rm_0",
+        "gpu_0/res3_0_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r40"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n41",
+      "op_type": "Relu",
+      "inputs": [
+        "r40"
+      ],
+      "outputs": [
+        "r41"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n42",
+      "op_type": "Conv",
+      "inputs": [
+        "r41",
+        "gpu_0/res3_0_branch2c_w_0"
+      ],
+      "outputs": [
+        "r42"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n43",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r42",
+        "gpu_0/res3_0_branch2c_bn_s_0",
+        "gpu_0/res3_0_branch2c_bn_b_0",
+        "gpu_0/res3_0_branch2c_bn_rm_0",
+        "gpu_0/res3_0_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r43"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n44",
+      "op_type": "Conv",
+      "inputs": [
+        "r35",
+        "gpu_0/res3_0_branch1_w_0"
+      ],
+      "outputs": [
+        "r44"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n45",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r44",
+        "gpu_0/res3_0_branch1_bn_s_0",
+        "gpu_0/res3_0_branch1_bn_b_0",
+        "gpu_0/res3_0_branch1_bn_rm_0",
+        "gpu_0/res3_0_branch1_bn_riv_0"
+      ],
+      "outputs": [
+        "r45"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n46",
+      "op_type": "Sum",
+      "inputs": [
+        "r43",
+        "r45"
+      ],
+      "outputs": [
+        "r46"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n47",
+      "op_type": "Relu",
+      "inputs": [
+        "r46"
+      ],
+      "outputs": [
+        "r47"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n48",
+      "op_type": "Conv",
+      "inputs": [
+        "r47",
+        "gpu_0/res3_1_branch2a_w_0"
+      ],
+      "outputs": [
+        "r48"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n49",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r48",
+        "gpu_0/res3_1_branch2a_bn_s_0",
+        "gpu_0/res3_1_branch2a_bn_b_0",
+        "gpu_0/res3_1_branch2a_bn_rm_0",
+        "gpu_0/res3_1_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r49"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n50",
+      "op_type": "Relu",
+      "inputs": [
+        "r49"
+      ],
+      "outputs": [
+        "r50"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n51",
+      "op_type": "Conv",
+      "inputs": [
+        "r50",
+        "gpu_0/res3_1_branch2b_w_0"
+      ],
+      "outputs": [
+        "r51"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n52",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r51",
+        "gpu_0/res3_1_branch2b_bn_s_0",
+        "gpu_0/res3_1_branch2b_bn_b_0",
+        "gpu_0/res3_1_branch2b_bn_rm_0",
+        "gpu_0/res3_1_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r52"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n53",
+      "op_type": "Relu",
+      "inputs": [
+        "r52"
+      ],
+      "outputs": [
+        "r53"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n54",
+      "op_type": "Conv",
+      "inputs": [
+        "r53",
+        "gpu_0/res3_1_branch2c_w_0"
+      ],
+      "outputs": [
+        "r54"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n55",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r54",
+        "gpu_0/res3_1_branch2c_bn_s_0",
+        "gpu_0/res3_1_branch2c_bn_b_0",
+        "gpu_0/res3_1_branch2c_bn_rm_0",
+        "gpu_0/res3_1_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r55"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n56",
+      "op_type": "Sum",
+      "inputs": [
+        "r55",
+        "r47"
+      ],
+      "outputs": [
+        "r56"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n57",
+      "op_type": "Relu",
+      "inputs": [
+        "r56"
+      ],
+      "outputs": [
+        "r57"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n58",
+      "op_type": "Conv",
+      "inputs": [
+        "r57",
+        "gpu_0/res3_2_branch2a_w_0"
+      ],
+      "outputs": [
+        "r58"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n59",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r58",
+        "gpu_0/res3_2_branch2a_bn_s_0",
+        "gpu_0/res3_2_branch2a_bn_b_0",
+        "gpu_0/res3_2_branch2a_bn_rm_0",
+        "gpu_0/res3_2_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r59"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n60",
+      "op_type": "Relu",
+      "inputs": [
+        "r59"
+      ],
+      "outputs": [
+        "r60"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n61",
+      "op_type": "Conv",
+      "inputs": [
+        "r60",
+        "gpu_0/res3_2_branch2b_w_0"
+      ],
+      "outputs": [
+        "r61"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n62",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r61",
+        "gpu_0/res3_2_branch2b_bn_s_0",
+        "gpu_0/res3_2_branch2b_bn_b_0",
+        "gpu_0/res3_2_branch2b_bn_rm_0",
+        "gpu_0/res3_2_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r62"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n63",
+      "op_type": "Relu",
+      "inputs": [
+        "r62"
+      ],
+      "outputs": [
+        "r63"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n64",
+      "op_type": "Conv",
+      "inputs": [
+        "r63",
+        "gpu_0/res3_2_branch2c_w_0"
+      ],
+      "outputs": [
+        "r64"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n65",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r64",
+        "gpu_0/res3_2_branch2c_bn_s_0",
+        "gpu_0/res3_2_branch2c_bn_b_0",
+        "gpu_0/res3_2_branch2c_bn_rm_0",
+        "gpu_0/res3_2_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r65"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n66",
+      "op_type": "Sum",
+      "inputs": [
+        "r65",
+        "r57"
+      ],
+      "outputs": [
+        "r66"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n67",
+      "op_type": "Relu",
+      "inputs": [
+        "r66"
+      ],
+      "outputs": [
+        "r67"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n68",
+      "op_type": "Conv",
+      "inputs": [
+        "r67",
+        "gpu_0/res3_3_branch2a_w_0"
+      ],
+      "outputs": [
+        "r68"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n69",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r68",
+        "gpu_0/res3_3_branch2a_bn_s_0",
+        "gpu_0/res3_3_branch2a_bn_b_0",
+        "gpu_0/res3_3_branch2a_bn_rm_0",
+        "gpu_0/res3_3_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r69"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n70",
+      "op_type": "Relu",
+      "inputs": [
+        "r69"
+      ],
+      "outputs": [
+        "r70"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n71",
+      "op_type": "Conv",
+      "inputs": [
+        "r70",
+        "gpu_0/res3_3_branch2b_w_0"
+      ],
+      "outputs": [
+        "r71"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n72",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r71",
+        "gpu_0/res3_3_branch2b_bn_s_0",
+        "gpu_0/res3_3_branch2b_bn_b_0",
+        "gpu_0/res3_3_branch2b_bn_rm_0",
+        "gpu_0/res3_3_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r72"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n73",
+      "op_type": "Relu",
+      "inputs": [
+        "r72"
+      ],
+      "outputs": [
+        "r73"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n74",
+      "op_type": "Conv",
+      "inputs": [
+        "r73",
+        "gpu_0/res3_3_branch2c_w_0"
+      ],
+      "outputs": [
+        "r74"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n75",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r74",
+        "gpu_0/res3_3_branch2c_bn_s_0",
+        "gpu_0/res3_3_branch2c_bn_b_0",
+        "gpu_0/res3_3_branch2c_bn_rm_0",
+        "gpu_0/res3_3_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r75"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n76",
+      "op_type": "Sum",
+      "inputs": [
+        "r75",
+        "r67"
+      ],
+      "outputs": [
+        "r76"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n77",
+      "op_type": "Relu",
+      "inputs": [
+        "r76"
+      ],
+      "outputs": [
+        "r77"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n78",
+      "op_type": "Conv",
+      "inputs": [
+        "r77",
+        "gpu_0/res4_0_branch2a_w_0"
+      ],
+      "outputs": [
+        "r78"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n79",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r78",
+        "gpu_0/res4_0_branch2a_bn_s_0",
+        "gpu_0/res4_0_branch2a_bn_b_0",
+        "gpu_0/res4_0_branch2a_bn_rm_0",
+        "gpu_0/res4_0_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r79"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n80",
+      "op_type": "Relu",
+      "inputs": [
+        "r79"
+      ],
+      "outputs": [
+        "r80"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n81",
+      "op_type": "Conv",
+      "inputs": [
+        "r80",
+        "gpu_0/res4_0_branch2b_w_0"
+      ],
+      "outputs": [
+        "r81"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n82",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r81",
+        "gpu_0/res4_0_branch2b_bn_s_0",
+        "gpu_0/res4_0_branch2b_bn_b_0",
+        "gpu_0/res4_0_branch2b_bn_rm_0",
+        "gpu_0/res4_0_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r82"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n83",
+      "op_type": "Relu",
+      "inputs": [
+        "r82"
+      ],
+      "outputs": [
+        "r83"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n84",
+      "op_type": "Conv",
+      "inputs": [
+        "r83",
+        "gpu_0/res4_0_branch2c_w_0"
+      ],
+      "outputs": [
+        "r84"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n85",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r84",
+        "gpu_0/res4_0_branch2c_bn_s_0",
+        "gpu_0/res4_0_branch2c_bn_b_0",
+        "gpu_0/res4_0_branch2c_bn_rm_0",
+        "gpu_0/res4_0_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r85"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n86",
+      "op_type": "Conv",
+      "inputs": [
+        "r77",
+        "gpu_0/res4_0_branch1_w_0"
+      ],
+      "outputs": [
+        "r86"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n87",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r86",
+        "gpu_0/res4_0_branch1_bn_s_0",
+        "gpu_0/res4_0_branch1_bn_b_0",
+        "gpu_0/res4_0_branch1_bn_rm_0",
+        "gpu_0/res4_0_branch1_bn_riv_0"
+      ],
+      "outputs": [
+        "r87"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n88",
+      "op_type": "Sum",
+      "inputs": [
+        "r85",
+        "r87"
+      ],
+      "outputs": [
+        "r88"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n89",
+      "op_type": "Relu",
+      "inputs": [
+        "r88"
+      ],
+      "outputs": [
+        "r89"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n90",
+      "op_type": "Conv",
+      "inputs": [
+        "r89",
+        "gpu_0/res4_1_branch2a_w_0"
+      ],
+      "outputs": [
+        "r90"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n91",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r90",
+        "gpu_0/res4_1_branch2a_bn_s_0",
+        "gpu_0/res4_1_branch2a_bn_b_0",
+        "gpu_0/res4_1_branch2a_bn_rm_0",
+        "gpu_0/res4_1_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r91"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n92",
+      "op_type": "Relu",
+      "inputs": [
+        "r91"
+      ],
+      "outputs": [
+        "r92"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n93",
+      "op_type": "Conv",
+      "inputs": [
+        "r92",
+        "gpu_0/res4_1_branch2b_w_0"
+      ],
+      "outputs": [
+        "r93"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n94",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r93",
+        "gpu_0/res4_1_branch2b_bn_s_0",
+        "gpu_0/res4_1_branch2b_bn_b_0",
+        "gpu_0/res4_1_branch2b_bn_rm_0",
+        "gpu_0/res4_1_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r94"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n95",
+      "op_type": "Relu",
+      "inputs": [
+        "r94"
+      ],
+      "outputs": [
+        "r95"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n96",
+      "op_type": "Conv",
+      "inputs": [
+        "r95",
+        "gpu_0/res4_1_branch2c_w_0"
+      ],
+      "outputs": [
+        "r96"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n97",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r96",
+        "gpu_0/res4_1_branch2c_bn_s_0",
+        "gpu_0/res4_1_branch2c_bn_b_0",
+        "gpu_0/res4_1_branch2c_bn_rm_0",
+        "gpu_0/res4_1_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r97"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n98",
+      "op_type": "Sum",
+      "inputs": [
+        "r97",
+        "r89"
+      ],
+      "outputs": [
+        "r98"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n99",
+      "op_type": "Relu",
+      "inputs": [
+        "r98"
+      ],
+      "outputs": [
+        "r99"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n100",
+      "op_type": "Conv",
+      "inputs": [
+        "r99",
+        "gpu_0/res4_2_branch2a_w_0"
+      ],
+      "outputs": [
+        "r100"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n101",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r100",
+        "gpu_0/res4_2_branch2a_bn_s_0",
+        "gpu_0/res4_2_branch2a_bn_b_0",
+        "gpu_0/res4_2_branch2a_bn_rm_0",
+        "gpu_0/res4_2_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r101"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n102",
+      "op_type": "Relu",
+      "inputs": [
+        "r101"
+      ],
+      "outputs": [
+        "r102"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n103",
+      "op_type": "Conv",
+      "inputs": [
+        "r102",
+        "gpu_0/res4_2_branch2b_w_0"
+      ],
+      "outputs": [
+        "r103"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n104",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r103",
+        "gpu_0/res4_2_branch2b_bn_s_0",
+        "gpu_0/res4_2_branch2b_bn_b_0",
+        "gpu_0/res4_2_branch2b_bn_rm_0",
+        "gpu_0/res4_2_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r104"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n105",
+      "op_type": "Relu",
+      "inputs": [
+        "r104"
+      ],
+      "outputs": [
+        "r105"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n106",
+      "op_type": "Conv",
+      "inputs": [
+        "r105",
+        "gpu_0/res4_2_branch2c_w_0"
+      ],
+      "outputs": [
+        "r106"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n107",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r106",
+        "gpu_0/res4_2_branch2c_bn_s_0",
+        "gpu_0/res4_2_branch2c_bn_b_0",
+        "gpu_0/res4_2_branch2c_bn_rm_0",
+        "gpu_0/res4_2_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r107"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n108",
+      "op_type": "Sum",
+      "inputs": [
+        "r107",
+        "r99"
+      ],
+      "outputs": [
+        "r108"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n109",
+      "op_type": "Relu",
+      "inputs": [
+        "r108"
+      ],
+      "outputs": [
+        "r109"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n110",
+      "op_type": "Conv",
+      "inputs": [
+        "r109",
+        "gpu_0/res4_3_branch2a_w_0"
+      ],
+      "outputs": [
+        "r110"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n111",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r110",
+        "gpu_0/res4_3_branch2a_bn_s_0",
+        "gpu_0/res4_3_branch2a_bn_b_0",
+        "gpu_0/res4_3_branch2a_bn_rm_0",
+        "gpu_0/res4_3_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r111"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n112",
+      "op_type": "Relu",
+      "inputs": [
+        "r111"
+      ],
+      "outputs": [
+        "r112"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n113",
+      "op_type": "Conv",
+      "inputs": [
+        "r112",
+        "gpu_0/res4_3_branch2b_w_0"
+      ],
+      "outputs": [
+        "r113"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n114",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r113",
+        "gpu_0/res4_3_branch2b_bn_s_0",
+        "gpu_0/res4_3_branch2b_bn_b_0",
+        "gpu_0/res4_3_branch2b_bn_rm_0",
+        "gpu_0/res4_3_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r114"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n115",
+      "op_type": "Relu",
+      "inputs": [
+        "r114"
+      ],
+      "outputs": [
+        "r115"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n116",
+      "op_type": "Conv",
+      "inputs": [
+        "r115",
+        "gpu_0/res4_3_branch2c_w_0"
+      ],
+      "outputs": [
+        "r116"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n117",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r116",
+        "gpu_0/res4_3_branch2c_bn_s_0",
+        "gpu_0/res4_3_branch2c_bn_b_0",
+        "gpu_0/res4_3_branch2c_bn_rm_0",
+        "gpu_0/res4_3_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r117"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n118",
+      "op_type": "Sum",
+      "inputs": [
+        "r117",
+        "r109"
+      ],
+      "outputs": [
+        "r118"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n119",
+      "op_type": "Relu",
+      "inputs": [
+        "r118"
+      ],
+      "outputs": [
+        "r119"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n120",
+      "op_type": "Conv",
+      "inputs": [
+        "r119",
+        "gpu_0/res4_4_branch2a_w_0"
+      ],
+      "outputs": [
+        "r120"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n121",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r120",
+        "gpu_0/res4_4_branch2a_bn_s_0",
+        "gpu_0/res4_4_branch2a_bn_b_0",
+        "gpu_0/res4_4_branch2a_bn_rm_0",
+        "gpu_0/res4_4_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r121"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n122",
+      "op_type": "Relu",
+      "inputs": [
+        "r121"
+      ],
+      "outputs": [
+        "r122"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n123",
+      "op_type": "Conv",
+      "inputs": [
+        "r122",
+        "gpu_0/res4_4_branch2b_w_0"
+      ],
+      "outputs": [
+        "r123"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n124",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r123",
+        "gpu_0/res4_4_branch2b_bn_s_0",
+        "gpu_0/res4_4_branch2b_bn_b_0",
+        "gpu_0/res4_4_branch2b_bn_rm_0",
+        "gpu_0/res4_4_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r124"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n125",
+      "op_type": "Relu",
+      "inputs": [
+        "r124"
+      ],
+      "outputs": [
+        "r125"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n126",
+      "op_type": "Conv",
+      "inputs": [
+        "r125",
+        "gpu_0/res4_4_branch2c_w_0"
+      ],
+      "outputs": [
+        "r126"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n127",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r126",
+        "gpu_0/res4_4_branch2c_bn_s_0",
+        "gpu_0/res4_4_branch2c_bn_b_0",
+        "gpu_0/res4_4_branch2c_bn_rm_0",
+        "gpu_0/res4_4_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r127"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n128",
+      "op_type": "Sum",
+      "inputs": [
+        "r127",
+        "r119"
+      ],
+      "outputs": [
+        "r128"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n129",
+      "op_type": "Relu",
+      "inputs": [
+        "r128"
+      ],
+      "outputs": [
+        "r129"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n130",
+      "op_type": "Conv",
+      "inputs": [
+        "r129",
+        "gpu_0/res4_5_branch2a_w_0"
+      ],
+      "outputs": [
+        "r130"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n131",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r130",
+        "gpu_0/res4_5_branch2a_bn_s_0",
+        "gpu_0/res4_5_branch2a_bn_b_0",
+        "gpu_0/res4_5_branch2a_bn_rm_0",
+        "gpu_0/res4_5_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r131"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n132",
+      "op_type": "Relu",
+      "inputs": [
+        "r131"
+      ],
+      "outputs": [
+        "r132"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n133",
+      "op_type": "Conv",
+      "inputs": [
+        "r132",
+        "gpu_0/res4_5_branch2b_w_0"
+      ],
+      "outputs": [
+        "r133"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n134",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r133",
+        "gpu_0/res4_5_branch2b_bn_s_0",
+        "gpu_0/res4_5_branch2b_bn_b_0",
+        "gpu_0/res4_5_branch2b_bn_rm_0",
+        "gpu_0/res4_5_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r134"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n135",
+      "op_type": "Relu",
+      "inputs": [
+        "r134"
+      ],
+      "outputs": [
+        "r135"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n136",
+      "op_type": "Conv",
+      "inputs": [
+        "r135",
+        "gpu_0/res4_5_branch2c_w_0"
+      ],
+      "outputs": [
+        "r136"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n137",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r136",
+        "gpu_0/res4_5_branch2c_bn_s_0",
+        "gpu_0/res4_5_branch2c_bn_b_0",
+        "gpu_0/res4_5_branch2c_bn_rm_0",
+        "gpu_0/res4_5_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r137"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n138",
+      "op_type": "Sum",
+      "inputs": [
+        "r137",
+        "r129"
+      ],
+      "outputs": [
+        "r138"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n139",
+      "op_type": "Relu",
+      "inputs": [
+        "r138"
+      ],
+      "outputs": [
+        "r139"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n140",
+      "op_type": "Conv",
+      "inputs": [
+        "r139",
+        "gpu_0/res5_0_branch2a_w_0"
+      ],
+      "outputs": [
+        "r140"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n141",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r140",
+        "gpu_0/res5_0_branch2a_bn_s_0",
+        "gpu_0/res5_0_branch2a_bn_b_0",
+        "gpu_0/res5_0_branch2a_bn_rm_0",
+        "gpu_0/res5_0_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r141"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n142",
+      "op_type": "Relu",
+      "inputs": [
+        "r141"
+      ],
+      "outputs": [
+        "r142"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n143",
+      "op_type": "Conv",
+      "inputs": [
+        "r142",
+        "gpu_0/res5_0_branch2b_w_0"
+      ],
+      "outputs": [
+        "r143"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n144",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r143",
+        "gpu_0/res5_0_branch2b_bn_s_0",
+        "gpu_0/res5_0_branch2b_bn_b_0",
+        "gpu_0/res5_0_branch2b_bn_rm_0",
+        "gpu_0/res5_0_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r144"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n145",
+      "op_type": "Relu",
+      "inputs": [
+        "r144"
+      ],
+      "outputs": [
+        "r145"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n146",
+      "op_type": "Conv",
+      "inputs": [
+        "r145",
+        "gpu_0/res5_0_branch2c_w_0"
+      ],
+      "outputs": [
+        "r146"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n147",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r146",
+        "gpu_0/res5_0_branch2c_bn_s_0",
+        "gpu_0/res5_0_branch2c_bn_b_0",
+        "gpu_0/res5_0_branch2c_bn_rm_0",
+        "gpu_0/res5_0_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r147"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n148",
+      "op_type": "Conv",
+      "inputs": [
+        "r139",
+        "gpu_0/res5_0_branch1_w_0"
+      ],
+      "outputs": [
+        "r148"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n149",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r148",
+        "gpu_0/res5_0_branch1_bn_s_0",
+        "gpu_0/res5_0_branch1_bn_b_0",
+        "gpu_0/res5_0_branch1_bn_rm_0",
+        "gpu_0/res5_0_branch1_bn_riv_0"
+      ],
+      "outputs": [
+        "r149"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n150",
+      "op_type": "Sum",
+      "inputs": [
+        "r147",
+        "r149"
+      ],
+      "outputs": [
+        "r150"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n151",
+      "op_type": "Relu",
+      "inputs": [
+        "r150"
+      ],
+      "outputs": [
+        "r151"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n152",
+      "op_type": "Conv",
+      "inputs": [
+        "r151",
+        "gpu_0/res5_1_branch2a_w_0"
+      ],
+      "outputs": [
+        "r152"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n153",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r152",
+        "gpu_0/res5_1_branch2a_bn_s_0",
+        "gpu_0/res5_1_branch2a_bn_b_0",
+        "gpu_0/res5_1_branch2a_bn_rm_0",
+        "gpu_0/res5_1_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r153"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n154",
+      "op_type": "Relu",
+      "inputs": [
+        "r153"
+      ],
+      "outputs": [
+        "r154"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n155",
+      "op_type": "Conv",
+      "inputs": [
+        "r154",
+        "gpu_0/res5_1_branch2b_w_0"
+      ],
+      "outputs": [
+        "r155"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n156",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r155",
+        "gpu_0/res5_1_branch2b_bn_s_0",
+        "gpu_0/res5_1_branch2b_bn_b_0",
+        "gpu_0/res5_1_branch2b_bn_rm_0",
+        "gpu_0/res5_1_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r156"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n157",
+      "op_type": "Relu",
+      "inputs": [
+        "r156"
+      ],
+      "outputs": [
+        "r157"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n158",
+      "op_type": "Conv",
+      "inputs": [
+        "r157",
+        "gpu_0/res5_1_branch2c_w_0"
+      ],
+      "outputs": [
+        "r158"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n159",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r158",
+        "gpu_0/res5_1_branch2c_bn_s_0",
+        "gpu_0/res5_1_branch2c_bn_b_0",
+        "gpu_0/res5_1_branch2c_bn_rm_0",
+        "gpu_0/res5_1_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r159"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n160",
+      "op_type": "Sum",
+      "inputs": [
+        "r159",
+        "r151"
+      ],
+      "outputs": [
+        "r160"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n161",
+      "op_type": "Relu",
+      "inputs": [
+        "r160"
+      ],
+      "outputs": [
+        "r161"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n162",
+      "op_type": "Conv",
+      "inputs": [
+        "r161",
+        "gpu_0/res5_2_branch2a_w_0"
+      ],
+      "outputs": [
+        "r162"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n163",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r162",
+        "gpu_0/res5_2_branch2a_bn_s_0",
+        "gpu_0/res5_2_branch2a_bn_b_0",
+        "gpu_0/res5_2_branch2a_bn_rm_0",
+        "gpu_0/res5_2_branch2a_bn_riv_0"
+      ],
+      "outputs": [
+        "r163"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n164",
+      "op_type": "Relu",
+      "inputs": [
+        "r163"
+      ],
+      "outputs": [
+        "r164"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n165",
+      "op_type": "Conv",
+      "inputs": [
+        "r164",
+        "gpu_0/res5_2_branch2b_w_0"
+      ],
+      "outputs": [
+        "r165"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n166",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r165",
+        "gpu_0/res5_2_branch2b_bn_s_0",
+        "gpu_0/res5_2_branch2b_bn_b_0",
+        "gpu_0/res5_2_branch2b_bn_rm_0",
+        "gpu_0/res5_2_branch2b_bn_riv_0"
+      ],
+      "outputs": [
+        "r166"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n167",
+      "op_type": "Relu",
+      "inputs": [
+        "r166"
+      ],
+      "outputs": [
+        "r167"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n168",
+      "op_type": "Conv",
+      "inputs": [
+        "r167",
+        "gpu_0/res5_2_branch2c_w_0"
+      ],
+      "outputs": [
+        "r168"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n169",
+      "op_type": "BatchNormalization",
+      "inputs": [
+        "r168",
+        "gpu_0/res5_2_branch2c_bn_s_0",
+        "gpu_0/res5_2_branch2c_bn_b_0",
+        "gpu_0/res5_2_branch2c_bn_rm_0",
+        "gpu_0/res5_2_branch2c_bn_riv_0"
+      ],
+      "outputs": [
+        "r169"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n170",
+      "op_type": "Sum",
+      "inputs": [
+        "r169",
+        "r161"
+      ],
+      "outputs": [
+        "r170"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n171",
+      "op_type": "Relu",
+      "inputs": [
+        "r170"
+      ],
+      "outputs": [
+        "r171"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n172",
+      "op_type": "AveragePool",
+      "inputs": [
+        "r171"
+      ],
+      "outputs": [
+        "r172"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n173",
+      "op_type": "Reshape",
+      "inputs": [
+        "r172",
+        "OC2_DUMMY_1"
+      ],
+      "outputs": [
+        "r173"
+      ],
+      "parameters": {
+        "OC2_DUMMY_1": [
+          2
+        ]
+      },
+      "num_params": 2
+    },
+    {
+      "name": "n174",
+      "op_type": "Gemm",
+      "inputs": [
+        "r173",
+        "gpu_0/pred_w_0",
+        "gpu_0/pred_b_0"
+      ],
+      "outputs": [
+        "r174"
+      ],
+      "parameters": {},
+      "num_params": 0
+    },
+    {
+      "name": "n175",
+      "op_type": "Softmax",
+      "inputs": [
+        "r174"
+      ],
+      "outputs": [
+        "gpu_0/softmax_1"
+      ],
+      "parameters": {},
+      "num_params": 0
+    }
+  ]
+}
