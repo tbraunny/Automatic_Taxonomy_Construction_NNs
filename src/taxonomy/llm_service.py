@@ -234,7 +234,7 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
 
     #ontology_path = f"./data/owl/annett-o-test.owl" 
     #ontology_path = f"./data/owl/fairannett-o.owl" 
-    #ontology = load_ontology(ontology_path=ontology_path)
+    #ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
     #for prop in ontology.get_properties():
     properties = list(ontology.data_properties()) + list(ontology.object_properties()) + list(ontology.classes())
@@ -265,7 +265,7 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
 if __name__ == '__main__':
     ontology_path = f"./data/owl/fairannett-o.owl" 
     #ontology_path = f"./data/owl/annett-o-test.owl" 
-    ontology = load_ontology(ontology_path=ontology_path)
+    ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
     thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
     

@@ -6,6 +6,7 @@ import sys
 import re
 from typing import Optional
 
+
 os.environ['KERAS_BACKEND'] = 'torch'
 
 from pathlib import Path
@@ -17,7 +18,7 @@ from collections import deque, defaultdict
 import networkx as nx
 
 
-from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
+from rdflib import Graph, Literal as Lit, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
 
 
@@ -462,10 +463,10 @@ class TaxonomyNode(BaseModel):
         g = Graph()
 
         # Define a custom namespace
-        MYNS = Namespace("http://example.org/taxonomy#")
+        MYNS = Namespace("http://ncats.org/taxonomy#")
         g.bind("myns", MYNS)
 
-        def add_node(node: "TaxonomyNode", graph: Graph):
+        def add_node(node: "Taxonomy", graph: Graph):
             """
             Recursively adds the node (and its children) to the graph,
             returning the URIRef for the current node.
@@ -477,56 +478,66 @@ class TaxonomyNode(BaseModel):
             graph.add((node_uri, RDF.type, MYNS.TaxonomyNode))
 
             # Add label (the node's name)
-            graph.add((node_uri, RDFS.label, Literal(node.name, datatype=XSD.string)))
+            graph.add((node_uri, RDFS.label, Lit(node.name, datatype=XSD.string)))
 
             # Add splitKey if it exists
             if node.splitKey:
                 graph.add((node_uri, MYNS.splitKey,
-                           Literal(node.splitKey, datatype=XSD.string)))
+                           Lit(node.splitKey, datatype=XSD.string)))
 
             # Add annConfigs
             if node.annConfigs:
                 # Serialize list/dict as JSON and store as literal
                 graph.add((node_uri, MYNS.annConfigs,
-                           Literal(json.dumps(serialize(node.annConfigs)),
+                           Lit(json.dumps(serialize(node.annConfigs)),
                                    datatype=XSD.string)))
 
             # Add splitProperties
             if node.splitProperties:
                 graph.add((node_uri, MYNS.splitProperties,
-                           Literal(json.dumps(serialize(node.splitProperties)),
+                           Lit(json.dumps(serialize(node.splitProperties)),
                                    datatype=XSD.string)))
 
             # Add Criteria if present
             if node.criteria:
                 criteria_bnode = BNode()
                 graph.add((node_uri, MYNS.hasCriteria, criteria_bnode))
-                graph.add( (criteria_bnode, MYNS.Name, Literal(node.criteria, datatype=XSD.string)  ) )
+                graph.add( (criteria_bnode, MYNS.Name, Lit(node.criteria, datatype=XSD.string)  ) )
                 # Each SearchOperator in .criteria.Searchs can be a separate BNode
                 for op in node.criteria.Searchs:
                     op_bnode = BNode()
                     graph.add((criteria_bnode, MYNS.hasSearchOperator, op_bnode))
 
                     # Add all fields of the SearchOperator
-                    if op.HasType:
-                        graph.add((op_bnode, MYNS.HasType,
-                                   Literal(op.HasType, datatype=XSD.string)))
                     if op.Type:
                         graph.add((op_bnode, MYNS.Type,
-                                   Literal(op.Type, datatype=XSD.string)))
+                                   Lit(op.Type, datatype=XSD.string)))
                     if op.Name:
                         graph.add((op_bnode, MYNS.Name,
-                                   Literal(op.Name, datatype=XSD.string)))
-                    if op.Op:
+                                   Lit(op.Name, datatype=XSD.string)))
+                    if  op.Cluster:
                         graph.add((op_bnode, MYNS.Op,
-                                   Literal(op.Op, datatype=XSD.string)))
+                                   Lit(op.Cluster, datatype=XSD.string)))
                     if op.Value is not None:
+
+                        values_bnode = BNode()
+                        graph.add((op_bnode, MYNS.hasCriteriaValues, values_bnode))
+                        
                         # Convert to string for simplicity; could refine based on type
-                        graph.add((op_bnode, MYNS.Value,
-                                   Literal(str(op.Value), datatype=XSD.string)))
+                        for value in op.Value:
+
+                            value_bnode = BNode()
+                            graph.add((values_bnode, MYNS.hasValueOperator, value_bnode))
+
+                            graph.add((value_bnode, RDF.type, MYNS.CriteriaValue))
+                            graph.add((value_bnode, RDFS.label, Lit(value.Name, datatype=XSD.string))) 
+                            graph.add((value_bnode,MYNS.Op, Lit(value.Op, datatype=XSD.string)))
+                            graph.add((value_bnode, MYNS.Value, Lit(str(value.Value), datatype=XSD.string)))
+                            #for val in value.Value:
+                            #    graph.add((op_bnode, MYNS.Value, Literal(str(val.Value), datatype=XSD.string)))
                     if op.HashOn:
                         graph.add((op_bnode, MYNS.HashOn,
-                                   Literal(op.HashOn, datatype=XSD.string)))
+                                   Lit(op.HashOn, datatype=XSD.string)))
 
             # Recursively handle children
             for child in node.children:
@@ -920,7 +931,7 @@ def main():
     
     criterias = [criteria]
     print('before load')
-    ontology = load_ontology(ontology_path=ontology_path)
+    ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
     print('after load')
 
     #print(ontology.load())
@@ -933,10 +944,15 @@ def main():
     
     annconfigs = ontology.ANNConfiguration.instances() 
 
-    format='json'
+    format='rdf'
+
+    print(annconfigs)
+    
 
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
     print(facetedTaxonomy)
+    print(output)
+    open('output.rdf','w').write(output)
 
 
 if __name__ == "__main__":
