@@ -77,7 +77,7 @@ class DBUtils:
 
         return self.model_list
     
-    def _insert_model(self , name: str , graph: json , avg_embedding , model_type: str=None) -> int:
+    def _insert_model(self , name: str , graph: json , avg_embedding=None , model_type: str=None) -> int:
         """
         Insert a model into the database
 
@@ -96,9 +96,10 @@ class DBUtils:
                 result = self.session.execute(query , {
                     "name": name,
                     'model_type': model_type,
-                    "graph": graph
+                    "graph": json.dumps(graph) if graph else None
                 })
             else:
+                print("MARKER")
                 query = text("""INSERT INTO model (model_name , library , average_weight_embedding , graph) 
                             VALUES (:name , :model_type , :graph , :avg_embedding) 
                             RETURNING model_id""")
@@ -106,9 +107,10 @@ class DBUtils:
                     "name": name,
                     'model_type': model_type,
                     "avg_embedding": avg_embedding,
-                    "graph": graph
+                    "graph": json.dumps(graph) if graph else None
                 })
             model_id = result.scalar()
+
             self.session.commit()
         except Exception as e:
             logging.exception(f"Failed to insert model {name} into the database: {e}")
@@ -150,13 +152,13 @@ class DBUtils:
                 "name": name,
                 "layer_type": layer_type,
                 "model_id": model_id,
-                "attributes": attributes
+                "attributes": json.dumps(attributes) if attributes else None
             })
             layer_id = result.scalar()
             self.session.commit()
         except Exception as e:
             logging.exception(f"Failed to insert layer {name} in model {model_id} into database: {e}")
-            
+        
         return layer_id
     
     def _insert_parameter(self , layer_id: int , name: str , shape: tuple , weight_embedding=None) -> None:
@@ -170,7 +172,7 @@ class DBUtils:
         :return None
         """
         try:
-            query = text("""INSERT INTO parameter (name , layer_id , shape , weight_embedding)
+            query = text("""INSERT INTO parameter (parameter_name , layer_id , shape , weight_embedding)
                          VALUES (:name , :layer_id , :shape , :weight_embedding)""")
             self.session.execute(query , {
                 "name": name,
@@ -283,8 +285,7 @@ class DBUtils:
                 network_data: dict = json.load(f)
 
             nodes = network_data.get("graph" , {}).get("node" , {})
-            model_type = None
-            model_id: int = self._insert_model(ann_path , model_type , network_data)
+            model_id: int = self._insert_model(ann_path , network_data)
 
             for layer in nodes:
                 layer_name = layer.get('name')

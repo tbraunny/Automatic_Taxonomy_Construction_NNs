@@ -1467,6 +1467,18 @@
   <rdfs:subClassOf rdf:resource="ActivationFunction"/>
 </owl:Class>
 
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaptiveAvgPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -3289,6 +3301,10 @@
   <rdf:type rdf:resource="ReLU_sub"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="709942bd_features_2">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="709942bd_features_3">
   <rdf:type rdf:resource="Conv2d"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">307392</layer_num_units>
@@ -3296,6 +3312,10 @@
 
 <owl:NamedIndividual rdf:about="709942bd_features_4">
   <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_5">
+  <rdf:type rdf:resource="MaxPool2d"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_6">
@@ -3323,6 +3343,14 @@
 
 <owl:NamedIndividual rdf:about="709942bd_features_11">
   <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_12">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_flatten">
