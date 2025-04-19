@@ -36,6 +36,9 @@ from src.graph_extraction.graphautoencoder.model import GraphAutoencoder,GraphBe
 
 from src.taxonomy.querybuilder import * 
 
+from src.taxonomy.utils_tabular import create_tabular_view_from_faceted_taxonomy, dfi
+
+
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -923,36 +926,25 @@ def main():
     op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     
-    
     criteria = Criteria(Name='Layer Num Units')
-    #criteria.add(op)
-    criteria.add(op2)
+    criteria.add(op)
+    #criteria.add(op2)
 
-    
     criterias = [criteria]
-    print('before load')
     ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
-    print('after load')
 
-    #print(ontology.load())
     logger.info(ontology.instances)
     logger.info("Ontology loaded.")
-
     logger.info("Creating taxonomy from Annetto annotations.")
 
+    # taxonomy creator
     taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    
-    annconfigs = ontology.ANNConfiguration.instances() 
-
-    format='rdf'
-
-    print(annconfigs)
-    
-
+    format='json'
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
-    print(facetedTaxonomy)
-    print(output)
-    open('output.rdf','w').write(output)
+
+    # create a dataframe
+    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format="json")
+    dfi.export(df,'./dataframe.png')
 
 
 if __name__ == "__main__":

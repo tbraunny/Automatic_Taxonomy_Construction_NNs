@@ -29,7 +29,7 @@ from langchain.output_parsers import OutputFixingParser
 from src.taxonomy.create_taxonomy import *
 from src.taxonomy.visualizeutils import visualizeTaxonomy
 
-
+from utils.llm_service import load_environemnt_llm
 
 
 
@@ -203,7 +203,7 @@ Do your best and follow the following schema no matter what: {schema}
 def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     
     # constructing an example output criteria and search operator for the taxonomy
-    op = SearchOperator(Value=[ValueOperator(Name=HasLoss,Op='has')])#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Value=[ValueOperator(Name='HasLoss',Op='has')])#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op2 = SearchOperator(Value=[ValueOperator(Name='layer_num_units',Value=[600,3001])],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
 
     criteria1 = Criteria(Name='Has Loss Criteria')
@@ -212,24 +212,31 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     criteria2 = Criteria(Name='Layer Num Units')
     criteria2.add(op2)
 
-    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='kmeans', Arguments=[4,'binary']), Value=[ValueOperator(Name='layer_num_units',Op='name'),ValueOperator(Name='dropout_rate',Op='name')])
+    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='kmeans', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name'),ValueOperator(Name='dropout_rate',Op='name')])
     criteria3 = Criteria(Name='KMeans Clustering')
 
     oc = OutputCriteria(criteriagroup=[criteria1,criteria2,criteria3], description="A taxonomy of loss at the top and a range of number of units and has kmeans on layer_num_units, dropout_rate, and and types of layers.").model_dump_json()
     
-    # create a parser to parse output criteria
-    parser = PydanticOutputParser(pydantic_object=OutputCriteria)
 
-    criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
+
+    
     #model='qwq:32b'
     model = 'llama3.2:latest'
     model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=5000)
+    # keep te above just in case things dont't work
+
+    llm = load_environemnt_llm(temperature=0.1,num_ctx=5000)
+    model = llm.llm
 
     # a fixing parser if the original model doesnt work
+
+    # create a parser to parse output criteria
+    parser = PydanticOutputParser(pydantic_object=OutputCriteria)
+    criteriaprompt = ChatPromptTemplate([('system',system_prompt), ('human', '{user_input}')]).partial(format_instructions=parser.get_format_instructions())
     fixparser = OutputFixingParser.from_llm(parser=parser, llm=model)
 
-
-    model.with_structured_output(OutputCriteria)
+    #llm.
+    #llm.llm.with_structured_output(OutputCriteria)
     chain = criteriaprompt | model
 
     #ontology_path = f"./data/owl/annett-o-test.owl" 
@@ -240,25 +247,21 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     properties = list(ontology.data_properties()) + list(ontology.object_properties()) + list(ontology.classes())
     properties = [prop.name for prop in properties]
     print(properties)
-    #input()
-    output = chain.invoke({'user_input': query,'oc': oc,'schema': json.dumps(OutputCriteria.model_json_schema()), 'valueoperator': json.dumps(ValueOperator.model_json_schema()), 'typeoperator': json.dumps(TypeOperator.model_json_schema()), "properties": json.dumps(properties).replace('"','') } ) #.content
-    print(output)
-    output = output.content
-    #input()
-    #input('output')
 
+    output = chain.invoke({'user_input': query,'oc': oc,'schema': json.dumps(OutputCriteria.model_json_schema()), 'valueoperator': json.dumps(ValueOperator.model_json_schema()), 'typeoperator': json.dumps(TypeOperator.model_json_schema()), "properties": json.dumps(properties).replace('"','') } ) #.content
+    
+    print(output)
+
+    output = output.content
     output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL)
-   
-    #print(output)
-    #input('test')
+
 
     # fixing the criteria -- this may fail sometimes
     thecriteria = output = fixparser.parse(output)
     handle = open('criteria.json','w')
     handle.write(json.dumps(thecriteria.model_dump()))
     handle.close()
-    #print(thecriteria)
-    #input("test2")
+
     return thecriteria
 
 
