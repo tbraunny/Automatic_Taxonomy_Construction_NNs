@@ -36,13 +36,14 @@ def remove_ann_config_from_user_owl(hashed_ann_name: str, ann_path: str) -> None
         delete_ann_configuration(hashed_ann_name)
         save_ontology(owl_file)
 
-def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
+def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_user_owl: bool = False) -> str:
     """
     Main function to run the Annett-o pipeline.
 
     :param ann_name: The name of the ANN.
     :param ann_path: The path to the directory containing the ANN files.
     :param use_user_owl: Whether to use the user-appended ontology or the pre-made stable ontology.
+    :param output_ontology_filepath: The path to save the output ontology file.
     :return: The hashed ANNConfig instance name for later use.
     """
     if not isinstance(ann_name, str):
@@ -55,11 +56,18 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
     onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
     pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
 
+    code_files_found = True
+    pdf_files_found = True
     # Check if any pdfs were found
     if not ann_pdf_files:
         print(f"No PDF files found in {ann_path}.")
+        pdf_files_found = False
     # Check if any code files were found
     if not py_files and not onnx_files and not pb_files:
+        code_files_found = False
+
+    files_found = pdf_files_found or code_files_found
+    if not files_found:
         raise FileNotFoundError(f"No files found in {ann_path}.")
 
     # Extract text from PDF, if any
@@ -75,13 +83,14 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
         pytorch_module_names = process_code.pytorch_module_names # for richie
 
     # insert model into db
-    db_runner = DBUtils()
-    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    paper_id: int = db_runner.insert_papers(ann_path)
-    print(model_id ,)
-    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    #db_runner = DBUtils()
+    #model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    #paper_id: int = db_runner.insert_papers(ann_path)
+    #print(model_id ,)
+    #translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
-    output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
+    if output_ontology_filepath == "" and not os.path.exists(ann_path):
+        output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
     if not use_user_owl:
         input_ontology = load_annetto_ontology(return_onto_from_release="stable")
     else:

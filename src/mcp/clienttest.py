@@ -255,6 +255,7 @@ class LLMClient:
         model1 = "neuralexpert:latest"
         model2 = "qwq:32b"
         model3 = 'deepseek-r1:32b-qwen-distill-q4_K_M'
+        model4 = 'llama3.2:latest'
         payload = {
             "messages": messages,
             "model": model1,
@@ -267,7 +268,7 @@ class LLMClient:
             "request_timeout": 120
         }
 
-        response = chat(model=model2,options={'temperature':.2, 'max_tokens':4048, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
+        response = chat(model=model3,options={'temperature':.4, 'max_tokens':4096, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
         output = response.message.content
         output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
         return output
@@ -361,7 +362,7 @@ class ChatSession:
                 "Choose the appropriate tool based on the user's question. "
                 "If no tool is needed, reply directly.\n\n"
                 "IMPORTANT: When you need to use a tool, you must ONLY respond with "
-                "the exact JSON object format below, nothing else no extra ```json ```:\n"
+                "the exact JSON object format below, nothing else no extra ```json ``` or elaboration:\n"
                 "{\n"
                 '    "tool": "tool-name",\n'
                 '    "arguments": {\n'
