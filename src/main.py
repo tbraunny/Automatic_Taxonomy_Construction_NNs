@@ -83,11 +83,11 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         pytorch_module_names = process_code.pytorch_module_names # for richie
 
     # insert model into db
-    #db_runner = DBUtils()
-    #model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    #paper_id: int = db_runner.insert_papers(ann_path)
-    #print(model_id ,)
-    #translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    db_runner = DBUtils()
+    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    paper_id: int = db_runner.insert_papers(ann_path)
+    print(model_id ,)
+    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     if output_ontology_filepath == "" and not os.path.exists(ann_path):
         output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
