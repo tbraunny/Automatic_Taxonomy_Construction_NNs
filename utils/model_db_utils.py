@@ -1,10 +1,24 @@
 import sqlalchemy as db
-import logging
 import json
 import glob
+import os
+from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from rapidfuzz import process , fuzz
+from rapidfuzz import process
+from utils.logger_util import get_logger
+from pathlib import Path
+
+logger = get_logger("model-db-utils")
+
+load_dotenv()
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 class DBUtils:
     """
@@ -27,16 +41,16 @@ class DBUtils:
         :return session: session for connection to db
         """
 
-        engine = db.create_engine('postgresql://postgres:postgres@100.80.229.100:5432/graphdb')
+        engine = db.create_engine(DATABASE_URL)
         Session = sessionmaker(bind=engine)
         session = Session()
 
         with engine.connect() as conn:
             try:
                 total_networks = conn.execute(text("SELECT COUNT(graph) FROM model"))
-                logging.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
+                logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
             except Exception as e:
-                logging.exception(f"Failed to connect to database: {e}")
+                logger.exception(f"Failed to connect to database: {e}")
 
             return engine , session
         
@@ -55,7 +69,7 @@ class DBUtils:
             layer_info = self.session.execute(query, {"network": network})
             self.layer_list: list = layer_info.fetchall()
         except Exception as e:
-            logging.exception(f"Failed to fetch layers for {network} from database: {e}")
+            logger.exception(f"Failed to fetch layers for {network} from database: {e}")
             self.layer_list = []
 
         return self.layer_list
@@ -72,7 +86,7 @@ class DBUtils:
             models = self.session.execute(query)
             self.model_list: list[str] = [row[0] for row in models.fetchall()]
         except Exception as e:
-            logging.exception(f"Failed to fetch models from database: {e}")
+            logger.exception(f"Failed to fetch models from database: {e}")
             self.model_list = []
 
         return self.model_list
@@ -99,7 +113,6 @@ class DBUtils:
                     "graph": json.dumps(graph) if graph else None
                 })
             else:
-                print("MARKER")
                 query = text("""INSERT INTO model (model_name , library , average_weight_embedding , graph) 
                             VALUES (:name , :model_type , :graph , :avg_embedding) 
                             RETURNING model_id""")
@@ -113,7 +126,7 @@ class DBUtils:
 
             self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert model {name} into the database: {e}")
+            logger.exception(f"Failed to insert model {name} into the database: {e}")
 
         return model_id
 
@@ -131,7 +144,7 @@ class DBUtils:
             })
             self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
+            logger.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
 
     def _insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
@@ -157,7 +170,7 @@ class DBUtils:
             layer_id = result.scalar()
             self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert layer {name} in model {model_id} into database: {e}")
+            logger.exception(f"Failed to insert layer {name} in model {model_id} into database: {e}")
         
         return layer_id
     
@@ -182,25 +195,49 @@ class DBUtils:
             })
             self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
+            logger.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
+
+    def find_model_id(self , name: str) -> int:
+        """
+        Find a model in the database its name via fuzzy match
+
+        :param name: Name of the model
+        :return Model ID
+        """
+        model_list: list = self._fetch_all_models()
+        model_list = [model.lower() for model in model_list]
+        model_name , score , _ = process.extractOne(name.lower() , model_list) # high score due to similar names in db
+
+        if not model_name or score < 90:
+            logger.warning(f"Could not find an existing model in the database matching {name}")
+
+        query = text("""SELECT model_id 
+                     FROM model 
+                     WHERE model_name = :model_name""")
+        result = self.session.execute(query , {
+            "model_name": model_name
+        })
+        model_id: int = result.scalar()
+
+        return model_id
 
     def insert_papers(self , ann_path: str) -> int:
         """
         Insert paper for model into the database
 
         :param paper_name: Name of the paper (actual title)
-        :param contents: The contents of the paper (bytea)
         :return paper_id: Insert paper's ID
         """
         paper_id = -1
         try:
-            pdf_files: list = glob.glob(f"{ann_path}/**/*doc*.pdf" , recursive=True)
+            pdf_files: list = glob.glob(f"{ann_path}/**/*.pdf" , recursive=True)
 
             for pdf in pdf_files:
                 contents: dict = {}
-                with open(pdf , 'r') as f:
-                    contents = json.load(f)
+                with open(pdf , 'rb') as f:
+                    contents = f.read()
 
+                print("MARKER")
                 query = text("""INSERT INTO paper (paper_name , contents)
                             VALUES (:paper_name , :contents)
                             RETURNING paper_id""")
@@ -209,9 +246,10 @@ class DBUtils:
                     "contents": contents
                 })
                 paper_id = result.scalar()
+                print(paper_id)
                 self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to insert paper {ann_path} into database: {e}")
+            logger.exception(f"Failed to insert paper {ann_path} into database: {e}")
 
         return paper_id
     
@@ -233,12 +271,13 @@ class DBUtils:
                 "model_id": model_id
             })
             paper_model_id = result.scalar()
+            self.session.commit()
         except Exception as e:
-            logging.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
+            logger.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
 
         return paper_model_id
 
-    def find_model(self , name: str=None , model_id: int=None) -> str:
+    def _find_model_name(self , name: str=None , model_id: int=None) -> str:
         """
         Find a model in the dataabase given its ID (if no ID, fuzzy match by name)
 
@@ -247,19 +286,51 @@ class DBUtils:
         :return model name
         """
         if model_id:
-            query = text("""SELECT name FROM model WHERE model_id = :model_id""")
+            query = text("""SELECT name 
+                         FROM model 
+                         WHERE model_id = :model_id""")
             result = self.session.execute(query , {
                 "model_id": model_id
             })
             model = result.fetchone()
         elif name: # fuzzy match for similar name
             name = name.lower()
-            model_list: list = self.fetch_all_models()
+            model_list: list = self._fetch_all_models()
             model , _ , _ = process.extractOne(name , model_list , score_cutoff=90)
         else:
-            raise "name or model_id params requried"
+            raise "Name and/or model_id params requried"
 
         return model
+
+    def fetch_layers_for_model(self , name: str=None , model_id: int=None) -> dict:
+        """
+        Return dictionary of layers that comprise a given model
+
+        :param name: Name of the model
+        :param model_id: ID of the model (if known)
+        :return Dictionary of layers
+        """
+        layers: dict = {
+            "layer_type": None,
+            "attributes": {}
+        }
+
+        if not model_id:
+            model_id: int = self.find_model_id(name)
+        
+        query = text("""SELECT layer_name , known_type , attributes
+                     FROM layer 
+                     WHERE model_id = :model_id""")
+        result = self.session.execute(query , {
+            "model_id": model_id
+        })
+        for element in result.fetchall():
+            layers[element[0]] = {
+                "layer_type": element[1],
+                "attributes": element[2]
+            }
+
+        return layers
 
     def insert_model_components(self , ann_path: str) -> int:
         """
@@ -279,13 +350,12 @@ class DBUtils:
         for file in json_files:
             network_data: dict = {}
 
-            print(file)
-
             with open(file , 'r') as f:
                 network_data: dict = json.load(f)
-
+            
+            model_name = os.path.basename(ann_path)
+            model_id: int = self._insert_model(model_name , network_data)
             nodes = network_data.get("graph" , {}).get("node" , {})
-            model_id: int = self._insert_model(ann_path , network_data)
 
             for layer in nodes:
                 layer_name = layer.get('name')
@@ -300,9 +370,18 @@ class DBUtils:
                         for shape in attr:
                             self._insert_parameter(layer_id , attr , shape)
 
+        return model_id
+
     
 if __name__ == '__main__':
     ann_name = "alexnet"
+    ann_path = f"data/{ann_name}"
     runner = DBUtils()
-    print(runner.find_model("alexnet"))
-    print(runner.insert_model_components("alexnet"))
+    runner.fetch_layers_for_model(ann_name)
+    # model_id = runner.insert_model_components(ann_path)
+    # paper_id = runner.insert_papers(ann_path)
+    # model_paper_id = runner.model_to_paper(model_id , paper_id)
+
+    # print("MODEL: " , model_id)
+    # print("PAPER: " , paper_id)
+    # print("MODEL PAPER: " , model_paper_id)

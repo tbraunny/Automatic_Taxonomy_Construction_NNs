@@ -28,20 +28,6 @@ NOTE: for how to run, see main()
 
 logger = get_logger("code-extraction")
 
-# log_dir = "logs"
-# log_file = os.path.join(log_dir , f"code_extraction_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
-# os.makedirs(log_dir , exist_ok=True)
-
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s - %(levelname)s - %(message)s",
-#     handlers=[
-#         logging.FileHandler(log_file),  # Write to file
-#     ],
-#     force=True,
-# )
-# logger = logging.getLogger(__name__)
-
 class _CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
         self.code_lines = code.split("\n")
