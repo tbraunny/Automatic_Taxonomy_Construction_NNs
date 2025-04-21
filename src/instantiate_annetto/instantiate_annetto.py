@@ -1450,16 +1450,9 @@ A **subnetwork** is a block that\n
                 titles = _extract_titles_from_docs(list_json_doc_paths)
                 _add_ann_metadata(ann_config_instance, titles, ann_path)
 
-
-                """
-                Testing where we get ann config(s) in the same from as network
-                Prompting for both at the same time seems to help the llm understand their differences
-                """
                 # Process the ANN Configuration instance
-                ann_config_instances_from_llm = self._process_network(ann_config_instance)
-
-                for ann_config_instance_llm in ann_config_instances_from_llm:
-                    self._process_training_strategy(ann_config_instance_llm)
+                self._process_network(ann_config_instance)
+                self._process_training_strategy(ann_config_instance)
 
                 minutes, seconds = divmod(time.time() - start_time, 60)
                 self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")
@@ -1558,25 +1551,16 @@ if __name__ == "__main__":
 
     
     # For single testing
-    # for model_name in [
-    #     "alexnet",
-    #     # "resnet",
-    #     # "vgg16",
-    #     # "gan",  # Assume we can model name from user or something
-    # ]:
-    #     single_instantiation(model_name, ontology)
+    for model_name in [
+        "alexnet",
+        # "resnet",
+        # "vgg16",
+        # "gan",  # Assume we can model name from user or something
+    ]:
+        single_instantiation(model_name, ontology)
 
     # For mass instantiation from a root dir
-    mass_instantiation("data/more_papers", ontology)
-
-    from utils.owl_utils import get_class_instances
-
-    classes = get_class_instances(ontology.Network)
-
-    print( len(classes), classes)
-
-
-
+    # mass_instantiation("data/more_papers", ontology)
 
     time_end = time.time()
     minutes, seconds = divmod(time_end - time_start, 60)
