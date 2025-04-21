@@ -484,13 +484,31 @@ class OntologyProcessor:
         
         return extracted_data
     
+    def _instantiate_temp_act_class(self , subclass_name: str="ActivationFunctionLayer") -> None:
+        """
+        Instantiate a subclass of ANNETT-O for a special case
+        Currently used to instantiate 'ActivationFunctionLayer' as a subclass of layer
+
+        :param subclass_name: Name of the new subclass
+        :param entities: List of entities to be instantiated
+        """
+        subclass = create_subclass(self.ontology , subclass_name , self.ontology.Layer)
+        actlayer_subclasses = get_all_subclasses(self.ontology.ActivationFunction)
+
+        for entity in actlayer_subclasses:
+            _ = create_subclass(
+                self.ontology ,
+                entity ,
+                self.ontology.subclass
+            )
+
     def _process_parsed_code(self , network_instance: Thing , module_names: list=None , actfunc_flag: bool=True) -> None:
         """
         Process code that has been parsed into specific JSON structure to instantiate
         an ontology for the network associated with the code
 
         :param network_instance: the network instance
-        :param actfunc_layer: (Default=True) Treats activation functions as layers when true
+        :param actfunc_layer: (Default=True) Set to false to treat activation functions as layers
         :param module_name: (Optional) List of PyTorch module names to be instantiated
         :return None
         """
@@ -512,8 +530,12 @@ class OntologyProcessor:
                 return
 
             # fetch ontology subclasses
+            actlayer_subclasses: list = []
+            if actfunc_flag:
+                actlayer_subclasses = get_all_subclasses(self.ontology.ActivationLayer)
+            else:
+                actlayer_subclasses = get_all_subclasses(self.ontology.ActivationFunctionLayer)
             layer_subclasses: list = get_all_subclasses(self.ontology.Layer)
-            actlayer_subclasses: list = get_all_subclasses(self.ontology.ActivationLayer)
             pooling_subclasses: list = get_all_subclasses(self.ontology.PoolingLayer)
             norm_subclasses: list = get_all_subclasses(self.ontology.BatchNormLayer)
 
@@ -554,14 +576,22 @@ class OntologyProcessor:
                         try:
                             actfunc_ontology = self._fuzzy_match_class(layer_type , actlayer_subclasses , score) # check the ontology for activation function
                             if not actfunc_ontology:
-                                actfunc_ontology = create_subclass(
-                                    self.ontology , 
-                                    layer_type , 
-                                    self.ontology.ActivationFunction
-                                )
-                                layer_subclasses.append(actfunc_ontology)
-                                self.logger.info(f"Activation layer {layer_name} subclass created in the ontology")
+                                if actfunc_flag:
+                                    actfunc_ontology = create_subclass(
+                                        self.ontology , 
+                                        layer_type , 
+                                        self.ontology.ActivationFunction
+                                    )
+                                    self.logger.info(f"Activation layer {layer_name} subclass created in the ontology")
+                                else:
+                                    actfunc_ontology = create_subclass(
+                                        self.ontology ,
+                                        layer_type ,
+                                        self.ontology.ActivationFunctionLayer
+                                    )
+                                    self.logger.info(f"Activation function layer {layer_name} subclass created in the ontology")
 
+                            actlayer_subclasses.append(actfunc_ontology)
                             actfunc_instance = self._instantiate_and_format_class(actfunc_ontology , layer_name)
                             name_to_instance[layer_name] = {
                                 "instance": actfunc_instance,
@@ -583,6 +613,7 @@ class OntologyProcessor:
                                 self.logger.info(f"Pooling layer {layer_name} subclass created in the ontology")
                             
                             pooling_instance = self._instantiate_and_format_class(pooling_ontology , layer_name)
+                            self._link_instances(network_instance , pooling_instance , self.ontology.hasLayer)
                             name_to_instance[layer_name] = {
                                 "instance": pooling_instance,
                                 "layer_type": "pooling"
@@ -603,6 +634,7 @@ class OntologyProcessor:
                                 self.logger.info(f"Normalization layer {layer_name} subclass created in the ontology")
 
                             norm_instance = self._instantiate_and_format_class(norm_instance , layer_name)
+                            self._link_instances(network_instance , norm_instance , self.ontology.hasLayer)
                             name_to_instance[layer_name] = {
                                 "instance": norm_instance,
                                 "layer_type": "norm"
@@ -628,7 +660,10 @@ class OntologyProcessor:
                                 self._link_data_property(layer_instance , self.ontology.layer_num_units , layer_params)
                             else:
                                 self.logger.warning(f"Layer {layer_name} of type {layer_type} does not have a number of parameters")
-                            name_to_instance[layer_name] = layer_instance
+                            name_to_instance[layer_name] = {
+                                "instance": layer_instance,
+                                "layer_type": layer_type
+                            }
                         except Exception as e:
                             self.logger.error(f"Error instantiating layer {layer_name}: {e}")
 
@@ -636,20 +671,19 @@ class OntologyProcessor:
                 for layer in nodes:
                     layer_name = layer.get('name')
                     layer_type = layer.get('op_type')
-                    prev_layers = layer.get('input' , [])
-                    next_layers = layer.get('output' , [])
+                    prev_layers: list = layer.get('input' , [])
+                    next_layers: list = layer.get('output' , [])
 
                     self.logger.info(f"I/O instantiation for layer {layer_name} in model {self.ann_config_name}")
-                    self.logger.info(f"{layer_name} INFO: input(s) {prev_layers} , output(s) {next_layers}")
+                    self.logger.info(f"{layer_name}: input(s) {prev_layers} , output(s) {next_layers}")
 
                     layer_instance = name_to_instance.get(layer_name)
                     if not layer_instance:
-
                         self.logger.warning(f"Layer instance not found for {layer_name} , linkage unsuccessful")
                         continue
-
-                    print("LAYER " , layer)
-
+                    layer_instance_type = layer_instance.get("layer_type")
+                    layer_instance = layer_instance.get("instance")
+                    
                     for prev in prev_layers: # link prev_layer
                         prev_layer_name = name_to_instance.get(prev)
                         if not prev_layer_name:
@@ -658,20 +692,26 @@ class OntologyProcessor:
                         prev_layer_instance = prev_layer_name.get("instance")
                         prev_layer_type = prev_layer_name.get("layer_type")
 
-                        if actfunc_flag: # just skip it for prev layer, handle in nextLayer
+                        if actfunc_flag: # skip linking activation layers
                             if prev_layer_type =="activation":
+                                continue
+                            if layer_instance_type == "activation":
                                 continue
                         
                         self._link_instances(layer_instance , prev_layer_instance , self.ontology.previousLayer)
-                        self.logger.info(f"Previous layer {prev_layer_name} instantiated for layer {layer_name}")
+                        self.logger.info(f"Previous layer {prev} instantiated for layer {layer_name}")
                     
                     for next in next_layers: # link nextLayer & handle activation functions
-                        next_layer_name = name_to_instance.get(next)
-                        if not next_layer_name:
-                            self.logger.warning(f"Next layer {next_layer_name} could not be instantiated for layer {layer_name}")
+                        next_layer_entry = name_to_instance.get(next)
+                        if not next_layer_entry:
+                            self.logger.warning(f"Next layer {next} could not be instantiated for layer {layer_name}")
                             continue
-                        next_layer_instance = next_layer_name.get("instance")
-                        next_layer_type = next_layer_name.get("layer_type")
+                        next_layer_instance = next_layer_entry.get("instance")
+                        next_layer_type = next_layer_entry.get("layer_type")
+
+                        if actfunc_flag and layer_instance_type == "activation": # skip activation function
+                            self.logger.info(f"I/O instantiation skipped for activation function {layer_type} at {layer_name}")
+                            continue
 
                         if next_layer_type == "activation": # handle activation layers
                             _ = create_subclass(
@@ -681,55 +721,68 @@ class OntologyProcessor:
                             )
 
                             if actfunc_flag:
-                                self._reassign_layer_linkage(layer_instance , next_layer_name , next_layer_type , name_to_instance)
+                                self._reassign_layer_linkage(layer_instance , next_layer_entry , next , next_layer_type , name_to_instance , nodes)
                                 continue
                             else:
                                 self._link_instances(layer_instance , next_layer_instance , self.ontology.hasActivationFunction) # parent hasActFunc
                                 self._link_instances(network_instance , next_layer_instance , self.ontology.hasLayer)
-                                self._link_instances(network_instance , next_layer_instance , self.ontology.ActivationFunctionLayer) # child is now layer
-                                
+                                #self._link_instances(network_instance , next_layer_instance , self.ontology.ActivationFunctionLayer) # child is now layer
+                    
                         self._link_instances(layer_instance , next_layer_instance , self.ontology.nextLayer)
-                        self.logger.info(f"Next layer {next_layer_name} instantiated for {layer_name}")
+                        self.logger.info(f"Next layer {next} instantiated for {layer_name}")
 
                 self.logger.info(f"Layers of {self.ann_config_name} processed & instantiated in ontology")
         except Exception as e:
             self.logger.error(f"Error processing parsed code for {self.ann_config_name}: {e}" , exc_info=True)
 
-    def _reassign_layer_linkage(self, parent_layer: Thing, child_layer: Thing, stored_type: str, name_to_instance: dict) -> None:
+    def _reassign_layer_linkage(self, parent_layer: Thing, child_layer_entry: dict , child_layer_name: str, stored_type: str, name_to_instance: dict , node_data: dict) -> None:
         """
         Recursively reassign linkages between layer instances that are not layers
 
         :param parent_layer: The parent layer instance
-        :param child_layer: The current layer instance under reassignment
+        :param child_layer_entry: Dict of layer instance & type
+        :param child_layer_name: Name identifying child layer
         :param stored_type: The stored type of the child layer (ex. activation)
         :param name_to_instance: Dictionary mapping layer names to their instance and type
+        :param node_data: Network data from model's parsed JSON
         :return None or instance of the next layer
         """
+        try:
+            child_node = next((node for node in node_data if node.get("name") == child_layer_name) , None)
 
-        # check if child is an activation function
-        if stored_type == "activation":
-            self._link_instances(parent_layer, child_layer, self.ontology.hasActivationFunction)
+            if not child_node:
+                self.logger.warning(f"Network data for layer {child_layer_name} not found.")
+                return
+            child_layer_instance = child_layer_entry.get("instance")
 
-            next_layer_names = child_layer.get('output', [])
-            for next_name in next_layer_names:
-                next_entry = name_to_instance.get(next_name)
-                if not next_entry:
-                    continue
+            # check if child is an activation function
+            if stored_type == "activation":
+                self._link_instances(parent_layer, child_layer_instance, self.ontology.hasActivationFunction)
 
-                next_instance = next_entry["instance"]
-                next_type = next_entry["layer_type"]
+                next_instance = None
+                next_layer_names: list = child_node.get('output', [])
 
-                # recurse if there's another activation function
-                if next_type == "activation":
-                    self._reassign_layer_linkage(parent_layer, next_instance, next_type, name_to_instance)
-                else:
-                    # is this right?
-                    self._link_instances(parent_layer, next_instance, self.ontology.nextLayer)
-                    self._link_instances(next_instance, parent_layer, self.ontology.prevLayer)
-            
-            return next_instance
-        else: # ez
-            return        
+                for next_name in next_layer_names:
+                    next_entry = name_to_instance.get(next_name)
+                    if not next_entry:
+                        self.logger.warning(f"No instance found for next layer {next_name}")
+                        continue
+
+                    next_instance = next_entry.get("instance")
+                    next_type = next_entry.get("layer_type")
+
+                    # recurse if there's another activation function
+                    if next_type == "activation":
+                        self._reassign_layer_linkage(parent_layer, next_name , next_entry, next_type, name_to_instance)
+                    else:
+                        self._link_instances(parent_layer, next_instance, self.ontology.nextLayer)
+                        self._link_instances(next_instance, parent_layer, self.ontology.previousLayer)
+                
+                return next_instance
+            else: # ez
+                return
+        except Exception as e:
+            self.logger.error(f"Error re-assigning linkages for activation function {child_layer_name}: {e}" , exc_info=True)        
     
     def _llm_process_layers(self, network_instance: Thing) -> None:
         self.logger.error("Process layers with LLM not implemented yet.")

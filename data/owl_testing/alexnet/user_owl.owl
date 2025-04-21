@@ -1464,7 +1464,7 @@
 </owl:Class>
 
 <owl:Class rdf:about="ReLU_sub">
-  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+  <rdfs:subClassOf rdf:resource="ActivationFunctionLayer"/>
 </owl:Class>
 
 <owl:Class rdf:about="MaxPool2d">
@@ -1475,7 +1475,47 @@
   <rdfs:subClassOf rdf:resource="PoolingLayer"/>
 </owl:Class>
 
+<owl:Class rdf:about="Linear_sub">
+  <rdfs:subClassOf rdf:resource="ActivationFunctionLayer"/>
+</owl:Class>
+
 <owl:Class rdf:about="features_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_6">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_8">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_10">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_4">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_5">
   <rdfs:subClassOf rdf:resource="ActivationLayer"/>
 </owl:Class>
 
@@ -3283,106 +3323,151 @@
 <owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasLayer rdf:resource="709942bd_features_0"/>
+  <hasLayer rdf:resource="709942bd_features_2"/>
   <hasLayer rdf:resource="709942bd_features_3"/>
+  <hasLayer rdf:resource="709942bd_features_5"/>
   <hasLayer rdf:resource="709942bd_features_6"/>
   <hasLayer rdf:resource="709942bd_features_8"/>
   <hasLayer rdf:resource="709942bd_features_10"/>
+  <hasLayer rdf:resource="709942bd_features_12"/>
+  <hasLayer rdf:resource="709942bd_avgpool"/>
   <hasLayer rdf:resource="709942bd_flatten"/>
   <hasLayer rdf:resource="709942bd_classifier_0"/>
   <hasLayer rdf:resource="709942bd_classifier_3"/>
+  <hasLayer rdf:resource="709942bd_features_1"/>
+  <hasLayer rdf:resource="709942bd_features_4"/>
+  <hasLayer rdf:resource="709942bd_features_7"/>
+  <hasLayer rdf:resource="709942bd_features_9"/>
+  <hasLayer rdf:resource="709942bd_features_11"/>
+  <hasLayer rdf:resource="709942bd_classifier_1"/>
+  <hasLayer rdf:resource="709942bd_classifier_2"/>
+  <hasLayer rdf:resource="709942bd_classifier_4"/>
+  <hasLayer rdf:resource="709942bd_classifier_5"/>
+  <hasLayer rdf:resource="709942bd_classifier_6"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_0">
   <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_1"/>
+  <nextLayer rdf:resource="709942bd_features_1"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">23296</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_1">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_features_2"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_2">
   <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_features_3"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_3">
   <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_4"/>
+  <nextLayer rdf:resource="709942bd_features_4"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">307392</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_4">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_features_5"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_5">
   <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_features_6"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_6">
   <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_7"/>
+  <nextLayer rdf:resource="709942bd_features_7"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">663936</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_7">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_features_8"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_8">
   <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_9"/>
+  <nextLayer rdf:resource="709942bd_features_9"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">884992</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_9">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_features_10"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_10">
   <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_11"/>
+  <nextLayer rdf:resource="709942bd_features_11"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">590080</layer_num_units>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_11">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_features_12"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_features_12">
   <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_avgpool"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_avgpool">
   <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+  <nextLayer rdf:resource="709942bd_flatten"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_flatten">
   <rdf:type rdf:resource="FlattenLayer"/>
+  <nextLayer rdf:resource="709942bd_classifier_0"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_0">
   <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_1"/>
+  <nextLayer rdf:resource="709942bd_classifier_1"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_1">
-  <rdf:type rdf:resource="Linear"/>
+  <rdf:type rdf:resource="Linear_sub"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_2"/>
+  <nextLayer rdf:resource="709942bd_classifier_2"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_2">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <nextLayer rdf:resource="709942bd_classifier_3"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_3">
   <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_4"/>
+  <nextLayer rdf:resource="709942bd_classifier_4"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_4">
-  <rdf:type rdf:resource="Linear"/>
+  <rdf:type rdf:resource="Linear_sub"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_5"/>
+  <nextLayer rdf:resource="709942bd_classifier_5"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_5">
   <rdf:type rdf:resource="ReLU_sub"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_6"/>
+  <nextLayer rdf:resource="709942bd_classifier_6"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_classifier_6">
-  <rdf:type rdf:resource="Linear"/>
+  <rdf:type rdf:resource="Linear_sub"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>

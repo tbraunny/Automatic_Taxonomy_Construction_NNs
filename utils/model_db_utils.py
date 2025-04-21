@@ -28,6 +28,7 @@ class DBUtils:
     """
     def __init__(self):
         self.engine , self.session = self._init_engine()
+        self.logger = logger
         self.layer_list = []
         self.model_list = []
         self.onto = 0
@@ -48,9 +49,9 @@ class DBUtils:
         with engine.connect() as conn:
             try:
                 total_networks = conn.execute(text("SELECT COUNT(graph) FROM model"))
-                logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
+                self.logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
             except Exception as e:
-                logger.exception(f"Failed to connect to database: {e}")
+                self.logger.exception(f"Failed to connect to database: {e}")
 
             return engine , session
         
@@ -69,7 +70,7 @@ class DBUtils:
             layer_info = self.session.execute(query, {"network": network})
             self.layer_list: list = layer_info.fetchall()
         except Exception as e:
-            logger.exception(f"Failed to fetch layers for {network} from database: {e}")
+            self.logger.exception(f"Failed to fetch layers for {network} from database: {e}")
             self.layer_list = []
 
         return self.layer_list
@@ -86,7 +87,7 @@ class DBUtils:
             models = self.session.execute(query)
             self.model_list: list[str] = [row[0] for row in models.fetchall()]
         except Exception as e:
-            logger.exception(f"Failed to fetch models from database: {e}")
+            self.logger.exception(f"Failed to fetch models from database: {e}")
             self.model_list = []
 
         return self.model_list
@@ -126,7 +127,7 @@ class DBUtils:
 
             self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to insert model {name} into the database: {e}")
+            self.logger.exception(f"Failed to insert model {name} into the database: {e}")
 
         return model_id
 
@@ -144,7 +145,7 @@ class DBUtils:
             })
             self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
+            self.logger.exception(f"Failed to insert model {model_id} type {model_type} into the database: {e}")
 
     def _insert_layer(self , model_id: int , name: str , layer_type: str , attributes: dict) -> int:
         """
@@ -170,7 +171,7 @@ class DBUtils:
             layer_id = result.scalar()
             self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to insert layer {name} in model {model_id} into database: {e}")
+            self.logger.exception(f"Failed to insert layer {name} in model {model_id} into database: {e}")
         
         return layer_id
     
@@ -195,7 +196,7 @@ class DBUtils:
             })
             self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
+            self.logger.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
 
     def find_model_id(self , name: str) -> int:
         """
@@ -209,7 +210,7 @@ class DBUtils:
         model_name , score , _ = process.extractOne(name.lower() , model_list) # high score due to similar names in db
 
         if not model_name or score < 90:
-            logger.warning(f"Could not find an existing model in the database matching {name}")
+            self.logger.warning(f"Could not find an existing model in the database matching {name}")
 
         query = text("""SELECT model_id 
                      FROM model 
@@ -249,7 +250,7 @@ class DBUtils:
                 print(paper_id)
                 self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to insert paper {ann_path} into database: {e}")
+            self.logger.exception(f"Failed to insert paper {ann_path} into database: {e}")
 
         return paper_id
     
@@ -273,7 +274,7 @@ class DBUtils:
             paper_model_id = result.scalar()
             self.session.commit()
         except Exception as e:
-            logger.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
+            self.logger.exception(f"Failed to translate model {model_id} to paper {paper_id}: {e}")
 
         return paper_model_id
 
