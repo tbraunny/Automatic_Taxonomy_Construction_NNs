@@ -31,7 +31,7 @@ if parent_dir not in sys.path:
 
 from src.taxonomy import llm_service,create_taxonomy
 from src.graph_rag.graphRAG import neo4j_connection, get_answer_for_question 
-from src.graph_rag.sample import import_rdf 
+from src.graph_rag.sample import import_rdf, get_neo4j_connection 
 
 # Create an MCP server named "OWL Server
 mcp = FastMCP("NCAT Server")
@@ -133,8 +133,8 @@ def create_ontology(directory_selection: int) -> str:
     annname = option.split('/')[-1]
     output_ontology_filepath= os.path.join('data/user/', C.ONTOLOGY.USER_OWL_FILENAME)
     main(annname, option, use_user_owl=True, output_ontology_filepath = output_ontology_filepath )
-
-    graph, session, driver = neo4j_connection()
+    print('after main')
+    driver = get_neo4j_connection()
     with driver.session() as session:
 
         rdf_format = "RDF/XML"
