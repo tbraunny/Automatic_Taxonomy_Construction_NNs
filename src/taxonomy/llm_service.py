@@ -29,7 +29,7 @@ from langchain.output_parsers import OutputFixingParser
 from src.taxonomy.create_taxonomy import *
 from src.taxonomy.visualizeutils import visualizeTaxonomy
 
-from utils.llm_service import load_environemnt_llm
+from utils.llm_service import load_environment_llm
 
 
 
@@ -225,7 +225,7 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
     model = ChatOllama(model=model,temperature=0.1, top_p= 1, repeat_penalty=1, num_ctx=5000)
     # keep te above just in case things dont't work
 
-    llm = load_environemnt_llm(temperature=0.1,num_ctx=5000)
+    llm = load_environment_llm(temperature=0.1,num_ctx=5000)
     model = llm.llm
 
     # a fixing parser if the original model doesnt work

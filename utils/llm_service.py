@@ -182,7 +182,7 @@ class OpenAIClient(BaseLLMClient):
         response = self.llm.invoke(prompt)
         return response.content.strip()
 
-def load_environemnt_llm(**kwargs):
+def load_environment_llm(**kwargs):
      
     llm_client = ( OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,

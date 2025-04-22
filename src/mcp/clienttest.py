@@ -15,10 +15,26 @@ from datetime import timedelta
 from ollama import chat
 from ollama import ChatResponse
 
+
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Literal
+
+from utils.llm_service import load_environment_llm
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
+
+
+class ToolResponse(BaseModel):
+    tool: str = ""
+    arguments: Dict = {}
+
+class ChatResponse(BaseModel):
+    response: str = Field("",description="The response from the LLM")
+    tool_call: Optional[ToolResponse] = Field(None,description="The tool call information if a tool is needed")
+    need_to_call_tool: bool = Field(description="Field used to determine if a tool call needs to be made")
 
 
 class Configuration:
@@ -235,8 +251,9 @@ class LLMClient:
 
     def __init__(self, api_key: str) -> None:
         self.api_key: str = api_key
+        self.llm = load_environment_llm().llm.with_structured_output(ChatResponse)
 
-    def get_response(self, messages: list[dict[str, str]]) -> str:
+    def get_response(self, messages: list[dict[str, str]]) -> ChatResponse:
         """Get a response from the LLM.
 
         Args:
@@ -268,10 +285,13 @@ class LLMClient:
             "request_timeout": 120
         }
 
-        response = chat(model=model3,options={'temperature':.4, 'max_tokens':4096, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
-        output = response.message.content
-        output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
-        return output
+        #response = chat(model=model3,options={'temperature':.4, 'max_tokens':4096, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
+        #output = response.message.content
+        #output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
+        
+        response = self.llm.invoke(messages)
+
+        return response
 
 
 class ChatSession:
@@ -293,7 +313,7 @@ class ChatSession:
             except Exception as e:
                 logging.warning(f"Warning during final cleanup: {e}")
 
-    async def process_llm_response(self, llm_response: str) -> str:
+    async def process_llm_response(self, llm_response: ChatResponse) -> str|ChatResponse:
         """Process the LLM response and execute tools if needed.
 
         Args:
@@ -305,38 +325,49 @@ class ChatSession:
         import json
 
         try:
-            tool_call = json.loads(llm_response)
-            if "tool" in tool_call and "arguments" in tool_call:
-                logging.info(f"Executing tool: {tool_call['tool']}")
-                logging.info(f"With arguments: {tool_call['arguments']}")
+            if llm_response.need_to_call_tool:
+                logging.info("Processing LLM response for tool execution...")
+                tool_call = llm_response.tool_call
 
-                for server in self.servers:
-                    tools = await server.list_tools()
-                    if any(tool.name == tool_call["tool"] for tool in tools):
-                        try:
-                            result = await server.execute_tool(
-                                tool_call["tool"], tool_call["arguments"]
-                            )
+                #tool_call = tool_call.dict() if isinstance(tool_call, ToolResponse) else tool_call
+                if tool_call:
+                    tool_call_input = {}
+                    tool_call_input["tool"] = tool_call.tool
+                    tool_call_input["arguments"] = tool_call.arguments
+                    tool_call = tool_call_input
 
-                            if isinstance(result, dict) and "progress" in result:
-                                progress = result["progress"]
-                                total = result["total"]
-                                percentage = (progress / total) * 100
-                                logging.info(
-                                    f"Progress: {progress}/{total} "
-                                    f"({percentage:.1f}%)"
+                #tool_call = json.loads(llm_response)
+                if "tool" in tool_call and "arguments" in tool_call:
+                    logging.info(f"Executing tool: {tool_call['tool']}")
+                    logging.info(f"With arguments: {tool_call['arguments']}")
+
+                    for server in self.servers:
+                        tools = await server.list_tools()
+                        if any(tool.name == tool_call["tool"] for tool in tools):
+                            try:
+                                result = await server.execute_tool(
+                                    tool_call["tool"], tool_call["arguments"]
                                 )
 
-                            return f"Tool execution result: {result}"
-                        except Exception as e:
-                            error_msg = f"Error executing tool: {str(e)}"
-                            logging.error(error_msg)
-                            return error_msg
+                                if isinstance(result, dict) and "progress" in result:
+                                    progress = result["progress"]
+                                    total = result["total"]
+                                    percentage = (progress / total) * 100
+                                    logging.info(
+                                        f"Progress: {progress}/{total} "
+                                        f"({percentage:.1f}%)"
+                                    )
+                                return f"Tool execution result: {result}"
+                            except Exception as e:
+                                error_msg = f"Error executing tool: {str(e)}"
+                                logging.error(error_msg)
+                                return error_msg
 
-                return f"No server found with tool: {tool_call['tool']}"
-            return llm_response
+                    return f"No server found with tool: {tool_call['tool']}"
+                return llm_response
         except json.JSONDecodeError:
             return llm_response
+        return llm_response
 
     async def start(self) -> None:
         """Main chat session handler."""
@@ -360,21 +391,15 @@ class ChatSession:
                 "You are a helpful assistant with access to these tools:\n\n"
                 f"{tools_description}\n"
                 "Choose the appropriate tool based on the user's question. "
-                "If no tool is needed, reply directly.\n\n"
-                "IMPORTANT: When you need to use a tool, you must ONLY respond with "
-                "the exact JSON object format below, nothing else no extra ```json ``` or elaboration:\n"
-                "{\n"
-                '    "tool": "tool-name",\n'
-                '    "arguments": {\n'
-                '        "argument-name": "value"\n'
-                "    }\n"
-                "}\n\n"
+                f"Reply with the following format: {{ChatResponse.schema_json(indent=2)}}\n\n"
+                "If no tool is needed, reply directly and fill in the response field.\n\n"
                 "After receiving a tool's response:\n"
                 "1. Transform the raw data into a natural, conversational response\n"
                 "2. Keep responses concise but informative\n"
                 "3. Focus on the most relevant information\n"
                 "4. Use appropriate context from the user's question\n"
                 "5. Avoid simply repeating the raw data\n\n"
+                "6. Reply in the response field with your output.\n"
                 "Please use only the tools that are explicitly defined above."
             )
 
@@ -390,21 +415,22 @@ class ChatSession:
                     messages.append({"role": "user", "content": user_input})
 
                     llm_response = self.llm_client.get_response(messages)
-                    logging.info("\nAssistant: %s", llm_response)
+                    logging.info("\nAssistant: %s", llm_response.response)
     
                     result = await self.process_llm_response(llm_response)
                     
+
                     if result != llm_response:
-                        messages.append({"role": "assistant", "content": llm_response})
-                        messages.append({"role": "system", "content": result})
+                        messages.append({"role": "assistant", "content": str(llm_response.tool_call)})
+                        messages.append({"role": "user", "content": result})
 
                         final_response = self.llm_client.get_response(messages)
-                        logging.info("\nFinal response: %s", final_response)
+                        logging.info("\nFinal response: %s", str(final_response.response))
                         messages.append(
-                            {"role": "assistant", "content": final_response}
+                            {"role": "assistant", "content": str(final_response.response)}
                         )
                     else:
-                        messages.append({"role": "assistant", "content": llm_response})
+                        messages.append({"role": "assistant", "content": str(llm_response)})
 
                 except KeyboardInterrupt:
                     logging.info("\nExiting...")

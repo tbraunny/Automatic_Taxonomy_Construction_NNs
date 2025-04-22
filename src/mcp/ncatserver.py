@@ -91,7 +91,7 @@ def create_json_files(directory_selection: int) -> str:
     return "An extraction has occured: " + str(extraction)
 
 @mcp.tool()
-def query_about_ann_config(load_selection: int, query: str) -> str:
+def query_about_paper(load_selection: int, query: str) -> str:
     """Queries about a paper based on the selection made by the user."""
     global options
 
