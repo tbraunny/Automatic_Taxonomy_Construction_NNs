@@ -30,6 +30,8 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 from src.taxonomy import llm_service,create_taxonomy
+from src.graph_rag.graphRAG import neo4j_connection, get_answer_for_question 
+from src.graph_rag.sample import import_rdf 
 
 # Create an MCP server named "OWL Server
 mcp = FastMCP("NCAT Server")
@@ -117,13 +119,35 @@ def query_about_paper(load_selection: int, query: str) -> str:
     return response
 
 @mcp.tool()
+def query_graph_database(query: str) -> str:
+    """ Queries a neo4j database that has information about neural networks """
+    graph, session, driver = neo4j_connection()
+    return get_answer_for_question(graph, query, driver)
+
+@mcp.tool()
 def create_ontology(directory_selection: int) -> str:
     """ Creates an ontology based on the selected directory as an integer index. """
     if directory_selection > len(options):
         return "Invalid selection. Please select a valid index."
     option = options[directory_selection]
     annname = option.split('/')[-1]
-    main(annname, option, use_user_owl=True, output_ontology_filepath= os.path.join('data/user/', C.ONTOLOGY.USER_OWL_FILENAME) )
+    output_ontology_filepath= os.path.join('data/user/', C.ONTOLOGY.USER_OWL_FILENAME)
+    main(annname, option, use_user_owl=True, output_ontology_filepath = output_ontology_filepath )
+
+    graph, session, driver = neo4j_connection()
+    with driver.session() as session:
+
+        rdf_format = "RDF/XML"
+        importoptions = {
+            "handleVocabUris": "SHORTEN",
+            "typesToLabels": False,
+            "keepLangTag": False,
+            "handleMultival": "ARRAY"
+        }
+        
+        # inline insert ontology -- this should be replaced with url insertion 
+        content = open(output_ontology_filepath,'r').read() 
+        counters = import_rdf(session, output_ontology_filepath, rdf_format, importoptions,inline=True,file_contents=content)
 
     return "Ontology created successfully."
 

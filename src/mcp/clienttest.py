@@ -121,8 +121,8 @@ class Server:
             )
             read, write = stdio_transport
             session = await self.exit_stack.enter_async_context(
-                # read_timeout_seconds with timedelta of 5 minutes
-                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=10))
+                # read_timeout_seconds with timedelta of 15 minutes
+                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=15))
             )
             await session.initialize()
             self.session = session
