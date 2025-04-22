@@ -31,7 +31,7 @@ if parent_dir not in sys.path:
 
 from src.taxonomy import llm_service,create_taxonomy
 from src.graph_rag.graphRAG import neo4j_connection, get_answer_for_question 
-from src.graph_rag.sample import import_rdf, get_neo4j_connection 
+from src.graph_rag.insertion import import_rdf, get_neo4j_connection 
 
 # Create an MCP server named "OWL Server
 mcp = FastMCP("NCAT Server")
