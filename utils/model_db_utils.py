@@ -9,14 +9,12 @@ from rapidfuzz import process
 from utils.logger_util import get_logger
 from pathlib import Path
 
-logger = get_logger("model-db-utils")
-
 load_dotenv()
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
+DB_NAME = os.environ.get("DB_NAME")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
@@ -27,8 +25,8 @@ class DBUtils:
     Must be run from WPEB machine to access server automatically (Tailscale network)
     """
     def __init__(self):
+        self.logger = get_logger("model-db-utils")
         self.engine , self.session = self._init_engine()
-        self.logger = logger
         self.layer_list = []
         self.model_list = []
         self.onto = 0
@@ -198,6 +196,54 @@ class DBUtils:
         except Exception as e:
             self.logger.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
 
+    def clear_testing_models(self , start_model_id: int) -> None:
+        """
+        Clear nonsense models from the database & conform to foreign key constraints (just call this from __name__:__main__)
+
+        :param start_model_id: Starting model id from which to delete all models with ID > start_model_id 
+        :return None
+        """
+        try:
+            self.logger.info("Beginning clearance of nonsense models...")
+
+            query = text("""SELECT layer_id 
+                        FROM layer 
+                        WHERE model_id > :start_model_id""")
+            result = self.session.execute(query , {
+                "start_model_id": start_model_id
+            })
+            layer_ids = [row[0] for row in result.fetchall()]
+            self.logger.info(f"Layer ID's extracted sample: {layer_ids[:10]}")
+
+            if not layer_ids: # return if no models to delete
+                return
+
+            query = text(f"""DELETE FROM parameter 
+                        WHERE layer_id IN :layer_ids""")
+            self.session.execute(query , {
+                "layer_ids": tuple(layer_ids)
+            })
+            self.logger.info(f"Deleted relevant parameters")
+
+            query = text(f"""DELETE FROM layer
+                            WHERE layer_id IN :layer_ids""")
+            self.session.execute(query , {
+                "layer_ids": tuple(layer_ids)
+            })
+            self.logger.info("Deleted relevant layers")
+
+            query = text(f"""DELETE FROM model
+                            WHERE model_id > :start_model_id""")
+            self.session.execute(query , {
+                "start_model_id": start_model_id
+            })
+            self.logger.info("Cleared nonsense models from database successfully")
+
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Could not clear nonsense models from the database: {e}" , exc_info=True)
+
     def find_model_id(self , name: str) -> int:
         """
         Find a model in the database its name via fuzzy match
@@ -238,7 +284,6 @@ class DBUtils:
                 with open(pdf , 'rb') as f:
                     contents = f.read()
 
-                print("MARKER")
                 query = text("""INSERT INTO paper (paper_name , contents)
                             VALUES (:paper_name , :contents)
                             RETURNING paper_id""")
@@ -247,7 +292,6 @@ class DBUtils:
                     "contents": contents
                 })
                 paper_id = result.scalar()
-                print(paper_id)
                 self.session.commit()
         except Exception as e:
             self.logger.exception(f"Failed to insert paper {ann_path} into database: {e}")
@@ -386,3 +430,4 @@ if __name__ == '__main__':
     # print("MODEL: " , model_id)
     # print("PAPER: " , paper_id)
     # print("MODEL PAPER: " , model_paper_id)
+    runner.clear_testing_models(start_model_id=216)

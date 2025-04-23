@@ -1472,6 +1472,50 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
+<owl:Class rdf:about="Conv2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="ReLU_sub">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="LocalResponseNorm">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="net_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="net_4">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="net_8">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="net_10">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="net_12">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
 <owl:Class rdf:about="Multinomial Logistic Regression Loss">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
@@ -3291,7 +3335,132 @@
 
 <owl:NamedIndividual rdf:about="709942bd_alexnet-network">
   <rdf:type rdf:resource="ParentNetwork"/>
+  <hasLayer rdf:resource="709942bd_net_0"/>
+  <hasLayer rdf:resource="709942bd_net_2"/>
+  <hasLayer rdf:resource="709942bd_net_3"/>
+  <hasLayer rdf:resource="709942bd_net_4"/>
+  <hasLayer rdf:resource="709942bd_net_6"/>
+  <hasLayer rdf:resource="709942bd_net_7"/>
+  <hasLayer rdf:resource="709942bd_net_8"/>
+  <hasLayer rdf:resource="709942bd_net_10"/>
+  <hasLayer rdf:resource="709942bd_net_12"/>
+  <hasLayer rdf:resource="709942bd_net_14"/>
+  <hasLayer rdf:resource="709942bd_classifier_0"/>
+  <hasLayer rdf:resource="709942bd_classifier_3"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_0">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_net_1"/>
+  <nextLayer rdf:resource="709942bd_net_2"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">34944</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_1">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_2">
+  <rdf:type rdf:resource="LocalResponseNorm"/>
+  <nextLayer rdf:resource="709942bd_net_3"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_3">
+  <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_net_4"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_4">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_net_5"/>
+  <nextLayer rdf:resource="709942bd_net_6"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">614656</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_5">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_6">
+  <rdf:type rdf:resource="LocalResponseNorm"/>
+  <nextLayer rdf:resource="709942bd_net_7"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_7">
+  <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_net_8"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_8">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_net_9"/>
+  <nextLayer rdf:resource="709942bd_net_10"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">885120</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_9">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_10">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_net_11"/>
+  <nextLayer rdf:resource="709942bd_net_12"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1327488</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_11">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_12">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_net_13"/>
+  <nextLayer rdf:resource="709942bd_net_14"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">884992</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_13">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_net_14">
+  <rdf:type rdf:resource="MaxPool2d"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_0">
+  <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_1"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_2"/>
+  <nextLayer rdf:resource="709942bd_classifier_3"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_2">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_3">
+  <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_4"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_5"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_6"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_4">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_5">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_6">
+  <rdf:type rdf:resource="Linear"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_convolutional-network">
@@ -3323,7 +3492,7 @@
 <owl:NamedIndividual rdf:about="709942bd_dropout">
   <rdf:type rdf:resource="Dropout"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that randomly sets a fraction of the input units to 0 during training to prevent overfitting.</definition>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that sets the output of each hidden neuron to zero with a probability of 0.5 to prevent overfitting.</definition>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_supervised-classification">
@@ -3392,9 +3561,9 @@
   <hasLabels rdf:resource="709942bd_label-set"/>
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2010 is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1.2 million training images across 1000 categories.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ILSVRC-2010 dataset is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1,000 images in each of 1,000 categories.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000000</data_samples>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_dataset-pipe-3">
@@ -3408,9 +3577,9 @@
   <hasLabels rdf:resource="709942bd_label-set"/>
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2012 is another subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, similar to ILSVRC-2010 but with test set labels unavailable.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ILSVRC-2012 dataset is another subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, similar in structure to ILSVRC-2010 but with test set labels not publicly available.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000000</data_samples>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
