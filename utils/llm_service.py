@@ -48,13 +48,12 @@ OPENAI_EMBEDDING_MODEL = os.environ.get(
 OPENAI_GENERATION_MODEL = os.environ.get(
     "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
 )
-print (OPENAI_GENERATION_MODEL)
-
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
+global logger
 logger = get_logger("llm_service")
 
 # async (wrappers for blocking API calls)
@@ -134,7 +133,7 @@ class OllamaClient(BaseLLMClient):
             # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
         self.embedder = OllamaEmbeddings(model=self.embed_model)
-        self.test_connection()
+        # self.test_connection()
 
     def embedding(self, text: str) -> List[float]:
         return self.embedder.embed_query(text)
@@ -154,7 +153,6 @@ class OllamaClient(BaseLLMClient):
                 raise ValueError("Invalid dummy chat model response.")
 
             logger.info("Successfully connected to Ollama API")
-
         except Exception as e:
             logger.exception("Failed to connect to Ollama API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to Ollama API: {e}")
@@ -178,7 +176,7 @@ class OpenAIClient(BaseLLMClient):
             model=self.embed_model,
             openai_api_key=self.api_key,
         )
-        self.test_connection()
+        # self.test_connection()
 
     def embedding(self, text: str) -> list:
         return self.embedder.embed_query(text)
@@ -201,20 +199,13 @@ class OpenAIClient(BaseLLMClient):
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
 
-
 class LLMQueryEngine:
 
     def __init__(
         self,
         json_file_path: str,
-        # chunk_size: int = CHUNK_SIZE,
-        # chunk_overlap: int = CHUNK_OVERLAP,
-        # embedding_model: str = EMBEDDING_MODEL,
-        # generation_model: str = GENERATION_MODEL,
     ):
-
         self.logger = logger
-
         self.llm_client = (
             OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
@@ -460,7 +451,7 @@ class LLMQueryEngine:
             raise ValueError("No context assembled for query: %s", query)
         self.logger.info(f"Assembled context for query.")
         prompt = (
-            f"Goal: Answer the query based on the provided context.\n\n"
+            f"Goal: Answer the query based on the provided context. Context is deliminated by triple back ticks\n\n"
             f"Query: {query}\n\n"
             f"Context:\n```\n{context}\n```\n\n"
             f"Response:\n"

@@ -823,7 +823,7 @@ def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
     :param ann_config_name: The name of the ANNConfiguration instance to remove.
     """
     ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
-    
+    print(f"Deleting ANNConfiguration instance: {ann_config_instance}")
     if not ann_config_instance:
         print(f"No instance found with name {ann_config_name}")
         return

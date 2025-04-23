@@ -1,5 +1,5 @@
 from owlready2 import Ontology
-from utils.owl_utils import create_class_object_property, create_subclass
+from utils.owl_utils import create_class_object_property, create_subclass, create_generic_data_property
 
 def add_has_weight_initialization(ontology: Ontology, logger=None) -> None:
     try:
@@ -33,6 +33,39 @@ def add_activation_function_layer_subclass(ontology: Ontology, logger=None) -> N
             logger.info("Subclass of Layer called 'ActivationFunctionLayer' added successfully.")
     except Exception as e:
         pass
+def add_source_data_property(ontology: Ontology, logger=None) -> None:
+    try:
+        create_generic_data_property(
+            ontology, "sourceData",
+            str
+        )
+        if logger:
+            logger.info("Data property 'sourceData' added successfully.")
+    except Exception as e:
+        logger.debug(f"Failed to add data property 'sourceData': {e}") if logger else None
+        pass
+def add_definition_data_property(ontology: Ontology, logger=None) -> None:
+    try:
+        create_generic_data_property(
+            ontology, "definition",
+            str
+        )
+        if logger:
+            logger.info("Data property 'definition' added successfully.")
+    except Exception as e:
+        logger.debug(f"Failed to add data property 'definition': {e}") if logger else None
+        pass
+def remove_annetto_default_anns(ontology: Ontology, logger=None) -> None:
+    try:
+        from utils.owl_utils import delete_ann_configuration
+        delete_ann_configuration(ontology, "GAN")
+        delete_ann_configuration(ontology, "AAE")
+        delete_ann_configuration(ontology, "simple_classification")
+        if logger:
+            logger.info("Default ANN configurations removed successfully.")
+    except Exception as e:
+        logger.debug(f"Failed to remove default ANN configurations: {e}") if logger else None
+        pass
 
 def initialize_annetto(ontology: Ontology, logger=None) -> None:
     """Initialize annett-o ontology with new classes and properties."""
@@ -40,8 +73,13 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
         add_has_weight_initialization(ontology, logger)
         add_new_task_characterizations(ontology, logger)
         add_activation_function_layer_subclass(ontology, logger)
+        remove_annetto_default_anns(ontology, logger)
+        add_source_data_property(ontology, logger)
+        add_definition_data_property(ontology, logger)
+        # Add any other initialization steps here
 
         if logger:
             logger.info("Ontology initialized successfully.")
     except Exception as e:
+        logger.debug(f"Failed to make initial ontology updates: {e}") if logger else None
         pass
