@@ -278,7 +278,7 @@ class CodeExtractor():
                         self.pytorch_module_names = processor.pytorch_module_names
 
                         for model_name , graph in processor.pytorch_model_graphs.items(): # save each class individually
-                            self.save_json(file.replace(".py" , f"_code_{model_name}_torch_{count}.json") , graph)
+                            self.save_json(file.replace(".py" , f"_{model_name}_torch_{count}.json") , graph)
                         #self.save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
                     elif processor.tf_graph:
                         logger.info(f"TensorFlow code found within file {file}")

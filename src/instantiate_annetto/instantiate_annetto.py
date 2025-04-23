@@ -551,20 +551,17 @@ class OntologyProcessor:
         :return None
         """
         try:
-            #################  TEMP ######################
-            _ = create_subclass(self.ontology , "ActivationFunctionLayer" , self.ontology.Layer)
-
             json_files: list = []
             if module_names: # PyTorch only
                 for module in module_names:
-                    json_files.extend(glob.glob(f"{self.ann_path}/**/*{module}*torch*.json" , recursive=True))
+                    json_files.extend(glob.glob(f"{self.ann_path}/*{module}*.json"))
             else:
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*torch*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*pb*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*onnx*.json" , recursive=True))
 
             if not json_files:
-                self.logger.error("No relevant JSON files (parsed code) found")
+                self.logger.error(f"No relevant JSON files (parsed code) found {module_names}")
                 return
 
             # fetch ontology subclasses
@@ -1165,10 +1162,6 @@ A **subnetwork** is a block that\n
             
             # pt networks list
             unused_pt_networks:List[str] = self.pt_network_names
-            unused_pt_networks.append( # TEMP FOR TESTING ################# TODO
-                "Convolutional Neural Network",
-            ) 
-            warnings.warn(" need to delete this line in the future instantiate annetto")
             # List for keeping track of processed networks from the LLM
             unused_subnetwork_names: List[str] = []
 
