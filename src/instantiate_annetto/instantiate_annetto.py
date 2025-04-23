@@ -748,6 +748,7 @@ class OntologyProcessor:
         :return None or instance of the next layer
         """
         try:
+            self.logger.info(f"Reassigning linkages for parent {parent_layer} to child {child_layer_name}")
             child_node = next((node for node in node_data if node.get("name") == child_layer_name) , None)
 
             if not child_node:
@@ -773,7 +774,7 @@ class OntologyProcessor:
 
                     # recurse if there's another activation function
                     if next_type == "activation":
-                        self._reassign_layer_linkage(parent_layer, next_name , next_entry, next_type, name_to_instance)
+                        self._reassign_layer_linkage(parent_layer, next_entry , next_name, next_type, name_to_instance , node_data)
                     else:
                         self._link_instances(parent_layer, next_instance, self.ontology.nextLayer)
                         self._link_instances(next_instance, parent_layer, self.ontology.previousLayer)

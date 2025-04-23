@@ -30,12 +30,13 @@ NOTE: for how to run, see main()
 logger = get_logger("code-extraction")
 
 class _CodeProcessor(ast.NodeVisitor):
-    def __init__(self , code):
+    def __init__(self , code , file_path):
         self.code_lines = code.split("\n")
         self.sections = [] # classes / functions / global vars
-        self.pytorch_graph = []
+        self.pytorch_model_graphs = {}
         self.model_name: str = None
         self.pytorch_module_names: list = [] # names of the different networks within a pytorch file
+        self.module_namespace = self.extract_namespace(file_path)
 
     def visit_Module(self, node):
         """
@@ -87,22 +88,40 @@ class _CodeProcessor(ast.NodeVisitor):
                 self.pytorch_module_names.append(node.name)
                 mappings: dict = {}
 
-                class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
-                exec("\n".join(class_code) , globals() , mappings) # load code into memory
-                model_class = mappings.get(node.name)
+                model_class = self.module_namespace.get(node.name)
 
-                if model_class:
-                    model = instantiate_with_dummy_args(model_class)
+                if not model_class:
+                    logger.error(f"Could not find class {node.name} in namespace")
+                    return
+                
+                model = instantiate_with_dummy_args(model_class) # might not need it
+                if model is None and node.name in dir(tmodels):
+                    try:
+                        model = tmodels.get_model(node.name, weights='DEFAULT')
+                    except Exception as e:
+                        logging.warning(f"Could not load torchvision model {node.name}: {e}")
+                
+                if model:
+                    self.model_name = node.name
+                    graph = extract_graph(model)
+                    self.pytorch_model_graphs[node.name] = graph
 
-                    if model is None and node.name in dir(tmodels):
-                        try:
-                            model = tmodels.get_model(node.name, weights='DEFAULT')
-                        except Exception as e:
-                            logging.warning(f"Could not load torchvision model {node.name}: {e}")
+                # class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
+                # exec("\n".join(class_code) , globals() , mappings) # load code into memory
+                # model_class = mappings.get(node.name)
+
+                # if model_class:
+                #     model = instantiate_with_dummy_args(model_class)
+
+                #     if model is None and node.name in dir(tmodels):
+                #         try:
+                #             model = tmodels.get_model(node.name, weights='DEFAULT')
+                #         except Exception as e:
+                #             logging.warning(f"Could not load torchvision model {node.name}: {e}")
                     
-                    if model:
-                        self.model_name = node.name
-                        self.pytorch_graph = extract_graph(model)              
+                #     if model:
+                #         self.model_name = node.name
+                #         self.pytorch_graph = extract_graph(model)              
 
             # Tensorflow check
             elif hasattr(base, "attr") and base.attr == "Model":
@@ -179,10 +198,48 @@ class _CodeProcessor(ast.NodeVisitor):
         Return contents of code for JSON dump
         """
         return self.sections
+    
+    def extract_namespace(self , filepath: str):
+        with open(filepath, 'r') as f:
+            code = f.read()
+        namespace = {
+            '__name__': '__main__',  # hope this helps
+            '__file__': filepath,
+            '__package__': None,
+            '__builtins__': __builtins__,
+        }
+
+        #compiled_code = _strip_relative_imports(code)
+        exec(code, namespace)
+        return namespace
+
+class _RelativeImportRemover(ast.NodeTransformer):
+    def visit_ImportFrom(self, node):
+        if node.level > 0:
+            return None  # Remove relative imports
+        return node
+
+    def generic_visit(self, node):
+        super().generic_visit(node)
+        # Fix empty bodies (for if/while/with/etc.)
+        if hasattr(node, 'body') and isinstance(node.body, list):
+            node.body = [stmt for stmt in node.body if stmt is not None]
+            if len(node.body) == 0:
+                node.body.append(ast.Pass())
+        return node
+
+
+def _strip_relative_imports(code: str) -> str:
+    tree = ast.parse(code)
+    tree = _RelativeImportRemover().visit(tree)
+    ast.fix_missing_locations(tree)
+    return compile(tree, filename="<ast>", mode="exec")
+     
 
 class CodeExtractor():
     def __init__(self):
         self.pytorch_module_names:list = []
+        self.pytorch_present: bool = False
 
     def save_json(self , output_file: str , content: dict):
         with open(output_file, "w") as json_file:
@@ -229,9 +286,7 @@ class CodeExtractor():
                         code = f.read()
                     tree = ast.parse(code)
                     output_file = file.replace(".py", f"_code_{count}.json")
-                    processor = _CodeProcessor(code)
-
-                    processor = _CodeProcessor(code)
+                    processor = _CodeProcessor(code , file)
 
                     # for node in ast.walk(tree): # track nodes
                     #     for child in ast.iter_child_nodes(node):
@@ -241,15 +296,19 @@ class CodeExtractor():
                     if not processor.model_name:
                         base = os.path.basename(file)
                         processor.model_name = os.path.splitext(base)[0]
-                    if processor.pytorch_graph: # symbolic graph dictionary
+                    if processor.pytorch_model_graphs: # symbolic graph dictionary
                         logger.info(f"PyTorch code found within file {file}")
                         self.pytorch_module_names = processor.pytorch_module_names
-                        self.save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
+
+                        for model_name , graph in processor.pytorch_model_graphs.items(): # save each class individually
+                            self.save_json(file.replace(".py" , f"_code_{model_name}_torch_{count}.json") , graph)
+                        #self.save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
                     elif processor.tf_graph:
                         logger.info(f"TensorFlow code found within file {file}")
                         self.save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
                     else:
                         logger.info(f"Model name '{processor.model_name}' is not PyTorch or TensorFlow")
+                        self.pytorch_present = False
 
                     # regular code dictionary for RAG
                     output = processor.parse_code()
@@ -290,10 +349,10 @@ class CodeExtractor():
             return False
 
 def main():
-    ann_name = "alexnet"
-    filepath = f"data/{ann_name}"
+    ann_name = "bart_ae"
+    filepath = f"data/more_papers/{ann_name}"
     #logger.info(f"File(s) found: {filepath}")
-
+    
     # simply provide the file path that may contain the related network code files
     processor = CodeExtractor()
     processor.process_code_file(filepath)

@@ -1,0 +1,58 @@
+[
+   {
+      "page_content": "",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "import torch.nn as nn\nclass Discriminator(nn.Module):\n\t\"\"\"\n\tGenerative Adverserial Network Discriminator Class\n\tTakes in an image as input and outputs a probability indicating whether or not\n\tthe input belongs to a the real data distribution.\n\t\"\"\"\n\tdef __init__(self, img_size, hidden_size):\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.img_size = img_size\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(img_size, hidden_size),\n\t\t\tnn.LeakyReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, hidden_size),\n\t\t\tnn.LeakyReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, 1),\n\t\t\tnn.Sigmoid()\n\t\t)\n\tdef forward(self, x):\n\t\t\"\"\"\n\t\tForward pass of a discriminator\n\t\t:param x: Image tensor\n\t\t:return: Float in range [0, 1] - probability score\n\t\t\"\"\"\n\t\t# Resize x from a H x W img to a vector\n\t\tx = x.view(-1, self.img_size)\n\t\treturn self.model(x).clamp(1e-9)\nclass Generator(nn.Module):\n\t\"\"\"\n\tGenerative Adversarial Network Generator Class\n\tTakes in a latent vector z and returns a vector in\n\tthe same image space that the discriminator is trained on.\n\t\"\"\"\n\tdef __init__(self, img_size, latent_size, hidden_size):\n\t\tsuper(Generator, self).__init__()\n\t\tself.latent_size = latent_size\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(latent_size, hidden_size),\n\t\t\tnn.ReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, hidden_size),\n\t\t\tnn.ReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, img_size),\n\t\t\tnn.Tanh()\n\t\t)\n\tdef forward(self, z):\n\t\t\"\"\"\n\t\tForward pass of a generator\n\t\t:param z: Latent space vector - size: batch_size x latent_size\n\t\t:return: Tensor of self.img_size\n\t\t\"\"\"\n\t\treturn self.model(z)",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Discriminator",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self, img_size, hidden_size):\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.img_size = img_size\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(img_size, hidden_size),\n\t\t\tnn.LeakyReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, hidden_size),\n\t\t\tnn.LeakyReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, 1),\n\t\t\tnn.Sigmoid()\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x):\n\t\t\"\"\"\n\t\tForward pass of a discriminator\n\t\t:param x: Image tensor\n\t\t:return: Float in range [0, 1] - probability score\n\t\t\"\"\"\n\t\t# Resize x from a H x W img to a vector\n\t\tx = x.view(-1, self.img_size)\n\t\treturn self.model(x).clamp(1e-9)",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Generator",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self, img_size, latent_size, hidden_size):\n\t\tsuper(Generator, self).__init__()\n\t\tself.latent_size = latent_size\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(latent_size, hidden_size),\n\t\t\tnn.ReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, hidden_size),\n\t\t\tnn.ReLU(),\n\t\t\tnn.Dropout(),\n\t\t\tnn.Linear(hidden_size, img_size),\n\t\t\tnn.Tanh()\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, z):\n\t\t\"\"\"\n\t\tForward pass of a generator\n\t\t:param z: Latent space vector - size: batch_size x latent_size\n\t\t:return: Tensor of self.img_size\n\t\t\"\"\"\n\t\treturn self.model(z)",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   }
+]

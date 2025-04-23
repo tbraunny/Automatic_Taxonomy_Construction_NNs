@@ -1,0 +1,185 @@
+{
+   "graph": {
+      "node": [
+         {
+            "name": "x",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "view"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "view",
+            "op_type": null,
+            "op": "call_method",
+            "output": [
+               "model_0"
+            ],
+            "input": [
+               "x",
+               "-1",
+               "784"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "model_0",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_1"
+            ],
+            "input": [
+               "view"
+            ],
+            "attributes": {
+               "weight": [
+                  784,
+                  784
+               ],
+               "bias": [
+                  784
+               ]
+            },
+            "num_params": 615440
+         },
+         {
+            "name": "model_1",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "model_2"
+            ],
+            "input": [
+               "model_0"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_2",
+            "op_type": "Dropout",
+            "op": "call_module",
+            "output": [
+               "model_3"
+            ],
+            "input": [
+               "model_1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_3",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_4"
+            ],
+            "input": [
+               "model_2"
+            ],
+            "attributes": {
+               "weight": [
+                  784,
+                  784
+               ],
+               "bias": [
+                  784
+               ]
+            },
+            "num_params": 615440
+         },
+         {
+            "name": "model_4",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "model_5"
+            ],
+            "input": [
+               "model_3"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_5",
+            "op_type": "Dropout",
+            "op": "call_module",
+            "output": [
+               "model_6"
+            ],
+            "input": [
+               "model_4"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_6",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_7"
+            ],
+            "input": [
+               "model_5"
+            ],
+            "attributes": {
+               "weight": [
+                  1,
+                  784
+               ],
+               "bias": [
+                  1
+               ]
+            },
+            "num_params": 785
+         },
+         {
+            "name": "model_7",
+            "op_type": "Sigmoid",
+            "op": "call_module",
+            "output": [
+               "clamp"
+            ],
+            "input": [
+               "model_6"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "clamp",
+            "op_type": null,
+            "op": "call_method",
+            "output": [
+               "output"
+            ],
+            "input": [
+               "model_7",
+               "1e-09"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "clamp"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}
