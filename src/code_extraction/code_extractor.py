@@ -204,10 +204,10 @@ class _CodeProcessor(ast.NodeVisitor):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
-            '__name__': '__main__',  # hope this helps (might have to take out)
-            '__file__': filepath,
-            '__package__': None,
-            '__builtins__': __builtins__,
+            # '__name__': '__main__',  # hope this helps (might have to take out)
+            # '__file__': filepath,
+            # '__package__': None,
+            # '__builtins__': __builtins__,
         }
 
         #compiled_code = _strip_relative_imports(code)
@@ -258,7 +258,6 @@ class CodeExtractor():
                 logger.info(f"Python file(s) detected: {py_files}")
                 for count , file in enumerate(py_files):
                     logger.info(f"Parsing python file {file}...")
-
                     code = 0
                     with open(file , "r") as f:
                         code = f.read()

@@ -1472,14 +1472,6 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
-<owl:Class rdf:about="Multinomial Logistic Regression Loss">
-  <rdfs:subClassOf rdf:resource="LossFunction"/>
-</owl:Class>
-
-<owl:Class rdf:about="Dropout">
-  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
-</owl:Class>
-
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -3283,52 +3275,8 @@
 
 <owl:NamedIndividual rdf:about="709942bd_alexnet">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="709942bd_alexnet-network"/>
-  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
   <hasPrimaryTrainingSession rdf:resource="709942bd_training-strategy"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_alexnet-network">
-  <rdf:type rdf:resource="ParentNetwork"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="709942bd_maximize-objective-function"/>
-  <hasTaskType rdf:resource="709942bd_supervised-classification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_maximize-objective-function">
-  <rdf:type rdf:resource="MaxObjectiveFunction"/>
-  <hasCost rdf:resource="709942bd_cost-function"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_cost-function">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="709942bd_multinomial-logistic-regression-loss"/>
-  <hasRegularizer rdf:resource="709942bd_dropout"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_multinomial-logistic-regression-loss">
-  <rdf:type rdf:resource="Multinomial Logistic Regression Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maximizes the average log-probability of the correct label under the prediction distribution.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dropout">
-  <rdf:type rdf:resource="Dropout"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that randomly sets a fraction of the input units to 0 during training to prevent overfitting.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_training-strategy">
@@ -3345,72 +3293,7 @@
 
 <owl:NamedIndividual rdf:about="709942bd_training-single">
   <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-2"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-3"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">90</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-1">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_imagenet"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_imagenet">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a dataset of over 15 million labeled high-resolution images belonging to roughly 22,000 categories. It includes a subset used in the ILSVRC competitions with approximately 1.2 million training images, 50,000 validation images, and 150,000 testing images.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_label-set">
-  <rdf:type rdf:resource="Labelset"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</labels_count>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_data-type">
-  <rdf:type rdf:resource="Image"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-2">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_ilsvrc-2010"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_ilsvrc-2010">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2010 is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1.2 million training images across 1000 categories.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-3">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_ilsvrc-2012"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_ilsvrc-2012">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2012 is another subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, similar to ILSVRC-2010 but with test set labels unavailable.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
