@@ -2,7 +2,7 @@
 
 class Constants:
     class ONTOLOGY:
-        STABLE_ONTOLOGY_PATH = "data/owl/annett-o.owl"
+        STABLE_ONTOLOGY_PATH = "data/owl/annett-o-stable.owl"
         MID_DEMO_ONTOLOGY_PATH = "data/owl/annett-o-mid-demo.owl"
         TEST_ONTOLOGY_PATH = "data/owl/annett-o-test.owl"
         DEV_ONTOLOGY_PATH = "data/owl/annett-o-dev.owl"

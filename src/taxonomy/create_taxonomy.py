@@ -6,6 +6,9 @@ import sys
 import re
 from typing import Optional
 
+
+os.environ['KERAS_BACKEND'] = 'torch'
+
 from pathlib import Path
 import logging
 import json
@@ -15,7 +18,7 @@ from collections import deque, defaultdict
 import networkx as nx
 
 
-from rdflib import Graph, Literal, RDF, URIRef, BNode, Namespace
+from rdflib import Graph, Literal as Lit, RDF, URIRef, BNode, Namespace
 from rdflib.namespace import RDFS, XSD
 
 
@@ -28,9 +31,53 @@ from src.taxonomy.visualizeutils import visualizeTaxonomy
 from src.taxonomy.clustering import kmeans_clustering,agglomerative_clustering
 from src.taxonomy.criteria import *
 
+from src.graph_extraction.graphautoencoder.owlinference import get_embedding
+from src.graph_extraction.graphautoencoder.model import GraphAutoencoder,GraphBertAutoencoder
+
+from src.taxonomy.querybuilder import * 
+
+from src.taxonomy.utils_tabular import create_tabular_view_from_faceted_taxonomy, dfi
+
+
 # Set up logging @ STREAM level
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+
+def querytacular(search, ontology):
+    annconfigs = ontology.ANNConfiguration.instances() 
+    
+    outputDictionary = {}
+
+    for value in search.Value:
+        chains = find_property_chain_to_property(ontology, ontology.ANNConfiguration, ontology[value.Name])
+        fullchain = set([ "<"+ link+">" for chain in chains for link in chain])
+        
+        filters = _map_vo_to_filter(value,"?value")
+        output = query_generic(ontology, value.Name, fullchain, filters)
+        output = [ list(out) for out in output]
+        
+
+        for out in output:
+            inserts = []
+            key = str(out[0])
+            if not key in outputDictionary:
+                outputDictionary[key] = []
+            if key in outputDictionary:
+                vals = []
+                for val in out[1].split(','):
+                    obj = ontology[value.Name]
+                    irisearch = list(ontology.search(iri=val.strip())) 
+                    if len(irisearch) > 0:
+                        typeinsert = irisearch[0].is_a[0]
+                    else:
+                        typeinsert = str(obj.name) if isinstance(ontology[value.Name] , ThingClass) else obj.domain[0].name
+                    vals.append({'type': typeinsert, 'value': val, 'name': value.Name, 'found': True} )
+                inserts.append(vals)
+            else:
+                inserts.append([])
+            outputDictionary[key].append(inserts)
+    return outputDictionary
 
 def find_paths_to_classes(onto):
     mapping = {}
@@ -41,20 +88,13 @@ def find_paths_to_classes(onto):
     classmapping = {}
     while len(stack) > 0:
         #print(stack)
-        #input('next')
         current,path = stack[0]
         visited.append(stack[0])
-        #input('has available')
         del stack[0]
-        #path.append(current)
         for prop in onto.object_properties():
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
-            #print(prop.name,searchdomain, current in searchdomain)
-            #print(type(current))
-            #input('bark1')
             if current in searchdomain:
                 #if 'hasTrainingOptimizer' in str(prop):
-                #    input('here2')
                 copypath = list(path)
                 copypath.append(prop)
                 mapping[prop] = path
@@ -68,9 +108,6 @@ def find_paths_to_classes(onto):
                         visited.append(prop.range[0])
         for prop in onto.data_properties():
             searchdomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
-            #print(prop.name,searchdomain, current in searchdomain)
-            #print(type(current))
-            #input('bark1')
             if current in searchdomain:
 
                 copypath = list(path)
@@ -84,15 +121,7 @@ def find_paths_to_classes(onto):
                     if not prop.range[0] in stack and not prop.range[0] in visited and not prop.range[0] in ignored:
                         stack.append((prop.range[0], copypath))
                         visited.append(prop.range[0])
-        #input('waiting')
 
-    #print(mapping)
-    #print(list(mapping.keys()))
-
-    #print(list(classmapping.keys()))
-    #print(classmapping[onto.Layer])
-    #print(mapping[classmapping[onto.Layer]])
-    #input('done')
     return classmapping, mapping
 
 def parse_function(text):
@@ -117,6 +146,7 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
         found: a list of found elements associate to has_property
         visisted: all nodes that have been visisted
     '''
+
     if visited is None:
         visited = set()
     if instance in visited:
@@ -188,10 +218,6 @@ def find_instance_properties_new(instance, query=[], found=None, visited=None):
 
     return found
 
-
-
-backTrackMap = {}
-
 def find_instances(annConfig, ontology, query):
     found = [[] for value in query.Value]
     #print(query)
@@ -221,12 +247,9 @@ def find_instances(annConfig, ontology, query):
                                 newstack.append(toinsert)
                     except Exception as e:
                         logger.warning(f'Problem found with {query} with error: {e}')
-                        input(e)
                 stack = newstack
                 #nn_configurations = get_class_instances(self.ontology.ANNConfiguration)
         if searchFound:
-            #print(searchFound,value)
-            #input('found')
             for plate in stack:
                 # need to check if this thing returns a single or list...
                 if plate != None:
@@ -277,7 +300,6 @@ def find_instances(annConfig, ontology, query):
             query.Value = [value]
             foundproperties = find_instance_properties_new(annConfig, query=query, found=[[]], visited=None)
             found[index] = foundproperties[0]
-
     return found
 
 
@@ -313,8 +335,10 @@ def get_property_from_ann_for_clustering(annconfig, value, query, ontology, vect
     #    query.Value = values
     #    items = find_instance_properties_new(annconfig, query, found=[ [] for index, value in enumerate(query.Value)])
     
-    items = find_instances(annconfig, ontology, query)
+    #items = querytacular(query)
 
+    items = find_instances(annconfig, ontology, query)
+    
     # restore original values 
     #query.HasType = HasType
     #query.Value = values
@@ -326,6 +350,16 @@ def get_property_from_ann_for_clustering(annconfig, value, query, ontology, vect
         for itemlist in items:
             returnlist.append([ item['value'] if type(item['value']) == float or type(item['value']) == int or type(item['value']) == str else str(item['value'])  for item in itemlist]
                     )
+    return returnlist
+
+
+def vectorize(items ):
+    returnlist = []
+    if len(items) == 0:
+        return returnlist
+    for value in items:
+        for itemlist in value:
+            returnlist.append([ item['value'] if type(item['value']) == float or type(item['value']) == int or type(item['value']) == str else str(item['value'])  for item in itemlist])
     return returnlist
 
 def SplitOnCriteria(ontology, annConfigs, has=[],equals=[]):
@@ -432,10 +466,10 @@ class TaxonomyNode(BaseModel):
         g = Graph()
 
         # Define a custom namespace
-        MYNS = Namespace("http://example.org/taxonomy#")
+        MYNS = Namespace("http://ncats.org/taxonomy#")
         g.bind("myns", MYNS)
 
-        def add_node(node: "TaxonomyNode", graph: Graph):
+        def add_node(node: "Taxonomy", graph: Graph):
             """
             Recursively adds the node (and its children) to the graph,
             returning the URIRef for the current node.
@@ -447,56 +481,66 @@ class TaxonomyNode(BaseModel):
             graph.add((node_uri, RDF.type, MYNS.TaxonomyNode))
 
             # Add label (the node's name)
-            graph.add((node_uri, RDFS.label, Literal(node.name, datatype=XSD.string)))
+            graph.add((node_uri, RDFS.label, Lit(node.name, datatype=XSD.string)))
 
             # Add splitKey if it exists
             if node.splitKey:
                 graph.add((node_uri, MYNS.splitKey,
-                           Literal(node.splitKey, datatype=XSD.string)))
+                           Lit(node.splitKey, datatype=XSD.string)))
 
             # Add annConfigs
             if node.annConfigs:
                 # Serialize list/dict as JSON and store as literal
                 graph.add((node_uri, MYNS.annConfigs,
-                           Literal(json.dumps(serialize(node.annConfigs)),
+                           Lit(json.dumps(serialize(node.annConfigs)),
                                    datatype=XSD.string)))
 
             # Add splitProperties
             if node.splitProperties:
                 graph.add((node_uri, MYNS.splitProperties,
-                           Literal(json.dumps(serialize(node.splitProperties)),
+                           Lit(json.dumps(serialize(node.splitProperties)),
                                    datatype=XSD.string)))
 
             # Add Criteria if present
             if node.criteria:
                 criteria_bnode = BNode()
                 graph.add((node_uri, MYNS.hasCriteria, criteria_bnode))
-                graph.add( (criteria_bnode, MYNS.Name, Literal(node.criteria, datatype=XSD.string)  ) )
+                graph.add( (criteria_bnode, MYNS.Name, Lit(node.criteria, datatype=XSD.string)  ) )
                 # Each SearchOperator in .criteria.Searchs can be a separate BNode
                 for op in node.criteria.Searchs:
                     op_bnode = BNode()
                     graph.add((criteria_bnode, MYNS.hasSearchOperator, op_bnode))
 
                     # Add all fields of the SearchOperator
-                    if op.HasType:
-                        graph.add((op_bnode, MYNS.HasType,
-                                   Literal(op.HasType, datatype=XSD.string)))
                     if op.Type:
                         graph.add((op_bnode, MYNS.Type,
-                                   Literal(op.Type, datatype=XSD.string)))
+                                   Lit(op.Type, datatype=XSD.string)))
                     if op.Name:
                         graph.add((op_bnode, MYNS.Name,
-                                   Literal(op.Name, datatype=XSD.string)))
-                    if op.Op:
+                                   Lit(op.Name, datatype=XSD.string)))
+                    if  op.Cluster:
                         graph.add((op_bnode, MYNS.Op,
-                                   Literal(op.Op, datatype=XSD.string)))
+                                   Lit(op.Cluster, datatype=XSD.string)))
                     if op.Value is not None:
+
+                        values_bnode = BNode()
+                        graph.add((op_bnode, MYNS.hasCriteriaValues, values_bnode))
+                        
                         # Convert to string for simplicity; could refine based on type
-                        graph.add((op_bnode, MYNS.Value,
-                                   Literal(str(op.Value), datatype=XSD.string)))
+                        for value in op.Value:
+
+                            value_bnode = BNode()
+                            graph.add((values_bnode, MYNS.hasValueOperator, value_bnode))
+
+                            graph.add((value_bnode, RDF.type, MYNS.CriteriaValue))
+                            graph.add((value_bnode, RDFS.label, Lit(value.Name, datatype=XSD.string))) 
+                            graph.add((value_bnode,MYNS.Op, Lit(value.Op, datatype=XSD.string)))
+                            graph.add((value_bnode, MYNS.Value, Lit(str(value.Value), datatype=XSD.string)))
+                            #for val in value.Value:
+                            #    graph.add((op_bnode, MYNS.Value, Literal(str(val.Value), datatype=XSD.string)))
                     if op.HashOn:
                         graph.add((op_bnode, MYNS.HashOn,
-                                   Literal(op.HashOn, datatype=XSD.string)))
+                                   Lit(op.HashOn, datatype=XSD.string)))
 
             # Recursively handle children
             for child in node.children:
@@ -604,15 +648,38 @@ class TaxonomyCreator:
             #print(clusterop)
             clustervecs = []
             length = -1
+            annConfigMap = querytacular(clusterop, ontology)
             for ann_config in ann_configurations:
-                vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, ontology, vectorize=True)
+
+                #vector = get_property_from_ann_for_clustering(ann_config,clusterop.Value, clusterop, ontology, vectorize=True)
+                if str(ann_config.iri) in annConfigMap:
+                    vector = vectorize(annConfigMap[str(ann_config.iri)])
+                else:
+                    vector = [[] for value in clusterop.Value]
+                
                 clustervecs.append(vector)
+            # do graph clustering here
+            #try:
+            print(clusterop.Type)
+            if clusterop.Type != None and 'graph' in clusterop.Type.Name: 
+
+                embedding_vecs = get_embedding(ontology)
+                
+                # converting to hash types -- #TODO should probably make a class to contain these
+                outvecs = [ {'type': ann_config.name, 'value': float(embedding_vecs[ann_config.name]), 'name': ann_config.name, 'found': True} for ann_config in ann_configurations]
+                for index,item in enumerate(outvecs):
+                    clustervecs[index].append([item['value']])
+
+            #except Exception as e:
+            #    logger.warn(f"something went wrong with the graph clustering: {e}")
 
             if len(clustervecs) != 0: # only do clustering if we have some sort of vector returned
                 
                 # fill in values that have nothing with a negative one
-                if clusterop.Type != None and ('kmeans' in clusterop.Type.Name or 'agg' in clusterop.Type.Name):
-                    
+                if clusterop.Type != None and ('kmeans' in clusterop.Type.Name or 'agg' in clusterop.Type.Name or 'graph' in clusterop.Type.Name):
+                    if clusterop.Type.Name == 'graph':
+                        logger.warn('by default a graph will use kmeans')
+                        
                     centroids=10
                     if len(clusterop.Type.Arguments) == 2:
                         centroids = int(clusterop.Type.Arguments[0])
@@ -657,10 +724,12 @@ class TaxonomyCreator:
                     maxdimension = max(map(len,inputclustervecs))
                     
                     if maxdimension != 0:
-                        if 'kmeans' in clusterop.Type.Name:
+                        if 'kmeans' in clusterop.Type.Name or 'graph' in clusterop.Type.Name:
                             centers = kmeans_clustering(inputclustervecs, centroids=centroids )
-                        if 'agg' in clusterop.Type.Name:
+                        elif 'agg' in clusterop.Type.Name:
                             centers = agglomerative_clustering(inputclustervecs, centroids=centroids)
+                        else:
+                            logging.warning(f"not supported: {clusterop.Type.Name}")
                     else:
                         logging.warn("clustering received vectors with zero dimensionality")
                         centers = []
@@ -672,64 +741,74 @@ class TaxonomyCreator:
                             prefind[ann_configurations[index]][hashcenter] = center
 
         criteria = otherlist
+        annMap = { annconfig : [] for annconfig in ann_configurations}
+        for crit in criteria:
+            for aindex, ann_config in enumerate(ann_configurations):
+                annConfigMap = querytacular(crit, ontology)
+                if str(ann_config.iri) in annConfigMap:
+                    items = []
+                    newitems = annConfigMap[str(ann_config.iri)]
+                    items += [ i for itemlist in newitems for item in itemlist for i in item]
 
-        # iterate over ann_config 
+                    for item in items:
+                        if  crit.HashOn in item:
+                            item['hash'] = item[crit.HashOn]
+                        else:
+                            logging.warn(f'item is missing: {item} and {crit.HashOn}')
+                        item['annconfig'] = ann_config
+                    annMap[ann_config] += items
         for aindex, ann_config in enumerate(ann_configurations):
-            
-            print(aindex,ann_config)
-            found = []
-            networks = ann_config.__getattr__(self.ontology.hasNetwork.name)
-            
-
-            logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
-            
-            # iterate over criteria,facets,levels 
-            for crit in criteria:
-                items = []
-
-                newitems = find_instances(ann_config,ontology,crit) #find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
-
-                # flatten found
-                items += [ item for itemlist in newitems for item in itemlist]
-                
-                for item in items:
-                    if  crit.HashOn in item:
-                        item['hash'] = item[crit.HashOn]
-                    else:
-                        logging.warn(f'item is missing: {item} and {crit.HashOn}')
-                        print(crit.HashOn,item)
-                        print(item)
-                        print(type(item))
-                        print('test')
-                        print(crit)
-                        input()
-
-                found += items
-            
-            for index, data in enumerate(found): 
-                found[index]['annconfig'] = ann_config
             if ann_config in prefind:
                 for pkey in prefind[ann_config]:
-                    found.append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
-            hashvalue = set([item['hash'] for item in found])
+                    annMap[ann_config].append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
+            hashvalue = set([item['hash'] for item in annMap[ann_config]])
             hashvalue = hashvalue = ','.join( str(hash) for hash in hashvalue)
- 
+
             if not hashvalue in hashmap:
-                hashmap[hashvalue] = { ann_config : found }
+                hashmap[hashvalue] = { ann_config.name : annMap[ann_config] }
             else:
-                hashmap[hashvalue][ann_config] = found
+                hashmap[hashvalue][ann_config.name] = annMap[ ann_config ]
 
-            for network in networks:
+        print(hashmap)
+        # iterate over ann_config 
+        # for aindex, ann_config in enumerate(ann_configurations):
+            
+        #     print(aindex,ann_config)
+        #     found = []
+            
+
+        #     logger.info(f"{' ' * 3}ANNConfig: {ann_config}, type: {type(ann_config)}")
+            
+        #     # iterate over criteria,facets,levels 
+        #     for crit in criteria:
+        #         items = []
+
+        #         newitems = find_instances(ann_config,ontology,crit) #find_instance_properties_new(ann_config, query=crit, found=[ [] for index, value in enumerate(crit.Value)])
+
+        #         # flatten found
+        #         items += [ item for itemlist in newitems for item in itemlist]
                 
-                task_characterizations = network.__getattr__(self.ontology.hasTaskType.name)
-                logger.info('\n')
+        #         for item in items:
+        #             if  crit.HashOn in item:
+        #                 item['hash'] = item[crit.HashOn]
+        #             else:
+        #                 logging.warn(f'item is missing: {item} and {crit.HashOn}')
 
-                for task_characterization in task_characterizations:
-                    logger.info(f"{' ' * 7}Task Characterization: {task_characterization}, type: {type(task_characterization)}")
-                    logger.info(f"{' ' * 7}Task Characterization: {task_characterization}, type: {task_characterization.is_a}")
+        #         found += items
+            
+        #     for index, data in enumerate(found): 
+        #         found[index]['annconfig'] = ann_config
+        #     if ann_config in prefind:
+        #         for pkey in prefind[ann_config]:
+        #             found.append({'annconfig':ann_config, 'hash':pkey, 'type': 'int', 'value': prefind[ann_config][pkey]})
+        #     hashvalue = set([item['hash'] for item in found])
+        #     hashvalue = hashvalue = ','.join( str(hash) for hash in hashvalue)
+ 
+        #     if not hashvalue in hashmap:
+        #         hashmap[hashvalue] = { ann_config : found }
+        #     else:
+        #         hashmap[hashvalue][ann_config] = found
 
-                    subclass = task_characterization.is_a[0]
-                    logger.info(f"{' ' * 9}Subclass: {subclass}, type: {type(subclass)}")
         logger.info('done')
         return hashmap
 
@@ -738,9 +817,6 @@ class TaxonomyCreator:
         # Get all ANNConfiguration Objects
         logger.info(f"ANNConfiguration Class: {self.ontology.ANNConfiguration}, type: {type(self.ontology.ANNConfiguration)}")
         
-        #self.ontology.load()
-        print('test',self.ontology.ANNConfiguration)
-        print(list(self.ontology.classes()))
         ann_configurations = get_class_instances(self.ontology.ANNConfiguration)
 
         logger.info(f"ANNConfigurations: {ann_configurations}, type: {type(ann_configurations)}")
@@ -791,6 +867,50 @@ class TaxonomyCreator:
             output = topnode.to_rdf()
         return topnode, facetedTaxonomy, output
 
+def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
+    """
+    Given a single ValueOperator and the SPARQL variable name (e.g. "?layerUnits"),
+    return a SPARQL expression (e.g. "?layerUnits >= 10 && ?layerUnits <= 100") or
+    None if Op == "none".
+    """
+    op = vo.Op
+    vals = vo.Value
+    if len(vals) == 0:
+        return None
+    # ensure we have at least one value for ops that need them:
+    #if op == "none" or not vals:
+    #    return None
+
+    # string-equal (exact match)
+    if op in ("sequal", "name", "none"):
+        v = vals[0]
+        # if numeric, leave bare, else quote
+        lit = f"\"{v}\"" if isinstance(v, str) else v
+        return f"{var} = {lit}"
+
+    # numeric comparisons
+    if op == "less":
+        return f"{var} < {vals[0]}"
+    if op == "leq":
+        return f"{var} <= {vals[0]}"
+    if op == "greater":
+        return f"{var} > {vals[0]}"
+    if op == "geq":
+        return f"{var} >= {vals[0]}"
+
+    # range [low, high]
+    if op == "range" and len(vals) >= 2:
+        low, high = vals[0], vals[1]
+        return f"({var} >= {low} && {var} <= {high})"
+
+    # substring / contains (case‐insensitive)
+    if op == "scomp":
+        # assume vals[0] is the substring to look for
+        v = vals[0]
+        return f"CONTAINS(LCASE(STR({var})), LCASE(\"{v}\"))"
+
+    # fallback
+    return None
 
 
 
@@ -800,68 +920,31 @@ class TaxonomyCreator:
 def main():
     logging.getLogger().setLevel(logging.WARNING)
     logger.info("Loading ontology.")
-    #ontology_path = f"./data/owl/{C.ONTOLOGY.FILENAME}" 
-    #ontology_path = f"./data/Annett-o/annett-o-test.owl"
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
-    #ontology_path = f"./data/owl/fairannett-o.owl" 
     # Example Criteria...
-    #op = SearchOperator(HasType=HasLoss )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Type=TypeOperator(name='layer_num_units'),Value=[ValueOperator(Name="layer_num_units",Value=[600,3001],Op="range"), ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units', HashOn='found' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    
     criteria = Criteria(Name='Layer Num Units')
     criteria.add(op)
+    #criteria.add(op2)
 
-    #op2 = SearchOperator(HasType=HasTaskType )
-    #criteria2 = Criteria(Name='HasTaskType')
-    #criteria2.add(op2)
-   
-    op3 = SearchOperator(Cluster='cluster',Type=TypeOperator(Name='agg', Arguments=['4','binary']), Value=[ValueOperator(Name='layer_num_units',Op='name')], HasType='')
+    criterias = [criteria]
+    ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
-    criteria3 = Criteria(Name='KMeans Clustering')
-    criteria3.add(op3)
-
-    #op3 = SearchOperator(has=[HasLoss] )
-    #criteria3 = Criteria()
-    #criteria3.add(op3)
-    
-    criterias = [criteria,criteria3]
-    print('before load')
-    ontology = load_ontology(ontology_path=ontology_path)
-    print('after load')
-
-    #print(ontology.load())
     logger.info(ontology.instances)
     logger.info("Ontology loaded.")
-
     logger.info("Creating taxonomy from Annetto annotations.")
 
-    criteriatest = '{"Searchs": [{"Type": {"Name": "agg", "Arguments": []}, "Name": "layer_num_units", "Cluster": "cluster", "Value": [{"Name": "hasLoss", "Op": "has", "Value": []}], "HashOn": "found"}], "Name": "Layer Units Clustering Criteria"}'
-    criteriatest2 = '{"criteriagroup": [{"Searchs": [{"Type": null, "Name": "hasNetwork", "Cluster": "none", "Value": [{"Name": "hasNetwork", "Op": "has", "Value": []}], "HashOn": "type"}], "Name": "Network Existence"}, {"Searchs": [{"Type": null, "Name": "layer_num_units", "Cluster": "none", "Value": [{"Name": "layer_num_units", "Op": "none", "Value": [600, 3001]}], "HashOn": "found"}], "Name": "Layer Num Units"}, {"Searchs": [{"Type": null, "Name": "dropout_rate", "Cluster": "none", "Value": [{"Name": "dropout_rate", "Op": "none", "Value": [0.2, 0.5]}], "HashOn": "found"}], "Name": "Dropout Rate"}, {"Searchs": [{"Type": null, "Name": "activation_function", "Cluster": "none", "Value": [{"Name": "activation_function", "Op": "none", "Value": ["relu", "tanh"]}], "HashOn": "found"}], "Name": "Activation Function"}, {"Searchs": [{"Type": null, "Name": "learning_rate", "Cluster": "none", "Value": [{"Name": "learning_rate", "Op": "none", "Value": [0.01, 0.1]}], "HashOn": "found"}], "Name": "Learning Rate"}], "description": "A taxonomy representing all neural networks, including existence, layer number of units, dropout rate, activation function, and learning rate."}'
-
-    output = Criteria.model_validate_json(criteriatest)
-    output = OutputCriteria.model_validate_json(criteriatest2)
-    #print(output)
-    #input()
-    #criterias = [output]
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=output.criteriagroup)
-
+    # taxonomy creator
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
     format='json'
-
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
 
-    print (json.dumps(serialize(facetedTaxonomy)))
-
-    with open('test.json', 'w') as handle:
-        handle.write(json.dumps(serialize(facetedTaxonomy)))
-
-    # print(output)
-    # with open('test.xml','w') as handle:
-    #     handle.write(output)
-
-    # if format == 'graphml':
-    #     visualizeTaxonomy(output)
-    #     print(output)
-    # logger.info("Finished creating taxonomy.")
+    # create a dataframe
+    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format="json")
+    dfi.export(df,'./dataframe.png')
 
 
 if __name__ == "__main__":

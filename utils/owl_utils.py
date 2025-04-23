@@ -658,6 +658,50 @@ def create_class_data_property(
 
     return NewDataProperty
 
+def create_generic_data_property(
+    ontology: Ontology,
+    property_name: str,
+    range_type: Union[int, float, str, bool],
+    functional: bool = False,
+) -> DataPropertyClass:
+    """
+    Creates a general DataProperty that applies to any Thing instance in the ontology.
+    
+    :param ontology: The ontology
+    :param property_name: Name of the data property to be created
+    :param range_type: Data type (int, float, str, bool) of the property
+    :param functional: Boolean flag to set the property as functional (i.e., one value max per instance)
+    :return: The newly created DataProperty class
+    """
+    # Check if the property already exists in the ontology
+    if hasattr(ontology, property_name):
+        existing_property = getattr(ontology, property_name)
+        if not isinstance(existing_property, DataPropertyClass):
+            raise TypeError(
+                f"Entity '{property_name}' already exists in the ontology but is not a DataPropertyClass."
+            )
+        else:
+            print(f"Warning: DataProperty '{property_name}' already exists in the ontology, using it. Unexpected behavior may occur.")
+            return existing_property
+    
+    valid_range_types = {int, float, str, bool}
+    if range_type not in valid_range_types:
+        raise ValueError(
+            f"Invalid range_type: {range_type}. Must be one of {valid_range_types}"
+        )
+
+    bases = (DataProperty, FunctionalProperty) if functional else (DataProperty,)
+    attributes = {
+        "namespace": ontology,
+        "domain": [Thing],
+        "range": [range_type],
+    }
+
+    NewDataProperty = type(property_name, bases, attributes)
+
+    
+    return NewDataProperty
+
 def create_class_object_property(
     ontology: Ontology,
     property_name: str,
@@ -779,7 +823,7 @@ def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
     :param ann_config_name: The name of the ANNConfiguration instance to remove.
     """
     ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
-    
+    print(f"Deleting ANNConfiguration instance: {ann_config_instance}")
     if not ann_config_instance:
         print(f"No instance found with name {ann_config_name}")
         return

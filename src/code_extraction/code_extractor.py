@@ -1,3 +1,4 @@
+import os
 import ast
 import json
 import glob
@@ -8,8 +9,7 @@ from datetime import datetime
 import os
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
-#from tests.deprecated.pt_extractor import PTExtractor
-import os
+from utils.logger_util import get_logger
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -26,19 +26,8 @@ all relevant information about the code.
 NOTE: for how to run, see main()
 """
 
-log_dir = "logs"
-log_file = os.path.join(log_dir , f"code_extraction_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
-os.makedirs(log_dir , exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_file),  # Write to file
-    ],
-    force=True,
-)
-logger = logging.getLogger(__name__)
+from utils.logger_util import get_logger
+logger = get_logger("code_extraction")
 
 class _CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
@@ -95,7 +84,7 @@ class _CodeProcessor(ast.NodeVisitor):
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
                 logging.info("PyTorch instantiation found")
-                self.module_names.append(node.name)
+                self.pytorch_module_names.append(node.name)
                 mappings: dict = {}
 
                 class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
@@ -187,7 +176,7 @@ class CodeExtractor():
     def __init__(self):
         self.pytorch_module_names:list = []
 
-    def save_json(output_file: str , content: dict):
+    def save_json(self , output_file: str , content: dict):
         with open(output_file, "w") as json_file:
             json.dump(content , json_file , indent=3)
                 
@@ -203,11 +192,8 @@ class CodeExtractor():
         :return List of the pytorch module names
         """
         try:
-            processor = _CodeProcessor(code)
-
             file_path  = os.path.normpath(file_path)
             py_files = glob.glob(f"{file_path}/**/*.py" , recursive=True)
-            #pt_files = glob.glob(f"{file_path}/*.pt" , recursive=True) # still working on it
             onnx_files = glob.glob(f"{file_path}/**/*.onnx" , recursive=True)
             pb_files = glob.glob(f"{file_path}/**/*.pb" , recursive=True)
 
@@ -230,10 +216,14 @@ class CodeExtractor():
                 for count , file in enumerate(py_files):
                     logger.info(f"Parsing python file {file}...")
 
+                    code = 0
                     with open(file , "r") as f:
                         code = f.read()
                     tree = ast.parse(code)
                     output_file = file.replace(".py", f"_code_{count}.json")
+                    processor = _CodeProcessor(code)
+
+                    processor = _CodeProcessor(code)
 
                     # for node in ast.walk(tree): # track nodes
                     #     for child in ast.iter_child_nodes(node):
@@ -264,7 +254,7 @@ class CodeExtractor():
                 
         except Exception as e:
             print(e)
-            logger.error(f"Error processing code file(s), {e}")
+            logger.error(f"Error processing code file(s), {e}" , exc_info=True)
 
             return -1
 
