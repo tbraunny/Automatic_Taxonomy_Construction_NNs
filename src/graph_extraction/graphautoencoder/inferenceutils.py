@@ -9,10 +9,15 @@ from torch_geometric.utils import to_dense_batch
 
 import os,sys
 
+from torch.serialization import add_safe_globals
+from src.graph_extraction.graphautoencoder.model import GraphAutoencoder
+
+add_safe_globals([GraphAutoencoder])
+
+
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
-
 
 
 from src.graph_extraction.graphautoencoder.processing import parse_networks,LAYER_MAPPING,REVERSE_MAPPING,create_chain_graph
@@ -41,7 +46,7 @@ def loadModel(selected_model,device='cuda'):
         path = 'src/graph_extraction/graphautoencoder/test.pt'
     else:
         path = 'src/graph_extraction/graphautoencoder/testbert.pt'
-    model = torch.load(path)#GraphAutoencoder(num_tokens=num_tokens, embed_dim=8, hidden_dim=16, latent_dim=8)
+    model = torch.load(path, weights_only=False)#GraphAutoencoder(num_tokens=num_tokens, embed_dim=8, hidden_dim=16, latent_dim=8)
     model = model.to(device)
     model.eval()
     return model

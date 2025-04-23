@@ -912,40 +912,196 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
     # fallback
     return None
 
-
-
-
-
-
 def main():
     logging.getLogger().setLevel(logging.WARNING)
+    logger = logging.getLogger(__name__)
     logger.info("Loading ontology.")
+
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
-
-    # Example Criteria...
-    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    
-    criteria = Criteria(Name='Layer Num Units')
-    criteria.add(op)
-    #criteria.add(op2)
-
-    criterias = [criteria]
     ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
-    logger.info(ontology.instances)
     logger.info("Ontology loaded.")
-    logger.info("Creating taxonomy from Annetto annotations.")
+    logger.info("Creating unified taxonomy from Annetto annotations.")
+    test_criterias = []
 
-    # taxonomy creator
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    format='json'
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    # 1. LESS
+    test_criterias.append(Criteria(
+        Name="Units < 64",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[64])],
+            HashOn="value"
+        )]
+    ))
 
-    # create a dataframe
-    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format="json")
-    dfi.export(df,'./dataframe.png')
+    # 2. GREATER
+    test_criterias.append(Criteria(
+        Name="Units > 512",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="greater", Value=[512])],
+            HashOn="found"
+        )]
+    ))
 
+    # 3. LESS_EQUAL
+    test_criterias.append(Criteria(
+        Name="Units <= 32",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="leq", Value=[32])],
+            HashOn="found"
+        )]
+    ))
+
+    # 4. GREATER_EQUAL
+    test_criterias.append(Criteria(
+        Name="Units >= 128",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="geq", Value=[128])],
+            HashOn="found"
+        )]
+    ))
+
+    # 5. RANGE
+    test_criterias.append(Criteria(
+        Name="Units 64–256",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="range", Value=[64, 256])],
+            HashOn="found"
+        )]
+    ))
+
+    # 6. EQUAL (numeric)
+    test_criterias.append(Criteria(
+        Name="Units = 128",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="sequal", Value=[128])],
+            HashOn="found"
+        )]
+    ))
+
+    # 7. SEQUAL (string match)
+    test_criterias.append(Criteria(
+        Name="Optimizer = Adam",
+        Searchs=[SearchOperator(
+            Name="hasOptimizer",
+            Value=[ValueOperator(Name="hasOptimizer", Op="sequal", Value=["UNREALOPTIMIZER"])],
+            HashOn="value"
+        )]
+    ))
+
+    # 8. NONE (missing property)
+    test_criterias.append(Criteria(
+        Name="Missing Units",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="none")],
+            HashOn="found"
+        )]
+    ))
+
+    # 9. SCOMP (substring comparison)
+    test_criterias.append(Criteria(
+        Name="Description contains 'deep'",
+        Searchs=[SearchOperator(
+            Name="hasDescription",
+            Value=[ValueOperator(Name="hasDescription", Op="scomp", Value=["deep"])],
+            HashOn="value"
+        )]
+    ))
+
+    # 10. NAME (equality by name, often for IDs)
+    test_criterias.append(Criteria(
+        Name="TaskType is Named 'SupervisedClassification'",
+        Searchs=[SearchOperator(
+            Name="hasTaskType",
+            Value=[ValueOperator(Name="hasTaskType", Op="name", Value=["SupervisedClassification"])],
+            HashOn="name"
+        )]
+    ))
+
+    # 11. HAS (presence of object/edge)
+    test_criterias.append(Criteria(
+        Name="Has Loss",
+        Searchs=[SearchOperator(
+            Name="hasLoss",
+            Value=[ValueOperator(Name="hasLoss", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    # 12. CLUSTERING: KMeans
+    test_criterias.append(Criteria(
+        Name="Cluster on Units (KMeans)",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Cluster="cluster",
+            Type=TypeOperator(Name="kmeans", Arguments=["3", "binary"]),
+            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[100])],
+            HashOn="found"
+        )]
+    ))
+
+    # 13. CLUSTERING: Agglomerative
+    test_criterias.append(Criteria(
+        Name="Cluster on Layer Types (Agg)",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Cluster="cluster",
+            Type=TypeOperator(Name="agg", Arguments=["2", "binary"]),
+            Value=[ValueOperator(Name="hasLayer", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    # 14. CLUSTERING: Graph
+    test_criterias.append(Criteria(
+        Name="Graph Clustering on Embeddings",
+        Searchs=[SearchOperator(
+            Name="graph_embedding",
+            Cluster="cluster",
+            Type=TypeOperator(Name="graph", Arguments=["2", "binary"]),
+            Value=[ValueOperator(Name="hasLayer", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    # 15. COMBINATION: ConvLayer with >100 units
+    test_criterias.append(Criteria(
+        Name="Conv Layers > 100 Units",
+        Searchs=[
+            SearchOperator(
+                Name="hasLayer",
+                Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["ConvolutionalLayer"])],
+                HashOn="value"
+            ),
+            SearchOperator(
+                Name="layer_num_units",
+                Value=[ValueOperator(Name="layer_num_units", Op="greater", Value=[100])],
+                HashOn="found"
+            )
+        ]
+    ))
+
+    # Create taxonomy
+    taxonomy_creator = TaxonomyCreator(ontology, criteria=test_criterias)
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='json', faceted=True)
+
+    # Generate tabular view
+    df = create_tabular_view_from_faceted_taxonomy(
+        taxonomy_str=json.dumps(serialize(facetedTaxonomy)),
+        format="json"
+    )
+    df.to_csv('./taxonomy_dataframe_test.csv')
+
+    # Export image
+    export_path = './dataframe_full_taxonomy.png'
+    dfi.export(df, export_path)
+    print(f"Exported: {export_path}")
 
 if __name__ == "__main__":
     main()
