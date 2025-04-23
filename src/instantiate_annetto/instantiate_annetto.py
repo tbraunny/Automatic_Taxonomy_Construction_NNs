@@ -198,7 +198,7 @@ class OntologyProcessor:
 
             # Convert classes to a dictionary for lookup
             class_name_map = {cls.name.lower(): cls for cls in classes}
-
+            
             match, score, _ = process.extractOne(
                 instance_name.lower(), class_name_map.keys(), scorer=fuzz.ratio
             )
@@ -220,31 +220,30 @@ class OntologyProcessor:
         :param name: The item name.
         :param class_names: A list of string names to match with.
         :param threshold: The minimum score required for a match.
-        :return: The best-matching string or None if no good match is found.
+        :return: The best-matching original string or None if no good match is found.
         """
         try:
-            if not all(isinstance(name, str) for name in class_names):
-                raise TypeError(
-                    "Expected class_names to be a list of strings.", exc_info=True
-                )
+            if not all(isinstance(n, str) for n in class_names):
+                raise TypeError("Expected class_names to be a list of strings.")
             if not isinstance(threshold, int):
-                raise TypeError("Expected threshold to be an integer.", exc_info=True)
+                raise TypeError("Expected threshold to be an integer.")
             if not class_names:
-                print("invoked")
                 return None
 
-            class_names_lower = [name.lower() for name in class_names]
-            match, score, _ = process.extractOne(
+            # Build a mapping from lowercased to original
+            lower_to_original = {n.lower(): n for n in class_names}
+            class_names_lower = list(lower_to_original.keys())
+
+            match_lower, score, _ = process.extractOne(
                 name.lower(), class_names_lower, scorer=fuzz.ratio
             )
-            # capitalized_string = string[0].upper() + string[1:]
 
-            return match if score >= threshold else None
+            return lower_to_original[match_lower] if score >= threshold else None
+
         except Exception as e:
-            self.logger.error(
-                f"Error in fuzzy matching: {e}", exc_info=True
-            )
+            self.logger.error(f"Error in fuzzy matching: {e}", exc_info=True)
             return None
+
 
     def _link_instances(
         self,
@@ -542,7 +541,7 @@ class OntologyProcessor:
                 self.ontology.subclass
             )
 
-    def _process_parsed_code(self , network_instance: Thing , module_names: list=None , actfunc_flag: bool=True) -> None:
+    def _process_parsed_code(self , network_instance: Thing , module_names: List[str]=None , actfunc_flag: bool=True) -> None:
         """
         Process code that has been parsed into specific JSON structure to instantiate
         an ontology for the network associated with the code
@@ -1164,33 +1163,14 @@ A **subnetwork** is a block that\n
                 )
                 return
             
-            # dict for network and pt matches
-            possible_pt_networks:List[str] = self.pt_network_names
-            # list each possible subnetwork name from details
-            subnetwork_names: List[str] = [
-                subnetwork.name for subnetwork in details.subnetworks
-            ]
-            print(f"Subnetwork names: {subnetwork_names} and details {details.subnetworks}")
-            print(f"Possible pt networks: {possible_pt_networks}")
-            if not subnetwork_names:
-                self.logger.error(
-                    f"No subnetwork names found for ANN '{ann_config_instance_name}'."
-                )
-                return
-            
-            if 
-            
-            network_matches: dict = {}
-            
-            for subname in subnetwork_names:
-                match = self._fuzzy_match_list(subname, possible_pt_networks, threshold=50)
-                if match:
-                    possible_pt_networks.remove(match)
-                    network_matches[subname] = match
-            print(f"Network matches: {network_matches}")
-            
-            # if possible_pt_networks: # TODO: Need logic for if there are leftover networks not matched
-
+            # pt networks list
+            unused_pt_networks:List[str] = self.pt_network_names
+            unused_pt_networks.append( # TEMP FOR TESTING ################# TODO
+                "Convolutional Neural Network",
+            ) 
+            warnings.warn(" need to delete this line in the future instantiate annetto")
+            # List for keeping track of processed networks from the LLM
+            unused_subnetwork_names: List[str] = []
 
             for subnetwork in details.subnetworks:
                 sub_name = subnetwork.name
@@ -1198,7 +1178,6 @@ A **subnetwork** is a block that\n
                 self.logger.info(
                     f"ANN: {ann_config_instance_name}, Subnetwork: {sub_name} is independent: {is_independent}"
                 )
-
                 # Skip if not an independent network
                 # This account for the LLM including layers as subnetworks
                 # check if any word in sub_name is 'layer' or 'layers'
@@ -1215,7 +1194,70 @@ A **subnetwork** is a block that\n
                         f"Subnetwork '{sub_name}' is not independent. Skipping."
                     )
                     continue
+                unused_subnetwork_names.append(sub_name)
+                        
+            print(f"Subnetwork names: {unused_subnetwork_names} and details {details.subnetworks}")
+            print(f"Possible pt networks: {unused_pt_networks}")
+            if not unused_subnetwork_names:
+                self.logger.error(
+                    f"No subnetwork names found for ANN '{ann_config_instance_name}'."
+                )
+                return
+                        
+            network_matches: dict = {} # for keeping track of matched networks with pt networks
+        
+            for subname in unused_subnetwork_names:
+                match = self._fuzzy_match_list(subname, unused_pt_networks, threshold=50)
+                if match:
+                    print(match)
+                    unused_pt_networks.remove(match)
+                    unused_subnetwork_names.remove(subname)
+                    network_matches[subname] = match
+            print(f"Network matches: {network_matches}")
 
+            if unused_subnetwork_names and unused_pt_networks:
+                # parse layers into Parent Network
+                parentnetwork_instance = self._instantiate_and_format_class(
+                    self.ontology.ParentNetwork, sub_name, "default"
+                )
+                self._link_instances(
+                    ann_config_instance,
+                    parentnetwork_instance,
+                    self.ontology.hasNetwork,
+                )
+                self._process_parsed_code(parentnetwork_instance, unused_pt_networks)
+                # process remaining subnetwork components
+                networks_to_process = unused_subnetwork_names
+            elif not unused_subnetwork_names and unused_pt_networks and not network_matches:
+                # parse layers into Parent Network
+                parentnetwork_instance = self._instantiate_and_format_class(
+                    self.ontology.ParentNetwork, sub_name, "default"
+                )
+                self._link_instances(
+                    ann_config_instance,
+                    parentnetwork_instance,
+                    self.ontology.hasNetwork,
+                )
+                self._process_parsed_code(parentnetwork_instance, unused_pt_networks)
+                # process parenet network components
+                networks_to_process = [parentnetwork_instance]
+            elif not unused_subnetwork_names and unused_pt_networks and network_matches:
+                # parse layers into Parent Network
+                parentnetwork_instance = self._instantiate_and_format_class(
+                    self.ontology.ParentNetwork, sub_name, "default"
+                )
+                self._link_instances(
+                    ann_config_instance,
+                    parentnetwork_instance,
+                    self.ontology.hasNetwork,
+                )
+                self._process_parsed_code(parentnetwork_instance, unused_pt_networks)
+            elif unused_subnetwork_names and not unused_pt_networks:
+                # process remaining subnetwork components
+                networks_to_process = unused_subnetwork_names            
+
+
+            for subnetwork in networks_to_process:
                 # Instantiate subnetwork instance
                 network_instance = self._instantiate_and_format_class(
                     self.ontology.Network, sub_name, "llm"
@@ -1225,18 +1267,15 @@ A **subnetwork** is a block that\n
                     network_instance,
                     self.ontology.hasNetwork,
                 )
-                # Process layers via code
-                parse_code_layers: bool = (
-                    False  # TODO: we need logic to determine if parsable code exist
-                )
-                if parse_code_layers:
-                    self._process_parsed_code(network_instance)
+                
+                if network_matches:
+                    for subname, match in network_matches.items():
+                        self._process_parsed_code(network_instance, [match])
                 self._process_objective_functions(network_instance)
                 self._process_task_characterization(network_instance)
                 self.logger.info(
                     f"Successfully processed network instance: {network_instance.name}"
                 )
-
         except Exception as e:
             self.logger.error(
                 f"Error processing the '{ann_config_instance}' networks: {e}",
