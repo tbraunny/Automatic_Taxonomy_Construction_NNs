@@ -29,6 +29,10 @@ load_dotenv()
 # In-memory embedding cache
 embedding_cache = {}
 
+import logging
+logging.getLogger("openai").setLevel(logging.ERROR)
+logging.getLogger("httpx").setLevel(logging.ERROR)
+
 # GENERAL CONFIG
 USE_LLM_API = (
     os.environ.get("USE_LLM_API", "False").lower() == "true"
