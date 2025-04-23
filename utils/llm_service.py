@@ -22,6 +22,16 @@ from utils.pydantic_models import *
 
 from dotenv import load_dotenv
 
+import logging
+logging.getLogger("openai").setLevel(logging.WARNING)
+logging.getLogger("langchain").setLevel(logging.WARNING)
+logging.getLogger("langchain.llms").setLevel(logging.WARNING)
+logging.getLogger("langchain.schema.output_parser").setLevel(logging.WARNING)
+
+# logging.disable(logging.CRITICAL)
+
+
+
 T = TypeVar("T", bound=BaseModel)
 
 load_dotenv()
@@ -210,9 +220,6 @@ def load_environment_llm(**kwargs):
                 embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL,**kwargs
             ))
     return llm_client
-
-    
-
 
 class LLMQueryEngine:
 
@@ -523,7 +530,6 @@ def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryE
     if model_name not in _engine_instances:
         _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, **kwargs)
     return _engine_instances[model_name]
-
 
 def query_llm(
     model_name: str,

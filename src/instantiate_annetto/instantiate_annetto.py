@@ -39,7 +39,6 @@ from utils.owl_utils import (
 
 global logger
 logger = get_logger("instantiate_annetto")
-print("heelp")
 
 class OntologyProcessor:
     """
@@ -62,6 +61,7 @@ class OntologyProcessor:
             ontology (str): The ontology.
             ontology_output_filepath (str): The .owl path to save the ontology file.
         """
+        self.logger = logger
         if not isinstance(ann_config_name, str):
             self.logger.error(
                 "Expected a string for ANN Configuration name.", exc_info=True
@@ -115,7 +115,6 @@ class OntologyProcessor:
         self.output_owl_path = ontology_output_filepath
 
         self.llm_cache: Dict[str, Any] = {}
-        self.logger = logger
         self.ann_config_hash = self._generate_hash(self.ann_config_name)
         self.pt_network_names = pt_network_names
 
@@ -161,7 +160,7 @@ class OntologyProcessor:
                 raise TypeError(f"Instance is not of type Thing: {type(instance)}")
             self.logger.info(f"Instantiated {cls.name} as {unique_name}.")
             if source:
-                self._add_generic_data_property(instance, "source", source)
+                self._add_source_data_property(instance, source)
             return instance
         except Exception as e:
             self.logger.error(
@@ -194,8 +193,8 @@ class OntologyProcessor:
                 )
             if not isinstance(threshold, int):
                 raise TypeError("Expected threshold to be an integer.", exc_info=True)
-        if not classes:
-            return None
+            if not classes:
+                return None
 
             # Convert classes to a dictionary for lookup
             class_name_map = {cls.name.lower(): cls for cls in classes}
@@ -230,9 +229,9 @@ class OntologyProcessor:
                 )
             if not isinstance(threshold, int):
                 raise TypeError("Expected threshold to be an integer.", exc_info=True)
-        if not class_names:
-            print("invoked")
-            return None
+            if not class_names:
+                print("invoked")
+                return None
 
             class_names_lower = [name.lower() for name in class_names]
             match, score, _ = process.extractOne(
@@ -285,6 +284,7 @@ class OntologyProcessor:
         Add a source data property to an instance.
         """
         try:
+            print(self.ontology.sourceData)
             link_data_property_to_instance(instance, self.ontology.sourceData, source)
             self.logger.info(
                 f"Linked '{self._unformat_instance_name(instance.name)}' with source data property '{source}'."
@@ -357,7 +357,7 @@ class OntologyProcessor:
             return self.llm_cache[prompt]
         try:
             # Response returned as pydantic class if json_format_instructions and pydantic_type_schema are provided.
-            response = self.query_llm(
+            response = query_llm(
                 self.ann_config_name,
                 prompt,
                 pydantic_type_schema,

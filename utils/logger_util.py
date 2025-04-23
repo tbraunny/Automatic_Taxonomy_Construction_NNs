@@ -24,7 +24,7 @@ def get_logger(base_name: str = "app", max_logs: int = 3) -> logging.Logger:
         )
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
-
+    logger.propagate = False
     return logger
 
 def _cleanup_old_logs(log_dir: str, base_name: str, max_logs: int):

@@ -20,7 +20,10 @@ def add_new_task_characterizations(ontology: Ontology, logger) -> None:
     for name, parent in new_classes.items():
         try:
             create_subclass(ontology, name, parent)
+            if logger:
+                logger.info(f"Subclass of TaskCharacterization called '{name}' added successfully.")
         except Exception as e:
+            logger.debug(f"Failed to add subclass '{name}': {e}",exc_info=True) if logger else None
             pass
 
 def add_activation_function_layer_subclass(ontology: Ontology, logger=None) -> None:
@@ -30,19 +33,20 @@ def add_activation_function_layer_subclass(ontology: Ontology, logger=None) -> N
             ontology.Layer
         )
         if logger:
-            logger.info("Subclass of Layer called 'ActivationFunctionLayer' added successfully.")
+            logger.info("Subclass of Layer called 'ActivationFunctionLayer' added successfully.",exc_info=True)
     except Exception as e:
         pass
 def add_source_data_property(ontology: Ontology, logger=None) -> None:
     try:
-        create_generic_data_property(
+        prop = create_generic_data_property(
             ontology, "sourceData",
             str
         )
+        print(f"Property created: {prop}")
         if logger:
             logger.info("Data property 'sourceData' added successfully.")
     except Exception as e:
-        logger.debug(f"Failed to add data property 'sourceData': {e}") if logger else None
+        logger.debug(f"Failed to add data property 'sourceData': {e}",exc_info=True) if logger else None
         pass
 def add_definition_data_property(ontology: Ontology, logger=None) -> None:
     try:
@@ -53,7 +57,7 @@ def add_definition_data_property(ontology: Ontology, logger=None) -> None:
         if logger:
             logger.info("Data property 'definition' added successfully.")
     except Exception as e:
-        logger.debug(f"Failed to add data property 'definition': {e}") if logger else None
+        logger.debug(f"Failed to add data property 'definition': {e}",exc_info=True) if logger else None
         pass
 def remove_annetto_default_anns(ontology: Ontology, logger=None) -> None:
     try:
@@ -64,7 +68,7 @@ def remove_annetto_default_anns(ontology: Ontology, logger=None) -> None:
         if logger:
             logger.info("Default ANN configurations removed successfully.")
     except Exception as e:
-        logger.debug(f"Failed to remove default ANN configurations: {e}") if logger else None
+        logger.debug(f"Failed to remove default ANN configurations: {e}",exc_info=True) if logger else None
         pass
 
 def initialize_annetto(ontology: Ontology, logger=None) -> None:
@@ -80,6 +84,7 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
 
         if logger:
             logger.info("Ontology initialized successfully.")
+            print("Ontology initialized successfully.")
     except Exception as e:
         logger.debug(f"Failed to make initial ontology updates: {e}") if logger else None
         pass

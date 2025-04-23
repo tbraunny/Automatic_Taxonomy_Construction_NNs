@@ -11,6 +11,10 @@ from utils.annetto_utils import load_annetto_ontology
 import warnings
 from typing import List
 
+from utils.logger_util import get_logger
+
+logger = get_logger("main", max_logs=3)
+
 def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
     """
     Removes the ANN configuration from the Annett-o ontology.
@@ -51,6 +55,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         raise ValueError("ANN path must be a directory.")
 
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
+    print(f"PDF files found in {ann_path}: {ann_pdf_files}")
     py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
     # onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
     # pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
@@ -59,7 +64,6 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         raise FileNotFoundError(f"No PDF files found in {ann_path}.")
     if not py_files: #and not onnx_files and not pb_files:
         raise FileNotFoundError(f"No code files found in {ann_path}.")
-    
     # TODO: Use llm query to verify if the pdf is about a NN architecture
     # TODO: verify if code has any classes that inherit from nn.Module
 
@@ -73,17 +77,17 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
     if py_files: # or onnx_files or pb_files:
-        ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
-        if not ann_torch_json:
-            process_code = CodeExtractor()
-            process_code.process_code_file(ann_path)
-            pytorch_module_names = process_code.pytorch_module_names # for richie
+        process_code = CodeExtractor()
+        # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
+        # if not ann_torch_json:
+        process_code.process_code_file(ann_path)
+        pytorch_module_names = process_code.pytorch_module_names # for richie
 
-    # insert model into db
-    db_runner = DBUtils()
-    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    paper_id: int = db_runner.insert_papers(ann_path)
-    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    # # insert model into db
+    # db_runner = DBUtils()
+    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # paper_id: int = db_runner.insert_papers(ann_path)
+    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
     if not use_user_owl:
@@ -94,7 +98,8 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         )
 
     # Initialize Annett-o with new classes and properties
-    initialize_annetto(input_ontology)
+    print("Initializing Annett-o ontology...")
+    initialize_annetto(input_ontology, logger)
     # Instantiate Annett-o
     instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
 
