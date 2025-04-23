@@ -196,6 +196,54 @@ class DBUtils:
         except Exception as e:
             self.logger.exception(f"Failed to insert parameter {name} into layer {layer_id} in the database: {e}")
 
+    def clear_testing_models(self , start_model_id: int) -> None:
+        """
+        Clear nonsense models from the database & conform to foreign key constraints (just call this from __name__:__main__)
+
+        :param start_model_id: Starting model id from which to delete all models with ID > start_model_id 
+        :return None
+        """
+        try:
+            self.logger.info("Beginning clearance of nonsense models...")
+
+            query = text("""SELECT layer_id 
+                        FROM layer 
+                        WHERE model_id > :start_model_id""")
+            result = self.session.execute(query , {
+                "start_model_id": start_model_id
+            })
+            layer_ids = [row[0] for row in result.fetchall()]
+            self.logger.info(f"Layer ID's extracted sample: {layer_ids[:10]}")
+
+            if not layer_ids: # return if no models to delete
+                return
+
+            query = text(f"""DELETE FROM parameter 
+                        WHERE layer_id IN :layer_ids""")
+            self.session.execute(query , {
+                "layer_ids": tuple(layer_ids)
+            })
+            self.logger.info(f"Deleted relevant parameters")
+
+            query = text(f"""DELETE FROM layer
+                            WHERE layer_id IN :layer_ids""")
+            self.session.execute(query , {
+                "layer_ids": tuple(layer_ids)
+            })
+            self.logger.info("Deleted relevant layers")
+
+            query = text(f"""DELETE FROM model
+                            WHERE model_id > :start_model_id""")
+            self.session.execute(query , {
+                "start_model_id": start_model_id
+            })
+            self.logger.info("Cleared nonsense models from database successfully")
+
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Could not clear nonsense models from the database: {e}" , exc_info=True)
+
     def find_model_id(self , name: str) -> int:
         """
         Find a model in the database its name via fuzzy match
@@ -382,3 +430,4 @@ if __name__ == '__main__':
     # print("MODEL: " , model_id)
     # print("PAPER: " , paper_id)
     # print("MODEL PAPER: " , model_paper_id)
+    runner.clear_testing_models(start_model_id=216)
