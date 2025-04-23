@@ -26,7 +26,8 @@ all relevant information about the code.
 NOTE: for how to run, see main()
 """
 
-logger = get_logger("code-extraction")
+from utils.logger_util import get_logger
+logger = get_logger("code_extraction")
 
 class _CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):

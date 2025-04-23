@@ -221,17 +221,11 @@ class Architecture(BaseModel):
     architecture_name: str = Field(..., description="Name of the neural network architecture.")
     subnetworks: List[Subnetwork] = Field(..., description="List of subnetworks within the architecture.")
 
-# class Architecture(BaseModel):
-#     architecture_name: str = Field(..., description="Explicit name of the neural network architecture.")
-#     subnetworks: List[Subnetwork] = Field(
-#         ..., description="List of subnetworks or functional components in this architecture."
-#     )
-
-
 class NetworkDetails(BaseModel):
-    architectures: List[Architecture] = Field(
-        ..., description="List of neural network architectures and their corresponding subnetworks."
+    architecture: Architecture = Field(
+        ..., description="The neural network architecture and it's corresponding subnetworks."
     )
+
 
 class NetworkResponse(LLMResponse[NetworkDetails]):
     pass
