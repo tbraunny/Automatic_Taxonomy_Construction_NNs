@@ -21,6 +21,8 @@ from src.pdf_extraction.utils.docling_pdf_loader import DoclingPDFLoader
 import json
 from langchain_core.documents.base import Document
 
+logging.getLogger("docling").setLevel(logging.ERROR)
+
 def save_documents_to_json(documents: list, output_path: str):
     """
     Saves a list of Document objects to a JSON file.
