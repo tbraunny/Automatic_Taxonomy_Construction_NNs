@@ -151,10 +151,24 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
     '''
     this is for only one prop at a time.
     '''
+    if not prop or not isinstance(prop, str) or not prop.strip():
+        raise ValueError(f"Invalid SPARQL property name: {prop}")
+    
+    if isinstance(property_chain, set):
+        property_chain = list(property_chain)
+    
     if len(property_chain) == 0:
         property_chain = onto.object_properties()
         property_chain = [str(item.iri) for item in property_chain]
+
+        # Detect if it's already a full URI
+    for i in range(len(property_chain)):
+        if property_chain[i].startswith("http://") or property_chain[i].startswith("https://"):
+            property_chain[i] = f"<{property_chain[i]}>"
+
+        
     property_chain = " | ".join(property_chain)
+
 
     filter_clause = ""
     if filter_condition:
@@ -169,11 +183,11 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
             ?config a ns0:ANNConfiguration .
             ?config ( { property_chain } )*  ?test .
 
-            ?test ns0:{prop} $value .
+            ?test ns0:{prop} ?value .
 
             {filter_clause}
         }}
-        GROUP BY $config
+        GROUP BY ?config
         """
     #print(query)
     #input()

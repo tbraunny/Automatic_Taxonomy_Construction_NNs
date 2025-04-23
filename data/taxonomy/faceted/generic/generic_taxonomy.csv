@@ -1,0 +1,7 @@
+,Has Activation Function Criteria Unrecognized criteria,Has Activation Function Criteria Unrecognized criteria,Has Loss Criteria Unrecognized criteria,Has Network Criteria Unrecognized criteria,"KMeans Clustering Includes {'Name': 'kmeans', 'Arguments': [4, 5]}",Layer Num Units Unrecognized criteria,Layer Num Units Unrecognized criteria
+,hasActivationFunction,not matching,hasLoss,hasNetwork,Not matching,True,not matching
+Model,,,,,,,
+709942bd_alexnet,,X,X,X,X,,X
+AAE,X,,X,X,X,X,
+GAN,X,,X,X,X,X,
+simple_classification,X,,X,X,X,X,

@@ -4,12 +4,15 @@ from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_
 from src.code_extraction.code_extractor import CodeExtractor
 from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
 from src.instantiate_annetto.initialize_annetto import initialize_annetto
+from src.taxonomy.create_taxonomy import TaxonomyCreator, TaxonomyNode, create_tabular_view_from_faceted_taxonomy, serialize
+from src.taxonomy.criteria import *
 from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
 import warnings
 from typing import List
+import json
 
 from utils.logger_util import get_logger
 
@@ -17,6 +20,7 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # 0 = all logs, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
 import logging
 logging.getLogger("faiss").setLevel(logging.ERROR)
+
 
 logger = get_logger("main", max_logs=3)
 
@@ -58,6 +62,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     :param ann_path: The path to the directory containing the ANN files.
     :param use_user_owl: Whether to use the user-appended ontology or the pre-made stable ontology.
     """
+
     if not isinstance(ann_name, str):
         logger.error("ANN name must be a string.")
         raise ValueError("ANN name must be a string.")
@@ -112,14 +117,44 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         input_ontology = load_annetto_ontology(
             return_onto_from_path=output_ontology_filepath
         )
-    logger.info(f"Loaded ontology from {input_ontology.base_iri}.")
 
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
     logger.info("Initialized Annett-o ontology.")
     # Instantiate Annett-o
-    instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
+    ontology_fp = instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
     logger.info("Instantiated Annett-o ontology.")
+
+    # Define split criteria via llm
+    logger.info("Loading ontology.")
+
+    # Example Criteria...
+    op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    
+    criteria = Criteria(Name='Layer Num Units')
+    criteria.add(op)
+
+    criterias = [criteria]
+    
+    ontology = load_annetto_ontology(return_onto_from_path=ontology_fp)
+
+    logger.info(ontology.instances)
+    logger.info("Ontology loaded.")
+    logger.info("Creating taxonomy from Annetto annotations.")
+
+    # taxonomy creator
+    format='json'
+
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format, faceted=True)
+
+    # create a dataframe
+    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
+
+    # save tabular taxonomy df as csv
+
+    
+    
 
 if __name__ == "__main__":
     # Example usage
