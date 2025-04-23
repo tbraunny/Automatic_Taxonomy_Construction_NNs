@@ -681,7 +681,7 @@ class OntologyProcessor:
                                 norm_subclasses.append(norm_ontology)
                                 self.logger.info(f"Normalization layer {layer_name} subclass created in the ontology")
 
-                            norm_instance = self._instantiate_and_format_class(norm_instance , layer_name)
+                            norm_instance = self._instantiate_and_format_class(norm_ontology , layer_name)
                             self._link_instances(network_instance , norm_instance , self.ontology.hasLayer)
                             name_to_instance[layer_name] = {
                                 "instance": norm_instance,
@@ -1655,10 +1655,10 @@ A **subnetwork** is a block that\n
                 list_json_doc_paths = glob.glob(
                     f"{self.ann_path}/*doc*.json"
                 )  # Grabs all pdf doc json's
-                if not list_json_doc_paths:
-                    raise FileNotFoundError(
-                        f"No JSON doc files found in {self.ann_path}."
-                    )
+                # if not list_json_doc_paths:
+                #     raise FileNotFoundError(
+                #         f"No JSON doc files found in {self.ann_path}."
+                #     )
                 if not all(item.endswith(".json") for item in list_json_doc_paths):
                     raise ValueError(
                         "All items in list_json_doc_paths must end with .json"
@@ -1685,6 +1685,8 @@ A **subnetwork** is a block that\n
                 # Process the ANN Configuration instance
                 self._process_network(ann_config_instance)
                 self._process_training_strategy(ann_config_instance)
+                print("MARK")
+                self._process_parsed_code(ann_config_instance)
 
                 minutes, seconds = divmod(time.time() - start_time, 60)
                 self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")

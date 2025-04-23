@@ -16,7 +16,7 @@ uselss_layers = [ # layers that do not provide us any benefit
 ]
 
 class PBExtractor:
-    def extract_compute_graph(pb_file: str , output_json: str) -> dict:
+    def extract_compute_graph(pb_file: str , output_json: str=None) -> dict:
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
         NOTE: useless layer types: DecodeJPEG, Cast, ExpandDims, ResizeBilinear, sub (tensor subtraction),

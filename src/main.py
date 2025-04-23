@@ -69,12 +69,12 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
     # onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
     # pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
-    if not ann_pdf_files:
-        logger.error(f"No PDF files found in {ann_path}.")
-        raise FileNotFoundError(f"No PDF files found in {ann_path}.")
-    if not py_files: #and not onnx_files and not pb_files:
-        logger.error(f"No code files found in {ann_path}.")
-        raise FileNotFoundError(f"No code files found in {ann_path}.")
+    # if not ann_pdf_files:
+    #     logger.error(f"No PDF files found in {ann_path}.")
+    #     raise FileNotFoundError(f"No PDF files found in {ann_path}.")
+    # if not py_files: #and not onnx_files and not pb_files:
+    #     logger.error(f"No code files found in {ann_path}.")
+    #     raise FileNotFoundError(f"No code files found in {ann_path}.")
     # TODO: Use llm query to verify if the pdf is about a NN architecture
     # TODO: verify if code has any classes that inherit from nn.Module
 
@@ -88,13 +88,13 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
 
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
-    if py_files: # or onnx_files or pb_files:
-        process_code = CodeExtractor()
-        # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
-        # if not ann_torch_json:
-        process_code.process_code_file(ann_path)
-        pytorch_module_names = process_code.pytorch_module_names # for richie
-        logger.info(f"Extracted code from {py_files} to JSON.")
+    #if py_files: # or onnx_files or pb_files:
+    process_code = CodeExtractor()
+    # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
+    # if not ann_torch_json:
+    process_code.process_code_file(ann_path)
+    pytorch_module_names = process_code.pytorch_module_names # for richie
+    logger.info(f"Extracted code from {py_files} to JSON.")
 
     # # insert model into db
     # db_runner = DBUtils()
@@ -123,8 +123,8 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
 
 if __name__ == "__main__":
     # Example usage
-    ann_name = "alexnet"
-    user_path = "data/owl_testing"
+    ann_name = "pb_testing"
+    user_path = "data/"
     user_ann_path = os.path.join(user_path, ann_name)
     os.makedirs(user_ann_path, exist_ok=True)
     main(ann_name, user_ann_path, use_user_owl=False, testing=True)
