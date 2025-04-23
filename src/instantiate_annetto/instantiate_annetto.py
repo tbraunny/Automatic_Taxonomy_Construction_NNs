@@ -678,7 +678,7 @@ class OntologyProcessor:
                                 norm_subclasses.append(norm_ontology)
                                 self.logger.info(f"Normalization layer {layer_name} subclass created in the ontology")
 
-                            norm_instance = self._instantiate_and_format_class(norm_instance , layer_name)
+                            norm_instance = self._instantiate_and_format_class(norm_ontology , layer_name)
                             self._link_instances(network_instance , norm_instance , self.ontology.hasLayer)
                             name_to_instance[layer_name] = {
                                 "instance": norm_instance,
