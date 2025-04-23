@@ -121,14 +121,14 @@ class BaseLLMClient(ABC):
 
 
 class OllamaClient(BaseLLMClient):
-    def __init__(self, embed_model: str, gen_model: str):
+    def __init__(self, embed_model: str, gen_model: str, **kwargs):
         self.embed_model = embed_model
         self.gen_model = gen_model
         self.llm = ChatOllama(
             model=self.gen_model,
-            temperature=0.2,
-            seed=42,
-            num_ctx=10000,
+            temperature=kwargs.get('temperature', 0.2),
+            seed=kwargs.get('seed',42),
+            num_ctx=kwargs.get('num_ctx',10000),
             # verbose=True,
             # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
@@ -158,7 +158,7 @@ class OllamaClient(BaseLLMClient):
             raise ConnectionError(f"Failed to connect to Ollama API: {e}")
 
 class OpenAIClient(BaseLLMClient):
-    def __init__(self, embed_model: str, gen_model: str, api_key: str = None):
+    def __init__(self, embed_model: str, gen_model: str, api_key: str = None, **kwargs):
         if not api_key:
             raise ValueError("OPENAI_API_KEY must be provided")
 
@@ -169,7 +169,7 @@ class OpenAIClient(BaseLLMClient):
         self.llm = ChatOpenAI(
             model=self.gen_model,
             openai_api_key=self.api_key,
-            temperature=0.2,
+            temperature=kwargs.get('temperature',0.2),
             max_tokens=4096,
         )
         self.embedder = OpenAIEmbeddings(
@@ -198,12 +198,32 @@ class OpenAIClient(BaseLLMClient):
         except Exception as e:
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
+def load_environment_llm(**kwargs):
+     
+    llm_client = ( OpenAIClient(
+                embed_model=OPENAI_EMBEDDING_MODEL,
+                gen_model=OPENAI_GENERATION_MODEL,
+                api_key=OPENAI_API_KEY,
+                **kwargs
+            ) if USE_LLM_API
+            else OllamaClient(
+                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL,**kwargs
+            ))
+    return llm_client
+
+    
+
 
 class LLMQueryEngine:
 
     def __init__(
         self,
         json_file_path: str,
+        # chunk_size: int = CHUNK_SIZE,
+        # chunk_overlap: int = CHUNK_OVERLAP,
+        # embedding_model: str = EMBEDDING_MODEL,
+        # generation_model: str = GENERATION_MODEL,
+        **kwargs
     ):
         self.logger = logger
         self.llm_client = (
@@ -211,10 +231,11 @@ class LLMQueryEngine:
                 embed_model=OPENAI_EMBEDDING_MODEL,
                 gen_model=OPENAI_GENERATION_MODEL,
                 api_key=OPENAI_API_KEY,
+                **kwargs
             )
             if USE_LLM_API
             else OllamaClient(
-                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL
+                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL,**kwargs
             )
         )
 

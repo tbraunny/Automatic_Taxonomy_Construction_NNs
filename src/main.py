@@ -37,7 +37,7 @@ def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
         delete_ann_configuration(ontology, ann_name)
         save_ontology(ontology, owl_file)
 
-def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
+def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_user_owl: bool = False) -> str:
     """
     Main function to run the Annett-o pipeline.
 

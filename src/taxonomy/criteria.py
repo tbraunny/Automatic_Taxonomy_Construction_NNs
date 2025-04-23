@@ -28,7 +28,7 @@ class TypeOperator(BaseModel):
     def check_proper_cluster(self) -> Self:
         if (self.Name == 'kmeans' or self.Name == 'agg'or self.Name == 'graph') and not (len(self.Arguments) == 2 or len(self.Arguments) == 0): 
             raise ValueError("if name is kmeans or agg and arguments must have length of 2 or 0.")
-        if (self.Name == 'kmeans' or self.Name == 'agg' or self.Name == 'graph') and len(self.Arguments) == 2 and type(self.Arguments[0])  != str and type(self.Arguments[1]) != str and not self.Arguments[0].numeric(): # enforcing
+        if (self.Name == 'kmeans' or self.Name == 'agg' or self.Name == 'graph') and len(self.Arguments) == 2 and type(self.Arguments[0])  != str and type(self.Arguments[1]) != str and not str(self.Arguments[0]).isnumeric(): # enforcing
             raise ValueError("if name is kmeans or agg and arguments must be numeric for first value and second argument must be string.")
  
         return self
@@ -70,5 +70,5 @@ class Criteria(BaseModel):
 
 class OutputCriteria(BaseModel):
     """Always use this tool to structure your response to the user."""
-    criteriagroup: List[Criteria] = Field(description='The levels of the taxonomy as written by the criteria in each element of this list.')
-    description: str = Field(description="The description of the taxonomy created.")
+    criteriagroup: List[Criteria] = Field([],description='The levels of the taxonomy as written by the criteria in each element of this list.')
+    description: str = Field('',description="The description of the taxonomy created.")

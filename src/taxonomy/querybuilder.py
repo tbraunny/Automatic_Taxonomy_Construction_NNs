@@ -1,6 +1,34 @@
 from owlready2 import get_ontology, Thing,ThingClass,default_world, DataPropertyClass
+from owlready2 import owl
 from collections import deque
-from utils.owl_utils import get_highest_subclass_ancestor
+
+def get_highest_ancestor(cls) -> ThingClass:
+    """
+    Finds the highest (most general) superclass for a given class,
+    Skips any parent that is not of type ThingClass.
+
+    :param: cls: A ThingClass instance from which to find the highest ancestor.
+    :return: The ThingClass of the highest ancestor of cls, or cls itself if no higher ancestor is found.
+    """
+    current = cls
+    while True:
+        # Get immediate superclasses excluding owl.Thing
+        superclasses = []
+        for parent in current.is_a:
+            if not isinstance(parent, ThingClass):
+                continue  # Skip if not a ThingClass
+
+            if parent == owl.Thing:
+                continue  # Skip owl.Thing
+
+            superclasses.append(parent)
+
+        if not superclasses:
+            # No more valid parents to traverse
+            return current
+
+        # Move to the first valid superclass
+        current = superclasses[0]
 
 
 def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
@@ -43,12 +71,12 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
             #if not prop.name.startswith("has"):
             #    continue
             searchDomain = [item for dom in prop.domain for item in dom.is_a] + prop.domain
-            searchDomain = [get_highest_subclass_ancestor(item) for item in searchDomain] + searchDomain
+            searchDomain = [get_highest_ancestor(item) for item in searchDomain] + searchDomain
             # If this property is the one we are looking for, record the chain.
             if current in searchDomain:
                 # Only add the chain if there is at least one value (i.e. the triple exists)
                 targetSearchDomain = target_prop.domain #[item for dom in target_prop.domain for item in dom.is_a] + target_prop.range 
-                targetSearchDomain = [get_highest_subclass_ancestor(item) for item in targetSearchDomain]
+                targetSearchDomain = [get_highest_ancestor(item) for item in targetSearchDomain]
 
 
                 # Otherwise, we follow the property edge if there are any values.
@@ -58,7 +86,7 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
                 except Exception:
                     next_values = []
                 new_chain = list(chain + [str(prop.iri)])
-                if get_highest_subclass_ancestor(current) in targetSearchDomain and prop.iri == target_iri:
+                if get_highest_ancestor(current) in targetSearchDomain and prop.iri == target_iri:
                     if not new_chain in found_chains:
                         found_chains.append(new_chain)
                 for next_node in next_values:
@@ -78,7 +106,7 @@ def find_inverse_path(onto, target):
         previous += target.domain
     else:
         previous += target.domain
-    previous = [get_highest_subclass_ancestor(item) if type(item) == ThingClass else item for item in previous]
+    previous = [get_highest_ancestor(item) if type(item) == ThingClass else item for item in previous]
     if annconfig in previous:
         return [[str(target.iri)]]
     queue = deque([(i, []) for i in previous])
@@ -93,7 +121,7 @@ def find_inverse_path(onto, target):
             searchRange = []
             searchRange += prop.domain
 
-            searchRange = [get_highest_subclass_ancestor(item) if type(item) == ThingClass else item for item in searchRange ] + prop.domain
+            searchRange = [get_highest_ancestor(item) if type(item) == ThingClass else item for item in searchRange ] + prop.domain
             if previous in searchRange:
                 new_chain = list(chain)
                 if annconfig in prop.range:
