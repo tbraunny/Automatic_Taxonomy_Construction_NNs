@@ -52,7 +52,7 @@ def get_color_for_class(instance):
 
     return CLASS_COLOR_MAP[class_type]
 
-def load_ontology(filepath):
+def load_annetto_ontology(filepath):
     # load the ontology from the given file path
     print(f"loading ontology from {filepath}...")
     return get_ontology(filepath).load()
@@ -193,7 +193,7 @@ def process_ontology():
     print("called")
     # load the ontology
     ontology_file = os.path.join(ROOT_DIR, "data/owl", C.ONTOLOGY.FILENAME)
-    ontology = load_ontology(ontology_file)
+    ontology = load_annetto_ontology(ontology_file)
     # get an instance of the root class
     class_name = "ANNConfiguration"
     cls = ontology[class_name]
