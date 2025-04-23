@@ -50,12 +50,14 @@ def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
         save_ontology(ontology, owl_file)
         logger.info(f"Removed ANN configuration for {ann_name} from user owl file.")
 
-def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_user_owl: bool = False, testing:bool=False) -> str:
+def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_user_owl: bool = False) -> str:
     """
     Main function to run the Annett-o pipeline.
 
     :param ann_name: The name of the ANN.
     :param ann_path: The path to the directory containing the ANN files.
+    :param output_ontology_filepath: The path to save the output ontology file, if you pass this, 
+                                     it will overwrite the user onto file (lukas pls dont pass anything for this param, use the user_owl bool)
     :param use_user_owl: Whether to use the user-appended ontology or the pre-made stable ontology.
     """
     if not isinstance(ann_name, str):
@@ -96,10 +98,10 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         pytorch_module_names = process_code.pytorch_module_names # for richie
         logger.info(f"Extracted code from {py_files} to JSON.")
 
-        has_nn_module = process_code.pytorch_present
-        if not has_nn_module:
-            logger.error("No nn.Module Pytorch classes found in the code files.")
-            raise ValueError("No nn.Module Pytorch classes found in the code files.")
+        # has_nn_module = process_code.pytorch_present
+        # if not has_nn_module:
+        #     logger.error("No nn.Module Pytorch classes found in the code files.")
+        #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
 
     # # insert model into db
     # db_runner = DBUtils()
@@ -107,15 +109,15 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     # paper_id: int = db_runner.insert_papers(ann_path)
     # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
-    if not testing:
-        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
-    else:
-        output_ontology_filepath = "data/owl_testing/user_owl.owl"
-    if not use_user_owl:
+    if output_ontology_filepath:
+        input_ontology = load_annetto_ontology(
+            return_onto_from_path=output_ontology_filepath
+        )
+    elif not use_user_owl:
         input_ontology = load_annetto_ontology(return_onto_from_release="stable")
     else:
         input_ontology = load_annetto_ontology(
-            return_onto_from_path=output_ontology_filepath
+            return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME
         )
     logger.info(f"Loaded ontology from {input_ontology.base_iri}.")
 
@@ -131,5 +133,6 @@ if __name__ == "__main__":
     ann_name = "alexnet"
     user_path = "data/owl_testing"
     user_ann_path = os.path.join(user_path, ann_name)
+    output_ontology_filepath = os.path.join(user_path, "user_owl.owl")
     os.makedirs(user_ann_path, exist_ok=True)
-    main(ann_name, user_ann_path, use_user_owl=False, testing=True)
+    main(ann_name, user_ann_path, output_ontology_filepath=output_ontology_filepath, use_user_owl=False)

@@ -3492,7 +3492,7 @@
 <owl:NamedIndividual rdf:about="709942bd_dropout">
   <rdf:type rdf:resource="Dropout"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sets the output of each hidden neuron to zero with a probability of 0.5 to reduce overfitting.</definition>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that sets the output of each hidden neuron to zero with a probability of 0.5 to prevent overfitting.</definition>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_supervised-classification">
@@ -3517,12 +3517,6 @@
   <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-1"/>
   <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-2"/>
   <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-3"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-4"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-5"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-6"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-7"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-8"/>
-  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-9"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
   <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
   <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">90</number_of_epochs>
@@ -3541,14 +3535,14 @@
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a dataset of over 15 million labeled high-resolution images belonging to roughly 22,000 categories. It includes a subset used in the ILSVRC competitions with approximately 1.2 million training images, 50,000 validation images, and 150,000 testing images.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Variable resolution, down-sampled to 256x256 for training</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500000</data_samples>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_label-set">
   <rdf:type rdf:resource="Labelset"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</labels_count>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</labels_count>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_data-type">
@@ -3567,7 +3561,7 @@
   <hasLabels rdf:resource="709942bd_label-set"/>
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2010 is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1.2 million training images across 1000 categories.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ILSVRC-2010 dataset is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1.2 million training images across 1000 categories.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
 </owl:NamedIndividual>
@@ -3583,103 +3577,9 @@
   <hasLabels rdf:resource="709942bd_label-set"/>
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2012 is another subset of ImageNet used in the subsequent competition, with similar structure but different test set labels.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ILSVRC-2012 dataset is another subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, similar to ILSVRC-2010 but with test set labels unavailable.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-4">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_cifar-10"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_cifar-10">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CIFAR-10 is a dataset of 60,000 32x32 color images in 10 classes, used for benchmarking image classification algorithms.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">32x32</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-5">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_cifar-100"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_cifar-100">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CIFAR-100 is similar to CIFAR-10 but contains 100 classes with 600 images each, totaling 60,000 images.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">32x32</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-6">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_norb"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_norb">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NORB is a dataset of 50,000 stereo images of 3D objects, used for object recognition tasks.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">64x64</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-7">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_caltech-101"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_caltech-101">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Caltech-101 is a dataset of images from 101 object categories, used for object recognition.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Variable</data_sample_dimensionality>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-8">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_caltech-256"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_caltech-256">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Caltech-256 is an extension of Caltech-101 with 256 categories and a larger number of images.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Variable</data_sample_dimensionality>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-9">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="709942bd_mnist"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="709942bd_mnist">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="709942bd_label-set"/>
-  <hasDataType rdf:resource="709942bd_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MNIST is a dataset of handwritten digits, consisting of 60,000 training and 10,000 test images.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28x28</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
