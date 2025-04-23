@@ -96,6 +96,11 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         pytorch_module_names = process_code.pytorch_module_names # for richie
         logger.info(f"Extracted code from {py_files} to JSON.")
 
+        has_nn_module = process_code.pytorch_present
+        if not has_nn_module:
+            logger.error("No nn.Module Pytorch classes found in the code files.")
+            raise ValueError("No nn.Module Pytorch classes found in the code files.")
+
     # # insert model into db
     # db_runner = DBUtils()
     # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model

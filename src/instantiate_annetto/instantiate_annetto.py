@@ -275,7 +275,7 @@ class OntologyProcessor:
         """
         link_data_property_to_instance(instance, data_property, value)
         self.logger.info(
-            f"Linked '{self._unformat_instance_name(instance.name)}' with data property '{data_property.name}'."
+            f"Linked '{instance.name}' with data property '{data_property.name}'."
         )
 
     def _add_source_data_property(self, instance: Thing, source: str) -> None:
