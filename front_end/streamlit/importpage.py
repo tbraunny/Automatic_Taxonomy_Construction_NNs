@@ -6,7 +6,42 @@ import time
 import os
 import shutil
 
-def ontology_import():
+def import_ontology_to_neo4j():
+    from neo4j import GraphDatabase
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_dir, "../../data/userinput/user_owl.owl")
+    file_path = os.path.normpath(file_path)
+    
+    url = "bolt://localhost:7687"
+    username = "neo4j"
+    password = "neo4j"
+    driver = GraphDatabase.driver(url, auth=(username, password))
+
+    def queryNeo4j(driver, query):
+        """Runs a single Cypher query."""
+        with driver.session() as session:
+            try:
+                session.run(query)
+            except Exception as e:
+                print(f"Error executing query: {e}")
+
+    importQuery = f'CALL n10s.rdf.import.fetch("file://{file_path}", "RDF/XML");'
+    queryNeo4j(driver, "MATCH(n) DETACH DELETE n;")
+    queryNeo4j(driver, "DROP CONSTRAINT n10s_unique_uri;")
+    queryNeo4j(driver, "CREATE CONSTRAINT n10s_unique_uri FOR (r:Resource) REQUIRE r.uri IS UNIQUE;")
+    queryNeo4j(driver, "CALL n10s.graphconfig.init({handleVocabUris: \"SHORTEN\", keepLangTag: false, handleMultival: \"ARRAY\"});")
+    queryNeo4j(driver, importQuery)
+    queryNeo4j(driver, """
+    MATCH (n)
+    WHERE n.uri STARTS WITH 'http://w3id.org/annett-o/'
+    SET n.uri = SPLIT(n.uri, '/')[SIZE(SPLIT(n.uri, '/')) - 1]
+    """)
+    print(importQuery)
+
+def import_page():
+    import_ontology_to_neo4j()
+    
     st.title("Graph Visualization & File Upload")
 
     user_ann_name = st.text_input("Enter the name of the neural network architecture (e.g., alexnet):")
@@ -19,12 +54,6 @@ def ontology_import():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     user_data_dir = os.path.join(script_dir, "../../data/userinput")
 
-    def ensure_directory(user_ann_name):
-        directory_path = os.path.join(user_data_dir, user_ann_name)
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-        return directory_path
-
     def handle_file(uploaded_file, save_path):
         file_path = os.path.join(save_path, uploaded_file.name)
         with open(file_path, 'wb') as f:
@@ -35,31 +64,33 @@ def ontology_import():
 
     with st.form(key='file_upload_form'):
         uploaded_files = st.file_uploader(
-            "Choose files", 
-            type=["py", "pdf", "pb", "onnx"], 
+            "Choose files",
+            type=["py", "pdf", "pb", "onnx"],
             accept_multiple_files=True
         )
         submit_button = st.form_submit_button(label='Submit')
-
+    
     if submit_button and uploaded_files:
-        if user_ann_name:
-            ann_path = ensure_directory(user_ann_name)
-
-            for uploaded_file in uploaded_files:
-                file_type = uploaded_file.name.split('.')[-1].lower()
-
-                if file_type in ["py", "pdf", "pb", "onnx"]:
-                    handle_file(uploaded_file, ann_path)
-                else:
-                    st.warning(f"Unsupported file type: {uploaded_file.name}")
-            
-            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
-            
-            # # delete_ann_name =  ""# you need to passs this from the user
-            # remove_ann_config_from_user_owl(hashed_delete_ann_name)
-        else:
+        if not user_ann_name:
             st.error("Please enter a neural network architecture before uploading files.")
+        else:
+            ann_path = os.path.join(user_data_dir, user_ann_name)
 
+            if os.path.exists(ann_path):
+                st.warning(f"Files for architecture '{user_ann_name}' already exist. Please choose a new architecture name")
+            else:
+                os.makedirs(ann_path)
+
+                for uploaded_file in uploaded_files:
+                    file_type = uploaded_file.name.split('.')[-1].lower()
+
+                    if file_type in ["py", "pdf", "pb", "onnx"]:
+                        handle_file(uploaded_file, ann_path)
+                    else:
+                        st.warning(f"Unsupported file type: {uploaded_file.name}")
+                
+                hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
+                
     st.header("View Uploaded Files")
 
     if os.path.exists(user_data_dir):
@@ -67,6 +98,7 @@ def ontology_import():
         if arch_dirs:
             for arch in arch_dirs:
                 arch_path = os.path.join(user_data_dir, arch)
+
                 with st.expander(f"📁 {arch}"):
                     files = os.listdir(arch_path)
                     if files:
@@ -74,11 +106,12 @@ def ontology_import():
                             file_path = os.path.join(arch_path, file)
                             file_mod_time = time.ctime(os.path.getmtime(file_path))
 
-                            col1, col2, col3 = st.columns([1, 4, 1])
+                            col1, col2, col3, col4 = st.columns([1, 3, 1, 2])
 
                             with col1:
                                 st.markdown(f"- **{file}**")
                                 st.caption(f"Uploaded: {file_mod_time}")
+
                             with col3:
                                 if st.button(f"🗑️ Delete {file}", key=f"delete_{arch}_{file}"):
                                     os.remove(file_path)
@@ -88,6 +121,7 @@ def ontology_import():
                         st.write("No files uploaded yet.")
 
                     if st.button(f"🧹 Delete entire `{arch}` folder", key=f"delete_folder_{arch}"):
+                        # remove_ann_config_from_user_owl() need to delete annConfigs when called
                         shutil.rmtree(arch_path)
                         st.success(f"Deleted entire architecture folder: `{arch}`")
                         st.rerun()
@@ -95,12 +129,12 @@ def ontology_import():
             st.info("No architectures found yet.")
     else:
         st.warning("User input directory does not exist.")
-    
+
     animation_html = """
     <a href="http://localhost:8866/" target="_blank">
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
         <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
     </a>
     """
-    st.markdown("Click below to view the Graph!")
+    st.markdown("Click below to view the graph in a new tab!")
     components.html(animation_html, height=400)

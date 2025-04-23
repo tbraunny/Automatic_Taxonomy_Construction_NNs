@@ -1,5 +1,5 @@
 import streamlit as st
-from importpage import ontology_import
+from importpage import import_page
 from LLMchat import chat_page
 from graphvis import display_graph
 from mcpconnection import mcp_connector
@@ -76,7 +76,7 @@ if page == "🏠 Home":
 elif page == "🤖 Chat with AI":
     chat_page()
 elif page == "📥 Import":
-    ontology_import()
+    import_page()
 elif page == "📊 Graph":
     display_graph()
 elif page == "Test":

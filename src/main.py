@@ -83,7 +83,7 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = False) -> str:
     # print(model_id ,)
     # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
-    output_ontology_filepath = os.path.join(ann_path, C.ONTOLOGY.USER_OWL_FILENAME) # User owl file always uses this name
+    output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
     if not use_user_owl:
         input_ontology = load_annetto_ontology(return_onto_from_release="stable")
     else:

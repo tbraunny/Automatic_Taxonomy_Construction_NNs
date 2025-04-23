@@ -10,7 +10,7 @@ def chat_page():
     from langchain_ollama.llms import OllamaLLM
     from langchain.prompts import PromptTemplate
     from langchain_neo4j import GraphCypherQAChain
-    from instances import list_of_class_instances
+    from front_end.instances import list_of_class_instances
     
     # Helper to remove internal thoughts
     def strip_think_block(text):
@@ -83,7 +83,7 @@ def chat_page():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    st.title("Chat with AI on Ontology")
+    st.title("Chat with AI on your Ontology")
     st.write("Ask about neural network classes or instances from the ontology.")
 
     # Display previous messages
