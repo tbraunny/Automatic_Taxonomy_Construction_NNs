@@ -17,24 +17,29 @@ from ollama import ChatResponse
 
 
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Literal
+from typing import List, Optional, Dict, Literal, Union
 
 from utils.llm_service import load_environment_llm
+
+from abc import ABC
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+class ArgumentValues(ABC, BaseModel):
+    argument: str
+    value: str|int|float
 
-class ToolResponse(BaseModel):
-    tool: str = ""
-    arguments: Dict = {}
+class ToolResponse(ABC, BaseModel):
+    tool: str #= ""
+    arguments: List[ArgumentValues] #= Field(..., description="The arguments of the function") #= {}
 
-class ChatResponse(BaseModel):
-    response: str = Field("",description="The response from the LLM")
-    tool_call: Optional[ToolResponse] = Field(None,description="The tool call information if a tool is needed")
-    need_to_call_tool: bool = Field(description="Field used to determine if a tool call needs to be made")
+class ChatResponse(ABC, BaseModel):
+    response: str #= Field("",description="The response from the LLM")
+    tool_call: Union[ToolResponse|None] #= Field(None,description="The tool call information if a tool is needed")
+    need_to_call_tool: bool #= Field(description="Field used to determine if a tool call needs to be made")
 
 
 class Configuration:
@@ -116,8 +121,8 @@ class Server:
             )
             read, write = stdio_transport
             session = await self.exit_stack.enter_async_context(
-                # read_timeout_seconds with timedelta of 5 minutes
-                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=10))
+                # read_timeout_seconds with timedelta of 15 minutes
+                ClientSession(read, write, read_timeout_seconds=timedelta(minutes=15))
             )
             await session.initialize()
             self.session = session
@@ -333,7 +338,16 @@ class ChatSession:
                 if tool_call:
                     tool_call_input = {}
                     tool_call_input["tool"] = tool_call.tool
-                    tool_call_input["arguments"] = tool_call.arguments
+                    print(tool_call.arguments)
+                    tool_call_input["arguments"] = {}
+
+                    for i in tool_call.arguments:
+                        tool_call_input["arguments"][i.argument] = i.value
+                    #print(tool_call_input["arguments"])
+                    #input()
+                    #print(tool_call_input["values"])
+                    #tool_call_input["arguments"] = tool_call.arguments
+                    
                     tool_call = tool_call_input
 
                 #tool_call = json.loads(llm_response)
