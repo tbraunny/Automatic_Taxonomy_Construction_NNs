@@ -39,7 +39,7 @@ def extract_tf_graph(class_node: ast.ClassDef) -> dict:
     for i, name in enumerate(layer_calls):
         compute_graph['graph']['node'].append({
             "name": name,
-            "op_type": layer_defs.get(name, "Unknown"),
+            "opType": layer_defs.get(name, "Unknown"),
             "op": "Layer",
             "input": [layer_calls[i-1]] if i > 0 else [],
             "output": [layer_calls[i+1]] if i < len(layer_calls) - 1 else [],

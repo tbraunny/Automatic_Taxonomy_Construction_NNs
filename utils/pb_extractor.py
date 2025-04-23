@@ -57,7 +57,7 @@ class PBExtractor:
             target_layers: list = consumer_map.get(node.name , [])
             node_info: dict = {
                 "name": node.name,
-                "op_type": None, # for flagging in instantation (layers without a type)
+                "opType": None, # for flagging in instantation (layers without a type)
                 "output": target_layers,
                 "input": list(node.input),
                 "attributes": [],

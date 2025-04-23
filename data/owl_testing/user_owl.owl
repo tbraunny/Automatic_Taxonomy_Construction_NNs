@@ -1472,264 +1472,36 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
-<owl:Class rdf:about="Placeholder">
+<owl:Class rdf:about="Conv">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
-<owl:Class rdf:about="Pad">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Conv2d">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Bias">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="MaxPool2d">
-  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="FusedBatchNorm">
+<owl:Class rdf:about="BatchNormalization">
   <rdfs:subClassOf rdf:resource="BatchNormLayer"/>
 </owl:Class>
 
-<owl:Class rdf:about="ReLU_sub">
-  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
-</owl:Class>
-
-<owl:Class rdf:about="Add">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Mean">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Squeeze">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/BatchNorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="module_apply_default/resnet_v2_50/postnorm/FusedBatchNorm">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="AveragePooling2D">
+<owl:Class rdf:about="MaxPool">
   <rdfs:subClassOf rdf:resource="PoolingLayer"/>
 </owl:Class>
 
-<owl:Class rdf:about="cat">
+<owl:Class rdf:about="Sum">
   <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AveragePool">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
 </owl:Class>
 
 <owl:Class rdf:about="Reshape">
   <rdfs:subClassOf rdf:resource="Layer"/>
 </owl:Class>
 
+<owl:Class rdf:about="Gemm">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
 <owl:Class rdf:about="Softmax_sub">
   <rdfs:subClassOf rdf:resource="ActivationFunction"/>
-</owl:Class>
-
-<owl:Class rdf:about="pool_3/_reshape">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="softmax/logits">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
 </owl:Class>
 
 <owl:NamedIndividual rdf:about="AAE">
@@ -3533,2918 +3305,856 @@
   <rdf:type rdf:resource="SupervisedClassification"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_pb_testing">
+<owl:NamedIndividual rdf:about="1fb79a1a_onnx_testing">
   <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasPrimaryTrainingSession rdf:resource="db390f91_training-strategy"/>
-  <hasLayer rdf:resource="db390f91_images"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/pad"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/conv1/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/pool1/maxpool"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/shortcut/maxpool"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/pad"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/shortcut/maxpool"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/pad"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/shortcut/maxpool"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/pad"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/add"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/postnorm/fusedbatchnorm"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/pool5"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/logits/conv2d"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/logits/biasadd"/>
-  <hasLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/spatialsqueeze"/>
-  <hasLayer rdf:resource="db390f91_conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_pool"/>
-  <hasLayer rdf:resource="db390f91_conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_conv_4/conv2d"/>
-  <hasLayer rdf:resource="db390f91_conv_4/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_pool_1"/>
-  <hasLayer rdf:resource="db390f91_mixed/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_1/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_2/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/tower/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_3/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_4/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_1/conv_4/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_4/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_4/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_1/conv_4/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_5/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_4/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_1/conv_4/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_6/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_4/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_1/conv_4/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_7/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_2/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_2/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_3/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/tower_1/conv_3/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_8/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_9/join"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv_1/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv_1/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_2/pool"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_2/conv/conv2d"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/tower_2/conv/batchnorm"/>
-  <hasLayer rdf:resource="db390f91_mixed_10/join"/>
-  <hasLayer rdf:resource="db390f91_pool_3"/>
-  <hasLayer rdf:resource="db390f91_pool_3/_reshape"/>
-  <hasLayer rdf:resource="db390f91_softmax/logits"/>
+  <hasPrimaryTrainingSession rdf:resource="1fb79a1a_training-strategy"/>
+  <hasLayer rdf:resource="1fb79a1a_n0"/>
+  <hasLayer rdf:resource="1fb79a1a_n1"/>
+  <hasLayer rdf:resource="1fb79a1a_n3"/>
+  <hasLayer rdf:resource="1fb79a1a_n4"/>
+  <hasLayer rdf:resource="1fb79a1a_n5"/>
+  <hasLayer rdf:resource="1fb79a1a_n7"/>
+  <hasLayer rdf:resource="1fb79a1a_n8"/>
+  <hasLayer rdf:resource="1fb79a1a_n10"/>
+  <hasLayer rdf:resource="1fb79a1a_n11"/>
+  <hasLayer rdf:resource="1fb79a1a_n12"/>
+  <hasLayer rdf:resource="1fb79a1a_n13"/>
+  <hasLayer rdf:resource="1fb79a1a_n14"/>
+  <hasLayer rdf:resource="1fb79a1a_n16"/>
+  <hasLayer rdf:resource="1fb79a1a_n17"/>
+  <hasLayer rdf:resource="1fb79a1a_n19"/>
+  <hasLayer rdf:resource="1fb79a1a_n20"/>
+  <hasLayer rdf:resource="1fb79a1a_n22"/>
+  <hasLayer rdf:resource="1fb79a1a_n23"/>
+  <hasLayer rdf:resource="1fb79a1a_n24"/>
+  <hasLayer rdf:resource="1fb79a1a_n26"/>
+  <hasLayer rdf:resource="1fb79a1a_n27"/>
+  <hasLayer rdf:resource="1fb79a1a_n29"/>
+  <hasLayer rdf:resource="1fb79a1a_n30"/>
+  <hasLayer rdf:resource="1fb79a1a_n32"/>
+  <hasLayer rdf:resource="1fb79a1a_n33"/>
+  <hasLayer rdf:resource="1fb79a1a_n34"/>
+  <hasLayer rdf:resource="1fb79a1a_n36"/>
+  <hasLayer rdf:resource="1fb79a1a_n37"/>
+  <hasLayer rdf:resource="1fb79a1a_n39"/>
+  <hasLayer rdf:resource="1fb79a1a_n40"/>
+  <hasLayer rdf:resource="1fb79a1a_n42"/>
+  <hasLayer rdf:resource="1fb79a1a_n43"/>
+  <hasLayer rdf:resource="1fb79a1a_n44"/>
+  <hasLayer rdf:resource="1fb79a1a_n45"/>
+  <hasLayer rdf:resource="1fb79a1a_n46"/>
+  <hasLayer rdf:resource="1fb79a1a_n48"/>
+  <hasLayer rdf:resource="1fb79a1a_n49"/>
+  <hasLayer rdf:resource="1fb79a1a_n51"/>
+  <hasLayer rdf:resource="1fb79a1a_n52"/>
+  <hasLayer rdf:resource="1fb79a1a_n54"/>
+  <hasLayer rdf:resource="1fb79a1a_n55"/>
+  <hasLayer rdf:resource="1fb79a1a_n56"/>
+  <hasLayer rdf:resource="1fb79a1a_n58"/>
+  <hasLayer rdf:resource="1fb79a1a_n59"/>
+  <hasLayer rdf:resource="1fb79a1a_n61"/>
+  <hasLayer rdf:resource="1fb79a1a_n62"/>
+  <hasLayer rdf:resource="1fb79a1a_n64"/>
+  <hasLayer rdf:resource="1fb79a1a_n65"/>
+  <hasLayer rdf:resource="1fb79a1a_n66"/>
+  <hasLayer rdf:resource="1fb79a1a_n68"/>
+  <hasLayer rdf:resource="1fb79a1a_n69"/>
+  <hasLayer rdf:resource="1fb79a1a_n71"/>
+  <hasLayer rdf:resource="1fb79a1a_n72"/>
+  <hasLayer rdf:resource="1fb79a1a_n74"/>
+  <hasLayer rdf:resource="1fb79a1a_n75"/>
+  <hasLayer rdf:resource="1fb79a1a_n76"/>
+  <hasLayer rdf:resource="1fb79a1a_n78"/>
+  <hasLayer rdf:resource="1fb79a1a_n79"/>
+  <hasLayer rdf:resource="1fb79a1a_n81"/>
+  <hasLayer rdf:resource="1fb79a1a_n82"/>
+  <hasLayer rdf:resource="1fb79a1a_n84"/>
+  <hasLayer rdf:resource="1fb79a1a_n85"/>
+  <hasLayer rdf:resource="1fb79a1a_n86"/>
+  <hasLayer rdf:resource="1fb79a1a_n87"/>
+  <hasLayer rdf:resource="1fb79a1a_n88"/>
+  <hasLayer rdf:resource="1fb79a1a_n90"/>
+  <hasLayer rdf:resource="1fb79a1a_n91"/>
+  <hasLayer rdf:resource="1fb79a1a_n93"/>
+  <hasLayer rdf:resource="1fb79a1a_n94"/>
+  <hasLayer rdf:resource="1fb79a1a_n96"/>
+  <hasLayer rdf:resource="1fb79a1a_n97"/>
+  <hasLayer rdf:resource="1fb79a1a_n98"/>
+  <hasLayer rdf:resource="1fb79a1a_n100"/>
+  <hasLayer rdf:resource="1fb79a1a_n101"/>
+  <hasLayer rdf:resource="1fb79a1a_n103"/>
+  <hasLayer rdf:resource="1fb79a1a_n104"/>
+  <hasLayer rdf:resource="1fb79a1a_n106"/>
+  <hasLayer rdf:resource="1fb79a1a_n107"/>
+  <hasLayer rdf:resource="1fb79a1a_n108"/>
+  <hasLayer rdf:resource="1fb79a1a_n110"/>
+  <hasLayer rdf:resource="1fb79a1a_n111"/>
+  <hasLayer rdf:resource="1fb79a1a_n113"/>
+  <hasLayer rdf:resource="1fb79a1a_n114"/>
+  <hasLayer rdf:resource="1fb79a1a_n116"/>
+  <hasLayer rdf:resource="1fb79a1a_n117"/>
+  <hasLayer rdf:resource="1fb79a1a_n118"/>
+  <hasLayer rdf:resource="1fb79a1a_n120"/>
+  <hasLayer rdf:resource="1fb79a1a_n121"/>
+  <hasLayer rdf:resource="1fb79a1a_n123"/>
+  <hasLayer rdf:resource="1fb79a1a_n124"/>
+  <hasLayer rdf:resource="1fb79a1a_n126"/>
+  <hasLayer rdf:resource="1fb79a1a_n127"/>
+  <hasLayer rdf:resource="1fb79a1a_n128"/>
+  <hasLayer rdf:resource="1fb79a1a_n130"/>
+  <hasLayer rdf:resource="1fb79a1a_n131"/>
+  <hasLayer rdf:resource="1fb79a1a_n133"/>
+  <hasLayer rdf:resource="1fb79a1a_n134"/>
+  <hasLayer rdf:resource="1fb79a1a_n136"/>
+  <hasLayer rdf:resource="1fb79a1a_n137"/>
+  <hasLayer rdf:resource="1fb79a1a_n138"/>
+  <hasLayer rdf:resource="1fb79a1a_n140"/>
+  <hasLayer rdf:resource="1fb79a1a_n141"/>
+  <hasLayer rdf:resource="1fb79a1a_n143"/>
+  <hasLayer rdf:resource="1fb79a1a_n144"/>
+  <hasLayer rdf:resource="1fb79a1a_n146"/>
+  <hasLayer rdf:resource="1fb79a1a_n147"/>
+  <hasLayer rdf:resource="1fb79a1a_n148"/>
+  <hasLayer rdf:resource="1fb79a1a_n149"/>
+  <hasLayer rdf:resource="1fb79a1a_n150"/>
+  <hasLayer rdf:resource="1fb79a1a_n152"/>
+  <hasLayer rdf:resource="1fb79a1a_n153"/>
+  <hasLayer rdf:resource="1fb79a1a_n155"/>
+  <hasLayer rdf:resource="1fb79a1a_n156"/>
+  <hasLayer rdf:resource="1fb79a1a_n158"/>
+  <hasLayer rdf:resource="1fb79a1a_n159"/>
+  <hasLayer rdf:resource="1fb79a1a_n160"/>
+  <hasLayer rdf:resource="1fb79a1a_n162"/>
+  <hasLayer rdf:resource="1fb79a1a_n163"/>
+  <hasLayer rdf:resource="1fb79a1a_n165"/>
+  <hasLayer rdf:resource="1fb79a1a_n166"/>
+  <hasLayer rdf:resource="1fb79a1a_n168"/>
+  <hasLayer rdf:resource="1fb79a1a_n169"/>
+  <hasLayer rdf:resource="1fb79a1a_n170"/>
+  <hasLayer rdf:resource="1fb79a1a_n172"/>
+  <hasLayer rdf:resource="1fb79a1a_n173"/>
+  <hasLayer rdf:resource="1fb79a1a_n174"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_training-strategy">
+<owl:NamedIndividual rdf:about="1fb79a1a_training-strategy">
   <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="db390f91_training-session"/>
+  <hasPrimaryTrainingSession rdf:resource="1fb79a1a_training-session"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_training-session">
+<owl:NamedIndividual rdf:about="1fb79a1a_training-session">
   <rdf:type rdf:resource="TrainingSession"/>
-  <hasPrimaryTrainingStep rdf:resource="db390f91_training-single"/>
+  <hasPrimaryTrainingStep rdf:resource="1fb79a1a_training-single"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_training-single">
+<owl:NamedIndividual rdf:about="1fb79a1a_training-single">
   <rdf:type rdf:resource="TrainingSingle"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_images">
-  <rdf:type rdf:resource="Placeholder"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n0">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/pad">
-  <rdf:type rdf:resource="Pad"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/conv1/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</layer_num_units>
+<owl:NamedIndividual rdf:about="1fb79a1a_n1">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/conv1/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n2">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/conv1/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/pool1/maxpool"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n3">
+  <rdf:type rdf:resource="MaxPool"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/pool1/maxpool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n4">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n5">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n6">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n7">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/shortcut/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n8">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n9">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n10">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n11">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n12">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n13">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n14">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n15">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n16">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_1/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n17">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n18">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n19">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n20">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n21">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n22">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n23">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n24">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n25">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n26">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n27">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_2/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/shortcut/maxpool"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n28">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n29">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n30">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/shortcut/maxpool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n31">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n32">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/pad"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n33">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n34">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/pad">
-  <rdf:type rdf:resource="Pad"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</layer_num_units>
+<owl:NamedIndividual rdf:about="1fb79a1a_n35">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n36">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n37">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n38">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n39">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n40">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block1/unit_3/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n41">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n42">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n43">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n44">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/shortcut/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n45">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n46">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n47">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n48">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n49">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n50">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n51">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n52">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n53">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_1/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n54">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n55">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n56">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n57">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n58">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n59">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n60">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n61">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n62">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n63">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n64">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_2/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n65">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n66">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n67">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n68">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n69">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n70">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n71">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n72">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n73">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n74">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n75">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_3/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/shortcut/maxpool"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n76">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n77">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n78">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/shortcut/maxpool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n79">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n80">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/pad"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n81">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n82">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/pad">
-  <rdf:type rdf:resource="Pad"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</layer_num_units>
+<owl:NamedIndividual rdf:about="1fb79a1a_n83">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n84">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n85">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n86">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n87">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n88">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block2/unit_4/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n89">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n90">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n91">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n92">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/shortcut/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n93">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n94">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n95">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n96">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n97">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n98">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n99">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n100">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n101">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_1/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n102">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n103">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n104">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n105">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n106">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n107">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n108">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n109">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n110">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n111">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n112">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_2/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n113">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n114">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n115">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n116">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n117">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n118">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n119">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n120">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n121">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n122">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n123">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_3/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n124">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n125">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n126">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n127">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n128">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n129">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n130">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n131">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n132">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n133">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n134">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_4/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n135">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n136">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n137">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n138">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n139">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n140">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n141">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n142">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n143">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n144">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n145">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_5/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/shortcut/maxpool"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n146">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n147">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n148">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/shortcut/maxpool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n149">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n150">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/pad"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n151">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n152">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/pad">
-  <rdf:type rdf:resource="Pad"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</layer_num_units>
+<owl:NamedIndividual rdf:about="1fb79a1a_n153">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n154">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n155">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n156">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n157">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n158">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block3/unit_6/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n159">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n160">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n161">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n162">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/shortcut/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n163">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n164">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n165">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n166">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n167">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/conv2d"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n168">
+  <rdf:type rdf:resource="Conv"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n169">
+  <rdf:type rdf:resource="BatchNormalization"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/biasadd"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n170">
+  <rdf:type rdf:resource="Sum"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n171">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_1/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/add"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n172">
+  <rdf:type rdf:resource="AveragePool"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/biasadd"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/add"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_2/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/fusedbatchnorm"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/add"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/preact/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv1/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/batchnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv2/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/biasadd"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/conv3/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/add"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/block4/unit_3/bottleneck_v2/add">
-  <rdf:type rdf:resource="Add"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/postnorm/fusedbatchnorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/postnorm/fusedbatchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-  <hasActivationFunction rdf:resource="db390f91_module_apply_default/resnet_v2_50/postnorm/relu"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/pool5"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/postnorm/relu">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/pool5">
-  <rdf:type rdf:resource="Mean"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/logits/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/logits/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/logits/biasadd"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/logits/biasadd">
-  <rdf:type rdf:resource="Bias"/>
-  <nextLayer rdf:resource="db390f91_module_apply_default/resnet_v2_50/spatialsqueeze"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_module_apply_default/resnet_v2_50/spatialsqueeze">
-  <rdf:type rdf:resource="Squeeze"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">864</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9216</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_pool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_conv_3/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5120</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_4/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_conv_4/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">138240</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_4/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_conv_4">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_pool_1">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_2/pool"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9216</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">76800</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">55296</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">82944</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6144</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16384</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">76800</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16384</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">55296</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">82944</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_1/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16384</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_1/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">13824</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">76800</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">55296</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">82944</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_2/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_2/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/tower/conv/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">995328</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">18432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">55296</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/tower/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">82944</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/tower/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/pool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_3/join"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_3/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">98304</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">114688</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">172032</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">98304</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">114688</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">114688</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">114688</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_4/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_1/conv_4/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">172032</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_4/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_4/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_4/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">122880</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">215040</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">122880</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_4/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_1/conv_4/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">215040</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_4/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_5/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_5/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">122880</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">215040</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">122880</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">179200</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_4/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_1/conv_4/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">215040</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_4/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_6/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_6/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_4/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_1/conv_4/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_4/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_7/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_7/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower_1/conv/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">552960</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">147456</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_2/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower_1/conv_2/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">258048</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_2/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_3/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/tower_1/conv_3/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">331776</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_3/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/pool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_8/join"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_8/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_1/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_2/pool"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">409600</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">491520</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower/mixed/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">573440</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1548288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_1/mixed/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_1/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_2/pool">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_9/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">245760</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_9/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower/conv/conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_1/conv/conv2d"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">655360</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">786432</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower/mixed/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_1/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">917504</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_1/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1548288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv_1/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_1/mixed/conv_1/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">442368</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv_1/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_1/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_2/pool">
-  <rdf:type rdf:resource="MaxPool2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_2/conv/conv2d"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_2/conv/conv2d">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="db390f91_mixed_10/tower_2/conv/batchnorm"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">393216</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_2/conv/batchnorm">
-  <rdf:type rdf:resource="FusedBatchNorm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/tower_2/conv">
-  <rdf:type rdf:resource="ReLU_sub"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_mixed_10/join">
-  <rdf:type rdf:resource="cat"/>
-  <nextLayer rdf:resource="db390f91_pool_3"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_pool_3">
-  <rdf:type rdf:resource="AveragePooling2D"/>
-  <nextLayer rdf:resource="db390f91_pool_3/_reshape"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_pool_3/_reshape">
+<owl:NamedIndividual rdf:about="1fb79a1a_n173">
   <rdf:type rdf:resource="Reshape"/>
-  <hasActivationFunction rdf:resource="db390f91_softmax/logits/matmul"/>
-  <nextLayer rdf:resource="db390f91_softmax/logits"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</layer_num_units>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_softmax/logits/matmul">
-  <rdf:type rdf:resource="Linear"/>
+<owl:NamedIndividual rdf:about="1fb79a1a_n174">
+  <rdf:type rdf:resource="Gemm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="db390f91_softmax/logits">
-  <rdf:type rdf:resource="Bias"/>
-  <hasActivationFunction rdf:resource="db390f91_softmax"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1008</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="db390f91_softmax">
+<owl:NamedIndividual rdf:about="1fb79a1a_n175">
   <rdf:type rdf:resource="Softmax_sub"/>
 </owl:NamedIndividual>
 

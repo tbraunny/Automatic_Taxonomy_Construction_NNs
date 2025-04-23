@@ -591,7 +591,11 @@ class OntologyProcessor:
                 }
                 for layer in nodes:
                     layer_name = layer.get("name")
-                    layer_type = layer.get("op_type")
+
+                    if not layer_name or layer_name == '':
+                        continue
+
+                    layer_type = layer.get("opType")
                     layer_params = layer.get("num_params")
                     self.logger.info(
                         f"Instantiating layer {layer_name} in model {self.ann_config_name}"
@@ -718,7 +722,11 @@ class OntologyProcessor:
                 # second run for instantiating next, prev (skip and find next/prev for non-layers if actfunc_flag is set False)
                 for layer in nodes:
                     layer_name = layer.get('name')
-                    layer_type = layer.get('op_type')
+
+                    if not layer_name or layer_name == '':
+                        continue
+
+                    layer_type = layer.get('opType')
                     prev_layers: list = layer.get('input' , [])
                     next_layers: list = layer.get('output' , [])
 

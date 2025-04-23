@@ -18,7 +18,7 @@ def extract_graph(model) -> dict:
     for node in traced.graph.nodes: 
         node_info = {
             "name": node.name,
-            "op_type": None,
+            "opType": None,
             "op": node.op,
             "output": node_outputs[node.name],#str(node.target),
             "input": list([str(arg) for arg in node.args]),  # Convert inputs to strings for JSON serialization
