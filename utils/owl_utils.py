@@ -674,21 +674,23 @@ def create_generic_data_property(
     :return: The newly created DataProperty class
     """
     # Check if the property already exists in the ontology
-    if hasattr(ontology, property_name):
-        existing_property = getattr(ontology, property_name)
-        if not isinstance(existing_property, DataPropertyClass):
+    existing_property = getattr(ontology, property_name)
+    if existing_property:
+        if not isinstance(existing_property, (DataProperty, DataPropertyClass)):
             raise TypeError(
-                f"Entity '{property_name}' already exists in the ontology but is not a DataPropertyClass."
+                f"Entity '{property_name}' already exists in the ontology but is not a DataPropertyClass instead is {type(existing_property)}."
             )
         else:
             print(f"Warning: DataProperty '{property_name}' already exists in the ontology, using it. Unexpected behavior may occur.")
             return existing_property
-    
+
     valid_range_types = {int, float, str, bool}
     if range_type not in valid_range_types:
         raise ValueError(
             f"Invalid range_type: {range_type}. Must be one of {valid_range_types}"
         )
+    if property_name == "sourceData":
+        print("here i am")
 
     bases = (DataProperty, FunctionalProperty) if functional else (DataProperty,)
     attributes = {
@@ -699,7 +701,6 @@ def create_generic_data_property(
 
     NewDataProperty = type(property_name, bases, attributes)
 
-    
     return NewDataProperty
 
 def create_class_object_property(
@@ -815,14 +816,16 @@ def save_ontology(ontology: Ontology, file_path: str, format: str = "rdfxml"):
     # Save the ontology
     ontology.save(file=file_path, format=format)
 
-def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
+def delete_ann_configuration(ontology:Ontology, ann_config_name:str): #TODO: Not working
     """
     Deletes an ANNConfiguration instance and all instances connected to it.
 
     :param ontology: The owlready2 ontology object.
     :param ann_config_name: The name of the ANNConfiguration instance to remove.
     """
-    ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
+    # ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
+    ann_instances = get_class_instances(ontology.ANNConfiguration)
+    ann_config_instance = next((inst for inst in ann_instances if inst.name in ann_config_name), None)
     print(f"Deleting ANNConfiguration instance: {ann_config_instance}")
     if not ann_config_instance:
         print(f"No instance found with name {ann_config_name}")
@@ -847,9 +850,6 @@ def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
         destroy_entity(inst)
 
     print(f"Deleted {len(instances_to_delete)} instances linked to {ann_config_name}.")
-
-
-
 
 if __name__ == "__main__":
     from constants import Constants as C

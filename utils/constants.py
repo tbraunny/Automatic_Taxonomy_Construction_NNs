@@ -7,5 +7,5 @@ class Constants:
         TEST_ONTOLOGY_PATH = "data/owl/annett-o-test.owl"
         DEV_ONTOLOGY_PATH = "data/owl/annett-o-dev.owl"
         BASE_ONTOLOGY_PATH = "data/owl/annett-o-0.1.owl"
-        USER_OWL_FILENAME = "user_owl.owl"
+        USER_OWL_FILENAME = "data/userinput/user_owl.owl"
         NAMESPACE = "http://w3id.org/annett-o/"

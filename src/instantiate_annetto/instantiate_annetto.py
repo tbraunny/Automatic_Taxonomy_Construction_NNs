@@ -1165,19 +1165,32 @@ A **subnetwork** is a block that\n
                 return
             
             # dict for network and pt matches
-            network_matches: dict = {}
             possible_pt_networks:List[str] = self.pt_network_names
             # list each possible subnetwork name from details
             subnetwork_names: List[str] = [
                 subnetwork.name for subnetwork in details.subnetworks
             ]
+            print(f"Subnetwork names: {subnetwork_names} and details {details.subnetworks}")
+            print(f"Possible pt networks: {possible_pt_networks}")
+            if not subnetwork_names:
+                self.logger.error(
+                    f"No subnetwork names found for ANN '{ann_config_instance_name}'."
+                )
+                return
+            
+            if 
+            
+            network_matches: dict = {}
+            
             for subname in subnetwork_names:
-                match = self._fuzzy_match_list(sub_name, possible_pt_networks, threshold=50)
+                match = self._fuzzy_match_list(subname, possible_pt_networks, threshold=50)
                 if match:
                     possible_pt_networks.remove(match)
                     network_matches[subname] = match
+            print(f"Network matches: {network_matches}")
             
             # if possible_pt_networks: # TODO: Need logic for if there are leftover networks not matched
+
 
             for subnetwork in details.subnetworks:
                 sub_name = subnetwork.name
@@ -1218,8 +1231,8 @@ A **subnetwork** is a block that\n
                 )
                 if parse_code_layers:
                     self._process_parsed_code(network_instance)
-                # self._process_objective_functions(network_instance)
-                # self._process_task_characterization(network_instance)
+                self._process_objective_functions(network_instance)
+                self._process_task_characterization(network_instance)
                 self.logger.info(
                     f"Successfully processed network instance: {network_instance.name}"
                 )
@@ -1604,7 +1617,7 @@ A **subnetwork** is a block that\n
 
                 # Process the ANN Configuration instance
                 self._process_network(ann_config_instance)
-                # self._process_training_strategy(ann_config_instance)
+                self._process_training_strategy(ann_config_instance)
 
                 minutes, seconds = divmod(time.time() - start_time, 60)
                 self.logger.info(f"Elapsed time: {int(minutes)}m {seconds:.2f}s.")

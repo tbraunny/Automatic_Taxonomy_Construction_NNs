@@ -10,6 +10,7 @@ def add_has_weight_initialization(ontology: Ontology, logger=None) -> None:
         if logger:
             logger.info("Object property 'hasWeightInitialization' added successfully.")
     except Exception as e:
+        logger.debug(f"Failed to add object property 'hasWeightInitialization': {e}",exc_info=True) if logger else None
         pass
 
 def add_new_task_characterizations(ontology: Ontology, logger) -> None:
@@ -37,6 +38,7 @@ def add_activation_function_layer_subclass(ontology: Ontology, logger=None) -> N
     except Exception as e:
         pass
 def add_source_data_property(ontology: Ontology, logger=None) -> None:
+    print("Adding source data property...")
     try:
         prop = create_generic_data_property(
             ontology, "sourceData",
@@ -49,6 +51,7 @@ def add_source_data_property(ontology: Ontology, logger=None) -> None:
         logger.debug(f"Failed to add data property 'sourceData': {e}",exc_info=True) if logger else None
         pass
 def add_definition_data_property(ontology: Ontology, logger=None) -> None:
+    print("Adding definition data property...")
     try:
         create_generic_data_property(
             ontology, "definition",
@@ -77,7 +80,7 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
         add_has_weight_initialization(ontology, logger)
         add_new_task_characterizations(ontology, logger)
         add_activation_function_layer_subclass(ontology, logger)
-        remove_annetto_default_anns(ontology, logger)
+        # remove_annetto_default_anns(ontology, logger)  #TODO: Not working
         add_source_data_property(ontology, logger)
         add_definition_data_property(ontology, logger)
         # Add any other initialization steps here
@@ -86,5 +89,5 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
             logger.info("Ontology initialized successfully.")
             print("Ontology initialized successfully.")
     except Exception as e:
-        logger.debug(f"Failed to make initial ontology updates: {e}") if logger else None
+        logger.debug(f"Failed to make initial ontology updates: {e}",exc_info=True) if logger else None
         pass

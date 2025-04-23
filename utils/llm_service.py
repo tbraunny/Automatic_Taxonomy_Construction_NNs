@@ -22,16 +22,6 @@ from utils.pydantic_models import *
 
 from dotenv import load_dotenv
 
-import logging
-logging.getLogger("openai").setLevel(logging.WARNING)
-logging.getLogger("langchain").setLevel(logging.WARNING)
-logging.getLogger("langchain.llms").setLevel(logging.WARNING)
-logging.getLogger("langchain.schema.output_parser").setLevel(logging.WARNING)
-
-# logging.disable(logging.CRITICAL)
-
-
-
 T = TypeVar("T", bound=BaseModel)
 
 load_dotenv()
