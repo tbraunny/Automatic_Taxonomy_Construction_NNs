@@ -1475,6 +1475,46 @@
   <rdfs:subClassOf rdf:resource="ActivationFunction"/>
 </owl:Class>
 
+<owl:Class rdf:about="Conv2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaptiveAvgPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_6">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_8">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="features_10">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="classifier_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
 <owl:NamedIndividual rdf:about="AAE">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="AAE_AE"/>
@@ -2318,14 +2358,30 @@
   <hasLoss rdf:resource="AAE_AE_MSE"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_AE_MSE">
-  <rdf:type rdf:resource="MSE"/>
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_ReLU">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_AE_Optimizer">
-  <rdf:type rdf:resource="Momentum"/>
-  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</learning_rate>
-  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.9</momentum>
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Sigmoid">
+  <rdf:type rdf:resource="Sigmoid"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Cost">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="AAE_Label_Discriminator_Loss"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_ReLU">
+  <rdf:type rdf:resource="Relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Sigmoid">
+  <rdf:type rdf:resource="Sigmoid"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Cost">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="AAE_Style_Discriminator_Loss"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="AAE_AE_TrainStep">
@@ -2340,11 +2396,113 @@
   <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="AAE_Encoder_Label_FwdStep">
+  <rdf:type rdf:resource="TrainingSingleForwardOnly"/>
+  <nextTrainingStep rdf:resource="AAE_Style_Discriminator_NoiseStep"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Encoder_Label_INP"/>
+  <trainsNetwork rdf:resource="AAE_Encoder_Label"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="AAE_Encoder_Style_FwdStep">
   <rdf:type rdf:resource="TrainingSingleForwardOnly"/>
   <nextTrainingStep rdf:resource="AAE_Encoder_Label_FwdStep"/>
   <trainingSingleHasIOPipe rdf:resource="AAE_Encoder_Style_INP"/>
   <trainsNetwork rdf:resource="AAE_Encoder_Style"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_GenSetStep">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <nextTrainingStep rdf:resource="AAE_Style_GAN_Step"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Label_Discriminator_GenPipe"/>
+  <trainsNetwork rdf:resource="AAE_Label_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_NoiseStep">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <nextTrainingStep rdf:resource="AAE_Style_Discriminator_GenSetStep"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Label_Discriminator_NoisePipe"/>
+  <trainsNetwork rdf:resource="AAE_Label_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_GAN_Step">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Label_GAN_INP"/>
+  <trainsNetwork rdf:resource="AAE_Label_GAN"/>
+  <updatesLayer rdf:resource="AAE_Label_GAN_L1"/>
+  <updatesLayer rdf:resource="AAE_Label_GAN_L2"/>
+  <updatesLayer rdf:resource="AAE_Label_GAN_Y"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_GenSetStep">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <nextTrainingStep rdf:resource="AAE_Label_Discriminator_GenSetStep"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Style_Discriminator_GenPipe"/>
+  <trainsNetwork rdf:resource="AAE_Style_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_NoiseStep">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <nextTrainingStep rdf:resource="AAE_Label_Discriminator_NoiseStep"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Style_Discriminator_NoisePipe"/>
+  <trainsNetwork rdf:resource="AAE_Style_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_GAN_Step">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
+  <nextTrainingStep rdf:resource="AAE_Label_GAN_Step"/>
+  <trainingSingleHasIOPipe rdf:resource="AAE_Style_GAN_INP"/>
+  <trainsNetwork rdf:resource="AAE_Style_GAN"/>
+  <updatesLayer rdf:resource="AAE_Style_GAN_L1"/>
+  <updatesLayer rdf:resource="AAE_Style_GAN_L2"/>
+  <updatesLayer rdf:resource="AAE_Style_GAN_Z"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_AE_MSE">
+  <rdf:type rdf:resource="MSE"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Loss">
+  <rdf:type rdf:resource="BinaryCrossEntropy"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Loss">
+  <rdf:type rdf:resource="BinaryCrossEntropy"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_AE_Optimizer">
+  <rdf:type rdf:resource="Momentum"/>
+  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</learning_rate>
+  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.9</momentum>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="AAE_Encoder_INP">
@@ -2353,11 +2511,10 @@
   <joinsLayer rdf:resource="AAE_Encoder_IN"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_Encoder_Label_FwdStep">
-  <rdf:type rdf:resource="TrainingSingleForwardOnly"/>
-  <nextTrainingStep rdf:resource="AAE_Style_Discriminator_NoiseStep"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Encoder_Label_INP"/>
-  <trainsNetwork rdf:resource="AAE_Encoder_Label"/>
+<owl:NamedIndividual rdf:about="AAE_Encoder_Label_INP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_train"/>
+  <joinsLayer rdf:resource="AAE_Encoder_Label_IN"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="AAE_Encoder_Style_INP">
@@ -2366,16 +2523,77 @@
   <joinsLayer rdf:resource="AAE_Encoder_Style_IN"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="AAE_Discriminator_Optimizer">
+  <rdf:type rdf:resource="Momentum"/>
+  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</learning_rate>
+  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</momentum>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_GenPipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="AAE_Encoder_GenSet_Labels"/>
+  <joinsLayer rdf:resource="AAE_Label_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_NoisePipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="AAE_Label_RandomNoise"/>
+  <joinsLayer rdf:resource="AAE_Label_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_GAN_INP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_train"/>
+  <joinsLayer rdf:resource="AAE_Label_GAN_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_GenPipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="AAE_Encoder_GenSet_Style"/>
+  <joinsLayer rdf:resource="AAE_Style_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_NoisePipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="AAE_Style_RandomNoise"/>
+  <joinsLayer rdf:resource="AAE_Style_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_GAN_INP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_train"/>
+  <joinsLayer rdf:resource="AAE_Style_GAN_IN"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="MNIST_train">
   <rdf:type rdf:resource="Dataset"/>
   <derivedTrainingDatasetFrom rdf:resource="MNIST"/>
   <hasLabels rdf:resource="MNIST_train_labels"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_Discriminator_Optimizer">
-  <rdf:type rdf:resource="Momentum"/>
-  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</learning_rate>
-  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</momentum>
+<owl:NamedIndividual rdf:about="MNIST">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasCharacteristicLabel rdf:resource="MNIST_Characterisation"/>
+  <hasDataType rdf:resource="MNIST_Type"/>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST database of handwritten digits, available from this page, has a training set of 60,000 examples, and a test set of 10,000 examples. It is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image.</data_description>
+  <data_location rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://yann.lecun.com/exdb/mnist/</data_location>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
+  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">784</data_sample_features>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="MNIST_train_labels">
+  <rdf:type rdf:resource="Labelset"/>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</labels_count>
+  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="MNIST_Characterisation">
+  <rdf:type rdf:resource="NumericalDigits"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="MNIST_Type">
+  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="AAE_Encoder_EVP">
@@ -2388,23 +2606,6 @@
   <rdf:type rdf:resource="Dataset"/>
   <derivedTestDatasetFrom rdf:resource="MNIST"/>
   <hasLabels rdf:resource="MNIST_test_labels"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Encoder_Label_INP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_train"/>
-  <joinsLayer rdf:resource="AAE_Encoder_Label_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="MNIST">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasCharacteristicLabel rdf:resource="MNIST_Characterisation"/>
-  <hasDataType rdf:resource="MNIST_Type"/>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST database of handwritten digits, available from this page, has a training set of 60,000 examples, and a test set of 10,000 examples. It is a subset of a larger set available from NIST. The digits have been size-normalized and centered in a fixed-size image.</data_description>
-  <data_location rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">http://yann.lecun.com/exdb/mnist/</data_location>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
-  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">784</data_sample_features>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="MNIST_test_labels">
@@ -2439,40 +2640,37 @@
   <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="MNIST_train_labels">
+<owl:NamedIndividual rdf:about="AAE_Style_RandomNoise">
+  <rdf:type rdf:resource="RandomNoiseDataset"/>
+  <hasFunction rdf:resource="AAE_Style_RandomNoise_Function"/>
+  <hasLabels rdf:resource="AAE_Style_Discriminator_RandomNoise_Labels"/>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
+  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</data_sample_features>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Label_RandomNoise">
+  <rdf:type rdf:resource="RandomNoiseDataset"/>
+  <hasFunction rdf:resource="AAE_Label_RandomNoise_Function"/>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
+  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</data_sample_features>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_RandomNoise_Function">
+  <rdf:type rdf:resource="Gaussian"/>
+  <normal_mu rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
+0.5 0.5 0.5
+&lt;/Array&gt;</normal_mu>
+  <normal_sigma rdf:datatype="http://www.dmg.org/PMML-4_3#Matrix">&lt;Matrix kind="symmetric" nbRows="3" nbCols="3"&gt;
+     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
+     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
+     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
+&lt;/Matrix&gt;</normal_sigma>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_RandomNoise_Labels">
   <rdf:type rdf:resource="Labelset"/>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</labels_count>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
   <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_NoiseStep">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <nextTrainingStep rdf:resource="AAE_Label_Discriminator_NoiseStep"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Style_Discriminator_NoisePipe"/>
-  <trainsNetwork rdf:resource="AAE_Style_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_NoiseStep">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <nextTrainingStep rdf:resource="AAE_Style_Discriminator_GenSetStep"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Label_Discriminator_NoisePipe"/>
-  <trainsNetwork rdf:resource="AAE_Label_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_NoisePipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="AAE_Style_RandomNoise"/>
-  <joinsLayer rdf:resource="AAE_Style_Discriminator_IN"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="AAE_Encoder_Y_OUTP">
@@ -2501,161 +2699,11 @@
   <rdf:type rdf:resource="Accuracy"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_ReLU">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Sigmoid">
-  <rdf:type rdf:resource="Sigmoid"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Cost">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="AAE_Label_Discriminator_Loss"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_Loss">
-  <rdf:type rdf:resource="BinaryCrossEntropy"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_GenPipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="AAE_Encoder_GenSet_Labels"/>
-  <joinsLayer rdf:resource="AAE_Label_Discriminator_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_GenSetStep">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <nextTrainingStep rdf:resource="AAE_Style_GAN_Step"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Label_Discriminator_GenPipe"/>
-  <trainsNetwork rdf:resource="AAE_Label_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_GAN_Step">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <nextTrainingStep rdf:resource="AAE_Label_GAN_Step"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Style_GAN_INP"/>
-  <trainsNetwork rdf:resource="AAE_Style_GAN"/>
-  <updatesLayer rdf:resource="AAE_Style_GAN_L1"/>
-  <updatesLayer rdf:resource="AAE_Style_GAN_L2"/>
-  <updatesLayer rdf:resource="AAE_Style_GAN_Z"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_GAN_Step">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Label_GAN_INP"/>
-  <trainsNetwork rdf:resource="AAE_Label_GAN"/>
-  <updatesLayer rdf:resource="AAE_Label_GAN_L1"/>
-  <updatesLayer rdf:resource="AAE_Label_GAN_L2"/>
-  <updatesLayer rdf:resource="AAE_Label_GAN_Y"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_GAN_INP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_train"/>
-  <joinsLayer rdf:resource="AAE_Style_GAN_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_Discriminator_NoisePipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="AAE_Label_RandomNoise"/>
-  <joinsLayer rdf:resource="AAE_Label_Discriminator_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_RandomNoise">
-  <rdf:type rdf:resource="RandomNoiseDataset"/>
-  <hasFunction rdf:resource="AAE_Label_RandomNoise_Function"/>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
-  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</data_sample_features>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="AAE_Label_RandomNoise_Function">
   <rdf:type rdf:resource="Categorical"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_GenSetStep">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="AAE_Discriminator_Optimizer"/>
-  <nextTrainingStep rdf:resource="AAE_Label_Discriminator_GenSetStep"/>
-  <trainingSingleHasIOPipe rdf:resource="AAE_Style_Discriminator_GenPipe"/>
-  <trainsNetwork rdf:resource="AAE_Style_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">0.1</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">50</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_GenPipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="AAE_Encoder_GenSet_Style"/>
-  <joinsLayer rdf:resource="AAE_Style_Discriminator_IN"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="AAE_Label_Discriminator_RandomNoise_Labels">
-  <rdf:type rdf:resource="Labelset"/>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
-  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Label_GAN_INP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_train"/>
-  <joinsLayer rdf:resource="AAE_Label_GAN_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_ReLU">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Sigmoid">
-  <rdf:type rdf:resource="Sigmoid"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Cost">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="AAE_Style_Discriminator_Loss"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_Loss">
-  <rdf:type rdf:resource="BinaryCrossEntropy"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_RandomNoise">
-  <rdf:type rdf:resource="RandomNoiseDataset"/>
-  <hasFunction rdf:resource="AAE_Style_RandomNoise_Function"/>
-  <hasLabels rdf:resource="AAE_Style_Discriminator_RandomNoise_Labels"/>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</data_sample_dimensionality>
-  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</data_sample_features>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_RandomNoise_Function">
-  <rdf:type rdf:resource="Gaussian"/>
-  <normal_mu rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
-0.5 0.5 0.5
-&lt;/Array&gt;</normal_mu>
-  <normal_sigma rdf:datatype="http://www.dmg.org/PMML-4_3#Matrix">&lt;Matrix kind="symmetric" nbRows="3" nbCols="3"&gt;
-     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
-     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
-     &lt;Array n="3" type="real"&gt;0.5 0.5 1.0&lt;/Array&gt;
-&lt;/Matrix&gt;</normal_sigma>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="AAE_Style_Discriminator_RandomNoise_Labels">
   <rdf:type rdf:resource="Labelset"/>
   <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
   <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
@@ -2888,98 +2936,20 @@
   <hasLoss rdf:resource="GAN_Discriminator_BinaryCrossEntropy"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="GAN_Discriminator_BinaryCrossEntropy">
-  <rdf:type rdf:resource="BinaryCrossEntropy"/>
+<owl:NamedIndividual rdf:about="GAN_Generator_ReLU">
+  <rdf:type rdf:resource="Relu"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="GAN_Discriminator_GenPipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="GAN_GeneratedSet"/>
-  <joinsLayer rdf:resource="GAN_Discriminator_IN"/>
+<owl:NamedIndividual rdf:about="GAN_Generator_L2">
+  <rdf:type rdf:resource="FullyConnectedLayer"/>
+  <hasActivationFunction rdf:resource="GAN_Generator_ReLU"/>
+  <nextLayer rdf:resource="GAN_Generator_L3"/>
+  <previousLayer rdf:resource="GAN_Generator_L1"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#int">300</layer_num_units>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="GAN_GeneratedSet">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="GAN_Discriminator_GenSet_labels"/>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</data_sample_dimensionality>
-  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#int">784</data_sample_features>
-  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</is_transient_dataset>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_GenSet_labels">
-  <rdf:type rdf:resource="Labelset"/>
-  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</is_transient_dataset>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
-  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_GenSet_step">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="GAN_Discriminator_SGD"/>
-  <trainingSingleHasIOPipe rdf:resource="GAN_Discriminator_GenPipe"/>
-  <trainsNetwork rdf:resource="GAN_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#int">50</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
-0.1 0.1 0.1
-&lt;/Array&gt;</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="integer"&gt;
-100 250 450
-&lt;/Array&gt;</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#int">500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_SGD">
-  <rdf:type rdf:resource="Momentum"/>
-  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</learning_rate>
-  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.9</momentum>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_Pipe">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_train"/>
-  <joinsLayer rdf:resource="GAN_Discriminator_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_labels">
-  <rdf:type rdf:resource="Labelset"/>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
-  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_step">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <hasTrainingOptimizer rdf:resource="GAN_Discriminator_SGD"/>
-  <nextTrainingStep rdf:resource="GAN_Discriminator_TrainFwdPass"/>
-  <trainingSingleHasIOPipe rdf:resource="GAN_Discriminator_MNIST_Pipe"/>
-  <trainsNetwork rdf:resource="GAN_Discriminator"/>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#int">50</batch_size>
-  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
-0.1 0.1 0.1
-&lt;/Array&gt;</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="integer"&gt;
-100 250 450
-&lt;/Array&gt;</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#int">500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_TrainFwdPass">
-  <rdf:type rdf:resource="TrainingSingleForwardOnly"/>
-  <nextTrainingStep rdf:resource="GAN_Discriminator_GenSet_step"/>
-  <trainingSingleHasIOPipe rdf:resource="GAN_Generator_INP"/>
-  <trainsNetwork rdf:resource="GAN_Generator"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Generator_INP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="RandomNoise"/>
-  <joinsLayer rdf:resource="GAN_Generator_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="RandomNoise">
-  <rdf:type rdf:resource="RandomNoiseDataset"/>
-  <hasFunction rdf:resource="StandardNormal"/>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</data_sample_dimensionality>
-  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#int">100</data_sample_features>
+<owl:NamedIndividual rdf:about="GAN_Generator_Tanh">
+  <rdf:type rdf:resource="Tanh"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="GAN_Discriminator_TrainLoop">
@@ -2989,11 +2959,6 @@
   <hasPrimaryLoopTrainingStep rdf:resource="GAN_Discriminator_MNIST_step"/>
   <hasStopCondition rdf:resource="GAN_Discriminator_TrainLoopStopCondition"/>
   <nextTrainingStep rdf:resource="GAN_TrainStep"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Discriminator_TrainLoopStopCondition">
-  <rdf:type rdf:resource="IterateFor"/>
-  <num_of_iterations rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</num_of_iterations>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="GAN_TrainStep">
@@ -3012,46 +2977,6 @@
 50 100 500
 &lt;/Array&gt;</learning_rate_decay_epochs>
   <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#int">500</number_of_epochs>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_net_GINP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="RandomNoise"/>
-  <joinsLayer rdf:resource="GAN_net_GIN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Generator_L2">
-  <rdf:type rdf:resource="FullyConnectedLayer"/>
-  <hasActivationFunction rdf:resource="GAN_Generator_ReLU"/>
-  <nextLayer rdf:resource="GAN_Generator_L3"/>
-  <previousLayer rdf:resource="GAN_Generator_L1"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#int">300</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Generator_ReLU">
-  <rdf:type rdf:resource="Relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Generator_Tanh">
-  <rdf:type rdf:resource="Tanh"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="StandardNormal">
-  <rdf:type rdf:resource="Gaussian"/>
-  <normal_mu rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
-0.1 0.2 0.3
-&lt;/Array&gt;</normal_mu>
-  <normal_sigma rdf:datatype="http://www.dmg.org/PMML-4_3#Matrix">&lt;Matrix kind="symmetric" nbRows="3" nbCols="3"&gt;
-     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
-     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
-     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
-&lt;/Matrix&gt;</normal_sigma>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="GAN_Generator_OUTP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="GAN_GeneratedSet"/>
-  <joinsLayer rdf:resource="GAN_Generator_OUT"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="GAN_net_DWL1">
@@ -3090,6 +3015,129 @@
   <trainedOutLayer rdf:resource="GAN_Generator_L3"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="GAN_Discriminator_BinaryCrossEntropy">
+  <rdf:type rdf:resource="BinaryCrossEntropy"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_GenSet_step">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="GAN_Discriminator_SGD"/>
+  <trainingSingleHasIOPipe rdf:resource="GAN_Discriminator_GenPipe"/>
+  <trainsNetwork rdf:resource="GAN_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#int">50</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
+0.1 0.1 0.1
+&lt;/Array&gt;</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="integer"&gt;
+100 250 450
+&lt;/Array&gt;</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#int">500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_TrainFwdPass">
+  <rdf:type rdf:resource="TrainingSingleForwardOnly"/>
+  <nextTrainingStep rdf:resource="GAN_Discriminator_GenSet_step"/>
+  <trainingSingleHasIOPipe rdf:resource="GAN_Generator_INP"/>
+  <trainsNetwork rdf:resource="GAN_Generator"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_step">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <hasTrainingOptimizer rdf:resource="GAN_Discriminator_SGD"/>
+  <nextTrainingStep rdf:resource="GAN_Discriminator_TrainFwdPass"/>
+  <trainingSingleHasIOPipe rdf:resource="GAN_Discriminator_MNIST_Pipe"/>
+  <trainsNetwork rdf:resource="GAN_Discriminator"/>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#int">50</batch_size>
+  <learning_rate_decay rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
+0.1 0.1 0.1
+&lt;/Array&gt;</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="integer"&gt;
+100 250 450
+&lt;/Array&gt;</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#int">500</number_of_epochs>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_TrainLoopStopCondition">
+  <rdf:type rdf:resource="IterateFor"/>
+  <num_of_iterations rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</num_of_iterations>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_SGD">
+  <rdf:type rdf:resource="Momentum"/>
+  <learning_rate rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</learning_rate>
+  <momentum rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.9</momentum>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_net_GINP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="RandomNoise"/>
+  <joinsLayer rdf:resource="GAN_net_GIN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_GenPipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="GAN_GeneratedSet"/>
+  <joinsLayer rdf:resource="GAN_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_GeneratedSet">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="GAN_Discriminator_GenSet_labels"/>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</data_sample_dimensionality>
+  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#int">784</data_sample_features>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</is_transient_dataset>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_GenSet_labels">
+  <rdf:type rdf:resource="Labelset"/>
+  <is_transient_dataset rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</is_transient_dataset>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
+  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_Pipe">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_train"/>
+  <joinsLayer rdf:resource="GAN_Discriminator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Discriminator_MNIST_labels">
+  <rdf:type rdf:resource="Labelset"/>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
+  <labels_dtype rdf:datatype="http://www.w3.org/2001/XMLSchema#anyType">integer</labels_dtype>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Generator_INP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="RandomNoise"/>
+  <joinsLayer rdf:resource="GAN_Generator_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="RandomNoise">
+  <rdf:type rdf:resource="RandomNoiseDataset"/>
+  <hasFunction rdf:resource="StandardNormal"/>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</data_sample_dimensionality>
+  <data_sample_features rdf:datatype="http://www.w3.org/2001/XMLSchema#int">100</data_sample_features>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="StandardNormal">
+  <rdf:type rdf:resource="Gaussian"/>
+  <normal_mu rdf:datatype="http://www.dmg.org/PMML-4_3#Array">&lt;Array n="3" type="real"&gt;
+0.1 0.2 0.3
+&lt;/Array&gt;</normal_mu>
+  <normal_sigma rdf:datatype="http://www.dmg.org/PMML-4_3#Matrix">&lt;Matrix kind="symmetric" nbRows="3" nbCols="3"&gt;
+     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
+     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
+     &lt;Array n="3" type="real"&gt;1.0 1.5 1.75&lt;/Array&gt;
+&lt;/Matrix&gt;</normal_sigma>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="GAN_Generator_OUTP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="GAN_GeneratedSet"/>
+  <joinsLayer rdf:resource="GAN_Generator_OUT"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="GAN_net_eval_metric">
   <rdf:type rdf:resource="ParzenWindow"/>
 </owl:NamedIndividual>
@@ -3101,14 +3149,6 @@
   <evaluatesUsingIOPipe rdf:resource="GAN_Generator_INP"/>
   <hasMetric rdf:resource="GAN_net_eval_metric"/>
   <withTrainingStrategy rdf:resource="GAN_TrainStrat"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="MNIST_Characterisation">
-  <rdf:type rdf:resource="NumericalDigits"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="MNIST_Type">
-  <rdf:type rdf:resource="Image"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="MNIST_xval">
@@ -3215,16 +3255,10 @@
   <hasWeights rdf:resource="simple_classification_WL3"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="simple_classification_EVP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_test"/>
-  <joinsLayer rdf:resource="simple_classification_IN"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="simple_classification_INP">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="MNIST_train"/>
-  <joinsLayer rdf:resource="simple_classification_IN"/>
+<owl:NamedIndividual rdf:about="simple_classification_cost">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="CategoricalCrossEntropy"/>
+  <hasRegularizer rdf:resource="ReguralizerL2"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="simple_classification_TrainStep">
@@ -3260,10 +3294,16 @@
   <trainedOutLayer rdf:resource="simple_classification_L3"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="simple_classification_cost">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="CategoricalCrossEntropy"/>
-  <hasRegularizer rdf:resource="ReguralizerL2"/>
+<owl:NamedIndividual rdf:about="simple_classification_INP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_train"/>
+  <joinsLayer rdf:resource="simple_classification_IN"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="simple_classification_EVP">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="MNIST_test"/>
+  <joinsLayer rdf:resource="simple_classification_IN"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="simple_classification_eval">
@@ -3296,14 +3336,6 @@
   <hasActivationFunction rdf:resource="f1253bc7_model_7_inst"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="f1253bc7_model_0">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_model_1">
-  <rdf:type rdf:resource="LeakyReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="f1253bc7_model_3">
   <rdf:type rdf:resource="Linear"/>
 </owl:NamedIndividual>
@@ -3328,8 +3360,144 @@
   <rdf:type rdf:resource="Tanh"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="f1253bc7_model_0">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="f1253bc7_model_1">
+  <rdf:type rdf:resource="LeakyReLU"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="f1253bc7_model_1_inst">
   <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_alexnet">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasLayer rdf:resource="709942bd_features_0"/>
+  <hasLayer rdf:resource="709942bd_features_2"/>
+  <hasLayer rdf:resource="709942bd_features_3"/>
+  <hasLayer rdf:resource="709942bd_features_5"/>
+  <hasLayer rdf:resource="709942bd_features_6"/>
+  <hasLayer rdf:resource="709942bd_features_8"/>
+  <hasLayer rdf:resource="709942bd_features_10"/>
+  <hasLayer rdf:resource="709942bd_features_12"/>
+  <hasLayer rdf:resource="709942bd_avgpool"/>
+  <hasLayer rdf:resource="709942bd_flatten"/>
+  <hasLayer rdf:resource="709942bd_classifier_0"/>
+  <hasLayer rdf:resource="709942bd_classifier_3"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_0">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_1"/>
+  <nextLayer rdf:resource="709942bd_features_2"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">23296</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_1">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_2">
+  <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_features_3"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_3">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_4"/>
+  <nextLayer rdf:resource="709942bd_features_5"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">307392</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_4">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_5">
+  <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_features_6"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_6">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_7"/>
+  <nextLayer rdf:resource="709942bd_features_8"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">663936</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_7">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_8">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_9"/>
+  <nextLayer rdf:resource="709942bd_features_10"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">884992</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_9">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_10">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="709942bd_features_11"/>
+  <nextLayer rdf:resource="709942bd_features_12"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">590080</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_11">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_features_12">
+  <rdf:type rdf:resource="MaxPool2d"/>
+  <nextLayer rdf:resource="709942bd_avgpool"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_avgpool">
+  <rdf:type rdf:resource="AdaptiveAvgPool2d"/>
+  <nextLayer rdf:resource="709942bd_flatten"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_flatten">
+  <rdf:type rdf:resource="FlattenLayer"/>
+  <nextLayer rdf:resource="709942bd_classifier_0"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_0">
+  <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_1"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_2"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_2">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_3">
+  <rdf:type rdf:resource="DropoutLayer"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_4"/>
+  <hasActivationFunction rdf:resource="709942bd_classifier_5"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_4">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_5">
+  <rdf:type rdf:resource="ReLU_sub"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_classifier_6">
+  <rdf:type rdf:resource="Linear"/>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>

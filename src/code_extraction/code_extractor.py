@@ -203,7 +203,7 @@ class _CodeProcessor(ast.NodeVisitor):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
-            '__name__': '__main__',  # hope this helps
+            '__name__': '__main__',  # hope this helps (might have to take out)
             '__file__': filepath,
             '__package__': None,
             '__builtins__': __builtins__,
@@ -211,30 +211,7 @@ class _CodeProcessor(ast.NodeVisitor):
 
         #compiled_code = _strip_relative_imports(code)
         exec(code, namespace)
-        return namespace
-
-class _RelativeImportRemover(ast.NodeTransformer):
-    def visit_ImportFrom(self, node):
-        if node.level > 0:
-            return None  # Remove relative imports
-        return node
-
-    def generic_visit(self, node):
-        super().generic_visit(node)
-        # Fix empty bodies (for if/while/with/etc.)
-        if hasattr(node, 'body') and isinstance(node.body, list):
-            node.body = [stmt for stmt in node.body if stmt is not None]
-            if len(node.body) == 0:
-                node.body.append(ast.Pass())
-        return node
-
-
-def _strip_relative_imports(code: str) -> str:
-    tree = ast.parse(code)
-    tree = _RelativeImportRemover().visit(tree)
-    ast.fix_missing_locations(tree)
-    return compile(tree, filename="<ast>", mode="exec")
-     
+        return namespace     
 
 class CodeExtractor():
     def __init__(self):
