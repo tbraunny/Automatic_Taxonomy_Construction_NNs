@@ -10,6 +10,7 @@ import os
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
 from utils.logger_util import get_logger
+from utils.instantiate_dummy_args import create_dummy_value, instantiate_with_dummy_args
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -89,11 +90,19 @@ class _CodeProcessor(ast.NodeVisitor):
                 class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
                 exec("\n".join(class_code) , globals() , mappings) # load code into memory
                 model_class = mappings.get(node.name)
-                model = model_class()
-                model = tmodels.get_model(node.name , weights='DEFAULT') # preprocessing?
-                
-                self.model_name = node.name
-                self.pytorch_graph: dict = extract_graph(model) # extract_graph returns dict                
+
+                if model_class:
+                    model = instantiate_with_dummy_args(model_class)
+
+                    if model is None and node.name in dir(tmodels):
+                        try:
+                            model = tmodels.get_model(node.name, weights='DEFAULT')
+                        except Exception as e:
+                            logging.warning(f"Could not load torchvision model {node.name}: {e}")
+                    
+                    if model:
+                        self.model_name = node.name
+                        self.pytorch_graph = extract_graph(model)              
 
             # Tensorflow check
             elif hasattr(base, "attr") and base.attr == "Model":

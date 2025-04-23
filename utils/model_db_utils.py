@@ -236,7 +236,6 @@ class DBUtils:
                 with open(pdf , 'rb') as f:
                     contents = f.read()
 
-                print("MARKER")
                 query = text("""INSERT INTO paper (paper_name , contents)
                             VALUES (:paper_name , :contents)
                             RETURNING paper_id""")
@@ -245,7 +244,6 @@ class DBUtils:
                     "contents": contents
                 })
                 paper_id = result.scalar()
-                print(paper_id)
                 self.session.commit()
         except Exception as e:
             self.logger.exception(f"Failed to insert paper {ann_path} into database: {e}")
