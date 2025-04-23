@@ -9,14 +9,12 @@ from rapidfuzz import process
 from utils.logger_util import get_logger
 from pathlib import Path
 
-logger = get_logger("model-db-utils")
-
 load_dotenv()
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.environ.get("DB_USER")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_HOST = os.environ.get("DB_HOST")
+DB_PORT = os.environ.get("DB_PORT")
+DB_NAME = os.environ.get("DB_NAME")
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
@@ -27,8 +25,8 @@ class DBUtils:
     Must be run from WPEB machine to access server automatically (Tailscale network)
     """
     def __init__(self):
+        self.logger = get_logger("model-db-utils")
         self.engine , self.session = self._init_engine()
-        self.logger = logger
         self.layer_list = []
         self.model_list = []
         self.onto = 0
