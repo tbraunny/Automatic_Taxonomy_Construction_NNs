@@ -6,124 +6,150 @@
             "op_type": null,
             "op": "placeholder",
             "output": [
-               "features_0"
+               "net_0"
             ],
             "input": [],
             "attributes": {},
             "num_params": null
          },
          {
-            "name": "features_0",
+            "name": "net_0",
             "op_type": "Conv2d",
             "op": "call_module",
             "output": [
-               "features_1"
+               "net_1"
             ],
             "input": [
                "x"
             ],
             "attributes": {
                "weight": [
-                  64,
+                  96,
                   3,
                   11,
                   11
                ],
                "bias": [
-                  64
+                  96
                ]
             },
-            "num_params": 23296
+            "num_params": 34944
          },
          {
-            "name": "features_1",
+            "name": "net_1",
             "op_type": "ReLU",
             "op": "call_module",
             "output": [
-               "features_2"
+               "net_2"
             ],
             "input": [
-               "features_0"
+               "net_0"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_2",
+            "name": "net_2",
+            "op_type": "LocalResponseNorm",
+            "op": "call_module",
+            "output": [
+               "net_3"
+            ],
+            "input": [
+               "net_1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "net_3",
             "op_type": "MaxPool2d",
             "op": "call_module",
             "output": [
-               "features_3"
+               "net_4"
             ],
             "input": [
-               "features_1"
+               "net_2"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_3",
+            "name": "net_4",
             "op_type": "Conv2d",
             "op": "call_module",
             "output": [
-               "features_4"
+               "net_5"
             ],
             "input": [
-               "features_2"
+               "net_3"
             ],
             "attributes": {
                "weight": [
-                  192,
-                  64,
+                  256,
+                  96,
                   5,
                   5
                ],
                "bias": [
-                  192
+                  256
                ]
             },
-            "num_params": 307392
+            "num_params": 614656
          },
          {
-            "name": "features_4",
+            "name": "net_5",
             "op_type": "ReLU",
             "op": "call_module",
             "output": [
-               "features_5"
+               "net_6"
             ],
             "input": [
-               "features_3"
+               "net_4"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_5",
+            "name": "net_6",
+            "op_type": "LocalResponseNorm",
+            "op": "call_module",
+            "output": [
+               "net_7"
+            ],
+            "input": [
+               "net_5"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "net_7",
             "op_type": "MaxPool2d",
             "op": "call_module",
             "output": [
-               "features_6"
+               "net_8"
             ],
             "input": [
-               "features_4"
+               "net_6"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_6",
+            "name": "net_8",
             "op_type": "Conv2d",
             "op": "call_module",
             "output": [
-               "features_7"
+               "net_9"
             ],
             "input": [
-               "features_5"
+               "net_7"
             ],
             "attributes": {
                "weight": [
                   384,
-                  192,
+                  256,
                   3,
                   3
                ],
@@ -131,30 +157,66 @@
                   384
                ]
             },
-            "num_params": 663936
+            "num_params": 885120
          },
          {
-            "name": "features_7",
+            "name": "net_9",
             "op_type": "ReLU",
             "op": "call_module",
             "output": [
-               "features_8"
+               "net_10"
             ],
             "input": [
-               "features_6"
+               "net_8"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_8",
+            "name": "net_10",
             "op_type": "Conv2d",
             "op": "call_module",
             "output": [
-               "features_9"
+               "net_11"
             ],
             "input": [
-               "features_7"
+               "net_9"
+            ],
+            "attributes": {
+               "weight": [
+                  384,
+                  384,
+                  3,
+                  3
+               ],
+               "bias": [
+                  384
+               ]
+            },
+            "num_params": 1327488
+         },
+         {
+            "name": "net_11",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "net_12"
+            ],
+            "input": [
+               "net_10"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "net_12",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "net_13"
+            ],
+            "input": [
+               "net_11"
             ],
             "attributes": {
                "weight": [
@@ -170,90 +232,42 @@
             "num_params": 884992
          },
          {
-            "name": "features_9",
+            "name": "net_13",
             "op_type": "ReLU",
             "op": "call_module",
             "output": [
-               "features_10"
+               "net_14"
             ],
             "input": [
-               "features_8"
+               "net_12"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "features_10",
-            "op_type": "Conv2d",
-            "op": "call_module",
-            "output": [
-               "features_11"
-            ],
-            "input": [
-               "features_9"
-            ],
-            "attributes": {
-               "weight": [
-                  256,
-                  256,
-                  3,
-                  3
-               ],
-               "bias": [
-                  256
-               ]
-            },
-            "num_params": 590080
-         },
-         {
-            "name": "features_11",
-            "op_type": "ReLU",
-            "op": "call_module",
-            "output": [
-               "features_12"
-            ],
-            "input": [
-               "features_10"
-            ],
-            "attributes": {},
-            "num_params": 0
-         },
-         {
-            "name": "features_12",
+            "name": "net_14",
             "op_type": "MaxPool2d",
             "op": "call_module",
             "output": [
-               "avgpool"
+               "view"
             ],
             "input": [
-               "features_11"
+               "net_13"
             ],
             "attributes": {},
             "num_params": 0
          },
          {
-            "name": "avgpool",
-            "op_type": "AdaptiveAvgPool2d",
-            "op": "call_module",
-            "output": [
-               "flatten"
-            ],
-            "input": [
-               "features_12"
-            ],
-            "attributes": {},
-            "num_params": 0
-         },
-         {
-            "name": "flatten",
-            "op_type": "flatten",
-            "op": "call_function",
+            "name": "view",
+            "op_type": null,
+            "op": "call_method",
             "output": [
                "classifier_0"
             ],
             "input": [
-               "avgpool",
-               "1"
+               "net_14",
+               "-1",
+               "9216"
             ],
             "attributes": {},
             "num_params": null
@@ -266,7 +280,7 @@
                "classifier_1"
             ],
             "input": [
-               "flatten"
+               "view"
             ],
             "attributes": {},
             "num_params": 0

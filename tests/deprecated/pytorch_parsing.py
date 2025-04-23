@@ -1,5 +1,7 @@
 import torch.nn as nn
 
+###### DEPRECATED
+
 def is_activation_layer(layer_name: str, use_torch: bool=False) -> bool:
     """Check if the layer is an activation function. (Non Case-Sensitive)
     
