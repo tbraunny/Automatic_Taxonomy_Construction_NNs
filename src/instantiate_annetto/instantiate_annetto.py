@@ -157,14 +157,14 @@ class OntologyProcessor:
             unique_name = self._format_instance_name(instance_name)
             instance = create_cls_instance(self.ontology, cls, unique_name)
             if not isinstance(instance, Thing):
-                raise TypeError(f"Instance is not of type Thing: {type(instance)}")
+                raise TypeError(f"Instance is not of type Thing: {cls} {type(instance)}")
             self.logger.info(f"Instantiated {cls.name} as {unique_name}.")
             if source:
                 self._add_source_data_property(instance, source)
             return instance
         except Exception as e:
             self.logger.error(
-                f"Error instantiating {cls.name} with name '{instance_name}'.",
+                f"Error instantiating {cls} with name '{instance_name}'.",
                 exc_info=True,
             )
             return None
@@ -198,7 +198,7 @@ class OntologyProcessor:
 
             # Convert classes to a dictionary for lookup
             class_name_map = {cls.name.lower(): cls for cls in classes}
-            
+
             match, score, _ = process.extractOne(
                 instance_name.lower(), class_name_map.keys(), scorer=fuzz.ratio
             )
@@ -263,7 +263,7 @@ class OntologyProcessor:
             )
         except Exception as e:
             self.logger.error(
-                f"Error linking {self._unformat_instance_name(parent_instance.name)} and {self._unformat_instance_name(child_instance.name)}: {e}",
+                f"Error linking {self._unformat_instance_name(parent_instance)} and {child_instance}: {e}",
                 exc_info=True,
             )
 
@@ -283,7 +283,6 @@ class OntologyProcessor:
         Add a source data property to an instance.
         """
         try:
-            print(self.ontology.sourceData)
             link_data_property_to_instance(instance, self.ontology.sourceData, source)
             self.logger.info(
                 f"Linked '{self._unformat_instance_name(instance.name)}' with source data property '{source}'."
@@ -1195,6 +1194,7 @@ A **subnetwork** is a block that\n
                     )
                     continue
                 unused_subnetwork_names.append(sub_name)
+            print(f"Unused subnetwork names: {unused_subnetwork_names}")
                         
             print(f"Subnetwork names: {unused_subnetwork_names} and details {details.subnetworks}")
             print(f"Possible pt networks: {unused_pt_networks}")
@@ -1215,10 +1215,22 @@ A **subnetwork** is a block that\n
                     network_matches[subname] = match
             print(f"Network matches: {network_matches}")
 
+            if not hasattr(self.ontology, "ParentNetwork"):
+                logger.error(
+                    "Invalid or missing ParentNetwork class in the ontology.",
+                    exc_info=True,
+                )
+                raise AttributeError(
+                    "The ontology must have a valid 'ParentNetwork' class of type ThingClass."
+                )
+            
+            networks_to_process: List[Thing] = []
+
             if unused_subnetwork_names and unused_pt_networks:
+                print("case 1")
                 # parse layers into Parent Network
                 parentnetwork_instance = self._instantiate_and_format_class(
-                    self.ontology.ParentNetwork, sub_name, "default"
+                    self.ontology.ParentNetwork, ann_config_instance_name + " network", "default"
                 )
                 self._link_instances(
                     ann_config_instance,
@@ -1229,9 +1241,11 @@ A **subnetwork** is a block that\n
                 # process remaining subnetwork components
                 networks_to_process = unused_subnetwork_names
             elif not unused_subnetwork_names and unused_pt_networks and not network_matches:
+                print("case 2")
+
                 # parse layers into Parent Network
                 parentnetwork_instance = self._instantiate_and_format_class(
-                    self.ontology.ParentNetwork, sub_name, "default"
+                    self.ontology.ParentNetwork, ann_config_instance_name + " network", "default"
                 )
                 self._link_instances(
                     ann_config_instance,
@@ -1242,9 +1256,10 @@ A **subnetwork** is a block that\n
                 # process parenet network components
                 networks_to_process = [parentnetwork_instance]
             elif not unused_subnetwork_names and unused_pt_networks and network_matches:
+                print("case 3")
                 # parse layers into Parent Network
                 parentnetwork_instance = self._instantiate_and_format_class(
-                    self.ontology.ParentNetwork, sub_name, "default"
+                    self.ontology.ParentNetwork, ann_config_instance_name + " network", "default"
                 )
                 self._link_instances(
                     ann_config_instance,
@@ -1253,24 +1268,37 @@ A **subnetwork** is a block that\n
                 )
                 self._process_parsed_code(parentnetwork_instance, unused_pt_networks)
             elif unused_subnetwork_names and not unused_pt_networks:
-                # process remaining subnetwork components
-                networks_to_process = unused_subnetwork_names            
+                print("case 4")
 
+                # process remaining subnetwork components
+                networks_to_process = unused_subnetwork_names     
+
+            # add mapped networks to networks to process
+            networks_to_process.extend(network_matches.keys())
+            print(f"Networks to process: {networks_to_process}")       
+
+            if not networks_to_process:
+                self.logger.error(
+                    f"No networks to process for ANN '{ann_config_instance_name}'."
+                )
+                return
 
             for subnetwork in networks_to_process:
+                print(f"Subnetwork: {subnetwork}")
                 # Instantiate subnetwork instance
                 network_instance = self._instantiate_and_format_class(
-                    self.ontology.Network, sub_name, "llm"
+                    self.ontology.Network, subnetwork, "llm"
                 )
                 self._link_instances(
                     ann_config_instance,
                     network_instance,
                     self.ontology.hasNetwork,
                 )
-                
-                if network_matches:
-                    for subname, match in network_matches.items():
-                        self._process_parsed_code(network_instance, [match])
+
+                if subnetwork in network_matches.keys():
+                    match = network_matches[subnetwork]
+                    self._process_parsed_code(network_instance, [match])
+                print(f"Subnetwork: {subnetwork} and match: {match}")            
                 self._process_objective_functions(network_instance)
                 self._process_task_characterization(network_instance)
                 self.logger.info(

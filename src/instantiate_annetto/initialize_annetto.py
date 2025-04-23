@@ -62,10 +62,8 @@ def add_activation_function_layer_subclass(ontology: Ontology, logger=None) -> N
 
 
 def add_source_data_property(ontology: Ontology, logger=None) -> None:
-    print("Adding source data property...")
     try:
         prop = create_generic_data_property(ontology, "sourceData", str)
-        print(f"Property created: {prop}")
         if logger:
             logger.info("Data property 'sourceData' added successfully.")
     except Exception as e:
@@ -80,7 +78,6 @@ def add_source_data_property(ontology: Ontology, logger=None) -> None:
 
 
 def add_definition_data_property(ontology: Ontology, logger=None) -> None:
-    print("Adding definition data property...")
     try:
         create_generic_data_property(ontology, "definition", str)
         if logger:
@@ -150,8 +147,6 @@ def un_functional_activation_function(ontology: Ontology, logger=None) -> None:
     except AttributeError:
         if logger:
             logger.error("Property hasActivationFunction not found in the ontology.")
-        else:
-            print("Property hasActivationFunction not found.")
 
 
 def initialize_annetto(ontology: Ontology, logger=None) -> None:
@@ -164,10 +159,10 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
         add_source_data_property(ontology, logger)
         add_definition_data_property(ontology, logger)
         un_functional_activation_function(ontology, logger)
+        subclass_network_with_parent(ontology, logger)
         # Add any other initialization steps here
         if logger:
             logger.info("Ontology initialized successfully.")
-            print("Ontology initialized successfully.")
     except Exception as e:
         (
             logger.debug(f"Failed to make initial ontology updates: {e}", exc_info=True)
