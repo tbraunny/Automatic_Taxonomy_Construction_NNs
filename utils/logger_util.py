@@ -26,7 +26,7 @@ def get_logger(base_name: str = "app", max_logs: int = 3) -> logging.Logger:
         # Add a wrapper to log error and print message
         original_error = logger.error
         def error_with_print(msg, *args, **kwargs):
-            print("#################### An error was logged! ####################")
+            print(f"#################### An error was logged in '{base_name}'! ####################")
             return original_error(msg, *args, **kwargs)
         logger.error = error_with_print
 

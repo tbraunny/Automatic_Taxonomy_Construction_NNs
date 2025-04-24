@@ -50,7 +50,7 @@ def find_property_chain_to_property(ontology, start, target_prop, max_depth=10):
     if target_prop == None:
         returnlist = list(ontology.object_properties()) # return everything if a target_prop was not specified
         returnlist = [str(item.iri) for item in returnlist]
-        return returnlist
+        return [returnlist]
     target_iri = str(target_prop.iri)
     queue = deque([(start, [])])
     found_chains = []  
@@ -159,7 +159,7 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
     
     if len(property_chain) == 0:
         property_chain = onto.object_properties()
-        property_chain = [str(item.iri) for item in property_chain]
+        property_chain = [ "<" + str(item.iri) + ">"  for item in property_chain]
 
         # Detect if it's already a full URI
     for i in range(len(property_chain)):
@@ -189,14 +189,30 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
         }}
         GROUP BY ?config
         """
-    #print(query)
-    #input()
+    
+    reverse_query= f"""
+        PREFIX ns0: <http://w3id.org/annett-o/>
+
+        SELECT   ?config (GROUP_CONCAT(?value; separator=", ") AS ?values)  
+        WHERE {{
+            ?config a ns0:ANNConfiguration .
+            
+            ?test ( { property_chain } )+  ?config .
+
+            ?test ns0:{prop} ?value .
+
+            {filter_clause}
+        }}
+        GROUP BY ?config
+        """
+
     graph = default_world.as_rdflib_graph()
     results = list(graph.query(query))
-    #for i in results:
-    #    print(i[0])
-    #print(len(results))
-    #input('results')
+
+    if len(results) == 0:
+        # run the query in the other direction....
+        results = list(graph.query(reverse_query))
+
     return results
     
 

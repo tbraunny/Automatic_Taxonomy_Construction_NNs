@@ -7,7 +7,10 @@ from collections import defaultdict
 
 def extract_graph(model) -> dict:
     traced = symbolic_trace(model)
-    computeGraph = {"graph": {"node": []}}
+    computeGraph = {
+        "total_num_params": 0,
+        "graph": {"node": []}
+        }
 
     node_outputs: dict = defaultdict(list) # bypass init loop
     for node in traced.graph.nodes:
@@ -15,6 +18,7 @@ def extract_graph(model) -> dict:
             if hasattr(arg, 'name'): # build target layers dict
                 node_outputs[arg.name].append(node.name)
 
+    total_num_params: int = 0
     for node in traced.graph.nodes: 
         node_info = {
             "name": node.name,
@@ -41,12 +45,13 @@ def extract_graph(model) -> dict:
             submodule = traced.get_submodule(node.target)
             param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
             node_info["num_params"] = param_count
+            total_num_params += param_count
 
-            # Retrieve total number of learned parameters
-            param_count: int = 0
-            submodule = traced.get_submodule(node.target)
-            param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
-            node_info["num_params"] = param_count
+            # # Retrieve total number of learned parameters
+            # param_count: int = 0
+            # submodule = traced.get_submodule(node.target)
+            # param_count = sum(p.numel() for p in submodule.parameters() if p.requires_grad)
+            # node_info["num_params"] = param_count
 
         elif node.op == 'call_function':
             node_info['op_type'] = f"Function: {str(node.target)}"
@@ -59,6 +64,7 @@ def extract_graph(model) -> dict:
         computeGraph['graph']['node'].append(node_info)
 
     # Convert to JSON and return
+    computeGraph["total_num_params"] = total_num_params
     return computeGraph
     #return json.dumps(computeGraph, indent=4)
 
