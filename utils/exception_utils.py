@@ -19,9 +19,15 @@ raise AppError(
 )
 
 try:
-    delete_ann_configuration(ontology, "GAN")
+    main(ontology, "GAN")
 except AppError as e:
     print("Error occurred:", e.to_dict())
+except OntologyParseError as e:
+    pass
+except Exception as e:
+    print("An unexpected error occurred:", str(e))
+
+
 
 try:
     result = delete_ann_configuration(ontology, "GAN")
