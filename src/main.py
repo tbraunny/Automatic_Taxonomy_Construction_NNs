@@ -13,6 +13,7 @@ from utils.annetto_utils import load_annetto_ontology
 import warnings
 from typing import List
 import json
+from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
 
 from utils.logger_util import get_logger
 
@@ -121,37 +122,21 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
     logger.info("Initialized Annett-o ontology.")
+
     # Instantiate Annett-o
     ontology_fp = instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
     logger.info("Instantiated Annett-o ontology.")
 
     # Define split criteria via llm
-    logger.info("Loading ontology.")
-
-    # Example Criteria...
-    op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    
-    criteria = Criteria(Name='Layer Num Units')
-    criteria.add(op)
-
-    criterias = [criteria]
-    
     ontology = load_annetto_ontology(return_onto_from_path=ontology_fp)
-
-    logger.info(ontology.instances)
-    logger.info("Ontology loaded.")
-    logger.info("Creating taxonomy from Annetto annotations.")
-
-    # taxonomy creator
+    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
     format='json'
-
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format, faceted=True)
-
-    # create a dataframe
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    
+    # Create faceted taxonomy as df
     df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
-
-    # save tabular taxonomy df as csv
+    df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
 
     
     
