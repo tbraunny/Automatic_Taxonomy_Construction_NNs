@@ -1,0 +1,455 @@
+{
+   "total_num_params": 5513856,
+   "graph": {
+      "node": [
+         {
+            "name": "input_1",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "main_0"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "main_0",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "main_1"
+            ],
+            "input": [
+               "input_1"
+            ],
+            "attributes": {
+               "weight": [
+                  64,
+                  3,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 3072
+         },
+         {
+            "name": "main_1",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "main_2"
+            ],
+            "input": [
+               "main_0"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_2",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "main_3"
+            ],
+            "input": [
+               "main_1"
+            ],
+            "attributes": {
+               "weight": [
+                  128,
+                  64,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 131072
+         },
+         {
+            "name": "main_3",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_4"
+            ],
+            "input": [
+               "main_2"
+            ],
+            "attributes": {
+               "weight": [
+                  128
+               ],
+               "bias": [
+                  128
+               ],
+               "running_mean": [
+                  128
+               ],
+               "running_var": [
+                  128
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 256
+         },
+         {
+            "name": "main_4",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "main_5"
+            ],
+            "input": [
+               "main_3"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_5",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "main_6"
+            ],
+            "input": [
+               "main_4"
+            ],
+            "attributes": {
+               "weight": [
+                  256,
+                  128,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 524288
+         },
+         {
+            "name": "main_6",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_7"
+            ],
+            "input": [
+               "main_5"
+            ],
+            "attributes": {
+               "weight": [
+                  256
+               ],
+               "bias": [
+                  256
+               ],
+               "running_mean": [
+                  256
+               ],
+               "running_var": [
+                  256
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 512
+         },
+         {
+            "name": "main_7",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "main_8"
+            ],
+            "input": [
+               "main_6"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_8",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "main_9"
+            ],
+            "input": [
+               "main_7"
+            ],
+            "attributes": {
+               "weight": [
+                  512,
+                  256,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 2097152
+         },
+         {
+            "name": "main_9",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_10"
+            ],
+            "input": [
+               "main_8"
+            ],
+            "attributes": {
+               "weight": [
+                  512
+               ],
+               "bias": [
+                  512
+               ],
+               "running_mean": [
+                  512
+               ],
+               "running_var": [
+                  512
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 1024
+         },
+         {
+            "name": "main_10",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "main_11"
+            ],
+            "input": [
+               "main_9"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_11",
+            "op_type": "ConvTranspose2d",
+            "op": "call_module",
+            "output": [
+               "main_12"
+            ],
+            "input": [
+               "main_10"
+            ],
+            "attributes": {
+               "weight": [
+                  512,
+                  256,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 2097152
+         },
+         {
+            "name": "main_12",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_13"
+            ],
+            "input": [
+               "main_11"
+            ],
+            "attributes": {
+               "weight": [
+                  256
+               ],
+               "bias": [
+                  256
+               ],
+               "running_mean": [
+                  256
+               ],
+               "running_var": [
+                  256
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 512
+         },
+         {
+            "name": "main_13",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "main_14"
+            ],
+            "input": [
+               "main_12"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_14",
+            "op_type": "ConvTranspose2d",
+            "op": "call_module",
+            "output": [
+               "main_15"
+            ],
+            "input": [
+               "main_13"
+            ],
+            "attributes": {
+               "weight": [
+                  256,
+                  128,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 524288
+         },
+         {
+            "name": "main_15",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_16"
+            ],
+            "input": [
+               "main_14"
+            ],
+            "attributes": {
+               "weight": [
+                  128
+               ],
+               "bias": [
+                  128
+               ],
+               "running_mean": [
+                  128
+               ],
+               "running_var": [
+                  128
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 256
+         },
+         {
+            "name": "main_16",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "main_17"
+            ],
+            "input": [
+               "main_15"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_17",
+            "op_type": "ConvTranspose2d",
+            "op": "call_module",
+            "output": [
+               "main_18"
+            ],
+            "input": [
+               "main_16"
+            ],
+            "attributes": {
+               "weight": [
+                  128,
+                  64,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 131072
+         },
+         {
+            "name": "main_18",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "main_19"
+            ],
+            "input": [
+               "main_17"
+            ],
+            "attributes": {
+               "weight": [
+                  64
+               ],
+               "bias": [
+                  64
+               ],
+               "running_mean": [
+                  64
+               ],
+               "running_var": [
+                  64
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 128
+         },
+         {
+            "name": "main_19",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "main_20"
+            ],
+            "input": [
+               "main_18"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "main_20",
+            "op_type": "ConvTranspose2d",
+            "op": "call_module",
+            "output": [
+               "main_21"
+            ],
+            "input": [
+               "main_19"
+            ],
+            "attributes": {
+               "weight": [
+                  64,
+                  3,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 3072
+         },
+         {
+            "name": "main_21",
+            "op_type": "Sigmoid",
+            "op": "call_module",
+            "output": [
+               "output"
+            ],
+            "input": [
+               "main_20"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "main_21"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}

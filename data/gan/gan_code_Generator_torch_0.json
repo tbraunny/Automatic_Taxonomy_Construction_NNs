@@ -1,0 +1,156 @@
+{
+   "graph": {
+      "node": [
+         {
+            "name": "z",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "model_0"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "model_0",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_1"
+            ],
+            "input": [
+               "z"
+            ],
+            "attributes": {
+               "weight": [
+                  784,
+                  784
+               ],
+               "bias": [
+                  784
+               ]
+            },
+            "num_params": 615440
+         },
+         {
+            "name": "model_1",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "model_2"
+            ],
+            "input": [
+               "model_0"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_2",
+            "op_type": "Dropout",
+            "op": "call_module",
+            "output": [
+               "model_3"
+            ],
+            "input": [
+               "model_1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_3",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_4"
+            ],
+            "input": [
+               "model_2"
+            ],
+            "attributes": {
+               "weight": [
+                  784,
+                  784
+               ],
+               "bias": [
+                  784
+               ]
+            },
+            "num_params": 615440
+         },
+         {
+            "name": "model_4",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "model_5"
+            ],
+            "input": [
+               "model_3"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_5",
+            "op_type": "Dropout",
+            "op": "call_module",
+            "output": [
+               "model_6"
+            ],
+            "input": [
+               "model_4"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "model_6",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "model_7"
+            ],
+            "input": [
+               "model_5"
+            ],
+            "attributes": {
+               "weight": [
+                  784,
+                  784
+               ],
+               "bias": [
+                  784
+               ]
+            },
+            "num_params": 615440
+         },
+         {
+            "name": "model_7",
+            "op_type": "Tanh",
+            "op": "call_module",
+            "output": [
+               "output"
+            ],
+            "input": [
+               "model_6"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "model_7"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}

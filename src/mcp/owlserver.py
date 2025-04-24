@@ -18,7 +18,7 @@ parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-from src.taxonomy import llm_service,create_taxonomy
+from src.taxonomy import llm_generate_criteria,create_taxonomy
 
 # Create an MCP server named "OWL Server
 mcp = FastMCP("OWL Server")
