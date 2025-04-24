@@ -50,8 +50,12 @@ def querytacular(search, ontology):
     outputDictionary = {}
 
     for value in search.Value:
-        chains = find_property_chain_to_property(ontology, ontology.ANNConfiguration, ontology[value.Name])
-        fullchain = set([ "<"+ link+">" for chain in chains for link in chain])
+        chains = []
+        try:
+            chains = find_property_chain_to_property(ontology, ontology.ANNConfiguration, ontology[value.Name])
+            fullchain = set([ "<"+ link+ ">" for chain in chains for link in chain])
+        except:
+            fullchain = set()
         
         filters = _map_vo_to_filter(value,"?value")
         output = query_generic(ontology, value.Name, fullchain, filters)
@@ -743,8 +747,9 @@ class TaxonomyCreator:
         criteria = otherlist
         annMap = { annconfig : [] for annconfig in ann_configurations}
         for crit in criteria:
+            annConfigMap = querytacular(crit, ontology)
             for aindex, ann_config in enumerate(ann_configurations):
-                annConfigMap = querytacular(crit, ontology)
+
                 if str(ann_config.iri) in annConfigMap:
                     items = []
                     newitems = annConfigMap[str(ann_config.iri)]
@@ -900,6 +905,15 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
 
     # range [low, high]
     if op == "range" and len(vals) >= 2:
+        allnumeric = True
+        for i in vals:
+            allnumeric = allnumeric and str(i).isnumeric()
+
+        if len(vals) > 2 or not allnumeric:
+            formatted = ','.join(f'"{item}"' for item in vals)
+            return f'{var} IN ({formatted})'
+                
+
         low, high = vals[0], vals[1]
         return f"({var} >= {low} && {var} <= {high})"
 
@@ -923,11 +937,11 @@ def main():
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
 
     # Example Criteria...
-    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasLayer',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
+    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasMetric',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
     
     criteria = Criteria(Name='Layer Num Units')
-    criteria.add(op)
+    criteria.add(op2)
     #criteria.add(op2)
 
     criterias = [criteria]
