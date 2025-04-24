@@ -123,8 +123,8 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
 
 if __name__ == "__main__":
     # Example usage
-    ann_name = "onnx_testing"
-    user_path = "data/"
+    ann_name = "alexnet"
+    user_path = "data/owl_testing"
     user_ann_path = os.path.join(user_path, ann_name)
     os.makedirs(user_ann_path, exist_ok=True)
     main(ann_name, user_ann_path, use_user_owl=False, testing=True)

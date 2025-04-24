@@ -1,9 +1,10 @@
 {
+   "total_num_params": 61100840,
    "graph": {
       "node": [
          {
             "name": "x",
-            "op_type": null,
+            "opType": null,
             "op": "placeholder",
             "output": [
                "features_0"
@@ -14,7 +15,7 @@
          },
          {
             "name": "features_0",
-            "op_type": "Conv2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_1"
@@ -33,11 +34,12 @@
                   64
                ]
             },
-            "num_params": 23296
+            "num_params": 23296,
+            "op_type": "Conv2d"
          },
          {
             "name": "features_1",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_2"
@@ -46,11 +48,12 @@
                "features_0"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "features_2",
-            "op_type": "MaxPool2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_3"
@@ -59,11 +62,12 @@
                "features_1"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "MaxPool2d"
          },
          {
             "name": "features_3",
-            "op_type": "Conv2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_4"
@@ -82,11 +86,12 @@
                   192
                ]
             },
-            "num_params": 307392
+            "num_params": 307392,
+            "op_type": "Conv2d"
          },
          {
             "name": "features_4",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_5"
@@ -95,11 +100,12 @@
                "features_3"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "features_5",
-            "op_type": "MaxPool2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_6"
@@ -108,11 +114,12 @@
                "features_4"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "MaxPool2d"
          },
          {
             "name": "features_6",
-            "op_type": "Conv2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_7"
@@ -131,11 +138,12 @@
                   384
                ]
             },
-            "num_params": 663936
+            "num_params": 663936,
+            "op_type": "Conv2d"
          },
          {
             "name": "features_7",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_8"
@@ -144,11 +152,12 @@
                "features_6"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "features_8",
-            "op_type": "Conv2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_9"
@@ -167,11 +176,12 @@
                   256
                ]
             },
-            "num_params": 884992
+            "num_params": 884992,
+            "op_type": "Conv2d"
          },
          {
             "name": "features_9",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_10"
@@ -180,11 +190,12 @@
                "features_8"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "features_10",
-            "op_type": "Conv2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_11"
@@ -203,11 +214,12 @@
                   256
                ]
             },
-            "num_params": 590080
+            "num_params": 590080,
+            "op_type": "Conv2d"
          },
          {
             "name": "features_11",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "features_12"
@@ -216,11 +228,12 @@
                "features_10"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "features_12",
-            "op_type": "MaxPool2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "avgpool"
@@ -229,11 +242,12 @@
                "features_11"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "MaxPool2d"
          },
          {
             "name": "avgpool",
-            "op_type": "AdaptiveAvgPool2d",
+            "opType": null,
             "op": "call_module",
             "output": [
                "flatten"
@@ -242,11 +256,12 @@
                "features_12"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "AdaptiveAvgPool2d"
          },
          {
             "name": "flatten",
-            "op_type": "flatten",
+            "opType": null,
             "op": "call_function",
             "output": [
                "classifier_0"
@@ -256,11 +271,12 @@
                "1"
             ],
             "attributes": {},
-            "num_params": null
+            "num_params": null,
+            "op_type": "flatten"
          },
          {
             "name": "classifier_0",
-            "op_type": "Dropout",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_1"
@@ -269,11 +285,12 @@
                "flatten"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "Dropout"
          },
          {
             "name": "classifier_1",
-            "op_type": "Linear",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_2"
@@ -290,11 +307,12 @@
                   4096
                ]
             },
-            "num_params": 37752832
+            "num_params": 37752832,
+            "op_type": "Linear"
          },
          {
             "name": "classifier_2",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_3"
@@ -303,11 +321,12 @@
                "classifier_1"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "classifier_3",
-            "op_type": "Dropout",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_4"
@@ -316,11 +335,12 @@
                "classifier_2"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "Dropout"
          },
          {
             "name": "classifier_4",
-            "op_type": "Linear",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_5"
@@ -337,11 +357,12 @@
                   4096
                ]
             },
-            "num_params": 16781312
+            "num_params": 16781312,
+            "op_type": "Linear"
          },
          {
             "name": "classifier_5",
-            "op_type": "ReLU",
+            "opType": null,
             "op": "call_module",
             "output": [
                "classifier_6"
@@ -350,11 +371,12 @@
                "classifier_4"
             ],
             "attributes": {},
-            "num_params": 0
+            "num_params": 0,
+            "op_type": "ReLU"
          },
          {
             "name": "classifier_6",
-            "op_type": "Linear",
+            "opType": null,
             "op": "call_module",
             "output": [
                "output"
@@ -371,11 +393,12 @@
                   1000
                ]
             },
-            "num_params": 4097000
+            "num_params": 4097000,
+            "op_type": "Linear"
          },
          {
             "name": "output",
-            "op_type": null,
+            "opType": null,
             "op": "output",
             "output": [],
             "input": [

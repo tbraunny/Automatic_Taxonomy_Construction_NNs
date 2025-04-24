@@ -551,9 +551,6 @@ class OntologyProcessor:
         :return None
         """
         try:
-            #################  TEMP ######################
-            _ = create_subclass(self.ontology , "ActivationFunctionLayer" , self.ontology.Layer)
-
             json_files: list = []
             if module_names: # PyTorch only
                 for module in module_names:
@@ -581,6 +578,7 @@ class OntologyProcessor:
                 with open(file, "r") as f:
                     network_data: dict = json.load(f)
 
+                total_num_params: int = network_data.get("total_num_params")
                 nodes = network_data.get("graph", {}).get("node", [])
                 if nodes is None:
                     warnings.warn("No parsed code available for given network")
@@ -589,6 +587,11 @@ class OntologyProcessor:
                     "instance": None,
                     "type": None
                 }
+
+                if total_num_params:
+                    self._link_data_property(network_instance , self.ontology.total_network_params , total_num_params)
+                    self.logger.info(f"Instantiated network {network_instance} with total number of parameters {total_num_params}")
+
                 for layer in nodes:
                     layer_name = layer.get("name")
 
@@ -1172,9 +1175,6 @@ A **subnetwork** is a block that\n
             
             # pt networks list
             unused_pt_networks:List[str] = self.pt_network_names
-            unused_pt_networks.append( # TEMP FOR TESTING ################# TODO
-                "Convolutional Neural Network",
-            ) 
             warnings.warn(" need to delete this line in the future instantiate annetto")
             # List for keeping track of processed networks from the LLM
             unused_subnetwork_names: List[str] = []
