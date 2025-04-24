@@ -3767,7 +3767,7 @@
 <owl:NamedIndividual rdf:about="709942bd_dropout">
   <rdf:type rdf:resource="Dropout"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sets the output of each hidden neuron to zero with a probability of 0.5 to reduce overfitting.</definition>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that sets the output of each hidden neuron to zero with a probability of 0.5 to prevent overfitting.</definition>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_weight-decay">
@@ -3846,9 +3846,9 @@
   <hasLabels rdf:resource="709942bd_label-set"/>
   <hasDataType rdf:resource="709942bd_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a dataset of over 15 million labeled high-resolution images belonging to roughly 22,000 categories. The ILSVRC subset contains approximately 1.2 million training images, 50,000 validation images, and 150,000 testing images, with roughly 1000 images in each of 1000 categories.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a dataset of over 15 million labeled high-resolution images belonging to roughly 22,000 categories, used for training models in the ILSVRC competitions.</data_description>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_ilsvrc-2010">
@@ -3858,7 +3858,7 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2010 is a subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, containing roughly 1000 images in each of 1000 categories.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2010 is a subset of ImageNet with roughly 1.2 million training images, 50,000 validation images, and 150,000 testing images, specifically used for the ImageNet Large Scale Visual Recognition Challenge.</data_description>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_ilsvrc-2012">
@@ -3868,7 +3868,7 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2012 is another subset of ImageNet used for the ImageNet Large-Scale Visual Recognition Challenge, similar to ILSVRC-2010 but with test set labels not publicly available.</data_description>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ILSVRC-2012 is another subset of ImageNet used in the subsequent competition, with similar structure but different test set labels.</data_description>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="709942bd_cifar-10">
@@ -5696,6 +5696,18 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="b45e3f69_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-2"/>
+  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-3"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0002</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="b45e3f69_gan-loss">
   <rdf:type rdf:resource="GAN Loss_sub"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -5712,18 +5724,6 @@
   <rdf:type rdf:resource="Kullback-Leibler Divergence_sub"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between two probability distributions, used to regularize the generator's conditioning variables.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="b45e3f69_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-2"/>
-  <trainingSingleHasIOPipe rdf:resource="b45e3f69_dataset-pipe-3"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0002</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="b45e3f69_dataset-pipe-1">
@@ -5999,6 +5999,23 @@
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">12</layer_num_units>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="b4ff1581_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="b4ff1581_cost-function"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="b4ff1581_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="b4ff1581_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="b4ff1581_training-single"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="b4ff1581_double_conv_2">
   <rdf:type rdf:resource="ReLU_sub"/>
 </owl:NamedIndividual>
@@ -6023,32 +6040,9 @@
   <rdf:type rdf:resource="ReLU_sub"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="b4ff1581_minimize-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="b4ff1581_cost-function"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="b4ff1581_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="b4ff1581_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
   <hasLoss rdf:resource="b4ff1581_weighted-cross-entropy-loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="b4ff1581_weighted-cross-entropy-loss">
-  <rdf:type rdf:resource="Weighted Cross Entropy Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A loss function that penalizes deviations from the true labels, with additional weights for certain pixels to emphasize learning on border regions.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="b4ff1581_training-session">
-  <rdf:type rdf:resource="TrainingSession"/>
-  <hasPrimaryTrainingStep rdf:resource="b4ff1581_training-single"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
@@ -6061,6 +6055,12 @@
   <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.99</learning_rate_decay>
   <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
   <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</batch_size>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="b4ff1581_weighted-cross-entropy-loss">
+  <rdf:type rdf:resource="Weighted Cross Entropy Loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A loss function that penalizes deviations from the true labels, with additional weights for certain pixels to emphasize learning on border regions.</definition>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="b4ff1581_dataset-pipe-1">
@@ -6091,17 +6091,6 @@
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">30</data_samples>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="b4ff1581_label-set">
-  <rdf:type rdf:resource="Labelset"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="b4ff1581_data-type">
-  <rdf:type rdf:resource="Image"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="b4ff1581_phc-u373">
   <rdf:type rdf:resource="Dataset"/>
   <hasLabels rdf:resource="b4ff1581_label-set"/>
@@ -6120,6 +6109,17 @@
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">20</data_samples>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="b4ff1581_label-set">
+  <rdf:type rdf:resource="Labelset"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</labels_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="b4ff1581_data-type">
+  <rdf:type rdf:resource="Image"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="25902217_xception_cnn">
   <rdf:type rdf:resource="ANNConfiguration"/>
   <hasNetwork rdf:resource="25902217_depthwise-separable-convolution-network"/>
@@ -6134,9 +6134,26 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="25902217_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="25902217_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="25902217_minimize-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="25902217_cost-function"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="25902217_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="25902217_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="25902217_training-single"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
@@ -6159,23 +6176,6 @@
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalizes large weights to prevent overfitting.</definition>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="25902217_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="25902217_training-strategy">
-  <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="25902217_training-session"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="25902217_training-session">
-  <rdf:type rdf:resource="TrainingSession"/>
-  <hasPrimaryTrainingStep rdf:resource="25902217_training-single"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="25902217_training-single">
   <rdf:type rdf:resource="TrainingSingle"/>
   <trainingSingleHasIOPipe rdf:resource="25902217_dataset-pipe-1"/>
@@ -6194,6 +6194,18 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="25902217_dataset-pipe-2">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="25902217_fasteval14k"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="25902217_dataset-pipe-3">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="25902217_imagenet"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="25902217_jft">
   <rdf:type rdf:resource="Dataset"/>
   <hasLabels rdf:resource="25902217_label-set"/>
@@ -6201,6 +6213,23 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">JFT is an internal Google dataset for large-scale image classification comprising over 350 million high-resolution images annotated with labels from a set of 17,000 classes.</data_description>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">350000000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="25902217_fasteval14k">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="25902217_label-set"/>
+  <hasDataType rdf:resource="25902217_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FastEval14k is a dataset of 14,000 images with dense annotations from about 6,000 classes, used as an auxiliary dataset to evaluate performance on JFT.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">14000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="25902217_imagenet">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="25902217_label-set"/>
+  <hasDataType rdf:resource="25902217_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a well-known dataset used for image classification tasks, containing a variety of images across 1000 classes.</data_description>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="25902217_label-set">
@@ -6214,33 +6243,112 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="25902217_dataset-pipe-2">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="25902217_fasteval14k"/>
+<owl:NamedIndividual rdf:about="8a59c05d_more_papers">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="8a59c05d_inception-module"/>
+  <hasNetwork rdf:resource="8a59c05d_auxiliary-classifier"/>
+  <hasPrimaryTrainingSession rdf:resource="8a59c05d_training-strategy"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_inception-module">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="8a59c05d_minimize-objective-function"/>
+  <hasTaskType rdf:resource="8a59c05d_supervised-classification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="8a59c05d_cost-function"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="25902217_fasteval14k">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="25902217_label-set"/>
-  <hasDataType rdf:resource="25902217_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FastEval14k is a dataset of 14,000 images with dense annotations from about 6,000 classes, used as an auxiliary dataset to evaluate performance on JFT.</data_description>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">14000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="25902217_dataset-pipe-3">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="25902217_imagenet"/>
+<owl:NamedIndividual rdf:about="8a59c05d_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="8a59c05d_cross-entropy-loss"/>
+  <hasRegularizer rdf:resource="8a59c05d_label-smoothing-regularization"/>
+  <hasRegularizer rdf:resource="8a59c05d_label-smoothing-regularization-(lsr)"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="25902217_imagenet">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="25902217_label-set"/>
-  <hasDataType rdf:resource="25902217_data-type"/>
+<owl:NamedIndividual rdf:about="8a59c05d_cross-entropy-loss">
+  <rdf:type rdf:resource="Cross-Entropy Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a well-known dataset used for image classification tasks, containing a variety of images across 1000 classes.</data_description>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the dissimilarity between the predicted probability distribution and the true distribution of labels.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_label-smoothing-regularization">
+  <rdf:type rdf:resource="Label Smoothing Regularization"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the model to be less confident about its predictions by mixing the ground-truth label distribution with a uniform distribution.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_auxiliary-classifier">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="8a59c05d_minimize-objective-function"/>
+  <hasTaskType rdf:resource="8a59c05d_supervised-classification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_label-smoothing-regularization-(lsr)">
+  <rdf:type rdf:resource="Label Smoothing Regularization (LSR)"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the model to be less confident by mixing the ground-truth label distribution with a uniform distribution.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="8a59c05d_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="8a59c05d_training-single"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="8a59c05d_dataset-pipe-1"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_dataset-pipe-1">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="8a59c05d_imagenet"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_imagenet">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="8a59c05d_label-set"/>
+  <hasDataType rdf:resource="8a59c05d_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ImageNet ILSVRC 2012 classification benchmark validation set containing 50,000 images across 1,000 classes.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">varied</data_sample_dimensionality>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_label-set">
+  <rdf:type rdf:resource="Labelset"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</labels_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="8a59c05d_data-type">
+  <rdf:type rdf:resource="Image"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>

@@ -66,11 +66,11 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
     py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
     # onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
-    # pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
+    pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
     if not ann_pdf_files:
         logger.error(f"No PDF files found in {ann_path}.")
         raise FileNotFoundError(f"No PDF files found in {ann_path}.")
-    if not py_files: #and not onnx_files and not pb_files:
+    if not py_files and not pb_files: #and not onnx_files:
         logger.error(f"No code files found in {ann_path}.")
         raise FileNotFoundError(f"No code files found in {ann_path}.")
     # TODO: Use llm query to verify if the pdf is about a NN architecture
@@ -86,7 +86,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
 
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
-    if py_files: # or onnx_files or pb_files:
+    if py_files or pb_files: # or onnx_files:
         process_code = CodeExtractor()
         # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
         # if not ann_torch_json:
@@ -100,10 +100,10 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
 
     # # insert model into db
-    # db_runner = DBUtils()
-    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    # paper_id: int = db_runner.insert_papers(ann_path)
-    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    db_runner = DBUtils()
+    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    paper_id: int = db_runner.insert_papers(ann_path)
+    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     if output_ontology_filepath:
         input_ontology = load_annetto_ontology(
@@ -126,7 +126,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
 
 if __name__ == "__main__":
     # Example usage
-    ann_name = "alexnet"
+    ann_name = "more_papers"
     user_path = "data/owl_testing"
     user_ann_path = os.path.join(user_path, ann_name)
     output_ontology_filepath = os.path.join(user_path, "user_owl.owl")
