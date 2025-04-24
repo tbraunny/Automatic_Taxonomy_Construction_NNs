@@ -153,7 +153,7 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
     '''
     if len(property_chain) == 0:
         property_chain = onto.object_properties()
-        property_chain = [str(item.iri) for item in property_chain]
+        property_chain = [ "<" + str(item.iri) + ">"  for item in property_chain]
     property_chain = " | ".join(property_chain)
 
     filter_clause = ""
@@ -175,12 +175,13 @@ def query_generic(onto, prop, property_chain:list, filter_condition=None):
         }}
         GROUP BY $config
         """
-    #print(query)
+    print(query)
     #input()
     graph = default_world.as_rdflib_graph()
     results = list(graph.query(query))
+    #print(results)
     #for i in results:
-    #    print(i[0])
+    #    print('testing:', i)
     #print(len(results))
     #input('results')
     return results

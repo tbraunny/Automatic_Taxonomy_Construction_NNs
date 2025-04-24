@@ -588,6 +588,10 @@ class OntologyProcessor:
                 }
                 for layer in nodes:
                     layer_name = layer.get("name")
+
+                    if not layer_name or layer_name == '':
+                        continue
+
                     layer_type = layer.get("op_type")
                     layer_params = layer.get("num_params")
                     self.logger.info(
@@ -678,7 +682,7 @@ class OntologyProcessor:
                                 norm_subclasses.append(norm_ontology)
                                 self.logger.info(f"Normalization layer {layer_name} subclass created in the ontology")
 
-                            norm_instance = self._instantiate_and_format_class(norm_instance , layer_name)
+                            norm_instance = self._instantiate_and_format_class(norm_ontology , layer_name)
                             self._link_instances(network_instance , norm_instance , self.ontology.hasLayer)
                             name_to_instance[layer_name] = {
                                 "instance": norm_instance,
@@ -715,6 +719,10 @@ class OntologyProcessor:
                 # second run for instantiating next, prev (skip and find next/prev for non-layers if actfunc_flag is set False)
                 for layer in nodes:
                     layer_name = layer.get('name')
+
+                    if not layer_name or layer_name == '':
+                        continue
+
                     layer_type = layer.get('op_type')
                     prev_layers: list = layer.get('input' , [])
                     next_layers: list = layer.get('output' , [])
