@@ -3,8 +3,15 @@ from utils.owl_utils import (
     create_class_object_property,
     create_subclass,
     create_generic_data_property,
+    create_class_data_property,
 )
 
+def add_total_network_params(ontology: Ontology , logger=None) -> None:
+    try:
+        create_class_data_property(ontology , "total_network_params" , ontology.Network , int)
+    except Exception as e:
+        if logger:
+            logger.error(f"Could not instantiate data property total_network_params")
 
 def add_has_weight_initialization(ontology: Ontology, logger=None) -> None:
     try:
@@ -160,6 +167,7 @@ def initialize_annetto(ontology: Ontology, logger=None) -> None:
         add_definition_data_property(ontology, logger)
         un_functional_activation_function(ontology, logger)
         subclass_network_with_parent(ontology, logger)
+        add_total_network_params(ontology , logger)
         # Add any other initialization steps here
         if logger:
             logger.info("Ontology initialized successfully.")
