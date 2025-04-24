@@ -1,5 +1,10 @@
+
 import os
 import glob
+import warnings
+from typing import List
+
+import utils.suppress_init # used to suppress some default lib loggings
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 from src.code_extraction.code_extractor import CodeExtractor
 from src.ontology_population.populate_annetto import instantiate_annetto
@@ -8,16 +13,7 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
-import warnings
-from typing import List
-
 from utils.logger_util import get_logger
-
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # 0 = all logs, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
-import logging
-logging.getLogger("faiss").setLevel(logging.ERROR)
-
 logger = get_logger("main", max_logs=3)
 
 def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
