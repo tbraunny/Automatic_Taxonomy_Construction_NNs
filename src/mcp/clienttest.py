@@ -15,7 +15,6 @@ from datetime import timedelta
 from ollama import chat
 from ollama import ChatResponse
 
-
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Literal, Union
 
