@@ -56,6 +56,21 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
                                      it will overwrite the user onto file (lukas pls dont pass anything for this param, use the user_owl bool)
     :param use_user_owl: Whether to use the user-appended ontology or the pre-made stable ontology.
     """
+    if ann_path.endswith(".zip"):
+        from scripts.unzip_clean_repo import unzip_and_clean_repo
+        new_ann_path = os.path.join(C.ONTOLOGY.USER_OWL_FILENAME, ann_name)
+        try:
+            unzip_and_clean_repo(ann_path, new_ann_path)
+        except Exception as e:
+            logger.error(f"Error unzipping the file: {e}")
+            raise
+        ann_path = new_ann_path
+        logger.info(f"Unzipped {ann_path} to {new_ann_path}.")
+
+    # if a annpath has a zip file, we need to unzip it
+    # then we need to match the py files in to the same file in the zip dir
+    # clean that zip dir
+    # need to come up with how we pass this to Tom
     if not isinstance(ann_name, str):
         logger.error("ANN name must be a string.")
         raise ValueError("ANN name must be a string.")
