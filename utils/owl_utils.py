@@ -838,9 +838,19 @@ def delete_ann_configuration(ontology:Ontology, ann_config_name:str): #TODO: Not
         if instance not in instances_to_delete:
             instances_to_delete.add(instance)
             for prop in instance.get_properties():
-                for value in prop[instance]:
+                try:
+                    values = prop[instance]
+                except Exception as e:
+                    print(f"Failed to get values for property {prop} on {instance}: {e}")
+                    continue
+
+                for value in values:
                     if isinstance(value, Thing):
                         collect_instances(value)
+                    else:
+                        # Optional: log or handle the literal
+                        pass
+
 
     collect_instances(ann_config_instance)
 

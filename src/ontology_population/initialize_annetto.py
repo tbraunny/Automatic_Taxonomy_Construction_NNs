@@ -126,7 +126,6 @@ def subclass_network_with_parent(ontology: Ontology, logger=None) -> None:
         )
         pass
 
-
 def un_functional_activation_function(ontology: Ontology, logger=None) -> None:
     from owlready2 import owl
     try:

@@ -81,9 +81,8 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         ann_doc_json = glob.glob(f"{ann_path}/*doc*.json")
         if not ann_doc_json:
                 for pdf_file in ann_pdf_files:
-                    extract_filter_pdf_to_json(pdf_file, ann_path)
+                    # extract_filter_pdf_to_json(pdf_file, ann_path)
                     logger.info(f"Extracted text from {pdf_file} to JSON.")
-
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
     if py_files: # or onnx_files or pb_files:
