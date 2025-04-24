@@ -34,38 +34,27 @@ USE_LLM_API = (
     os.environ.get("USE_LLM_API", "False").lower() == "true"
 )  # By default use local model
 
-DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
-BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
-
 # Ollama Specific:
-
-# GENERATION_MODEL = os.environ.get(
-#     "GENERATION_MODEL", "neuroexpert:latest"
-# )
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwq:32b-q4_K_M")
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "qwen2.5:32b")
 OLLAMA_EMBEDDING_MODEL = os.environ.get("OLLAMA_EMBEDDING_MODEL", "bge-m3")
 OLLAMA_GENERATION_MODEL = os.environ.get(
     "OLLAMA_GENERATION_MODEL", "deepseek-r1:32b-qwen-distill-q4_K_M"
 )
-# GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "command-r")
 # GENERATION_MODEL = os.environ.get("GENERATION_MODEL", "deepseek-r1:1.5b")
 
-# # OpenAI Specific:
-# OPENAI_EMBEDDING_MODEL = os.environ.get(
-#     "OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"
-# )
-# OPENAI_GENERATION_MODEL = os.environ.get(
-#     "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
-# )
-
-# OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-
-logger = get_logger("llm_service")
+# OpenAI Specific:
+OPENAI_EMBEDDING_MODEL = os.environ.get(
+    "OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"
+)
+OPENAI_GENERATION_MODEL = os.environ.get(
+    "OPENAI_GENERATION_MODEL", "gpt-4o-mini-2024-07-18"  # "gpt-4o-2024-08-06"
+)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
 DENSE_WEIGHT = float(os.environ.get("DENSE_WEIGHT", 0.5))
 BM25_WEIGHT = float(os.environ.get("BM25_WEIGHT", 0.5))
 
+global logger
+logger = get_logger("llm_service")
 
 # async (wrappers for blocking API calls)
 async def async_embedding(model: str, prompt: str):
@@ -132,18 +121,19 @@ class BaseLLMClient(ABC):
 
 
 class OllamaClient(BaseLLMClient):
-    def __init__(self, embed_model: str, gen_model: str):
+    def __init__(self, embed_model: str, gen_model: str, **kwargs):
         self.embed_model = embed_model
         self.gen_model = gen_model
         self.llm = ChatOllama(
             model=self.gen_model,
-            temperature=0.2,
-            seed=42,
-            num_ctx=10000,
+            temperature=kwargs.get('temperature', 0.2),
+            seed=kwargs.get('seed',42),
+            num_ctx=kwargs.get('num_ctx',10000),
             # verbose=True,
             # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
         self.embedder = OllamaEmbeddings(model=self.embed_model)
+        # self.test_connection()
 
     def embedding(self, text: str) -> List[float]:
         return self.embedder.embed_query(text)
@@ -151,10 +141,24 @@ class OllamaClient(BaseLLMClient):
     def generate(self, prompt: str) -> str:
         response = self.llm.invoke(prompt)
         return response.content.strip()
+    
+    def test_connection(self):
+        """Test connection by making a dummy embedding and dummy chat generation request"""
+        try:
+            _ = self.embedder.embed_query("test")
+            logger.info("Successfully connected to OpenAI Embedding API")
+            dummy_prompt = "Say hello!"
+            dummy_response = self.llm.invoke(dummy_prompt)
+            if not dummy_response or not hasattr(dummy_response, "content"):
+                raise ValueError("Invalid dummy chat model response.")
 
+            logger.info("Successfully connected to Ollama API")
+        except Exception as e:
+            logger.exception("Failed to connect to Ollama API: %s", str(e), exc_info=True)
+            raise ConnectionError(f"Failed to connect to Ollama API: {e}")
 
 class OpenAIClient(BaseLLMClient):
-    def __init__(self, embed_model: str, gen_model: str, api_key: str = None):
+    def __init__(self, embed_model: str, gen_model: str, api_key: str = None, **kwargs):
         if not api_key:
             raise ValueError("OPENAI_API_KEY must be provided")
 
@@ -165,15 +169,14 @@ class OpenAIClient(BaseLLMClient):
         self.llm = ChatOpenAI(
             model=self.gen_model,
             openai_api_key=self.api_key,
-            temperature=0.2,
+            temperature=kwargs.get('temperature',0.2),
             max_tokens=4096,
-            # verbose=True,
-            # callbacks=[DebugCallbackHandler()], # Uncomment for debugging ollama server
         )
         self.embedder = OpenAIEmbeddings(
             model=self.embed_model,
             openai_api_key=self.api_key,
         )
+        # self.test_connection()
 
     def embedding(self, text: str) -> list:
         return self.embedder.embed_query(text)
@@ -181,7 +184,32 @@ class OpenAIClient(BaseLLMClient):
     def generate(self, prompt: str) -> str:
         response = self.llm.invoke(prompt)
         return response.content.strip()
-
+    
+    def test_connection(self):
+        """Test connection by making a dummy embedding and dummy chat generation request"""
+        try:
+            _ = self.embedder.embed_query("test")
+            logger.info("Successfully connected to OpenAI Embedding API")
+            dummy_prompt = "Say hello!"
+            dummy_response = self.llm.invoke(dummy_prompt)
+            if not dummy_response or not hasattr(dummy_response, "content"):
+                raise ValueError("Invalid dummy chat model response.")
+            logger.info("Successfully connected to OpenAI API")
+        except Exception as e:
+            logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
+            raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
+def load_environment_llm(**kwargs):
+     
+    llm_client = ( OpenAIClient(
+                embed_model=OPENAI_EMBEDDING_MODEL,
+                gen_model=OPENAI_GENERATION_MODEL,
+                api_key=OPENAI_API_KEY,
+                **kwargs
+            ) if USE_LLM_API
+            else OllamaClient(
+                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL,**kwargs
+            ))
+    return llm_client
 
 class LLMQueryEngine:
 
@@ -192,19 +220,19 @@ class LLMQueryEngine:
         # chunk_overlap: int = CHUNK_OVERLAP,
         # embedding_model: str = EMBEDDING_MODEL,
         # generation_model: str = GENERATION_MODEL,
+        **kwargs
     ):
-
         self.logger = logger
-
         self.llm_client = (
             OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
                 gen_model=OPENAI_GENERATION_MODEL,
                 api_key=OPENAI_API_KEY,
+                **kwargs
             )
             if USE_LLM_API
             else OllamaClient(
-                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL
+                embed_model=OLLAMA_EMBEDDING_MODEL, gen_model=OLLAMA_GENERATION_MODEL,**kwargs
             )
         )
 
@@ -441,7 +469,7 @@ class LLMQueryEngine:
             raise ValueError("No context assembled for query: %s", query)
         self.logger.info(f"Assembled context for query.")
         prompt = (
-            f"Goal: Answer the query based on the provided context.\n\n"
+            f"Goal: Answer the query based on the provided context. Context is deliminated by triple back ticks\n\n"
             f"Query: {query}\n\n"
             f"Context:\n```\n{context}\n```\n\n"
             f"Response:\n"
@@ -493,7 +521,6 @@ def init_engine(model_name: str, doc_json_file_path: str, **kwargs) -> LLMQueryE
         _engine_instances[model_name] = LLMQueryEngine(doc_json_file_path, **kwargs)
     return _engine_instances[model_name]
 
-
 def query_llm(
     model_name: str,
     query: str,
@@ -509,9 +536,8 @@ def query_llm(
     engine = _engine_instances[model_name]
     return engine.query_structured(query, cls_schema, token_budget, max_chunks)
 
-
-def main():
-    TEST_MODEL_NAME = "STANDALONE_TEST_MODEL"
+if __name__ == "__main__":
+    TEST_MODEL_NAME = "alexnet"
 
     # Example Pydantic models for testing
     class Layer(BaseModel):
@@ -561,7 +587,3 @@ def main():
         print(f"\nCompleted in {elapsed:.2f} seconds\n{'-'*40}")
 
         print(f"Example {idx}:\nAnswer: {answer}\nTime: {elapsed:.2f} seconds\n\n\n")
-
-
-if __name__ == "__main__":
-    main()

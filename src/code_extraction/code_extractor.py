@@ -1,3 +1,4 @@
+import os
 import ast
 import json
 import glob
@@ -8,8 +9,7 @@ from datetime import datetime
 import os
 from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
-#from tests.deprecated.pt_extractor import PTExtractor
-import os
+from utils.logger_util import get_logger
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -26,19 +26,8 @@ all relevant information about the code.
 NOTE: for how to run, see main()
 """
 
-log_dir = "logs"
-log_file = os.path.join(log_dir , f"code_extraction_log_{datetime.now().strftime('%Y-%m-%d_%H-%M')}.log")
-os.makedirs(log_dir , exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(log_file),  # Write to file
-    ],
-    force=True,
-)
-logger = logging.getLogger(__name__)
+from utils.logger_util import get_logger
+logger = get_logger("code_extraction")
 
 class _CodeProcessor(ast.NodeVisitor):
     def __init__(self , code):
@@ -205,7 +194,6 @@ class CodeExtractor():
         try:
             file_path  = os.path.normpath(file_path)
             py_files = glob.glob(f"{file_path}/**/*.py" , recursive=True)
-            #pt_files = glob.glob(f"{file_path}/*.pt" , recursive=True) # still working on it
             onnx_files = glob.glob(f"{file_path}/**/*.onnx" , recursive=True)
             pb_files = glob.glob(f"{file_path}/**/*.pb" , recursive=True)
 
@@ -233,6 +221,7 @@ class CodeExtractor():
                         code = f.read()
                     tree = ast.parse(code)
                     output_file = file.replace(".py", f"_code_{count}.json")
+                    processor = _CodeProcessor(code)
 
                     processor = _CodeProcessor(code)
 

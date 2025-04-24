@@ -6,6 +6,9 @@ import time
 import os
 import shutil
 
+# A global list to store success message placeholders
+success_placeholders = []
+
 def import_ontology_to_neo4j():
     from neo4j import GraphDatabase
 
@@ -37,11 +40,8 @@ def import_ontology_to_neo4j():
     WHERE n.uri STARTS WITH 'http://w3id.org/annett-o/'
     SET n.uri = SPLIT(n.uri, '/')[SIZE(SPLIT(n.uri, '/')) - 1]
     """)
-    print(importQuery)
 
 def import_page():
-    import_ontology_to_neo4j()
-    
     st.title("Graph Visualization & File Upload")
 
     user_ann_name = st.text_input("Enter the name of the neural network architecture (e.g., alexnet):")
@@ -58,7 +58,10 @@ def import_page():
         file_path = os.path.join(save_path, uploaded_file.name)
         with open(file_path, 'wb') as f:
             f.write(uploaded_file.getvalue())
-        st.success(f"{uploaded_file.name} saved!")
+        success_placeholder = st.empty()
+        success_placeholder.success(f"{uploaded_file.name} saved!")
+        time.sleep(2)
+        success_placeholder.empty()
 
     st.title("File Upload Example")
 
@@ -69,7 +72,15 @@ def import_page():
             accept_multiple_files=True
         )
         submit_button = st.form_submit_button(label='Submit')
-    
+
+    # Check if `main` is already running
+    if "is_main_running" not in st.session_state:
+        st.session_state.is_main_running = False
+
+    # Track whether the process is running
+    if "is_processing" not in st.session_state:
+        st.session_state.is_processing = False
+
     if submit_button and uploaded_files:
         if not user_ann_name:
             st.error("Please enter a neural network architecture before uploading files.")
@@ -89,9 +100,34 @@ def import_page():
                     else:
                         st.warning(f"Unsupported file type: {uploaded_file.name}")
                 
-                hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
-                
-    st.header("View Uploaded Files")
+                # Prevent running `main` again if it's already in progress
+                if st.session_state.is_main_running:
+                    st.warning("The processing is already running. Please wait until it's finished.")
+                else:
+                    # Mark the process as running in session state
+                    st.session_state.is_main_running = True
+                    st.session_state.is_processing = True
+                    
+                    # Show spinner
+                    with st.spinner("Processing your files and generating ontology. Please wait..."):
+                        try:
+                            # Run the main function
+                            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
+                        except Exception as e:
+                            st.error(f"An error occurred during the process: {e}")
+                        finally:
+                            # Mark that `main` has finished running
+                            st.session_state.is_main_running = False
+                            st.session_state.is_processing = False
+                    
+                    # Once processing is done, display info and import ontology to Neo4j
+                    info_placeholder = st.empty()
+                    info_placeholder.info("Finished processing files. Now importing ontology into Neo4j...")
+                    import_ontology_to_neo4j()
+                    info_placeholder.empty()
+                    st.success("Ontology successfully imported into Neo4j!")
+
+                st.header("View Uploaded Files")
 
     if os.path.exists(user_data_dir):
         arch_dirs = sorted([d for d in os.listdir(user_data_dir) if os.path.isdir(os.path.join(user_data_dir, d))])
@@ -121,7 +157,6 @@ def import_page():
                         st.write("No files uploaded yet.")
 
                     if st.button(f"🧹 Delete entire `{arch}` folder", key=f"delete_folder_{arch}"):
-                        # remove_ann_config_from_user_owl() need to delete annConfigs when called
                         shutil.rmtree(arch_path)
                         st.success(f"Deleted entire architecture folder: `{arch}`")
                         st.rerun()

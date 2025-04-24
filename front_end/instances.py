@@ -9,6 +9,3 @@ def list_of_class_instances():
     instances = get_class_instances(ontology.ANNConfiguration)
 
     return instances
-    
-    
-print(list_of_class_instances())

@@ -36,7 +36,7 @@ def load_annetto_ontology(
         )
     # If a path is provided, load the ontology from that path
     if return_onto_from_path:
-        return get_ontology(return_onto_from_path)
+        return get_ontology(return_onto_from_path).load()
 
     # Check if the release type is valid
     if return_onto_from_release not in list(releases.keys()):
