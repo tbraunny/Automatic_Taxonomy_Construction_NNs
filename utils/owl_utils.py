@@ -560,7 +560,6 @@ def assign_object_property_relationship(
     # Check if the connection was successful
     related_objects = list(object_property[domain])
     if range not in related_objects:
-
         raise ValueError(
             f"Verification failed: {range} not found in {object_property}[{domain}]. Current values: {related_objects}"
         )
