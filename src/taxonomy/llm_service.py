@@ -181,12 +181,13 @@ When you receive a request—such as classifying small vs. large neural networks
 1. Taxonomy Construction
    - Each Criteria represents one level in the taxonomy.
    - A single level (one Criteria) can contain one or more SearchOperator objects.
-   - The final output should be a list of Criteria objects arranged in hierarchical order.
+   - The final output should be a list of Criteria objects arranged in hierarchical or faceted order.
 2. SearchOperator Definition
    - The name for Search operator does not change taxonomy and it is recommended to make it something descriptive
    - Use the Cluster field to specify the comparison operator to use clustering. Supported operators are: cluster and none    
-   - The Type field is used to specify the type of clustering. The only supported clustering is kmeans. kmeans with four clusters and encoding words to binary. It must be specified this way. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on. Here is the spec: {typeoperator}
+   - The Type field is used to specify the type of clustering. The supported arguments at this time are the number of clusters and the argument 'binary'. The binary option is only supported at this time. Specify what values to cluster on in the Value field as list of values and a single type can be specified in the HasType field for a type which both values and types can be clustered on. Here is the spec: {typeoperator}
    - Use the Value field to define what values you want to query against and is Value Operator.
+   - The range Op in the Value Operator only accepts numbers.
 3. ValueOperator Definition
    - The Value field takes a list of int,string,float.
    - The Op field has the following supported ops: less, greater, leq, geq, equal, scomp, and range, name, has. name is used to query for specific names and has for querying specific types. The has can be used to query for things like hasLayer, hasEvaluation.
@@ -266,8 +267,8 @@ def llm_create_taxonomy(query : str, ontology) -> OutputCriteria:
 
 
 if __name__ == '__main__':
-    ontology_path = f"./data/owl/fairannett-o.owl" 
-    #ontology_path = f"./data/owl/annett-o-test.owl" 
+    #ontology_path = f"./data/owl/fairannett-o.owl" 
+    ontology_path = f"./data/owl/annett-o-test.owl" 
     ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
     thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)

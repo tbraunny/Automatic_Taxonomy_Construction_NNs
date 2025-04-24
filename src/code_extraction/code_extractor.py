@@ -17,6 +17,27 @@ import torch
 import torch.nn as nn
 import torchvision
 from torchvision import models as tmodels
+import math
+import numpy as np
+import random
+import scipy
+import copy
+import tqdm
+import matplotlib
+import keras
+import argparse
+import time
+import datetime
+import functools
+import contextlib
+import collections
+import logging
+import timm
+import abc
+import optree
+import sklearn
+import matplotlib
+import ipdb
 
 """
 Extract code from python files & convert into a JSON for langchain embeddings
@@ -235,6 +256,7 @@ class CodeExtractor():
         :return List of the pytorch module names
         """
         try:
+            code_files_present: bool = False
             file_path  = os.path.normpath(file_path)
             py_files = glob.glob(f"{file_path}/**/*.py" , recursive=True)
             onnx_files = glob.glob(f"{file_path}/**/*.onnx" , recursive=True)
@@ -242,6 +264,7 @@ class CodeExtractor():
 
             if onnx_files:
                 logger.info(f"ONNX file(s) detected: {onnx_files}")
+                code_files_present = True
                 for count , file in enumerate(onnx_files):
                     logger.info(f"Parsing ONNX file {file}...")
                     #output_json = file.replace(".onnx" , f"onnx_{count}.json")
@@ -249,6 +272,7 @@ class CodeExtractor():
                     self.save_json(file.replace(".onnx" , f"_onnx_{count}.json") , onnx_graph)
             if pb_files:
                 logger.info(f"TensorFlow file(s) detected: {pb_files}")
+                code_files_present = True
                 for count , file in enumerate(pb_files):
                     logger.info(f"Parsing TensorFlow file {file}...")
                     #output_json = file.replace(".pb" , f"_pbcode_{count}.json")
@@ -256,6 +280,7 @@ class CodeExtractor():
                     self.save_json(file.replace(".pb" , f"_pb_{count}.json") , pb_graph)
             if py_files: # informational
                 logger.info(f"Python file(s) detected: {py_files}")
+                code_files_present = True
                 for count , file in enumerate(py_files):
                     logger.info(f"Parsing python file {file}...")
                     code = 0
@@ -290,9 +315,9 @@ class CodeExtractor():
                     # regular code dictionary for RAG
                     output = processor.parse_code()
                     self.save_json(output_file , output)
-            else:
+            if not code_files_present:
                 logger.warning(f"No code file(s) of any type found")
-                return -1
+                raise FileNotFoundError
 
             return processor.pytorch_module_names
                 

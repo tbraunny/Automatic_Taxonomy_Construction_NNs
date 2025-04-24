@@ -9,11 +9,25 @@ from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_
 from src.code_extraction.code_extractor import CodeExtractor
 from src.ontology_population.populate_annetto import instantiate_annetto
 from src.ontology_population.initialize_annetto import initialize_annetto
+from src.taxonomy.create_taxonomy import TaxonomyCreator, TaxonomyNode, create_tabular_view_from_faceted_taxonomy, serialize
+from src.taxonomy.criteria import *
 from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
+import warnings
+from typing import List
+import json
+from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
+
 from utils.logger_util import get_logger
+
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # 0 = all logs, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
+import logging
+logging.getLogger("faiss").setLevel(logging.ERROR)
+
+
 logger = get_logger("main", max_logs=3)
 
 def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
@@ -81,11 +95,11 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
     py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
     # onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
-    # pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
+    pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
     if not ann_pdf_files:
         logger.error(f"No PDF files found in {ann_path}.")
         raise FileNotFoundError(f"No PDF files found in {ann_path}.")
-    if not py_files: #and not onnx_files and not pb_files:
+    if not py_files and not pb_files: #and not onnx_files:
         logger.error(f"No code files found in {ann_path}.")
         raise FileNotFoundError(f"No code files found in {ann_path}.")
     # TODO: Use llm query to verify if the pdf is about a NN architecture
@@ -100,7 +114,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
                     logger.info(f"Extracted text from {pdf_file} to JSON.")
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
-    if py_files: # or onnx_files or pb_files:
+    if py_files or pb_files: # or onnx_files:
         process_code = CodeExtractor()
         # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
         # if not ann_torch_json:
@@ -114,10 +128,10 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
 
     # # insert model into db
-    # db_runner = DBUtils()
-    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    # paper_id: int = db_runner.insert_papers(ann_path)
-    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    db_runner = DBUtils()
+    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    paper_id: int = db_runner.insert_papers(ann_path)
+    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     if output_ontology_filepath:
         input_ontology = load_annetto_ontology(
@@ -129,18 +143,32 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
         input_ontology = load_annetto_ontology(
             return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME
         )
-    logger.info(f"Loaded ontology from {input_ontology.base_iri}.")
 
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
     logger.info("Initialized Annett-o ontology.")
+
     # Instantiate Annett-o
-    instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
+    ontology_fp = instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
     logger.info("Instantiated Annett-o ontology.")
+
+    # Define split criteria via llm
+    ontology = load_annetto_ontology(return_onto_from_path=ontology_fp)
+    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
+    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
+    format='json'
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    
+    # Create faceted taxonomy as df
+    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
+    df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
+
+    
+    
 
 if __name__ == "__main__":
     # Example usage
-    ann_name = "alexnet"
+    ann_name = "more_papers"
     user_path = "data/owl_testing"
     user_ann_path = os.path.join(user_path, ann_name)
     output_ontology_filepath = os.path.join(user_path, "user_owl.owl")

@@ -16,7 +16,7 @@ uselss_layers = [ # layers that do not provide us any benefit
 ]
 
 class PBExtractor:
-    def extract_compute_graph(pb_file: str , output_json: str) -> dict:
+    def extract_compute_graph(pb_file: str , output_json: str=None) -> dict:
         """
         Extracts the computation graph from a tensorflow .pb file and saves it as JSON
         NOTE: useless layer types: DecodeJPEG, Cast, ExpandDims, ResizeBilinear, sub (tensor subtraction),
@@ -43,7 +43,12 @@ class PBExtractor:
                 consumer_map[clean_input].append(node.name)
 
         const_nodes = {}
-        minimal_graph: dict = {"graph": {"node": []}}
+        minimal_graph: dict = {
+        "total_num_params": 0,
+        "graph": {"node": []}
+        }
+
+        total_num_params: int = 0
         for node in graph_def.node:  
             if node.op == "Const": # Const has become useful!
                 try:
@@ -87,9 +92,11 @@ class PBExtractor:
                     total_params += np.prod(tensor.shape) if hasattr(tensor, "shape") else 0
 
             node_info["num_params"] = int(total_params)
+            total_num_params += int(total_params)
 
             minimal_graph['graph']['node'].append(node_info)
 
+        minimal_graph["total_num_params"] = total_num_params
         return minimal_graph
         # with open(output_json, "w") as json_file:
         #     json.dump({"network": minimal_graph}, json_file, indent=3)

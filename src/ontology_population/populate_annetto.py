@@ -582,6 +582,11 @@ class OntologyProcessor:
                 if nodes is None:
                     warnings.warn("No parsed code available for given network")
 
+                total_num_params: int = network_data.get("total_num_params")
+                if total_num_params:
+                    self._link_data_property(network_instance , self.ontology.total_network_params , total_num_params)
+                    self.logger.info(f"Instantiated network {network_instance} with total number of parameters {total_num_params}")
+
                 name_to_instance: dict = { # invoke fewer ontology calls
                     "instance": None,
                     "type": None
