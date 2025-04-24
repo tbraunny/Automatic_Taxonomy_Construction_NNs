@@ -166,7 +166,7 @@ def import_page():
         st.warning("User input directory does not exist.")
 
     animation_html = """
-    <a href="http://localhost:8866/" target="_blank">
+    <a href="http://100.102.166.78:8866/" target="_blank">
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
         <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
     </a>
