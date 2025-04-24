@@ -1793,7 +1793,7 @@ if __name__ == "__main__":
     ###################################################################
 
     ontology = load_annetto_ontology(return_onto_from_release="base")
-    from src.instantiate_annetto.initialize_annetto import initialize_annetto
+    from src.ontology_population.initialize_annetto import initialize_annetto
 
     initialize_annetto(ontology, logger)
     """

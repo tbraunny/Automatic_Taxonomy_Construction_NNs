@@ -2,8 +2,8 @@ import os
 import glob
 from src.pdf_extraction.extract_filter_pdf_to_json import extract_filter_pdf_to_json
 from src.code_extraction.code_extractor import CodeExtractor
-from src.instantiate_annetto.instantiate_annetto import instantiate_annetto
-from src.instantiate_annetto.initialize_annetto import initialize_annetto
+from src.ontology_population.populate_annetto import instantiate_annetto
+from src.ontology_population.initialize_annetto import initialize_annetto
 from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
