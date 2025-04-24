@@ -11,6 +11,7 @@ from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
 from utils.logger_util import get_logger
 from utils.instantiate_dummy_args import create_dummy_value, instantiate_with_dummy_args
+from utils.exception_utils import CodeExtractionError
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -316,8 +317,13 @@ class CodeExtractor():
                     output = processor.parse_code()
                     self.save_json(output_file , output)
             if not code_files_present:
-                logger.warning(f"No code file(s) of any type found")
-                raise FileNotFoundError
+                logger.error(f"No code file(s) of any type found")
+
+                raise CodeExtractionError(
+                    message=f"No code/model files found in directory {file_path}",
+                    code="FILES_NOT_FOUND",
+                    context={"code_extraction": "500", "property": FileNotFoundError},
+                )
 
             return processor.pytorch_module_names
                 

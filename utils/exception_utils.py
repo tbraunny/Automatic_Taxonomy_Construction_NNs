@@ -1,10 +1,38 @@
 class AppError(Exception):
     def __init__(self, message, code=None, context=None):
+        super().__init__(message)
         self.message = message
         self.code = code
         self.context = context or {}
-        super().__init__(message)
 
+    def to_dict(self):
+        return {
+            "error": self.message,
+            "code": self.code,
+            "context": self.context
+        }
+    
+class CodeExtractionError(AppError):
+    def __init__(self, message, code=None, context=None):
+        super().__init__(message)
+        self.message = message
+        self.code = code
+        self.context = context or {}
+
+    def to_dict(self):
+        return {
+            "error": self.message,
+            "code": self.code,
+            "context": self.context
+        }
+    
+class DatabaseError(AppError):
+    def __init__(self, message, code=None, context=None):
+        super().__init__(message)
+        self.message = message
+        self.code = code
+        self.context = context or {}
+        
     def to_dict(self):
         return {
             "error": self.message,
