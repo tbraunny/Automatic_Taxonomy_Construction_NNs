@@ -944,142 +944,309 @@ def main():
 
     test_criterias: list[Criteria] = []
 
-    # --- Scalar filters ---
+   # --- Scalar Filters with Fine-Grained Ranges ---
     test_criterias.append(Criteria(
-        Name="Units < 64",
+        Name="Dropout Rate Between 0.2 and 0.5",
         Searchs=[SearchOperator(
-            Name="layer_num_units",
-            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[64])],
-            HashOn="found"
-        )]
-    ))
-
-    test_criterias.append(Criteria(
-        Name="Units in Range 32–256",
-        Searchs=[SearchOperator(
-            Name="layer_num_units",
-            Value=[ValueOperator(Name="layer_num_units", Op="range", Value=[32, 256])],
-            HashOn="found"
-        )]
-    ))
-
-    # --- Exact match (string) ---
-    test_criterias.append(Criteria(
-        Name="Optimizer = Adam",
-        Searchs=[SearchOperator(
-            Name="hasOptimizer",
-            Value=[ValueOperator(Name="hasOptimizer", Op="sequal", Value=["Adam"])],
+            Name="dropout_rate",
+            Value=[ValueOperator(Name="dropout_rate", Op="range", Value=[0.2, 0.5])],
             HashOn="value"
         )]
     ))
 
     test_criterias.append(Criteria(
-        Name="Task = Supervised",
+        Name="Learning Rate < 0.001",
         Searchs=[SearchOperator(
-            Name="hasTaskType",
-            Value=[ValueOperator(Name="hasTaskType", Op="sequal", Value=["SupervisedClassification"])],
+            Name="learning_rate",
+            Value=[ValueOperator(Name="learning_rate", Op="less", Value=[0.001])],
+            HashOn="value"
+        )]
+    ))
+
+    # --- Activation Function (Exact Match & Presence) ---
+    test_criterias.append(Criteria(
+        Name="Has ReLU Activation",
+        Searchs=[SearchOperator(
+            Name="hasActivationFunction",
+            Value=[ValueOperator(Name="hasActivationFunction", Op="sequal", Value=["ReLU"])],
             HashOn="name"
         )]
     ))
 
-    # --- Presence / Absence ---
     test_criterias.append(Criteria(
-        Name="Has Loss Function",
+        Name="Missing Activation Function",
         Searchs=[SearchOperator(
-            Name="hasLoss",
-            Value=[ValueOperator(Name="hasLoss", Op="has")],
+            Name="hasActivationFunction",
+            Value=[ValueOperator(Name="hasActivationFunction", Op="none")],
             HashOn="found"
         )]
     ))
 
+    # --- Regularization and Weight Decay ---
     test_criterias.append(Criteria(
-        Name="Missing Unit Size",
+        Name="L2 Regularization > 0.0001",
         Searchs=[SearchOperator(
-            Name="layer_num_units",
-            Value=[ValueOperator(Name="layer_num_units", Op="none")],
-            HashOn="found"
+            Name="hasRegularizer",
+            Value=[ValueOperator(Name="hasRegularizer", Op="greater", Value=[0.0001])],
+            HashOn="value"
         )]
     ))
 
-    # --- Clustering: KMeans ---
+    # --- Strategy Types (e.g., Optimization/Training) ---
     test_criterias.append(Criteria(
-        Name="KMeans Cluster on Units",
+        Name="Uses Early Stopping",
         Searchs=[SearchOperator(
-            Name="layer_num_units",
-            Cluster="cluster",
-            Type=TypeOperator(Name="kmeans", Arguments=["3", "binary"]),
-            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[128])],
-            HashOn="found"
+            Name="hasTrainingStrategy",
+            Value=[ValueOperator(Name="hasTrainingStrategy", Op="sequal", Value=["EarlyStopping"])],
+            HashOn="name"
         )]
     ))
 
-    # --- Clustering: Agglomerative ---
+    # --- Task Types ---
     test_criterias.append(Criteria(
-        Name="Agglomerative Clustering on Layers",
+        Name="Unsupervised Learning Tasks",
+        Searchs=[SearchOperator(
+            Name="hasTaskType",
+            Value=[ValueOperator(Name="hasTaskType", Op="sequal", Value=["UnsupervisedLearning"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Layer Types (Architectural Specificity) ---
+    test_criterias.append(Criteria(
+        Name="Includes Attention Layer",
         Searchs=[SearchOperator(
             Name="hasLayer",
-            Cluster="cluster",
-            Type=TypeOperator(Name="agg", Arguments=["2", "binary"]),
-            Value=[ValueOperator(Name="hasLayer", Op="has")],
-            HashOn="found"
+            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["AttentionLayer"])],
+            HashOn="name"
         )]
     ))
 
-    # --- Clustering: Graph embeddings ---
     test_criterias.append(Criteria(
-        Name="Graph Clustering",
+        Name="Includes Residual Connections",
         Searchs=[SearchOperator(
-            Name="graph_embedding",
-            Cluster="cluster",
-            Type=TypeOperator(Name="graph", Arguments=["2", "binary"]),
-            Value=[ValueOperator(Name="hasLayer", Op="has")],
-            HashOn="found"
+            Name="hasLayerProperty",
+            Value=[ValueOperator(Name="hasLayerProperty", Op="sequal", Value=["Residual"])],
+            HashOn="name"
         )]
     ))
 
-    # --- Multi-condition criteria ---
+    # --- Compound Criteria ---
     test_criterias.append(Criteria(
-        Name="Conv Layers + >128 Units",
+        Name="Dense Layers with Softmax",
         Searchs=[
             SearchOperator(
                 Name="hasLayer",
-                Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["ConvolutionalLayer"])],
+                Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["Dense"])],
                 HashOn="value"
             ),
             SearchOperator(
-                Name="layer_num_units",
-                Value=[ValueOperator(Name="layer_num_units", Op="greater", Value=[128])],
-                HashOn="found"
+                Name="hasActivationFunction",
+                Value=[ValueOperator(Name="hasActivationFunction", Op="sequal", Value=["Softmax"])],
+                HashOn="value"
             )
         ]
     ))
 
-    # --- Presence and absence mix ---
+    # --- Multi-Field Clustered Criteria ---
     test_criterias.append(Criteria(
-        Name="Has Loss and Missing Optimizer",
+        Name="KMeans Cluster on Dropout + Units",
+        Searchs=[SearchOperator(
+            Name="layer_features",
+            Cluster="cluster",
+            Type=TypeOperator(Name="kmeans", Arguments=["3", "binary"]),
+            Value=[
+                ValueOperator(Name="dropout_rate", Op="name"),
+                ValueOperator(Name="layer_num_units", Op="name")
+            ],
+            HashOn="type"
+        )]
+    ))
+
+    # --- Multi-Range Conditions ---
+    test_criterias.append(Criteria(
+        Name="Small Networks (Units 16-128, Layers < 5)",
         Searchs=[
             SearchOperator(
-                Name="hasLoss",
-                Value=[ValueOperator(Name="hasLoss", Op="has")],
+                Name="layer_num_units",
+                Value=[ValueOperator(Name="layer_num_units", Op="range", Value=[16, 128])],
                 HashOn="found"
             ),
             SearchOperator(
-                Name="hasOptimizer",
-                Value=[ValueOperator(Name="hasOptimizer", Op="none")],
+                Name="layer_depth",
+                Value=[ValueOperator(Name="layer_depth", Op="less", Value=[5])],
                 HashOn="found"
             )
         ]
     ))
 
-    # --- Empty Criteria---
+    # --- Clustering on Task Type and Loss ---
     test_criterias.append(Criteria(
-    Name="Units > 10000000",
-    Searchs=[SearchOperator(
-        Name="layer_num_units",
-        Value=[ValueOperator(Name="layer_num_units", Op="geq", Value=[10000000])],
-        HashOn="found"
+        Name="Agg Cluster on Task + Loss",
+        Searchs=[SearchOperator(
+            Name="meta_properties",
+            Cluster="cluster",
+            Type=TypeOperator(Name="agg", Arguments=["2", "binary"]),
+            Value=[
+                ValueOperator(Name="hasTaskType", Op="name"),
+                ValueOperator(Name="hasLoss", Op="name")
+            ],
+            HashOn="type"
         )]
     ))
+
+    # --- Custom Model Type Examples ---
+    test_criterias.append(Criteria(
+        Name="GANs Only",
+        Searchs=[SearchOperator(
+            Name="hasModelType",
+            Value=[ValueOperator(Name="hasModelType", Op="sequal", Value=["GenerativeAdversarialNetwork"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Presence of Normalization ---
+    test_criterias.append(Criteria(
+        Name="Has BatchNorm Layer",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["BatchNormalization"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Absence of Normalization ---
+    test_criterias.append(Criteria(
+        Name="Missing Normalization",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Value=[ValueOperator(Name="hasLayer", Op="none", Value=["BatchNormalization"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- EarlyStopping with < 50 Epochs ---
+    test_criterias.append(Criteria(
+        Name="EarlyStopping & Few Epochs",
+        Searchs=[
+            SearchOperator(
+                Name="hasTrainingStrategy",
+                Value=[ValueOperator(Name="hasTrainingStrategy", Op="sequal", Value=["EarlyStopping"])],
+                HashOn="name"
+            ),
+            SearchOperator(
+                Name="epochs",
+                Value=[ValueOperator(Name="epochs", Op="less", Value=[50])],
+                HashOn="value"
+            )
+        ]
+    ))
+
+    # --- Models With > 5 Convolutional Layers ---
+    test_criterias.append(Criteria(
+        Name="Conv-heavy Models",
+        Searchs=[
+            SearchOperator(
+                Name="num_convolutional_layers",
+                Value=[ValueOperator(Name="num_convolutional_layers", Op="greater", Value=[5])],
+                HashOn="value"
+            )
+        ]
+    ))
+
+    # --- Pooling Usage ---
+    test_criterias.append(Criteria(
+        Name="Has Pooling Layer",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["MaxPooling", "AveragePooling"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Batch Size Range ---
+    test_criterias.append(Criteria(
+        Name="Batch Size 16–64",
+        Searchs=[SearchOperator(
+            Name="batch_size",
+            Value=[ValueOperator(Name="batch_size", Op="range", Value=[16, 64])],
+            HashOn="value"
+        )]
+    ))
+
+    # --- Tiny Models (Low depth & unit count) ---
+    test_criterias.append(Criteria(
+        Name="Tiny Models",
+        Searchs=[
+            SearchOperator(
+                Name="layer_depth",
+                Value=[ValueOperator(Name="layer_depth", Op="less", Value=[4])],
+                HashOn="found"
+            ),
+            SearchOperator(
+                Name="layer_num_units",
+                Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[32])],
+                HashOn="found"
+            )
+        ]
+    ))
+
+    # --- Autoencoders ---
+    test_criterias.append(Criteria(
+        Name="Autoencoders",
+        Searchs=[SearchOperator(
+            Name="hasModelType",
+            Value=[ValueOperator(Name="hasModelType", Op="sequal", Value=["Autoencoder"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Transformer Networks ---
+    test_criterias.append(Criteria(
+        Name="Transformer Architectures",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["TransformerBlock"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Missing Training Strategy ---
+    test_criterias.append(Criteria(
+        Name="No Training Strategy Declared",
+        Searchs=[SearchOperator(
+            Name="hasTrainingStrategy",
+            Value=[ValueOperator(Name="hasTrainingStrategy", Op="none")],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Very Large Networks (Extreme Unit Count) ---
+    test_criterias.append(Criteria(
+        Name="Extreme Unit Count",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="greater", Value=[5000])],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Graph Clustering on Architecture Features ---
+    test_criterias.append(Criteria(
+        Name="Graph Cluster on Layer + Strategy",
+        Searchs=[SearchOperator(
+            Name="graph_cluster_features",
+            Cluster="cluster",
+            Type=TypeOperator(Name="graph", Arguments=["3", "binary"]),
+            Value=[
+                ValueOperator(Name="hasLayer", Op="name"),
+                ValueOperator(Name="hasTrainingStrategy", Op="name")
+            ],
+            HashOn="type"
+        )]
+    ))
+
+
 
     # Create taxonomy
     taxonomy_creator = TaxonomyCreator(ontology, criteria=test_criterias)
@@ -1093,7 +1260,8 @@ def main():
 
     # Export image
     export_path = './dataframe_full_taxonomy.png'
-    dfi.export(df, export_path)
+    dfi.export(df, export_path, max_cols=-1)
+    df.to_csv("./data/taxonomy/faceted/generic/create_taxonomy_df.csv")
     print(f"Exported: {export_path}")
 
 if __name__ == "__main__":

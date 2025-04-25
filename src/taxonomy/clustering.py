@@ -9,7 +9,7 @@ def kmeans_clustering(observations, centroids=10):
         centroids = len(observations)
     kmeans = KMeans(n_clusters=centroids)
     centers = kmeans.fit(observations).fit_predict(observations) #kmeans(observations, centroids)
-    centers = [int(center) for center in centers] # making this list json serialize
+    centers = [int(center) if center else 0 for center in centers] # making this list json serialize
     return centers
 
 
@@ -22,7 +22,7 @@ def agglomerative_clustering(observations, centroids=10):
     # TODO make this adjustable to allow for criteria on cluster selection
     centers = fcluster(Z, centroids, criterion='maxclust')
 
-    centers = [int(center) for center in centers] # making this list json serialize
+    centers = [int(center) if center else 0 for center in centers] # making this list json serialize
     return centers
 
 
