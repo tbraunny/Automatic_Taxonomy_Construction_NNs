@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+      "owl": {
+        "command": "python",
+        "args": ["src/mcp/owlserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/user"]
+      },
+      "ncat": {
+	 "command": "python",
+	 "args": ["src/mcp/ncatserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/more_papers"]
+       }
+    }
+  }

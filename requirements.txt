@@ -1,0 +1,26 @@
+-r "requirements/requirements-doc_chunker.txt"
+-r "requirements/requirements-llm_service.txt"
+-r "requirements/requirements-owl.txt"
+-r "requirements/requirements-pdf_extraction.txt"
+-r "requirements/requirements-pytest.txt"
+-r "requirements/requirements-instantiate_annetto.txt"
+-r "requirements/requirements-code_extraction.txt"
+-r "requirements/requirements-front_end.txt"
+-r "requirements/requirements-taxonomy_viz.txt"
+# -r "requirements/requirements-graph_viz.txt"
+
+
+
+# # *** HOW TO VENV ***
+
+# # Create virtual environment
+# python3 -m venv venv
+
+# # Activate venv in WSL
+# source venv/bin/activate
+
+# # Install requirements
+# pip install -r requirements.txt
+
+# # Deactivate virtual environment
+# deactivate

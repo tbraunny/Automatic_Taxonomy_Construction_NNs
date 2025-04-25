@@ -1,0 +1,6 @@
+mcp[cli]
+rdflib
+owlready2
+graphviz
+matplotlib
+scikit-learn

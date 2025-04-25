@@ -1,0 +1,93 @@
+[
+   {
+      "page_content": "parser = argparse.ArgumentParser()\nopt = parser.parse_args()\nimg_shape = (opt.channels, opt.img_size, opt.img_size)\ncuda = True if torch.cuda.is_available() else False\nadversarial_loss = torch.nn.BCELoss()\npixelwise_loss = torch.nn.L1Loss()\nencoder = Encoder()\ndecoder = Decoder()\ndiscriminator = Discriminator()\ndataloader = torch.utils.data.DataLoader(\n\tdatasets.MNIST(\n\t\t\"../../data/mnist\",\n\t\ttrain=True,\n\t\tdownload=True,\n\t\ttransform=transforms.Compose(\n\t\t\t[transforms.Resize(opt.img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]\n\t\t),\n\t),\n\tbatch_size=opt.batch_size,\n\tshuffle=True,\n)\noptimizer_G = torch.optim.Adam(\n\titertools.chain(encoder.parameters(), decoder.parameters()), lr=opt.lr, betas=(opt.b1, opt.b2)\n)\noptimizer_D = torch.optim.Adam(discriminator.parameters(), lr=opt.lr, betas=(opt.b1, opt.b2))\nTensor = torch.cuda.FloatTensor if cuda else torch.FloatTensor",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "import argparse\nimport os\nimport numpy as np\nimport math\nimport itertools\nimport torchvision.transforms as transforms\nfrom torchvision.utils import save_image\nfrom torch.utils.data import DataLoader\nfrom torchvision import datasets\nfrom torch.autograd import Variable\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torch\nos.makedirs(\"images\", exist_ok=True)\nparser.add_argument(\"--n_epochs\", type=int, default=200, help=\"number of epochs of training\")\nparser.add_argument(\"--batch_size\", type=int, default=64, help=\"size of the batches\")\nparser.add_argument(\"--lr\", type=float, default=0.0002, help=\"adam: learning rate\")\nparser.add_argument(\"--b1\", type=float, default=0.5, help=\"adam: decay of first order momentum of gradient\")\nparser.add_argument(\"--b2\", type=float, default=0.999, help=\"adam: decay of first order momentum of gradient\")\nparser.add_argument(\"--n_cpu\", type=int, default=8, help=\"number of cpu threads to use during batch generation\")\nparser.add_argument(\"--latent_dim\", type=int, default=10, help=\"dimensionality of the latent code\")\nparser.add_argument(\"--img_size\", type=int, default=32, help=\"size of each image dimension\")\nparser.add_argument(\"--channels\", type=int, default=1, help=\"number of image channels\")\nparser.add_argument(\"--sample_interval\", type=int, default=400, help=\"interval between image sampling\")\nprint(opt)\ndef reparameterization(mu, logvar):\n\tstd = torch.exp(logvar / 2)\n\tsampled_z = Variable(Tensor(np.random.normal(0, 1, (mu.size(0), opt.latent_dim))))\n\tz = sampled_z * std + mu\n\treturn z\nclass Encoder(nn.Module):\n\tdef __init__(self):\n\t\tsuper(Encoder, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(int(np.prod(img_shape)), 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 512),\n\t\t\tnn.BatchNorm1d(512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t)\n\t\tself.mu = nn.Linear(512, opt.latent_dim)\n\t\tself.logvar = nn.Linear(512, opt.latent_dim)\n\tdef forward(self, img):\n\t\timg_flat = img.view(img.shape[0], -1)\n\t\tx = self.model(img_flat)\n\t\tmu = self.mu(x)\n\t\tlogvar = self.logvar(x)\n\t\tz = reparameterization(mu, logvar)\n\t\treturn z\nclass Decoder(nn.Module):\n\tdef __init__(self):\n\t\tsuper(Decoder, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(opt.latent_dim, 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 512),\n\t\t\tnn.BatchNorm1d(512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, int(np.prod(img_shape))),\n\t\t\tnn.Tanh(),\n\t\t)\n\tdef forward(self, z):\n\t\timg_flat = self.model(z)\n\t\timg = img_flat.view(img_flat.shape[0], *img_shape)\n\t\treturn img\nclass Discriminator(nn.Module):\n\tdef __init__(self):\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(opt.latent_dim, 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 256),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(256, 1),\n\t\t\tnn.Sigmoid(),\n\t\t)\n\tdef forward(self, z):\n\t\tvalidity = self.model(z)\n\t\treturn validity\nif cuda:\n\tencoder.cuda()\n\tdecoder.cuda()\n\tdiscriminator.cuda()\n\tadversarial_loss.cuda()\n\tpixelwise_loss.cuda()\nos.makedirs(\"../../data/mnist\", exist_ok=True)\ndef sample_image(n_row, batches_done):\n\t\"\"\"Saves a grid of generated digits\"\"\"\n\t# Sample noise\n\tz = Variable(Tensor(np.random.normal(0, 1, (n_row ** 2, opt.latent_dim))))\n\tgen_imgs = decoder(z)\n\tsave_image(gen_imgs.data, \"images/%d.png\" % batches_done, nrow=n_row, normalize=True)\nfor epoch in range(opt.n_epochs):\n\tfor i, (imgs, _) in enumerate(dataloader):\n\t\t# Adversarial ground truths\n\t\tvalid = Variable(Tensor(imgs.shape[0], 1).fill_(1.0), requires_grad=False)\n\t\tfake = Variable(Tensor(imgs.shape[0], 1).fill_(0.0), requires_grad=False)\n\t\t# Configure input\n\t\treal_imgs = Variable(imgs.type(Tensor))\n\t\t# -----------------\n\t\t#  Train Generator\n\t\t# -----------------\n\t\toptimizer_G.zero_grad()\n\t\tencoded_imgs = encoder(real_imgs)\n\t\tdecoded_imgs = decoder(encoded_imgs)\n\t\t# Loss measures generator's ability to fool the discriminator\n\t\tg_loss = 0.001 * adversarial_loss(discriminator(encoded_imgs), valid) + 0.999 * pixelwise_loss(\n\t\t\tdecoded_imgs, real_imgs\n\t\t)\n\t\tg_loss.backward()\n\t\toptimizer_G.step()\n\t\t# ---------------------\n\t\t#  Train Discriminator\n\t\t# ---------------------\n\t\toptimizer_D.zero_grad()\n\t\t# Sample noise as discriminator ground truth\n\t\tz = Variable(Tensor(np.random.normal(0, 1, (imgs.shape[0], opt.latent_dim))))\n\t\t# Measure discriminator's ability to classify real from generated samples\n\t\treal_loss = adversarial_loss(discriminator(z), valid)\n\t\tfake_loss = adversarial_loss(discriminator(encoded_imgs.detach()), fake)\n\t\td_loss = 0.5 * (real_loss + fake_loss)\n\t\td_loss.backward()\n\t\toptimizer_D.step()\n\t\tprint(\n\t\t\t\"[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]\"\n\t\t\t% (epoch, opt.n_epochs, i, len(dataloader), d_loss.item(), g_loss.item())\n\t\t)\n\t\tbatches_done = epoch * len(dataloader) + i\n\t\tif batches_done % opt.sample_interval == 0:\n\t\t\tsample_image(n_row=10, batches_done=batches_done)",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "def reparameterization(mu, logvar):\n\tstd = torch.exp(logvar / 2)\n\tsampled_z = Variable(Tensor(np.random.normal(0, 1, (mu.size(0), opt.latent_dim))))\n\tz = sampled_z * std + mu\n\treturn z",
+      "metadata": {
+         "section_header": "reparameterization",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Encoder",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self):\n\t\tsuper(Encoder, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(int(np.prod(img_shape)), 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 512),\n\t\t\tnn.BatchNorm1d(512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t)\n\t\tself.mu = nn.Linear(512, opt.latent_dim)\n\t\tself.logvar = nn.Linear(512, opt.latent_dim)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, img):\n\t\timg_flat = img.view(img.shape[0], -1)\n\t\tx = self.model(img_flat)\n\t\tmu = self.mu(x)\n\t\tlogvar = self.logvar(x)\n\t\tz = reparameterization(mu, logvar)\n\t\treturn z",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Decoder",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self):\n\t\tsuper(Decoder, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(opt.latent_dim, 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 512),\n\t\t\tnn.BatchNorm1d(512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, int(np.prod(img_shape))),\n\t\t\tnn.Tanh(),\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, z):\n\t\timg_flat = self.model(z)\n\t\timg = img_flat.view(img_flat.shape[0], *img_shape)\n\t\treturn img",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Discriminator",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self):\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.model = nn.Sequential(\n\t\t\tnn.Linear(opt.latent_dim, 512),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(512, 256),\n\t\t\tnn.LeakyReLU(0.2, inplace=True),\n\t\t\tnn.Linear(256, 1),\n\t\t\tnn.Sigmoid(),\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, z):\n\t\tvalidity = self.model(z)\n\t\treturn validity",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def sample_image(n_row, batches_done):\n\t\"\"\"Saves a grid of generated digits\"\"\"\n\t# Sample noise\n\tz = Variable(Tensor(np.random.normal(0, 1, (n_row ** 2, opt.latent_dim))))\n\tgen_imgs = decoder(z)\n\tsave_image(gen_imgs.data, \"images/%d.png\" % batches_done, nrow=n_row, normalize=True)",
+      "metadata": {
+         "section_header": "sample_image",
+         "type": "python function"
+      }
+   }
+]
