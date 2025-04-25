@@ -1475,13 +1475,433 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
-<owl:Class rdf:about="Multinomial Logistic Regression Loss">
+<owl:Class rdf:about="Conv2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="batch_norm">
+  <rdfs:subClassOf rdf:resource="BatchNormLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="ReLU">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="MaxPool2d">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AveragePooling2D">
+  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="cat">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Reshape">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Bias">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Softmax">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="pool_3/_reshape">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="softmax/logits">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Cross-Entropy Loss">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Dropout">
+<owl:Class rdf:about="Label Smoothing Regularization">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
+
+<owl:NamedIndividual rdf:about="bfad730c_conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_1/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_2/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_3/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_3/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_3/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_3/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_4/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_5/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_6/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_7/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_8/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower_1/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower_1/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_9/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower_1/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower_1/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="bfad730c_mixed_10/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
 
