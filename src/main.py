@@ -98,27 +98,29 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
                 for pdf_file in ann_pdf_files:
                     extract_filter_pdf_to_json(pdf_file, ann_path)
                     logger.info(f"Extracted text from {pdf_file} to JSON.")
+    
+    pytorch_module_names = []
 
-    # Extract code (give file path, glob is processed in the function), if any
-    pytorch_module_names: List[str] = []
-    if py_files or pb_files: # or onnx_files:
-        process_code = CodeExtractor()
-        # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
-        # if not ann_torch_json:
-        process_code.process_code_file(ann_path)
-        pytorch_module_names = process_code.pytorch_module_names # for richie
-        logger.info(f"Extracted code from {py_files} to JSON.")
+    # # Extract code (give file path, glob is processed in the function), if any
+    # pytorch_module_names: List[str] = []
+    # if py_files or pb_files: # or onnx_files:
+    #     process_code = CodeExtractor()
+    #     # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
+    #     # if not ann_torch_json:
+    #     process_code.process_code_file(ann_path)
+    #     pytorch_module_names = process_code.pytorch_module_names # for richie
+    #     logger.info(f"Extracted code from {py_files} to JSON.")
 
-        # has_nn_module = process_code.pytorch_present
-        # if not has_nn_module:
-        #     logger.error("No nn.Module Pytorch classes found in the code files.")
-        #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
+    #     # has_nn_module = process_code.pytorch_present
+    #     # if not has_nn_module:
+    #     #     logger.error("No nn.Module Pytorch classes found in the code files.")
+    #     #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
 
-    # # insert model into db
-    db_runner = DBUtils()
-    model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    paper_id: int = db_runner.insert_papers(ann_path)
-    translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    # # # insert model into db
+    # db_runner = DBUtils()
+    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # paper_id: int = db_runner.insert_papers(ann_path)
+    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     if output_ontology_filepath:
         input_ontology = load_annetto_ontology(

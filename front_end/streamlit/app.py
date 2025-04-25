@@ -3,6 +3,7 @@ from importpage import import_page
 from LLMchat import chat_page
 from graphvis import display_graph
 from mcpconnection import mcp_connector
+import asyncio
 st.set_page_config(layout="wide")
 
 # Page 1: Home
@@ -80,4 +81,4 @@ elif page == "📥 Import":
 elif page == "📊 Graph":
     display_graph()
 elif page == "Test":
-    mcp_connector()
+    asyncio.run( mcp_connector())

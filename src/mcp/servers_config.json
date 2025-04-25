@@ -2,11 +2,11 @@
     "mcpServers": {
       "owl": {
         "command": "python",
-        "args": ["src/mcp/owlserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/user"]
+        "args": ["/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/src/mcp/owlserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/user"]
       },
       "ncat": {
 	 "command": "python",
-	 "args": ["src/mcp/ncatserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/more_papers"]
+	 "args": ["/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/src/mcp/ncatserver.py","/home/lukas/CS425/Automatic_Taxonomy_Construction_NNs/data/more_papers"]
        }
     }
   }

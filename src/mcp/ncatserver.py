@@ -48,7 +48,7 @@ def list_available_titles() -> str:
     """List the available papers and their titles. Returns a json dictionary with titles as key and ann name as value."""
     unique_titles = set()
     title_to_path = {}
-    json_doc_paths = glob.glob(f"{paperpath}/*/*.json") # Grabs all pdf doc json's
+    json_doc_paths = glob.glob(f"{paperpath}/**/*doc*.json" , recursive=True) # Grabs all pdf doc json's change to pdf
     for file in json_doc_paths:
         with open(file, "r", encoding="utf-8") as f:
             data = json.load(f)

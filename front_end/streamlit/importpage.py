@@ -8,6 +8,7 @@ import shutil
 
 # A global list to store success message placeholders
 success_placeholders = []
+st.session_state.first_import = True
 
 def import_ontology_to_neo4j():
     from neo4j import GraphDatabase
@@ -112,7 +113,9 @@ def import_page():
                     with st.spinner("Processing your files and generating ontology. Please wait..."):
                         try:
                             # Run the main function
-                            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
+                            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=st.session_state.first_import)
+                            st.session_state.first_import = False
+                                
                         except Exception as e:
                             st.error(f"An error occurred during the process: {e}")
                         finally:

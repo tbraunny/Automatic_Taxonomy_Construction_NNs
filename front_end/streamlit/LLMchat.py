@@ -1,5 +1,5 @@
 import streamlit as st
-
+from utils.llm_service import load_environment_llm
 def chat_page():
     import re
     import time
@@ -28,7 +28,8 @@ def chat_page():
     graph = Neo4jGraph(url=url, username=username, password=password)
     driver = GraphDatabase.driver(url, auth=(username, password))
     session = driver.session()
-    llm = OllamaLLM(model="gemma3:27b-it-q4_K_M")
+    llm = load_environment_llm().llm
+    #llm = OllamaLLM(model="gemma3:27b-it-q4_K_M")
 
     # Question validation prompt
     QUESTION_VALIDATION_TEMPLATE = f"""
@@ -131,11 +132,21 @@ def chat_page():
     for msg in st.session_state.chat_history:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
-
+    
+    # Initialize llm thinking to false
+    if "thinking" not in st.session_state:
+        st.session_state.thinking = False
+        
+    def disable_callback():
+        st.session_state.thinking = True
+        
+    user_input = None
     # Chat input
-    user_input = st.chat_input("Ask something about the ontology...")
+    user_input = st.chat_input("Ask something about the ontology...", disabled= st.session_state.thinking, on_submit=disable_callback)
 
     if user_input:
+        
+        st.session_state.thinking = True
         st.session_state.chat_history.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.markdown(user_input)
@@ -152,6 +163,8 @@ def chat_page():
                 st.session_state.chat_history.append(
                     {"role": "assistant", "content": validation_response}
                 )
+                st.session_state.thinking = False
+                st.rerun()
                 return
 
             # Step 2: Process the valid query
@@ -176,6 +189,8 @@ def chat_page():
                     st.session_state.chat_history.append(
                         {"role": "assistant", "content": full_response}
                     )
+            st.session_state.thinking = False
+            st.rerun()
 
         except Exception as e:
             error_msg = f"Error: {str(e)}"
@@ -183,3 +198,4 @@ def chat_page():
                 {"role": "assistant", "content": error_msg}
             )
             st.chat_message("assistant").write(error_msg)
+            st.rerun()

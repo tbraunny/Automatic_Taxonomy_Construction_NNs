@@ -29,6 +29,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 class ArgumentValues(ABC, BaseModel):
     argument: str
     value: str|int|float
@@ -480,7 +481,7 @@ class ChatSession:
                 )
             else:
                 self.messages.append({"role": "assistant", "content": str(llm_response)})
-        except:
+        except Exception as e:
             print(f"EXCEPTION: {e}")
         return output
 
