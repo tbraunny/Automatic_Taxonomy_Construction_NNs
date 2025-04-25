@@ -229,3 +229,18 @@ class NetworkDetails(BaseModel):
 
 class NetworkResponse(LLMResponse[NetworkDetails]):
     pass
+
+
+"--- For renaming facet labels ---"
+
+class FacetLabel(BaseModel):
+    high_level: str
+    low_level: str
+
+class RenamedFacetLabel(BaseModel):
+    high_level: str
+    low_level: str
+    readable_high: str
+    readable_low: str
+class RenamedFacetList(BaseModel):
+    items: List[RenamedFacetLabel]
