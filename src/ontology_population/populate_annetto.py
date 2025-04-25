@@ -17,8 +17,6 @@ from owlready2 import (
 )
 from utils.known_layer_types import check_actfunc, check_pooling, check_norm
 from utils.constants import Constants as C
-
-# from utils.onnx_db import OnnxAddition
 from utils.annetto_utils import load_annetto_ontology
 from utils.util import get_sanitized_attr
 from utils.llm_service import init_engine, query_llm
@@ -32,9 +30,7 @@ from utils.owl_utils import (
     create_class_data_property,
     link_data_property_to_instance,
     entitiy_exists,
-    is_subclass_of_class,
     assign_object_property_relationship,
-    create_generic_data_property,
 )
 
 global logger
@@ -1651,14 +1647,18 @@ A **subnetwork** is a block that\n
                                     unique_titles.add(title)
                     return list(unique_titles)
 
-                list_json_doc_paths = glob.glob(
-                    f"{self.ann_path}/*doc*.json"
+                json_pdf_paths = glob.glob(
+                    f"{self.ann_path}/*pdf*.json"
                 )  # Grabs all pdf doc json's
-                if not list_json_doc_paths:
+                json_code_paths = glob.glob(
+                    f"{self.ann_path}/*code_doc*.json"
+                )
+                json_paths = json_pdf_paths + json_code_paths
+                if not json_paths:
                     raise FileNotFoundError(
                         f"No JSON doc files found in {self.ann_path}."
                     )
-                if not all(item.endswith(".json") for item in list_json_doc_paths):
+                if not all(item.endswith(".json") for item in json_paths):
                     raise ValueError(
                         "All items in list_json_doc_paths must end with .json"
                     )
@@ -1669,7 +1669,7 @@ A **subnetwork** is a block that\n
                     )
 
                 # Add docs to llm engine for RAG
-                for j in list_json_doc_paths:
+                for j in json_paths:
                     init_engine(self.ann_config_name, j)
 
                 # Instantiate ANN Configuration instance using parameter passed name
@@ -1678,7 +1678,7 @@ A **subnetwork** is a block that\n
                 )
 
                 # Extract metadata and attach to ANNConfiguration instance
-                titles = _extract_titles_from_docs(list_json_doc_paths)
+                titles = _extract_titles_from_docs(json_paths)
                 _add_ann_metadata(ann_config_instance, titles, ann_path)
 
                 # Process the ANN Configuration instance
@@ -1741,7 +1741,6 @@ def instantiate_annetto(
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
     )
-    return ontology_output_filepath
 
 
 # For standalone testing

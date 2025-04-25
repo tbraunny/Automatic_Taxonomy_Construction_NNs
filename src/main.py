@@ -1,7 +1,6 @@
 
 import os
 import glob
-import warnings
 from typing import List
 
 import utils.suppress_init # used to suppress some default lib loggings
@@ -15,9 +14,9 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
+from utils.exception_utils import CodeExtractionError, PDFError
 import warnings
 from typing import List
-import json
 from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
 
 from utils.logger_util import get_logger
@@ -30,37 +29,33 @@ logging.getLogger("faiss").setLevel(logging.ERROR)
 
 logger = get_logger("main", max_logs=3)
 
-def remove_ann_config_from_user_owl(ann_name: str, user_dir: str) -> None:
+def remove_ann_config_from_user_owl(ann_name: str) -> None:
     """
     Removes the ANN configuration from the Annett-o ontology.
     Written specifically for user-appended ontologies.
     Saves the updated owl file to it's original location.
 
     :param ann_name: The name of the ANN.
-    :param user_dir: The path to the directory containing the user files.
     """
     if not ann_name or not isinstance(ann_name, str):
         logger.error("ANN name is required.")
         raise ValueError("ANN name is required.")
-    if not os.path.isdir(user_dir):
-        logger.error("User_dir must be a directory.")
-        raise ValueError("User_dir must be a directory.")
     
-    owl_files = glob.glob(f"{user_dir}/*.owl") # should only be one owl file in a user folder
-    if len(owl_files) > 1:
-        logger.warning(f"Multiple owl files found in {user_dir}. Using the first one.")
-        warnings.warn(f"Multiple owl files found in {user_dir}. Using the first one.")
-    owl_file = owl_files[0] if owl_files else None     
-    if not owl_file:
-        logger.error("No owl file found in the user_dir path.")
-        raise ValueError("No owl file found in the user_dir path.")
+    owl_file = C.ONTOLOGY.USER_OWL_FILENAME
     ontology = load_annetto_ontology(return_onto_from_path=owl_file)
     with ontology:
-        delete_ann_configuration(ontology, ann_name)
+        from utils.owl_utils import get_class_instances
+        ann_instances = get_class_instances(ontology.ANNConfiguration)
+        for ann_instance in ann_instances:
+            ann_instance_name = ann_instance.name
+            stripped_ann_instance_name = ann_instance_name.split('_', 1)[1] if '_' in ann_instance_name else ann_instance_name
+            if stripped_ann_instance_name == ann_name:
+                delete_ann_configuration(ontology, ann_instance_name)
+                break
         save_ontology(ontology, owl_file)
         logger.info(f"Removed ANN configuration for {ann_name} from user owl file.")
 
-def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_user_owl: bool = True) -> str:
+def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ontology_filepath: str = None, test_output_ontology_filepath: str = None) -> str:
     """
     Main function to run the Annett-o pipeline.
 
@@ -85,92 +80,90 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
     # then we need to match the py files in to the same file in the zip dir
     # clean that zip dir
     # need to come up with how we pass this to Tom
-    if not isinstance(ann_name, str):
-        logger.error("ANN name must be a string.")
-        raise ValueError("ANN name must be a string.")
+
     if not os.path.isdir(ann_path):
         logger.error("ANN path must be a directory.")
         raise ValueError("ANN path must be a directory.")
 
-    ann_pdf_files = glob.glob(f"{ann_path}/*.pdf")
-    py_files = glob.glob(f"{ann_path}/**/*.py" , recursive=True)
-    # onnx_files = glob.glob(f"{ann_path}/**/*.onnx" , recursive=True)
-    pb_files = glob.glob(f"{ann_path}/**/*.pb" , recursive=True)
-    if not ann_pdf_files:
+    # Check if the ann_path has pdfs
+    ann_pdfs = glob.glob(os.path.join(ann_path,"*.pdf"))
+    if not ann_pdfs:
         logger.error(f"No PDF files found in {ann_path}.")
-        raise FileNotFoundError(f"No PDF files found in {ann_path}.")
-    if not py_files and not pb_files: #and not onnx_files:
-        logger.error(f"No code files found in {ann_path}.")
-        raise FileNotFoundError(f"No code files found in {ann_path}.")
-    # TODO: Use llm query to verify if the pdf is about a NN architecture
-    # TODO: verify if code has any classes that inherit from nn.Module
+        raise PDFError(
+        message="No PDFs provided. Please provide a PDF.",
+        code="PDF_NOT_FOUND",
+        context={"datatype": "422", "property": "pdf"})
+    # If ann_path has multiple pdfs, use the first one and log a warning
+    # NOTE: Can only handle one pdf for now. Assumes a single ANN can't have multiple papers 
+    if len(ann_pdfs) > 1:
+        logger.warning(f"Multiple PDF files found in {ann_path}. Using the first one.")
+        ann_pdf = ann_pdfs[0]
+    else:
+        ann_pdf = ann_pdfs[0]
 
-    # Extract text from PDF, if any
-    if ann_pdf_files:
-        ann_doc_json = glob.glob(f"{ann_path}/*doc*.json")
-        if not ann_doc_json:
-                for pdf_file in ann_pdf_files:
-                    extract_filter_pdf_to_json(pdf_file, ann_path)
-                    logger.info(f"Extracted text from {pdf_file} to JSON.")
+    # TODO: Use llm query to verify if the pdf is about a NN architecture
+
+    # Extract text from PDF
+    extract_filter_pdf_to_json(ann_pdf, ann_path)
+    logger.info(f"Extracted text from {ann_pdf} to JSON.")
+
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
-    if py_files or pb_files: # or onnx_files:
-        process_code = CodeExtractor()
-        # ann_torch_json = glob.glob(f"{ann_path}/*torch*.json")
-        # if not ann_torch_json:
-        process_code.process_code_file(ann_path)
-        pytorch_module_names = process_code.pytorch_module_names # for richie
-        logger.info(f"Extracted code from {py_files} to JSON.")
+    process_code = CodeExtractor()
+    process_code.process_code_file(ann_path)
+    pytorch_module_names = process_code.pytorch_module_names
+    logger.info(f"Extracted code from to JSON.")
 
-        # has_nn_module = process_code.pytorch_present
-        # if not has_nn_module:
-        #     logger.error("No nn.Module Pytorch classes found in the code files.")
-        #     raise ValueError("No nn.Module Pytorch classes found in the code files.")
-
-    # # insert model into db
+    # insert model into db 
+    # NOTE: This is for Chase
     db_runner = DBUtils()
     model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
     paper_id: int = db_runner.insert_papers(ann_path)
     translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
-    if output_ontology_filepath:
+    if test_input_ontology_filepath:
+        logger.info("Using parameter passed ontology.")
         input_ontology = load_annetto_ontology(
             return_onto_from_path=output_ontology_filepath
         )
     elif not use_user_owl:
+        logger.info("Using the stable ontology.")
         input_ontology = load_annetto_ontology(return_onto_from_release="stable")
     else:
+        logger.info("Using the user ontology.")
         input_ontology = load_annetto_ontology(
             return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME
         )
+
+    if test_output_ontology_filepath:
+        output_ontology_filepath = test_output_ontology_filepath
+    else:
+        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
 
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
     logger.info("Initialized Annett-o ontology.")
 
     # Instantiate Annett-o
-    ontology_fp = instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
+    instantiate_annetto(ann_name, ann_path, input_ontology, output_ontology_filepath, pytorch_module_names)
     logger.info("Instantiated Annett-o ontology.")
 
     # Define split criteria via llm
-    ontology = load_annetto_ontology(return_onto_from_path=ontology_fp)
-    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
-    format='json'
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    ontology = load_annetto_ontology(return_onto_from_path=output_ontology_filepath)
+    # thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
+    # taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
+    # format='json'
+    # topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
     
-    # Create faceted taxonomy as df
-    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
-    df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
+    # # Create faceted taxonomy as df
+    # df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
+    # df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
 
-    
-    
 
 if __name__ == "__main__":
-    # Example usage
-    ann_name = "more_papers"
-    user_path = "data/owl_testing"
+    ann_name = "alexnet"
+    user_path = "data/userinput"
     user_ann_path = os.path.join(user_path, ann_name)
-    output_ontology_filepath = os.path.join(user_path, "user_owl.owl")
     os.makedirs(user_ann_path, exist_ok=True)
-    main(ann_name, user_ann_path, output_ontology_filepath=output_ontology_filepath, use_user_owl=False)
+    main(ann_name, user_ann_path, use_user_owl=False)
+    remove_ann_config_from_user_owl(ann_name)

@@ -12,15 +12,17 @@ Example usage:
 
 import re
 import argparse
-# import logging
-# logging.getLogger("docling").setLevel(logging.ERROR)
+import logging
+logger = logging.getLogger(__name__)
+logging.getLogger("docling").setLevel(logging.ERROR)
+
 import json
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
 from src.pdf_extraction.utils.docling_pdf_loader import DoclingPDFLoader
 from langchain_core.documents.base import Document
-from utils.logger_util import get_logger
-logger = get_logger("pdf_extraction")
+# from utils.logger_util import get_logger
+# logger = get_logger("pdf_extraction")
 
 def save_documents_to_json(documents: list, output_path: str):
     """
@@ -174,7 +176,7 @@ def extract_filter_pdf_to_json(pdf_path: str, debug: bool = False) -> None:
     if not pdf_path.endswith(".pdf"):
         raise ValueError("Input file must be a PDF.")
     
-    output_path = pdf_path.replace(".pdf" , "_doc.json")
+    output_path = pdf_path.replace(".pdf" , "_pdf.json")
     logger.info("Filtering sections from extracted documents...")
     filtered_docs = filter_sections_from_documents(docs, EXCLUDED_SECTIONS)
         
