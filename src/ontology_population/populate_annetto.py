@@ -551,13 +551,16 @@ class OntologyProcessor:
             if module_names: # PyTorch only
                 for module in module_names:
                     json_files.extend(glob.glob(f"{self.ann_path}/*{module}*.json"))
+
+                    if not json_files:
+                        self.logger.error(f"Could not find module name {module} in {self.ann_path}")
             else:
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*torch*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*pb*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*onnx*.json" , recursive=True))
 
             if not json_files:
-                self.logger.error(f"No relevant JSON files (parsed code) found {module_names}")
+                self.logger.error(f"No relevant JSON files (parsed code) found {module_names}, {self.ann_path}")
                 return
 
             # fetch ontology subclasses
