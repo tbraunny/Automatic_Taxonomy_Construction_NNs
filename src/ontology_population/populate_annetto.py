@@ -17,8 +17,6 @@ from owlready2 import (
 )
 from utils.known_layer_types import check_actfunc, check_pooling, check_norm
 from utils.constants import Constants as C
-
-# from utils.onnx_db import OnnxAddition
 from utils.annetto_utils import load_annetto_ontology
 from utils.util import get_sanitized_attr
 from utils.llm_service import init_engine, query_llm
@@ -32,9 +30,7 @@ from utils.owl_utils import (
     create_class_data_property,
     link_data_property_to_instance,
     entitiy_exists,
-    is_subclass_of_class,
     assign_object_property_relationship,
-    create_generic_data_property,
 )
 
 global logger
@@ -1741,7 +1737,6 @@ def instantiate_annetto(
     print(
         f"Ontology instantiation completed for {ann_name} and saved to {ontology_output_filepath}."
     )
-    return ontology_output_filepath
 
 
 # For standalone testing
