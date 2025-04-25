@@ -8,6 +8,7 @@ from sqlalchemy import text
 from rapidfuzz import process
 from utils.logger_util import get_logger
 from pathlib import Path
+from utils.exception_utils import DatabaseError
 
 load_dotenv()
 DB_USER = os.environ.get("DB_USER")
@@ -50,6 +51,11 @@ class DBUtils:
                 self.logger.info(f"DATABASE CONNECTED: Network count is {total_networks.fetchone()[0]}")
             except Exception as e:
                 self.logger.exception(f"Failed to connect to database: {e}")
+                raise DatabaseError(
+                    message="Database connection failed",
+                    code="DATABASE_CONN_ERROR",
+                    context={"datatype": 600 , "property": "DATABASE"}
+                )
 
             return engine , session
         

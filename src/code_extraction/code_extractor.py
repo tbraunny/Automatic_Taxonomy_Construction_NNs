@@ -233,7 +233,14 @@ class _CodeProcessor(ast.NodeVisitor):
         }
 
         #compiled_code = _strip_relative_imports(code)
-        exec(code, namespace)
+        try:
+            exec(code, namespace)
+        except CodeExtractionError as e:
+            raise CodeExtractionError(
+                message="Error instantiating PyTorch code. Ensure relative import files are provided.",
+                code="PYTORCH_EXEC_ERROR",
+                context={"datatype": 401 , "property": "PYTORCH"}
+            )
         return namespace     
 
 class CodeExtractor():
@@ -242,10 +249,14 @@ class CodeExtractor():
         self.pytorch_present: bool = False
 
     def save_json(self , output_file: str , content: dict):
-        with open(output_file, "w") as json_file:
-            json.dump(content , json_file , indent=3)
-                
-        logger.info(f"JSON successfully saved to {output_file}")
+        try:
+            with open(output_file, "w") as json_file:
+                json.dump(content , json_file , indent=3)
+                    
+            logger.info(f"JSON successfully saved to {output_file}")
+        except CodeExtractionError as e:
+            logger.error(f"Could not successfully save {output_file} to JSON")
+
 
     def process_code_file(self , file_path) -> list:
         """
@@ -311,6 +322,13 @@ class CodeExtractor():
                         self.save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
                     else:
                         logger.info(f"Model name '{processor.model_name}' is not PyTorch or TensorFlow")
+
+                        raise CodeExtractionError(
+                            message="PyTorch code not detected. Ensure model class inherits from nn.Module",
+                            code="PYTORCH_NOT_FOUND",
+                            context={"datatype": 402 , "property": "PYTORCH"}
+                        )
+
                         self.pytorch_present = False
 
                     # regular code dictionary for RAG
@@ -320,7 +338,7 @@ class CodeExtractor():
                 logger.error(f"No code file(s) of any type found")
 
                 raise CodeExtractionError(
-                    message=f"No code/model files found in directory {file_path}",
+                    message=f"No code/model files provided. Program requires .py containing PyTorch or .pb files",
                     code="FILES_NOT_FOUND",
                     context={"code_extraction": "500", "property": FileNotFoundError},
                 )
