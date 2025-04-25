@@ -12,14 +12,15 @@ Example usage:
 
 import re
 import argparse
-import logging
-import glob
+# import logging
+# logging.getLogger("docling").setLevel(logging.ERROR)
+import json
 from fuzzywuzzy import fuzz
 from langchain_core.documents.base import Document
 from src.pdf_extraction.utils.docling_pdf_loader import DoclingPDFLoader
-
-import json
 from langchain_core.documents.base import Document
+from utils.logger_util import get_logger
+logger = get_logger("pdf_extraction")
 
 def save_documents_to_json(documents: list, output_path: str):
     """
@@ -75,10 +76,6 @@ def print_document_metadata(document: Document):
     for key, value in document.metadata.items():
         print(f"{key}: {value}")
     print("=========================\n")
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # List of section names to exclude (using fuzzy matching)
 EXCLUDED_SECTIONS = [

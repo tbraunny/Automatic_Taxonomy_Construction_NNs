@@ -15,13 +15,13 @@ from datetime import timedelta
 from ollama import chat
 from ollama import ChatResponse
 
-
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Literal, Union
 
 from utils.llm_service import load_environment_llm
 
 from abc import ABC
+
 
 # Configure logging
 logging.basicConfig(
@@ -270,32 +270,7 @@ class LLMClient:
         Raises:
             httpx.RequestError: If the request to the LLM fails.
         """
-        url = "http://localhost:11434/api/chat"
-        headers = {
-            "Content-Type": "application/json",
-        }
-        model1 = "neuralexpert:latest"
-        model2 = "qwq:32b"
-        model3 = 'deepseek-r1:32b-qwen-distill-q4_K_M'
-        model4 = 'llama3.2:latest'
-        payload = {
-            "messages": messages,
-            "model": model1,
-            "temperature": 0.2,
-            "max_tokens": 20000,
-            "top_p": 1,
-            'repeat_penalty': 1,
-            "stream": False,
-            "stop": None,
-            "request_timeout": 120
-        }
-
-        #response = chat(model=model3,options={'temperature':.4, 'max_tokens':4096, "top_p": 1, "repeat_penalty":1,'stream':False},messages=messages)
-        #output = response.message.content
-        #output = re.sub(r"<think>.*?</think>\n?", "", output, flags=re.DOTALL) 
-        
         response = self.llm.invoke(messages)
-
         return response
 
 
@@ -305,6 +280,9 @@ class ChatSession:
     def __init__(self, servers: list[Server], llm_client: LLMClient) -> None:
         self.servers: list[Server] = servers
         self.llm_client: LLMClient = llm_client
+
+        self.messages = []
+        
 
     async def cleanup_servers(self) -> None:
         """Clean up all servers properly."""
@@ -338,15 +316,10 @@ class ChatSession:
                 if tool_call:
                     tool_call_input = {}
                     tool_call_input["tool"] = tool_call.tool
-                    print(tool_call.arguments)
                     tool_call_input["arguments"] = {}
 
                     for i in tool_call.arguments:
                         tool_call_input["arguments"][i.argument] = i.value
-                    #print(tool_call_input["arguments"])
-                    #input()
-                    #print(tool_call_input["values"])
-                    #tool_call_input["arguments"] = tool_call.arguments
                     
                     tool_call = tool_call_input
 
@@ -382,6 +355,22 @@ class ChatSession:
         except json.JSONDecodeError:
             return llm_response
         return llm_response
+    async def initialize(self):
+        try:
+            for server in self.servers:
+                try:
+                    await server.initialize()
+                except Exception as e:
+                    logging.error(f"Failed to initialize server: {e}")
+                    await self.cleanup_servers()
+                    return
+
+            self.all_tools = []
+            for server in self.servers:
+                tools = await server.list_tools()
+                self.all_tools.extend(tools)
+        except:
+            pass
 
     async def start(self) -> None:
         """Main chat session handler."""
@@ -394,14 +383,64 @@ class ChatSession:
                     await self.cleanup_servers()
                     return
 
-            all_tools = []
-            for server in self.servers:
-                tools = await server.list_tools()
-                all_tools.extend(tools)
+            tools_description = "\n".join([tool.format_for_llm() for tool in self.all_tools])
+            self.system_message = (
+                    "You are a helpful assistant with access to these tools:\n\n"
+                    f"{tools_description}\n"
+                    "Choose the appropriate tool based on the user's question. "
+                    f"Reply with the following format: {{ChatResponse.schema_json(indent=2)}}\n\n"
+                    "If no tool is needed, reply directly and fill in the response field.\n\n"
+                    "After receiving a tool's response:\n"
+                    "1. Transform the raw data into a natural, conversational response\n"
+                    "2. Keep responses concise but informative\n"
+                    "3. Focus on the most relevant information\n"
+                    "4. Use appropriate context from the user's question\n"
+                    "5. Avoid simply repeating the raw data\n\n"
+                    "6. Reply in the response field with your output.\n"
+                    "Please use only the tools that are explicitly defined above."
+                )
+            
 
-            tools_description = "\n".join([tool.format_for_llm() for tool in all_tools])
 
-            system_message = (
+            self.messages = [{"role": "system", "content": self.system_message}]
+
+            while True:
+                try:
+                    user_input = input("You: ").strip().lower()
+                    if user_input in ["quit", "exit"]:
+                        logging.info("\nExiting...")
+                        break
+
+                    self.messages.append({"role": "user", "content": user_input})
+                    
+
+                    llm_response = self.llm_client.get_response(self.messages)
+                    logging.info("\nAssistant: %s", llm_response.response)\
+    
+                    result = await self.process_llm_response(llm_response)
+                    
+
+                    if result != llm_response:
+                        self.messages.append({"role": "assistant", "content": str(llm_response.tool_call)})
+                        self.messages.append({"role": "user", "content": result})
+
+                        final_response = self.llm_client.get_response(self.messages)
+                        logging.info("\nFinal response: %s", str(final_response.response))
+                        self.messages.append(
+                            {"role": "assistant", "content": str(final_response.response)}
+                        )
+                    else:
+                        self.messages.append({"role": "assistant", "content": str(llm_response)})
+
+                except KeyboardInterrupt:
+                    logging.info("\nExiting...")
+                    break
+
+        finally:
+            await self.cleanup_servers()
+    async def query_server(self, message):
+        tools_description = "\n".join([tool.format_for_llm() for tool in self.all_tools])
+        self.system_message = (
                 "You are a helpful assistant with access to these tools:\n\n"
                 f"{tools_description}\n"
                 "Choose the appropriate tool based on the user's question. "
@@ -416,42 +455,33 @@ class ChatSession:
                 "6. Reply in the response field with your output.\n"
                 "Please use only the tools that are explicitly defined above."
             )
+        
+        if len(self.messages) == 0:
+            self.messages.append({"role": "system", "content": self.system_message})
+        output = []
+        try:
+            self.messages.append({"role": "user", "content": message})
+            llm_response = self.llm_client.get_response(self.messages)
+            #logging.info("\nAssistant: %s", llm_response.response)
+            
+            result = await self.process_llm_response(llm_response)
+            output.append(llm_response.response)
 
-            messages = [{"role": "system", "content": system_message}]
+            if result != llm_response:
+                self.messages.append({"role": "assistant", "content": str(llm_response.tool_call)})
+                self.messages.append({"role": "user", "content": result})
 
-            while True:
-                try:
-                    user_input = input("You: ").strip().lower()
-                    if user_input in ["quit", "exit"]:
-                        logging.info("\nExiting...")
-                        break
-
-                    messages.append({"role": "user", "content": user_input})
-
-                    llm_response = self.llm_client.get_response(messages)
-                    logging.info("\nAssistant: %s", llm_response.response)
-    
-                    result = await self.process_llm_response(llm_response)
-                    
-
-                    if result != llm_response:
-                        messages.append({"role": "assistant", "content": str(llm_response.tool_call)})
-                        messages.append({"role": "user", "content": result})
-
-                        final_response = self.llm_client.get_response(messages)
-                        logging.info("\nFinal response: %s", str(final_response.response))
-                        messages.append(
-                            {"role": "assistant", "content": str(final_response.response)}
-                        )
-                    else:
-                        messages.append({"role": "assistant", "content": str(llm_response)})
-
-                except KeyboardInterrupt:
-                    logging.info("\nExiting...")
-                    break
-
-        finally:
-            await self.cleanup_servers()
+                final_response = self.llm_client.get_response(self.messages)
+                #logging.info("\nFinal response: %s", str(final_response.response))
+                output.append(final_response.response)
+                self.messages.append(
+                    {"role": "assistant", "content": str(final_response.response)}
+                )
+            else:
+                self.messages.append({"role": "assistant", "content": str(llm_response)})
+        except:
+            print(f"EXCEPTION: {e}")
+        return output
 
 
 async def main() -> None:
@@ -464,7 +494,12 @@ async def main() -> None:
     ]
     llm_client = LLMClient(config.llm_api_key)
     chat_session = ChatSession(servers, llm_client)
-    await chat_session.start()
+    await chat_session.initialize()
+    #await chat_session.start()
+    while True:
+        query = input("User:")
+        output = await chat_session.query_server(query)
+        print("LLM: ", output)
 
 
 if __name__ == "__main__":

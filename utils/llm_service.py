@@ -22,22 +22,17 @@ from utils.pydantic_models import *
 
 from dotenv import load_dotenv
 
-import logging
-logging.getLogger("openai").setLevel(logging.WARNING)
-logging.getLogger("langchain").setLevel(logging.WARNING)
-logging.getLogger("langchain.llms").setLevel(logging.WARNING)
-logging.getLogger("langchain.schema.output_parser").setLevel(logging.WARNING)
-
-# logging.disable(logging.CRITICAL)
-
-
-
 T = TypeVar("T", bound=BaseModel)
 
-load_dotenv()
+load_dotenv(override=True)
 
+#os.environ["USE_LLM_API"] = "False"
 # In-memory embedding cache
 embedding_cache = {}
+
+import logging
+logging.getLogger("openai").setLevel(logging.ERROR)
+logging.getLogger("httpx").setLevel(logging.ERROR)
 
 # GENERAL CONFIG
 USE_LLM_API = (
@@ -209,7 +204,6 @@ class OpenAIClient(BaseLLMClient):
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
 def load_environment_llm(**kwargs):
-     
     llm_client = ( OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
                 gen_model=OPENAI_GENERATION_MODEL,
@@ -248,7 +242,7 @@ class LLMQueryEngine:
 
         # Log LLMQueryEngine Inputs
         self.logger.info(
-            f"Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"
+            f"""Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"""
         )
 
         # Load and chunk documents
