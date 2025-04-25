@@ -1475,7 +1475,7 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
-<owl:Class rdf:about="Multinomial Logistic Loss">
+<owl:Class rdf:about="Multinomial Logistic Regression Loss">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 

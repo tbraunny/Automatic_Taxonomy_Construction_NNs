@@ -12,6 +12,7 @@ from utils.onnx_extractor import ONNXProgram
 from utils.logger_util import get_logger
 from utils.instantiate_dummy_args import create_dummy_value, instantiate_with_dummy_args
 from utils.exception_utils import CodeExtractionError
+from utils.dynamic_imports import install_imports
 from scripts.clean_repo import extract_dependencies
 from scripts.unzip_clean_repo import unzip_and_clean_repo
 
@@ -20,27 +21,6 @@ import torch
 import torch.nn as nn
 import torchvision
 from torchvision import models as tmodels
-import math
-import numpy as np
-import random
-import scipy
-import copy
-import tqdm
-import matplotlib
-import keras
-import argparse
-import time
-import datetime
-import functools
-import contextlib
-import collections
-import logging
-import timm
-import abc
-import optree
-import sklearn
-import matplotlib
-import ipdb
 
 """
 Extract code from python files & convert into a JSON for langchain embeddings
@@ -62,6 +42,17 @@ class _CodeProcessor(ast.NodeVisitor):
         self.model_name: str = None
         self.pytorch_module_names: list = [] # names of the different networks within a pytorch file
         self.module_namespace = None
+        self.imports = set()
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            self.imports.add(alias.name.split('.')[0])
+        self.generic_visit(node)
+    
+    def visit_ImportFrom(self, node):
+        if node.module:
+            self.imports.add(node.module.split('.')[0])
+        self.generic_visit(node)
 
     def visit_Module(self, node):
         """
@@ -316,7 +307,7 @@ class CodeExtractor():
                     if found_clean_file:
                         py_files.append(found_clean_file)
                         extract_dependencies(user_repo_path, found_clean_file)
-                        ann_path = user_repo_path
+                        file_path = user_repo_path
                     else:
                         raise CodeExtractionError(
                             message=f"File '{py_name}' not found in uploaded repository.",
@@ -346,6 +337,8 @@ class CodeExtractor():
                     if processor.pytorch_model_graphs: # symbolic graph dictionary
                         logger.info(f"PyTorch code found within file {file}")
                         self.pytorch_module_names = processor.pytorch_module_names
+
+                        install_imports(self.imports)
 
                         for model_name , graph in processor.pytorch_model_graphs.items(): # save each class individually
                             self.save_json(file.replace(".py" , f"_{model_name}_torch_{count}.json") , graph)
