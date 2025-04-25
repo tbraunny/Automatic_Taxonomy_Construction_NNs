@@ -10,7 +10,7 @@ from collections import defaultdict
 import dataframe_image as dfi
 from utils.llm_service import load_environment_llm
 from typing import List, Tuple
-
+import time
 from utils.pydantic_models import RenamedFacetList, RenamedFacetLabel  # if you moved them elsewhere
 
 
@@ -113,7 +113,9 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
     # multi_index = pd.MultiIndex.from_tuples(all_columns)
     # Use LLM for renaming
     llm_client = load_environment_llm()
+    print(f"ORIGINAL_COLUMNS: {all_columns}")
     renamed_columns = rename_columns_with_llm(llm_client, all_columns)
+    print(f"RENAMED_COLUMNS: {renamed_columns}")
     multi_index = pd.MultiIndex.from_tuples(renamed_columns)
 
     df = pd.DataFrame(row_data, columns=multi_index, index=[format_model(model_uri) for model_uri in all_models])
@@ -121,9 +123,6 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
 
     if style == 'X':
         df = df.replace(True, "X").replace(False, "")
-
-    
-
 
     return df
 
@@ -137,51 +136,196 @@ def rename_columns_with_llm(llm_client, columns: List[Tuple[str, str]]) -> List[
     """
     facet_objs = [FacetLabel(high_level=h, low_level=l) for h, l in columns]
     input_json = json.dumps([f.model_dump() for f in facet_objs], indent=2)
+    
+    prompt = """You are a helpful assistant tasked with improving the readability of taxonomy labels generated from neural network ontologies.
+    IMPORTANT INSTRUCTIONS:
 
-    prompt = f"""
-You are a helpful assistant for making ontology-based taxonomies more readable.
+    - You must process every original column provided to you.
+    - Do not skip, drop, or omit any columns.
+    - Preserve the **exact same order** as the original list.
+    - For each original column, produce exactly one corresponding output dictionary in the "items" list.
+    - If a label is already clear and readable, you may reuse the original label for the `readable_high` and `readable_low` fields with minimal edits.
+    - If unsure how to improve a label, preserve its original meaning exactly rather than changing it unnecessarily.
+    - Always fill both `readable_high` and `readable_low`.
+    - Cluster labels like "Cluster 0", "Cluster 1", etc. must be preserved exactly unless a clear improvement is possible.
 
-You will receive a list of technical facet labels, each with:
-- `high_level`: a general category of the facet
-- `low_level`: a specific subcategory or value
+    Each item has:
+    - `high_level`: a general facet category
+    - `low_level`: a specific property or feature associated with the category
 
-Your job is to return human-friendly names for each, keeping them meaningful but concise.
+    Your goals:
+    1. **Preserve important technical context** such as:
+    - Numerical ranges (e.g., "Batch Size 16–64")
+    - Specific layer types or activation functions (e.g., "ReLU", "BatchNormalization")
+    - Model types (e.g., "Autoencoder", "GAN")
+    - Cluster names (e.g., "Cluster 0", "Cluster 1") — keep them recognizable
+    2. **Handle logical values carefully**:
+    - If `low_level` represents `True`, interpret it as "Present" or "Applied".
+    - If `low_level` represents `False`, interpret it as "Not Present" or "Not Applied".
+    - If clustering, preserve cluster labels like "Cluster 0", "Cluster 1", etc.
+3. **Make labels readable while preserving essential technical detail**:
+   - You must always include any meaningful numeric thresholds, parameter values, or ranges present in the original label (e.g., units > 5000, dropout rate between 0.2 and 0.5).
+   - If the model architecture is mentioned (e.g., convolutional, transformer), keep those terms intact.
+   - Do NOT generalize into vague summaries like "Tiny Model" or "Small Network" unless the facet clearly defines what makes it such, and this is reflected in the readable version.
+   - Prefer labels that explain *why* something is "tiny" (e.g., "Fewer than 5 layers and unit count below 32") over simply naming it "Tiny Model".
+   - If the original column name includes task types (e.g., "Unsupervised", "Classification"), include those explicitly in the readable version.
+    4. **Be consistent** in style:
+    - Use title casing (capitalize main words).
+    - Prefer "within range", "outside range", "not present", "missing" rather than just "True" or "False".
+    Return your output as a list of dictionaries, wrapped in an `items` field like this:
+    ```json{{ "items": [{{ ... }}, {{ ... }}] }}```
+    ---
 
-Return your output as a list of dictionaries, wrapped in an `items` field like this:
-{{ "items": [{{ ... }}, {{ ... }}] }}
+    Examples:
 
-Each dictionary must include:
-- `high_level`: (original high-level)
-- `low_level`: (original low-level)
-- `readable_high`: a human-readable version of the high-level category
-- `readable_low`: a human-readable version of the subcategory
+    Example 1)
+    Original Columns:
+    ```json
+    {{
+    [
+    {{
+        "high_level": "Units < 64 layer_num_units [{{'Name': 'layer_num_units', 'Op': 'less', 'Value': [64]}}]",
+        "low_level": "True"
+    }}
+    ]
+    }}
 
-Be descriptive but brief (e.g., avoid jargon unless necessary).
+    }}
 
-Example Input:
-[
-  {{ "high_level": "Training & Optimization", "low_level": "hasTrainingStrategy" }}
-]
+    Renamed Columns:
+    {{
+    "items": [
+    {{
+        "high_level": "Units < 64",
+        "low_level": "True",
+        "readable_high": "Layer Unit Count Below Threshold",
+        "readable_low": "Fewer than 64 units"
+    }}
+    ]
+    }}
 
-Example Output:
-{{ 
-  "items": [
-    {{ "high_level": "Training & Optimization", "low_level": "hasTrainingStrategy", "readable_high": "Training Strategy", "readable_low": "Strategy Type" }}
-  ]
-}}
+    Example 2)
 
-Now here is the list you should rewrite:
-{input_json}
+    Original Columns:
+    {{
+    [
+    {{
+        "high_level": "Has BatchNorm Layer hasLayer [{{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['BatchNormalization']}}]",
+        "low_level": "False"
+    }}
+    ]
+    }}
+
+    Renamed Columns:
+    {{
+    "items": [
+    {{
+        "high_level": "Has BatchNorm Layer",
+        "low_level": "False",
+        "readable_high": "Batch Normalization Layer",
+        "readable_low": "Not present"
+    }}
+    ]
+    }}
+
+    Example 3)
+
+    Original Columns)
+    {{
+    [
+    {{
+        "high_level": "Learning Rate < 0.001 learning_rate [{{'Name': 'learning_rate', 'Op': 'less', 'Value': [0.001]}}]",
+        "low_level": "False"
+    }}
+    ]
+    }}
+
+    Renamed Columns)
+    {{
+    "items": [
+    {{
+        "high_level": "Learning Rate < 0.001",
+        "low_level": "False",
+        "readable_high": "Learning Rate",
+        "readable_low": "Not below 0.001"
+    }}
+    ]
+    }}
+
+    Example 4)
+
+    Original Columns:
+
+        {{
+    [
+    {{
+        "high_level": "Small Networks (Units 16-128, Layers < 5) layer_num_units [{{'Name': 'layer_num_units', 'Op': 'range', 'Value': [16, 128]}}]; layer_depth [{{'Name': 'layer_depth', 'Op': 'less', 'Value': [5]}}]",
+        "low_level": "True"
+    }}
+    ]
+    }}
+
+    Renamed Columns:
+    {{
+    "items": [
+    {{
+        "high_level": "Small Networks (Units 16-128, Layers < 5)",
+        "low_level": "True",
+        "readable_high": "Network Size: Units 16–128, Depth < 5",
+        "readable_low": "Meets unit and depth thresholds"
+    }}
+    ]
+    }}
+
+    Example 5)
+
+    Original Columns:
+    {{
+    [
+    {{
+        "high_level": "KMeans Cluster on Dropout + Units layer_features clustered (kmeans)",
+        "low_level": "Cluster 0"
+    }}
+    ]
+    }}
+
+    Renamed Columns:
+
+    {{
+    "items": [
+    {{
+        "high_level": "KMeans Cluster on Dropout and Units",
+        "low_level": "Cluster 0",
+        "readable_high": "KMeans Cluster on Dropout and Units",
+        "readable_low": "Cluster 0"
+    }}
+    ]
+    }}
+
+
+
+
+    NOW: Here is the list you should rewrite:
+    ```json
+    {}
+    ```
     """
+    prompt = prompt.format(input_json)
 
     # Structured output with wrapper model
     structured_llm = llm_client.llm.with_structured_output(RenamedFacetList)
-    try:
-        response: RenamedFacetList = structured_llm.invoke(prompt)
-        return [(r.readable_high, r.readable_low) for r in response.items]
-    except Exception as e:
-        print(f"LLM structured output failed: {e}")
-        raise
+    max_retries = 3
+    delay_seconds = 1
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response: RenamedFacetList = structured_llm.invoke(prompt)
+            return [(r.readable_high, r.readable_low) for r in response.items]
+        except Exception as e:
+            print(f"Attempt {attempt} failed with error: {e}")
+            if attempt == max_retries:
+                raise  # Give up after max retries
+            time.sleep(delay_seconds)  # Wait a little before retrying
 
     
 
