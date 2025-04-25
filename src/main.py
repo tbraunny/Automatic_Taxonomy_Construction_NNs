@@ -161,7 +161,7 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
 
 
 if __name__ == "__main__":
-    ann_name = "alexnet"
+    ann_name = "inceptionv3_cnn"
     user_path = "data/userinput"
     user_ann_path = os.path.join(user_path, ann_name)
     os.makedirs(user_ann_path, exist_ok=True)

@@ -1527,6 +1527,10 @@
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
+<owl:Class rdf:about="Label Smoothing Regularization (LSR)">
+  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
+</owl:Class>
+
 <owl:NamedIndividual rdf:about="bfad730c_conv">
   <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
