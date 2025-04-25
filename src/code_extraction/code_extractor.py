@@ -113,7 +113,9 @@ class _CodeProcessor(ast.NodeVisitor):
                 self.pytorch_module_names.append(node.name)
                 mappings: dict = {}
 
-                model_class = self.module_namespace.get(node.name)
+
+                class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+                model_class = self.module_namespace.get(node.name , "\n".join(class_code))
 
                 if not model_class:
                     logger.error(f"Could not find class {node.name} in namespace")
@@ -224,7 +226,7 @@ class _CodeProcessor(ast.NodeVisitor):
         """
         return self.sections
     
-    def extract_namespace(self , filepath: str):
+    def extract_namespace(self , filepath: str , code):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
