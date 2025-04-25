@@ -5,6 +5,7 @@ from src.main import main, remove_ann_config_from_user_owl
 import time
 import os
 import shutil
+from utils.exception_utils import *
 
 # A global list to store success message placeholders
 success_placeholders = []
@@ -115,6 +116,12 @@ def import_page():
                             hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=False)
                         except Exception as e:
                             st.error(f"An error occurred during the process: {e}")
+                        except CodeExtractionError as e:
+                            st.error(e.to_dict())
+                        except AppError as e:
+                            st.error(e.to_dict())
+                        except DatabaseError as e:
+                            st.error(e.to_dict())
                         finally:
                             # Mark that `main` has finished running
                             st.session_state.is_main_running = False
