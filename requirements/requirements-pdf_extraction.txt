@@ -1,0 +1,5 @@
+docling 
+docling-core
+python-Levenshtein
+fuzzywuzzy
+langchain_core

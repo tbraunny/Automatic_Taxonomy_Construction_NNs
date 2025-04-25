@@ -1,0 +1,290 @@
+body {
+  display: flex;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f7f7f8;
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: 250px;
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h1 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.sidebar button {
+  padding: 10px;
+  margin: 5px 0;
+  color: white;
+  border-radius: 5px;
+  background-color: #C81B1B;
+  border: none;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #9E1010;
+}
+
+/* Main content area styling */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.main-content h2 {
+  font-size: 1.2em;
+  margin-top: 0;
+}
+
+.main-content p, .main-content input, .main-content button {
+  margin: 10px 0;
+}
+
+/* Image styling */
+#taxonomy-image {
+  max-width: 100%;
+  height: auto;
+  max-height: calc(80vh);
+  display: none;
+  object-fit: contain;
+}
+
+#ontology-image {
+  max-width: 100%;
+  height: auto;
+  max-height: calc(80vh);
+  display: none;
+  object-fit: contain;
+}
+
+.generate-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #C81B1B;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.generate-btn:hover {
+  background-color: #9E1010;
+}
+
+#about-section {
+  margin-top: 0px;
+  padding-left: 50px;
+  margin-left: 50px;
+  padding: 10px;
+}
+
+#gen_ont {
+  margin-top: 0px;
+  padding-left: 50px;
+  margin-left: 50px;
+  padding: 10px;
+}
+
+select {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 200px;
+  margin: 10px 0;
+}
+
+label {
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.back-button {
+  position: absolute; /* Position it above the sidebar */
+  top: 4px;          /* Distance from the top */
+  left: 0px;         /* Distance from the left */
+  background-color: transparent; /* Red background */
+  color: white;       /* White text */
+  border: none;       /* Remove default border */
+/* Padding inside the button */
+  font-size: 16px;    /* Font size for the text */
+  cursor: pointer;   /* Cursor changes to pointer */
+  border-radius: 50%; /* Rounded corners */
+  border: 3px solid white;
+  justify-content: center;
+}
+
+.chat-options {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;  /* Space between buttons */
+}
+
+/* Chat buttons */
+.chat-button {
+  padding: 10px;
+  background-color: #C81B1B;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat-button:hover {
+  background-color: #9E1010;
+}
+
+.back-button:hover {
+  background-color: #9E1010; /* Darker red on hover */
+}
+
+.left-border {
+  position: fixed; /* Keeps the sidebar fixed as you scroll */
+  top: 0;
+  left: 0;
+  width: 35px; /* Narrow width for a border-like appearance */
+  height: 100%; /* Full height of the page */
+  background-color: #C81B1B; /* Red color for the border */
+   /* Ensures it stays above the content */
+}
+
+/* Positioning the prompt container at the bottom */
+.prompt-container {
+  position: fixed;
+  bottom: 0;
+  left: 300px;
+  width: 950px;
+  /*max-width: 1000px;*/
+  background-color: #f7f7f8;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.prompt-input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* File upload button styling */
+.upload-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  text-align: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  display: inline;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+/* Dropdown styling */
+.dropdown {
+  margin-top: 10px;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border: 1px solid #444;
+  border-radius: 4px;
+  width: 90%;
+  position: relative;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content {
+  display: none;
+  align-items: center;
+  text-align: center;
+  border-radius: 5px;
+  position: absolute;
+  left: 0;
+  background-color: #444;
+  width: 150px;
+  min-height: 50px;
+  padding: 5px;
+  z-index: 1;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Nested dropdowns for individual hover display */
+.nested-dropdown-content {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 150px;
+  min-height: 70px;
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.nested-dropdown-content button {
+  width: 90%; /* Make buttons fill most of the nested dropdown */
+  margin: 5px auto;
+}
+
+.sub-dropdown:hover .nested-dropdown-content {
+  display: block;
+}
+
+.sub-dropdown {
+  margin-bottom: 20px;
+  width: 110%;
+}
+
+/* Responses section styling */
+#responses {
+  position: relative;
+  margin: 5px;
+  padding: 0px;
+  width: 245px;
+  
+  display: none;
+}
+
+#chat-responses {
+  margin-top: 10px;
+  border-radius: 10px;
+  padding-top: 5px;
+  padding-left: 15px;
+  min-width: 250px;
+  max-width: 950px;
+  width: auto;
+  background-color: #E0E0E0;
+  display: none;
+}

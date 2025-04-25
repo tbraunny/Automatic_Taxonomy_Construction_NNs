@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxon Neuro</title>
+    <link rel="stylesheet" href="static/taxon_neuro_style.css">
+    <link rel="shortcut icon" href="static/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+        <div class="chat-options">
+            <button onclick="clearChat()" class="chat-button" title="Clear chat">Clear Chat</button>
+            <button onclick="copyChatText()" class="chat-button" title="Copy Response">Copy Response</button>
+            <button onclick="regenerateChat()" class="chat-button" title="Regenerate Response">Regenerate</button>
+        </div>
+
+        <div class="sidebar">
+            <h1>Menu</h1>
+            <a href="{{url_for('read_gen_ont')}}">Generate Ontology</a>
+            <a href="{{url_for('read_gen_tax')}}">Generate Taxonomy</a>
+            <a href="{{url_for('read_about')}}">About / Open Source</a>
+
+
+            <div class="dropdown">
+                Definitions
+                <div class="dropdown-content">
+                    <div class="sub-dropdown">Layers
+                        <div class="nested-dropdown-content">
+                            <button onclick="layer_type('Convolutional')">Convolutional Layer</button>
+                            <button onclick="layer_type('Pooling')">Pooling Layer</button>
+                            <button onclick="layer_type('Fully Connected')">Fully Connected Layer</button>
+                            <button onclick="layer_type('ReLU')">ReLU Layer</button>
+                        </div>
+                    </div>
+                    <div class="sub-dropdown">Loss Functions
+                        <div class="nested-dropdown-content">
+                            <button onclick="layer_type('Hinge')">Hinge Loss</button>
+                            <button onclick="layer_type('Logistic')">Logistic</button>
+                            <button onclick="layer_type('Exponential')">Exponential</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="responses">
+                <h3 id="definition-title">Layer Definitions</h3>
+                <p id="layerInfo">Click on a layer type to see its definition.</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <h2>Responses</h2>
+            <div id="file_name"></div>
+
+            <img id="taxonomy-image" src="/static/datacharacterization.png" alt="Generated Taxonomy Image" />
+            <img id="ontology-image" src="/static/taxonomy_sample.png" alt="Generated Ontology Image" />
+            
+            <div id="about-section"></div>
+
+            <div id="chat-responses" style="margin-bottom: 75px;"></div>
+        </div>
+
+        <div class="prompt-container">
+            <input id="prompt-input" class="prompt-input"  type="text" placeholder="Type your prompt here...">
+        </div>
+
+        <form id="uploadForm" action="/uploadfile/" method="POST" enctype="multipart/form-data">
+            <label for="file" class="upload-button" title="Upload a PDF">+</label>
+            <input id="file" name="file" type="file" accept=".pdf , .py" style="display: none;" />
+        </form>
+
+    </div>
+    
+    <script src="/static/taxon_neuro_js.js"></script>
+
+</body>
+</html>

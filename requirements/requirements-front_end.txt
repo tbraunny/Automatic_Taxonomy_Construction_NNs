@@ -1,0 +1,13 @@
+streamlit
+neo4j
+langchain_neo4j
+langchain
+langchain-ollama
+ipywidgets
+yfiles-jupyter-graphs
+ipython
+voila
+jupyter
+matplotlib
+scikit-learn
+mcp

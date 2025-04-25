@@ -1,0 +1,13 @@
+onnx
+fire
+sqlalchemy
+pgvector
+torch
+torchvision
+tensorflow
+numpy
+onnxruntime
+fire
+timm
+ipdb
+apex
