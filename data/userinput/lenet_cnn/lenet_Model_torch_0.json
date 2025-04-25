@@ -1,0 +1,273 @@
+{
+   "total_num_params": 44426,
+   "graph": {
+      "node": [
+         {
+            "name": "x",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "conv1"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "conv1",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "relu1"
+            ],
+            "input": [
+               "x"
+            ],
+            "attributes": {
+               "weight": [
+                  6,
+                  1,
+                  5,
+                  5
+               ],
+               "bias": [
+                  6
+               ]
+            },
+            "num_params": 156
+         },
+         {
+            "name": "relu1",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "pool1"
+            ],
+            "input": [
+               "conv1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "pool1",
+            "op_type": "MaxPool2d",
+            "op": "call_module",
+            "output": [
+               "conv2"
+            ],
+            "input": [
+               "relu1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv2",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "relu2"
+            ],
+            "input": [
+               "pool1"
+            ],
+            "attributes": {
+               "weight": [
+                  16,
+                  6,
+                  5,
+                  5
+               ],
+               "bias": [
+                  16
+               ]
+            },
+            "num_params": 2416
+         },
+         {
+            "name": "relu2",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "pool2"
+            ],
+            "input": [
+               "conv2"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "pool2",
+            "op_type": "MaxPool2d",
+            "op": "call_module",
+            "output": [
+               "getattr_1",
+               "view"
+            ],
+            "input": [
+               "relu2"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "getattr_1",
+            "op_type": "getattr",
+            "op": "call_function",
+            "output": [
+               "getitem"
+            ],
+            "input": [
+               "pool2",
+               "shape"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "getitem",
+            "op_type": "getitem",
+            "op": "call_function",
+            "output": [
+               "view"
+            ],
+            "input": [
+               "getattr_1",
+               "0"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "view",
+            "op_type": null,
+            "op": "call_method",
+            "output": [
+               "fc1"
+            ],
+            "input": [
+               "pool2",
+               "getitem",
+               "-1"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "fc1",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "relu3"
+            ],
+            "input": [
+               "view"
+            ],
+            "attributes": {
+               "weight": [
+                  120,
+                  256
+               ],
+               "bias": [
+                  120
+               ]
+            },
+            "num_params": 30840
+         },
+         {
+            "name": "relu3",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "fc2"
+            ],
+            "input": [
+               "fc1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "fc2",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "relu4"
+            ],
+            "input": [
+               "relu3"
+            ],
+            "attributes": {
+               "weight": [
+                  84,
+                  120
+               ],
+               "bias": [
+                  84
+               ]
+            },
+            "num_params": 10164
+         },
+         {
+            "name": "relu4",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "fc3"
+            ],
+            "input": [
+               "fc2"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "fc3",
+            "op_type": "Linear",
+            "op": "call_module",
+            "output": [
+               "relu5"
+            ],
+            "input": [
+               "relu4"
+            ],
+            "attributes": {
+               "weight": [
+                  10,
+                  84
+               ],
+               "bias": [
+                  10
+               ]
+            },
+            "num_params": 850
+         },
+         {
+            "name": "relu5",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "output"
+            ],
+            "input": [
+               "fc3"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "relu5"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}
