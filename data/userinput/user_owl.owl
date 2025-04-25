@@ -1491,138 +1491,17 @@
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:NamedIndividual rdf:about="f1253bc7_gan">
-  <rdf:type rdf:resource="ANNConfiguration"/>
-  <hasNetwork rdf:resource="f1253bc7_generator-network"/>
-  <hasNetwork rdf:resource="f1253bc7_discriminator-network"/>
-  <hasPrimaryTrainingSession rdf:resource="f1253bc7_training-strategy"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
-</owl:NamedIndividual>
+<owl:Class rdf:about="Reconstruction Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
 
-<owl:NamedIndividual rdf:about="f1253bc7_generator-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="f1253bc7_maximize-objective-function"/>
-  <hasTaskType rdf:resource="f1253bc7_adversarial"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
+<owl:Class rdf:about="Adversarial Regularization">
+  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
+</owl:Class>
 
-<owl:NamedIndividual rdf:about="f1253bc7_maximize-objective-function">
-  <rdf:type rdf:resource="MaxObjectiveFunction"/>
-  <hasCost rdf:resource="f1253bc7_cost-function"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_cost-function">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="f1253bc7_log-loss"/>
-  <hasLoss rdf:resource="f1253bc7_log-likelihood-loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_log-loss">
-  <rdf:type rdf:resource="Log Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the performance of a classification model whose output is a probability value between 0 and 1.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_adversarial">
-  <rdf:type rdf:resource="Adversarial"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_discriminator-network">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="f1253bc7_maximize-objective-function"/>
-  <hasTaskType rdf:resource="f1253bc7_adversarial"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_log-likelihood-loss">
-  <rdf:type rdf:resource="Log-Likelihood Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maximizes the log-likelihood for estimating the conditional probability of the data.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_training-strategy">
-  <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="f1253bc7_training-session"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_training-session">
-  <rdf:type rdf:resource="TrainingSession"/>
-  <hasPrimaryTrainingStep rdf:resource="f1253bc7_training-single"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="f1253bc7_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="f1253bc7_dataset-pipe-2"/>
-  <trainingSingleHasIOPipe rdf:resource="f1253bc7_dataset-pipe-3"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_dataset-pipe-1">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="f1253bc7_mnist"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_mnist">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="f1253bc7_label-set"/>
-  <hasDataType rdf:resource="f1253bc7_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST handwritten digit dataset containing 60,000 training and 10,000 test examples.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28x28</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_label-set">
-  <rdf:type rdf:resource="Labelset"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</labels_count>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_data-type">
-  <rdf:type rdf:resource="Image"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_dataset-pipe-2">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="f1253bc7_toronto-face-database-(tfd)"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_toronto-face-database-(tfd)">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="f1253bc7_label-set"/>
-  <hasDataType rdf:resource="f1253bc7_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Toronto Face Database (TFD) containing facial images for research purposes.</data_description>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_dataset-pipe-3">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="f1253bc7_cifar-10"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="f1253bc7_cifar-10">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="f1253bc7_label-set"/>
-  <hasDataType rdf:resource="f1253bc7_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CIFAR-10 dataset containing 60,000 32x32 color images in 10 classes, with 6,000 images per class.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">32x32</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">60000</data_samples>
-</owl:NamedIndividual>
+<owl:Class rdf:about="Euclidean Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
 
 <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
 

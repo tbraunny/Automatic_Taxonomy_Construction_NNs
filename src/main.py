@@ -158,6 +158,7 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
     
     # Create faceted taxonomy as df
     df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
+    
     df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
 
 
