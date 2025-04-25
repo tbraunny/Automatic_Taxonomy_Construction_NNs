@@ -113,7 +113,9 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
     # multi_index = pd.MultiIndex.from_tuples(all_columns)
     # Use LLM for renaming
     llm_client = load_environment_llm()
+    print(f"Original columns: {all_columns}")
     renamed_columns = rename_columns_with_llm(llm_client, all_columns)
+    print(f"Renamed Colummns: {renamed_columns}")
     multi_index = pd.MultiIndex.from_tuples(renamed_columns)
 
     df = pd.DataFrame(row_data, columns=multi_index, index=[format_model(model_uri) for model_uri in all_models])
@@ -169,6 +171,8 @@ Example Output:
     {{ "high_level": "Training & Optimization", "low_level": "hasTrainingStrategy", "readable_high": "Training Strategy", "readable_low": "Strategy Type" }}
   ]
 }}
+
+
 
 Now here is the list you should rewrite:
 {input_json}
