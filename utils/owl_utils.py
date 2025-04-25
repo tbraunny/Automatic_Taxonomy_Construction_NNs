@@ -7,7 +7,6 @@ from utils.annetto_utils import load_annetto_ontology
 
 """ 1) Class Functions """
 
-
 def get_highest_subclass_ancestor(cls: ThingClass) -> ThingClass:
     """
     Finds the highest (most general) superclass for a given class,
@@ -203,10 +202,8 @@ def get_connected_classes(
                 if isinstance(values, list):
                     for value in values:
                         if isinstance(value, Thing):
-                            print(value)
                             connected_classes.add(value)
                 elif isinstance(values, Thing):
-                    print(values)
                     connected_classes.add(values)
 
         return list(connected_classes) if connected_classes else None
@@ -502,10 +499,10 @@ def create_cls_instance(
                 if hasattr(instance, key):
                     setattr(instance, key, value)
                 else:
-                    print(f"Warning: {cls.name} has no property '{key}'")
+                    warnings.warn(f"{cls.name} has no property '{key}'")
 
         except Exception as e:
-            print(f"Error setting properties for {cls.name}: {e}")
+            warnings.warn(f"Error setting properties for {cls.name}: {e}")
 
     return instance
 
@@ -634,8 +631,8 @@ def create_class_data_property(
     :param functional: Boolean flag to set the property as functional
     :return: Created DataProperty class
     """
-    if hasattr(ontology, property_name): # need new logic to check if property exits for the given domain class
-        print(f"Property '{property_name}' already exists in the ontology. Error or unexepcted behavior may occur.")
+    if getattr(ontology, property_name): # TODO: need new logic to check if property exits for the given domain class
+        warnings.warn(f"Property '{property_name}' already exists in the ontology. Error or unexepcted behavior may occur.")
     valid_range_types = {int, float, str, bool}
     if range_type not in valid_range_types:
         raise ValueError(
@@ -680,7 +677,7 @@ def create_generic_data_property(
                 f"Entity '{property_name}' already exists in the ontology but is not a DataPropertyClass instead is {type(existing_property)}."
             )
         else:
-            print(f"Warning: DataProperty '{property_name}' already exists in the ontology, using it. Unexpected behavior may occur.")
+            warnings.warn(f"DataProperty '{property_name}' already exists in the ontology, using it. Unexpected behavior may occur.")
             return existing_property
 
     valid_range_types = {int, float, str, bool}
@@ -688,8 +685,6 @@ def create_generic_data_property(
         raise ValueError(
             f"Invalid range_type: {range_type}. Must be one of {valid_range_types}"
         )
-    if property_name == "sourceData":
-        print("here i am")
 
     bases = (DataProperty, FunctionalProperty) if functional else (DataProperty,)
     attributes = {
@@ -815,40 +810,48 @@ def save_ontology(ontology: Ontology, file_path: str, format: str = "rdfxml"):
     # Save the ontology
     ontology.save(file=file_path, format=format)
 
-def delete_ann_configuration(ontology:Ontology, ann_config_name:str): #TODO: Not working
+def delete_ann_configuration(ontology:Ontology, ann_config_name:str):
     """
-    Deletes an ANNConfiguration instance and all instances connected to it.
+    Deletes an ANNConfiguration instance and recursively all instances connected to it.
 
     :param ontology: The owlready2 ontology object.
     :param ann_config_name: The name of the ANNConfiguration instance to remove.
     """
-    # ann_config_instance = ontology.search_one(iri="*" + ann_config_name)
     ann_instances = get_class_instances(ontology.ANNConfiguration)
     ann_config_instance = next((inst for inst in ann_instances if inst.name in ann_config_name), None)
-    print(f"Deleting ANNConfiguration instance: {ann_config_instance}")
     if not ann_config_instance:
-        print(f"No instance found with name {ann_config_name}")
-        return
+        raise ValueError(
+            f"Failed to delete ANN instance '{ann_config_instance}.' None type was passed as parameter."
+        )
     
     # Set to store all instances to be deleted
     instances_to_delete = set()
 
     # DFS to collect all connected individuals
-    def collect_instances(instance):
-        if instance not in instances_to_delete:
-            instances_to_delete.add(instance)
-            for prop in instance.get_properties():
-                for value in prop[instance]:
-                    if isinstance(value, Thing):
-                        collect_instances(value)
-
-    collect_instances(ann_config_instance)
-
-    # Now, destroy all collected instances
-    for inst in instances_to_delete:
-        destroy_entity(inst)
-
-    print(f"Deleted {len(instances_to_delete)} instances linked to {ann_config_name}.")
+    def _collect_instances(instance: Thing, instances_to_delete: set):
+            # Check if the instance is already in the delete set    
+            if instance in instances_to_delete:
+                return
+            # Add the instance to the delete set
+            if isinstance(instance, Thing):
+                instances_to_delete.add(instance)
+            # Process connected classes via object properties.
+            connected = get_connected_classes(instance, ontology)
+            
+            if connected:
+                for conn in connected:
+                    if isinstance(conn, Thing):  # Ensure the type matches the root type
+                        _collect_instances(conn, instances_to_delete)
+    
+    _collect_instances(ann_config_instance, instances_to_delete)
+    if instances_to_delete:
+        for inst in instances_to_delete:
+            destroy_entity(inst)
+    else:
+        warnings.warn(
+            f"No instances found to delete for ANNConfiguration '{ann_config_name}'."
+        )
+    # TODO: recursively confirm each deletion
 
 if __name__ == "__main__":
     from constants import Constants as C
@@ -856,5 +859,4 @@ if __name__ == "__main__":
     ontology = load_annetto_ontology(return_onto_from_release="test")
 
     with ontology:
-
         save_ontology(ontology, C.ONTOLOGY.TEST_ONTOLOGY_PATH, format="rdfxml")

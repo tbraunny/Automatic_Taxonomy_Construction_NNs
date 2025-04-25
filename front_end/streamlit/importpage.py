@@ -5,10 +5,24 @@ from src.main import main, remove_ann_config_from_user_owl
 import time
 import os
 import shutil
+from utils.exception_utils import *
+
+from utils.logger_util import get_logger
+logger = get_logger("importpage", max_logs=3)
 
 # A global list to store success message placeholders
 success_placeholders = []
 st.session_state.first_import = True
+
+def show_error(e):
+    logger.error(f"Custom exception occurred", exc_info=True)
+    error_data = e.to_dict() if hasattr(e, "to_dict") else {"message": "An unexpected error occurred during the process. Please try again."}
+    st.error(f"{error_data.get('message')}")
+    # if error_data.get("context"):
+    #     st.caption(f"Context: {error_data['context']}")
+    # if error_data.get("code"):
+    #     st.caption(f"Error Code: {error_data['code']}")
+
 
 def import_ontology_to_neo4j():
     from neo4j import GraphDatabase
@@ -113,11 +127,12 @@ def import_page():
                     with st.spinner("Processing your files and generating ontology. Please wait..."):
                         try:
                             # Run the main function
-                            hashed_delete_ann_name = main(user_ann_name, ann_path, use_user_owl=st.session_state.first_import)
-                            st.session_state.first_import = False
-                                
+                            main(user_ann_name, ann_path, use_user_owl=True)
+                        except (CodeExtractionError, PDFError, LLMAPIError, DatabaseError) as e:
+                            show_error(e)
                         except Exception as e:
-                            st.error(f"An error occurred during the process: {e}")
+                            logger.error("An unexpected error occurred in main:\n\n", exc_info=True)
+                            st.error(f"An unexpected error occurred during the process. Please try again.")
                         finally:
                             # Mark that `main` has finished running
                             st.session_state.is_main_running = False
