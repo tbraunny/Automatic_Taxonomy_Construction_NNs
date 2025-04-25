@@ -43,7 +43,7 @@ def chat_page():
         username = "neo4j"
         password = "neo4j"
         graph = Neo4jGraph(url=url, username=username, password=password)
-        llm = load_environment_llm().llm
+        llm = load_environment_llm(max_tokens=8000).llm
         #llm = OllamaLLM(model="gemma3:27b-it-q4_K_M")
 
         # Question validation prompt
@@ -87,7 +87,7 @@ def chat_page():
 
             multiple instances:
                 MATCH (a)
-                WHERE a.uri CONTAINS "instance_name"
+                WHERE a.uri CONTAINS "instance_name" 
                 MATCH (a)-[r*1..5]->(b)
                 RETURN "instance_name" AS type, a, r, b
                 
