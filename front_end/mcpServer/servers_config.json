@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+      "owl": {
+        "command": "python",
+        "args": ["front_end/mcpServer/owlserver.py"]
+         
+
+      }
+    }
+  }

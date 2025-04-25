@@ -11,6 +11,9 @@ from utils.pb_extractor import PBExtractor
 from utils.onnx_extractor import ONNXProgram
 from utils.logger_util import get_logger
 from utils.instantiate_dummy_args import create_dummy_value, instantiate_with_dummy_args
+from utils.exception_utils import CodeExtractionError
+from scripts.clean_repo import extract_dependencies
+from scripts.unzip_clean_repo import unzip_and_clean_repo
 
 # extra libraries for loading pytorch code into memory (avoids depenecy issues)
 import torch
@@ -110,7 +113,9 @@ class _CodeProcessor(ast.NodeVisitor):
                 self.pytorch_module_names.append(node.name)
                 mappings: dict = {}
 
-                model_class = self.module_namespace.get(node.name)
+
+                class_code = self.extract_code_lines(node.lineno , node.end_lineno)
+                model_class = self.module_namespace.get(node.name , "\n".join(class_code))
 
                 if not model_class:
                     logger.error(f"Could not find class {node.name} in namespace")
@@ -221,7 +226,7 @@ class _CodeProcessor(ast.NodeVisitor):
         """
         return self.sections
     
-    def extract_namespace(self , filepath: str):
+    def extract_namespace(self , filepath: str , code):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
@@ -232,7 +237,14 @@ class _CodeProcessor(ast.NodeVisitor):
         }
 
         #compiled_code = _strip_relative_imports(code)
-        exec(code, namespace)
+        try:
+            exec(code, namespace)
+        except Exception as e:
+            raise CodeExtractionError(
+                message="PyTorch code could not be loaded If file contains relative imports, try uploading entire repository as ZIP",
+                code="PYTORCH_IMPORTS",
+                context={"datatype": 405 , "property": "PYTORCH"}
+            )
         return namespace     
 
 class CodeExtractor():
@@ -261,6 +273,8 @@ class CodeExtractor():
             py_files = glob.glob(f"{file_path}/**/*.py" , recursive=True)
             onnx_files = glob.glob(f"{file_path}/**/*.onnx" , recursive=True)
             pb_files = glob.glob(f"{file_path}/**/*.pb" , recursive=True)
+            zip_file = f"{file_path}/*.zip"
+
 
             if onnx_files:
                 logger.info(f"ONNX file(s) detected: {onnx_files}")
@@ -278,6 +292,36 @@ class CodeExtractor():
                     #output_json = file.replace(".pb" , f"_pbcode_{count}.json")
                     pb_graph = PBExtractor.extract_compute_graph(file)
                     self.save_json(file.replace(".pb" , f"_pb_{count}.json") , pb_graph)
+            dirty_py_files: list = py_files
+            if zip_file: # unzip & clean the uploaded repo
+                user_repo_path = os.path.join(ann_path, "user_repo")
+
+                if not py_files:
+                    raise CodeExtractionError(
+                        message="Ensure the model py file is uploaded in addition to the ZIP file",
+                        code="TARGET_MODEL_FILE_MISSING",
+                        context={"datatype": 406 , "property": "TARGET_MODEL_FILE"}
+                    )
+                unzip_and_clean_repo(zip_file , user_repo_path)
+                
+                for py_file in dirty_py_files:
+                    py_name = os.path.basename(py_file)
+                    found_clean_file = None
+                    for root, dirs, files in os.walk(user_repo_path):
+                        if py_name in files:
+                            found_clean_file = os.path.join(root, py_name)
+                            break
+
+                    if found_clean_file:
+                        py_files.append(found_clean_file)
+                        extract_dependencies(user_repo_path, found_clean_file)
+                        ann_path = user_repo_path
+                    else:
+                        raise CodeExtractionError(
+                            message=f"File '{py_name}' not found in uploaded repository.",
+                            code="CLEANED_MODEL_FILE_MISSING",
+                            context={"datatype": 407 , "property": "CLEAN_REPO"}
+                        )
             if py_files: # informational
                 logger.info(f"Python file(s) detected: {py_files}")
                 code_files_present = True
@@ -287,7 +331,7 @@ class CodeExtractor():
                     with open(file , "r") as f:
                         code = f.read()
                     tree = ast.parse(code)
-                    output_file = file.replace(".py", f"_code_{count}.json")
+                    output_file = file.replace(".py", f"_code_doc_{count}.json")
                     processor = _CodeProcessor(code , file)
 
                     # for node in ast.walk(tree): # track nodes
@@ -316,16 +360,19 @@ class CodeExtractor():
                     output = processor.parse_code()
                     self.save_json(output_file , output)
             if not code_files_present:
-                logger.warning(f"No code file(s) of any type found")
-                raise FileNotFoundError
+                logger.error(f"No code file(s) of any type found")
+
+                raise CodeExtractionError(
+                    message=f"No code/model files found in directory {file_path}",
+                    code="FILES_NOT_FOUND",
+                    context={"code_extraction": "500", "property": FileNotFoundError},
+                )
 
             return processor.pytorch_module_names
                 
         except Exception as e:
-            print(e)
             logger.error(f"Error processing code file(s), {e}" , exc_info=True)
-
-            return -1
+            return
 
     def check_pytorch(tree: ast.Module) -> bool:
         """

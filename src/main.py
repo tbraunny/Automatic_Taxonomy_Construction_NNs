@@ -15,6 +15,7 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
+from utils.exception_utils import CodeExtractionError
 import warnings
 from typing import List
 import json

@@ -169,6 +169,5 @@ def unformat_instance_name(instance_name: str) -> str:
     stripped_name = " ".join(word.capitalize() for word in stripped_name.split())
     return stripped_name
 
-
 if __name__ == "__main__":
     ontology = load_annetto_ontology("meow")
