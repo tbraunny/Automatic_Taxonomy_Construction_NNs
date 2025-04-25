@@ -1,7 +1,6 @@
 
 import os
 import glob
-import warnings
 from typing import List
 
 import utils.suppress_init # used to suppress some default lib loggings
@@ -15,10 +14,9 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
-from utils.exception_utils import CodeExtractionError
+from utils.exception_utils import CodeExtractionError, PDFError
 import warnings
 from typing import List
-import json
 from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
 
 from utils.logger_util import get_logger
@@ -91,7 +89,10 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
     ann_pdfs = glob.glob(os.path.join(ann_path,"*.pdf"))
     if not ann_pdfs:
         logger.error(f"No PDF files found in {ann_path}.")
-        raise FileNotFoundError(f"No PDF files found in {ann_path}.")
+        raise PDFError(
+        message="No PDFs provided. Please provide a PDF.",
+        code="PDF_NOT_FOUND",
+        context={"datatype": "422", "property": "pdf"})
     # If ann_path has multiple pdfs, use the first one and log a warning
     # NOTE: Can only handle one pdf for now. Assumes a single ANN can't have multiple papers 
     if len(ann_pdfs) > 1:
