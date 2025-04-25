@@ -933,33 +933,158 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
 
 def main():
     logging.getLogger().setLevel(logging.WARNING)
+    logger = logging.getLogger(__name__)
     logger.info("Loading ontology.")
+
     ontology_path = f"./data/Annett-o/annett-o-0.1.owl"
-
-    # Example Criteria...
-    op2 = SearchOperator(HashOn="value",Value=[ValueOperator(Name='hasMetric',Op="has")],Cluster='none',Name='layer_num_units' )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    op = SearchOperator(Cluster="cluster", Value=[ValueOperator(Name="layer_num_units",Value=[10],Op="less")],Name='layer_num_units', HashOn='found', Type=TypeOperator(Name="kmeans") )#, equals=[{'type':'name', 'value':'simple_classification_L2'}])
-    
-    criteria = Criteria(Name='Layer Num Units')
-    criteria.add(op2)
-    #criteria.add(op2)
-
-    criterias = [criteria]
     ontology = load_annetto_ontology(return_onto_from_path=ontology_path)
 
-    logger.info(ontology.instances)
     logger.info("Ontology loaded.")
-    logger.info("Creating taxonomy from Annetto annotations.")
+    logger.info("Creating unified taxonomy from Annetto annotations.")
 
-    # taxonomy creator
-    taxonomy_creator = TaxonomyCreator(ontology,criteria=criterias)
-    format='json'
-    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
+    test_criterias: list[Criteria] = []
 
-    # create a dataframe
-    df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format="json")
-    dfi.export(df,'./dataframe.png')
+    # --- Scalar filters ---
+    test_criterias.append(Criteria(
+        Name="Units < 64",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[64])],
+            HashOn="found"
+        )]
+    ))
 
+    test_criterias.append(Criteria(
+        Name="Units in Range 32–256",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="range", Value=[32, 256])],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Exact match (string) ---
+    test_criterias.append(Criteria(
+        Name="Optimizer = Adam",
+        Searchs=[SearchOperator(
+            Name="hasOptimizer",
+            Value=[ValueOperator(Name="hasOptimizer", Op="sequal", Value=["Adam"])],
+            HashOn="value"
+        )]
+    ))
+
+    test_criterias.append(Criteria(
+        Name="Task = Supervised",
+        Searchs=[SearchOperator(
+            Name="hasTaskType",
+            Value=[ValueOperator(Name="hasTaskType", Op="sequal", Value=["SupervisedClassification"])],
+            HashOn="name"
+        )]
+    ))
+
+    # --- Presence / Absence ---
+    test_criterias.append(Criteria(
+        Name="Has Loss Function",
+        Searchs=[SearchOperator(
+            Name="hasLoss",
+            Value=[ValueOperator(Name="hasLoss", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    test_criterias.append(Criteria(
+        Name="Missing Unit Size",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Value=[ValueOperator(Name="layer_num_units", Op="none")],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Clustering: KMeans ---
+    test_criterias.append(Criteria(
+        Name="KMeans Cluster on Units",
+        Searchs=[SearchOperator(
+            Name="layer_num_units",
+            Cluster="cluster",
+            Type=TypeOperator(Name="kmeans", Arguments=["3", "binary"]),
+            Value=[ValueOperator(Name="layer_num_units", Op="less", Value=[128])],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Clustering: Agglomerative ---
+    test_criterias.append(Criteria(
+        Name="Agglomerative Clustering on Layers",
+        Searchs=[SearchOperator(
+            Name="hasLayer",
+            Cluster="cluster",
+            Type=TypeOperator(Name="agg", Arguments=["2", "binary"]),
+            Value=[ValueOperator(Name="hasLayer", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Clustering: Graph embeddings ---
+    test_criterias.append(Criteria(
+        Name="Graph Clustering",
+        Searchs=[SearchOperator(
+            Name="graph_embedding",
+            Cluster="cluster",
+            Type=TypeOperator(Name="graph", Arguments=["2", "binary"]),
+            Value=[ValueOperator(Name="hasLayer", Op="has")],
+            HashOn="found"
+        )]
+    ))
+
+    # --- Multi-condition criteria ---
+    test_criterias.append(Criteria(
+        Name="Conv Layers + >128 Units",
+        Searchs=[
+            SearchOperator(
+                Name="hasLayer",
+                Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["ConvolutionalLayer"])],
+                HashOn="value"
+            ),
+            SearchOperator(
+                Name="layer_num_units",
+                Value=[ValueOperator(Name="layer_num_units", Op="greater", Value=[128])],
+                HashOn="found"
+            )
+        ]
+    ))
+
+    # --- Presence and absence mix ---
+    test_criterias.append(Criteria(
+        Name="Has Loss and Missing Optimizer",
+        Searchs=[
+            SearchOperator(
+                Name="hasLoss",
+                Value=[ValueOperator(Name="hasLoss", Op="has")],
+                HashOn="found"
+            ),
+            SearchOperator(
+                Name="hasOptimizer",
+                Value=[ValueOperator(Name="hasOptimizer", Op="none")],
+                HashOn="found"
+            )
+        ]
+    ))
+
+    # Create taxonomy
+    taxonomy_creator = TaxonomyCreator(ontology, criteria=test_criterias)
+    topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='json', faceted=True)
+
+    # Generate tabular view
+    df = create_tabular_view_from_faceted_taxonomy(
+        taxonomy_str=json.dumps(serialize(facetedTaxonomy)),
+        format="json"
+    )
+
+    # Export image
+    export_path = './dataframe_full_taxonomy.png'
+    dfi.export(df, export_path)
+    print(f"Exported: {export_path}")
 
 if __name__ == "__main__":
     main()
