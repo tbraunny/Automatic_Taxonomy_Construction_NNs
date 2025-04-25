@@ -1,7 +1,4 @@
-,Data & Labels Criteria Unrecognized criteria,Data & Labels Criteria Unrecognized criteria,Evaluation & Metrics Criteria Unrecognized criteria,KMeans Clustering Unrecognized criteria,KMeans Clustering Unrecognized criteria,Layer Properties Criteria Unrecognized criteria,Layer Properties Criteria Unrecognized criteria,Network Structure Criteria Unrecognized criteria,Training & Optimization Criteria Unrecognized criteria,Training & Optimization Criteria Unrecognized criteria
-,hasDataType,not matching,not matching,Not matching,True,hasActivationFunction,not matching,hasNetwork,hasTrainingStrategy,not matching
-Model,,,,,,,,,,
-709942bd_alexnet,X,,X,X,,,X,X,,X
-AAE,X,,X,,X,X,,X,X,
-GAN,,X,X,,X,X,,X,X,
-simple_classification,X,,X,,X,X,,X,X,
+,Has Activation Function Criteria Unrecognized criteria,Has Loss Criteria Unrecognized criteria,Has Network Criteria Unrecognized criteria,Has Training Optimizer Criteria Unrecognized criteria,"Layer Num Units Includes {'Name': 'kmeans', 'Arguments': [4, 10]}"
+,not matching,hasLoss,hasNetwork,not matching,not matching
+Model,,,,,
+709942bd_alexnet,X,X,X,X,X
