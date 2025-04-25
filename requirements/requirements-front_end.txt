@@ -8,4 +8,6 @@ yfiles-jupyter-graphs
 ipython
 voila
 jupyter
-
+matplotlib
+scikit-learn
+mcp

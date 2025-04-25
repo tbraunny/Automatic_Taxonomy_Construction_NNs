@@ -5,7 +5,8 @@
 -r "requirements/requirements-pytest.txt"
 -r "requirements/requirements-instantiate_annetto.txt"
 -r "requirements/requirements-code_extraction.txt"
-# -r "requirements/requirements-front_end.txt"
+-r "requirements/requirements-front_end.txt"
+-r "requirements/requirements-taxonomy_viz.txt"
 # -r "requirements/requirements-graph_viz.txt"
 
 

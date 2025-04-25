@@ -24,8 +24,9 @@ from dotenv import load_dotenv
 
 T = TypeVar("T", bound=BaseModel)
 
-load_dotenv()
-os.environ["USE_LLM_API"] = "False"
+load_dotenv(override=True)
+
+#os.environ["USE_LLM_API"] = "False"
 # In-memory embedding cache
 embedding_cache = {}
 
@@ -203,7 +204,6 @@ class OpenAIClient(BaseLLMClient):
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
 def load_environment_llm(**kwargs):
-     
     llm_client = ( OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
                 gen_model=OPENAI_GENERATION_MODEL,

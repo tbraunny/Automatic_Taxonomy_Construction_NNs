@@ -11,9 +11,9 @@ from pydantic import BaseModel
 from owlready2 import (
     Ontology,
     ThingClass,
-    Thing,
     ObjectPropertyClass,
     DataPropertyClass,
+    Thing,
 )
 from utils.known_layer_types import check_actfunc, check_pooling, check_norm
 from utils.constants import Constants as C
