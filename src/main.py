@@ -15,6 +15,7 @@ from utils.model_db_utils import DBUtils
 from utils.owl_utils import delete_ann_configuration, save_ontology
 from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
+from utils.exception_utils import CodeExtractionError
 import warnings
 from typing import List
 import json
@@ -112,6 +113,7 @@ def main(ann_name: str, ann_path: str, output_ontology_filepath: str = "", use_u
                 for pdf_file in ann_pdf_files:
                     extract_filter_pdf_to_json(pdf_file, ann_path)
                     logger.info(f"Extracted text from {pdf_file} to JSON.")
+            
     # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
     if py_files or pb_files: # or onnx_files:

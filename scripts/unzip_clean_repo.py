@@ -27,6 +27,8 @@ def unzip_and_clean_repo(zip_path, extract_to):
         # Remove .gitignore files
         if '.gitignore' in files:
             os.remove(os.path.join(root, '.gitignore'))
+        if '.gitattributes' in files:
+            os.remove(os.path.join(root , '.gitattributes'))
 
     print(f"Extraction and cleanup completed in '{extract_to}'")
 

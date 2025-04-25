@@ -98,13 +98,12 @@ def find_dependencies(file_path, root_dir):
 
     return visited
 
-def extract_dependencies(root_dir, target_filename, output_dir):
+def extract_dependencies(root_dir, target_filename):
     """
     Copy only the Python files needed by `target_filename` from `root_dir`
     into `output_dir`, preserving the directory structure.
     """
     root_dir = Path(root_dir).resolve()
-    output_dir = Path(output_dir).resolve()
 
     # 1) locate the target file in root_dir
     target_path = None
@@ -124,14 +123,14 @@ def extract_dependencies(root_dir, target_filename, output_dir):
         src = Path(abs_path)
         # compute relative path w.r.t. the repo root
         rel = src.relative_to(root_dir)
-        dst = output_dir / rel
+        #dst = output_dir / rel
 
         # make sure the destination directory exists
-        dst.parent.mkdir(parents=True, exist_ok=True)
+        #dst.parent.mkdir(parents=True, exist_ok=True)
         # copy the file (preserve metadata)
-        shutil.copy2(src, dst)
+        shutil.copy2(src, rel)
 
-    print(f"Copied {len(deps)} files into {output_dir}")
+    print(f"Copied {len(deps)} files into {root_dir}")
 
 
 def clean_directory(root_dir, target_filename):
