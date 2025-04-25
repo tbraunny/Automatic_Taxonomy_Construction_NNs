@@ -1251,100 +1251,129 @@
   <owl:disjointWith rdf:resource="MinObjectiveFunction"/>
 </owl:Class>
 
+<owl:Class rdf:about="MinObjectiveFunction">
+  <rdfs:subClassOf rdf:resource="ObjectiveFunction"/>
+</owl:Class>
 
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Datatypes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
+<owl:Class rdf:about="MeanSquaredError">
+  <rdfs:subClassOf rdf:resource="Metric"/>
+</owl:Class>
 
-    
+<owl:Class rdf:about="Momentum">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
 
+<owl:Class rdf:about="MultiDimensionalCube">
+  <rdfs:subClassOf rdf:resource="DataType"/>
+</owl:Class>
 
-    <!-- http://www.dmg.org/PMML-4_3#Array -->
+<owl:Class rdf:about="MultiplyLayer">
+  <rdfs:subClassOf rdf:resource="AggregationLayer"/>
+</owl:Class>
 
-    <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
-    
+<owl:Class rdf:about="NormalInitialization">
+  <rdfs:subClassOf rdf:resource="WeightInitialization"/>
+</owl:Class>
 
+<owl:Class rdf:about="OnesInitialization">
+  <rdfs:subClassOf rdf:resource="Constant"/>
+</owl:Class>
 
-    <!-- http://www.dmg.org/PMML-4_3#Matrix -->
+<owl:Class rdf:about="Orthogonal">
+  <rdfs:subClassOf rdf:resource="WeightInitialization"/>
+</owl:Class>
 
-    <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Matrix"/>
-    
+<owl:Class rdf:about="ParzenWindow">
+  <rdfs:subClassOf rdf:resource="LogLikelihood"/>
+</owl:Class>
 
+<owl:Class rdf:about="PoolingLayer">
+  <rdfs:subClassOf rdf:resource="AggregationLayer"/>
+</owl:Class>
 
-    <!-- http://www.w3.org/2001/XMLSchema#anyType -->
+<owl:Class rdf:about="Precision">
+  <rdfs:subClassOf rdf:resource="Metric"/>
+</owl:Class>
 
-    <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
-    
+<owl:Class rdf:about="ProximalAdaGrad">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
 
+<owl:Class rdf:about="ProximalGradientDescent">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
 
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
+<owl:Class rdf:about="RMSProp">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
 
-    
+<owl:Class rdf:about="RandomDropOut">
+  <rdfs:subClassOf rdf:resource="Regularization"/>
+</owl:Class>
 
+<owl:Class rdf:about="Regularization">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
 
-    <!-- http://w3id.org/annett-o/derivedFrom -->
+<owl:Class rdf:about="Recall">
+  <rdfs:subClassOf rdf:resource="Metric"/>
+</owl:Class>
 
-    <owl:ObjectProperty rdf:about="http://w3id.org/annett-o/derivedFrom">
-        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-        <rdfs:domain rdf:resource="http://w3id.org/annett-o/Dataset"/>
-        <rdfs:range rdf:resource="http://w3id.org/annett-o/Dataset"/>
-    </owl:ObjectProperty>
-    
+<owl:Class rdf:about="Reconstruction">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
 
+<owl:Class rdf:about="Regression">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
 
-    <!-- http://w3id.org/annett-o/derivedTestDatasetFrom -->
+<owl:Class rdf:about="Relu">
+  <rdfs:subClassOf rdf:resource="NonDiff"/>
+</owl:Class>
 
-    <owl:ObjectProperty rdf:about="http://w3id.org/annett-o/derivedTestDatasetFrom">
-        <rdfs:subPropertyOf rdf:resource="http://w3id.org/annett-o/derivedFrom"/>
-        <rdfs:domain rdf:resource="http://w3id.org/annett-o/Dataset"/>
-        <rdfs:range rdf:resource="http://w3id.org/annett-o/Dataset"/>
-    </owl:ObjectProperty>
-    
+<owl:Class rdf:about="Relu6">
+  <rdfs:subClassOf rdf:resource="NonDiff"/>
+</owl:Class>
 
+<owl:Class rdf:about="Scenery">
+  <rdfs:subClassOf rdf:resource="Nature"/>
+</owl:Class>
 
-    <!-- http://w3id.org/annett-o/derivedTrainingDatasetFrom -->
+<owl:Class rdf:about="SemiSupervisedClassification">
+  <rdfs:subClassOf rdf:resource="Classification"/>
+</owl:Class>
 
-    <owl:ObjectProperty rdf:about="http://w3id.org/annett-o/derivedTrainingDatasetFrom">
-        <rdfs:subPropertyOf rdf:resource="http://w3id.org/annett-o/derivedFrom"/>
-        <rdfs:domain rdf:resource="http://w3id.org/annett-o/Dataset"/>
-        <rdfs:range rdf:resource="http://w3id.org/annett-o/Dataset"/>
-    </owl:ObjectProperty>
-    
+<owl:Class rdf:about="SemistructuredText">
+  <rdfs:subClassOf rdf:resource="Text"/>
+</owl:Class>
 
+<owl:Class rdf:about="Text">
+  <rdfs:subClassOf rdf:resource="DataType"/>
+</owl:Class>
 
-    <!-- http://w3id.org/annett-o/derivedXValDatasetFrom -->
+<owl:Class rdf:about="SeparableConvolutionLayer">
+  <rdfs:subClassOf rdf:resource="ConvolutionLayer"/>
+</owl:Class>
 
-    <owl:ObjectProperty rdf:about="http://w3id.org/annett-o/derivedXValDatasetFrom">
-        <rdfs:subPropertyOf rdf:resource="http://w3id.org/annett-o/derivedFrom"/>
-        <rdfs:domain rdf:resource="http://w3id.org/annett-o/Dataset"/>
-        <rdfs:range rdf:resource="http://w3id.org/annett-o/Dataset"/>
-    </owl:ObjectProperty>
-    
+<owl:Class rdf:about="SeparableDeconvolutionLayer">
+  <rdfs:subClassOf rdf:resource="DeconvolutionLayer"/>
+</owl:Class>
 
+<owl:Class rdf:about="Sigmoid">
+  <rdfs:subClassOf rdf:resource="Smooth"/>
+</owl:Class>
 
-    <!-- http://w3id.org/annett-o/evaluatesANNConf -->
+<owl:Class rdf:about="Smooth">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
 
-    <owl:ObjectProperty rdf:about="http://w3id.org/annett-o/evaluatesANNConf">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
-        <rdfs:domain rdf:resource="http://w3id.org/annett-o/EvaluationResult"/>
-        <rdfs:range rdf:resource="http://w3id.org/annett-o/ANNConfiguration"/>
-    </owl:ObjectProperty>
-    
+<owl:Class rdf:about="SoftMax">
+  <rdfs:subClassOf rdf:resource="Smooth"/>
+</owl:Class>
 
+<owl:Class rdf:about="SoftPlus">
+  <rdfs:subClassOf rdf:resource="Smooth"/>
+</owl:Class>
 
 <owl:Class rdf:about="SoftSign">
   <rdfs:subClassOf rdf:resource="Smooth"/>
@@ -1446,55 +1475,11 @@
   <rdfs:subClassOf rdf:resource="Network"/>
 </owl:Class>
 
-<owl:Class rdf:about="Conv2d">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="ReLU">
-  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
-</owl:Class>
-
-<owl:Class rdf:about="LocalResponseNorm">
-  <rdfs:subClassOf rdf:resource="Layer"/>
-</owl:Class>
-
-<owl:Class rdf:about="MaxPool2d">
-  <rdfs:subClassOf rdf:resource="PoolingLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="net_0">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="net_4">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="net_8">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="net_10">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="net_12">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="classifier_0">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="classifier_3">
-  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Multinomial Logistic Regression Loss">
+<owl:Class rdf:about="Multinomial Logistic Loss">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Weight Decay">
+<owl:Class rdf:about="Dropout">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
@@ -1627,236 +1612,4 @@
 </owl:AllDisjointProperties>
 
 
-    <!-- http://w3id.org/annett-o/simple_classification_Trained_Model -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_Trained_Model">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/TrainedModel"/>
-        <hasWeights rdf:resource="http://w3id.org/annett-o/simple_classification_WL1"/>
-        <hasWeights rdf:resource="http://w3id.org/annett-o/simple_classification_WL2"/>
-        <hasWeights rdf:resource="http://w3id.org/annett-o/simple_classification_WL3"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_WL1 -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_WL1">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/TrainedWeights"/>
-        <trainedInLayer rdf:resource="http://w3id.org/annett-o/simple_classification_IN"/>
-        <trainedOutLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L1"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_WL2 -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_WL2">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/TrainedWeights"/>
-        <trainedInLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L1"/>
-        <trainedOutLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L2"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_WL3 -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_WL3">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/TrainedWeights"/>
-        <trainedInLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L2"/>
-        <trainedOutLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L3"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_cost -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_cost">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/CostFunction"/>
-        <hasLoss rdf:resource="http://w3id.org/annett-o/CategoricalCrossEntropy"/>
-        <hasRegularizer rdf:resource="http://w3id.org/annett-o/ReguralizerL2"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_eval -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_eval">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/EvaluationResult"/>
-        <evaluatesANNConf rdf:resource="http://w3id.org/annett-o/simple_classification"/>
-        <evaluatesNetwork rdf:resource="http://w3id.org/annett-o/simple_classification_net"/>
-        <evaluatesUsingIOPipe rdf:resource="http://w3id.org/annett-o/simple_classification_EVP"/>
-        <hasMetric rdf:resource="http://w3id.org/annett-o/ACC"/>
-        <withTrainingStrategy rdf:resource="http://w3id.org/annett-o/simple_classification_Strategy"/>
-        <eval_score rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.7</eval_score>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_net -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_net">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/Network"/>
-        <hasInputLayer rdf:resource="http://w3id.org/annett-o/simple_classification_IN"/>
-        <hasLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L1"/>
-        <hasLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L2"/>
-        <hasLayer rdf:resource="http://w3id.org/annett-o/simple_classification_L3"/>
-        <hasObjective rdf:resource="http://w3id.org/annett-o/simple_classification_objective"/>
-        <hasOutputLayer rdf:resource="http://w3id.org/annett-o/simple_classification_OUT"/>
-        <hasTaskType rdf:resource="http://w3id.org/annett-o/simple_classification_type"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_objective -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_objective">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/MinObjectiveFunction"/>
-        <hasCost rdf:resource="http://w3id.org/annett-o/simple_classification_cost"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://w3id.org/annett-o/simple_classification_type -->
-
-    <owl:NamedIndividual rdf:about="http://w3id.org/annett-o/simple_classification_type">
-        <rdf:type rdf:resource="http://w3id.org/annett-o/SupervisedClassification"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // General axioms
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Accuracy"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/LogLikelihood"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/MeanSquaredError"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Precision"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Recall"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/TrueOrFalseExamples"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ActivationFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/CostFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/LossFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Metric"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ObjectiveFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ProbabilityDistributionFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/RegularizerFunction"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ActivationLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/AggregationLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ModificationLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/SeparationLayer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/AdaDelta"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/AdaGrad"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/AdaGradDA"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Adam"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Ftrl"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/GradientDescent"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Momentum"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ProximalAdaGrad"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ProximalGradientDescent"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/RMSProp"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/BatchNormLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/DropoutLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/FlattenLayer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/BinaryCrossEntropy"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/CategoricalCrossEntropy"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/MSE"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Categorical"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Exponential"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Uniform"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ConcatLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/MultiplyLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/SumLayer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/ConvolutionLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/DeconvolutionLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/FullyConnectedLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/RNNLayer"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/SeparableConvolutionLayer"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Elu"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Relu"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Relu6"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/L1L2RegularizerFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/L1RegularizerFunction"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/L2RegularizerFunction"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Linear"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/NonDiff"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Regularization"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/Smooth"/>
-        </owl:members>
-    </rdf:Description>
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
-        <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://w3id.org/annett-o/derivedTestDatasetFrom"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/derivedTrainingDatasetFrom"/>
-            <rdf:Description rdf:about="http://w3id.org/annett-o/derivedXValDatasetFrom"/>
-        </owl:members>
-    </rdf:Description>
 </rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
-
