@@ -1,5 +1,15 @@
-,Activation Function Criteria,Loss Function Criteria,Network Criteria,Layer Number of Units,Learning Rate,Number of Epochs,Number of Epochs
-,No Activation Function,Loss Function Defined,Network Defined,No Units Specified,No Learning Rate Set,No Epochs Specified,Epochs Specified
-Model,,,,,,,
-cf34362a_aae,X,X,X,X,X,X,
-f1253bc7_gan,X,X,X,X,X,,X
+,Activation Function,Activation Function,Loss Criteria,Loss Criteria,Regularizer,Regularizer,Training Optimizer,Number of Units in Layer,Number of Units in Layer,Number of Units in Layer,Number of Units in Layer,Number of Units in Layer,Learning Rate
+,Not Specified,Defined,Not Specified,Defined,Not Specified,Defined,Not Specified,"1025, 1, 1088, 8193","3072, 8192, 3072","156, 2416","864, 2, 5120, 1008, 9216, 1, 6144",Not Specified,Not Specified
+Model,,,,,,,,,,,,,
+1df4bed9_sparse_ae,,X,,X,,X,X,,,,,X,X
+219ceb2c_cgan_gan,,X,,X,X,,X,,,,,X,X
+35c32b31_vae,,X,,X,,X,X,,,,,X,X
+4b55c674_lenet_cnn,,X,,X,X,,X,,,X,,,X
+63427150_dcgan,,X,,X,,X,X,X,,,,,X
+6fade30c_lstm_rnn,X,,,X,,X,X,,,,,X,X
+7ddf32e1_random,X,,,X,,X,X,,,,,X,X
+98709a6f_discogan_gan,,X,,X,,X,X,,X,,,,X
+b4ff1581_unet_cnn,X,,X,,X,,X,,,,,X,X
+bfad730c_inceptionv3_cnn,,X,,X,,X,X,,,,X,,X
+d53410e0_resnet,,X,,X,,X,X,,,,,X,X
+e22d76b0_gat_gnn,X,,X,,X,,X,,,,,X,X

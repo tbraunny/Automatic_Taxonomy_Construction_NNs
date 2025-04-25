@@ -110,10 +110,10 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
 
     # # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
-    # process_code = CodeExtractor()
-    # process_code.process_code_file(ann_path)
-    # pytorch_module_names = process_code.pytorch_module_names
-    # logger.info(f"Extracted code from to JSON.")
+    process_code = CodeExtractor()
+    process_code.process_code_file(ann_path)
+    pytorch_module_names = process_code.pytorch_module_names
+    logger.info(f"Extracted code from to JSON.")
 
     # # insert model into db 
     # # NOTE: This is for Chase

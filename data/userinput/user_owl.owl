@@ -2775,6 +2775,20 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="98709a6f_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-2"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-3"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-4"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-5"/>
+  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-6"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0002</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50000</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">200</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="98709a6f_reconstruction-loss">
   <rdf:type rdf:resource="Reconstruction Loss_sub"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -2791,20 +2805,6 @@
   <rdf:type rdf:resource="GAN Discriminator Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures how well the discriminator distinguishes between real and generated images.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="98709a6f_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-2"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-3"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-4"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-5"/>
-  <trainingSingleHasIOPipe rdf:resource="98709a6f_dataset-pipe-6"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.0002</learning_rate_decay>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">50000</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">200</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="98709a6f_dataset-pipe-1">
@@ -4394,6 +4394,16 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="bfad730c_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="bfad730c_dataset-pipe-1"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="bfad730c_cross-entropy-loss">
   <rdf:type rdf:resource="Cross-Entropy Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -4410,16 +4420,6 @@
   <rdf:type rdf:resource="Label Smoothing Regularization"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the model to be less confident by mixing the ground-truth label distribution with a uniform distribution.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="bfad730c_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="bfad730c_dataset-pipe-1"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="bfad730c_dataset-pipe-1">
@@ -4498,6 +4498,15 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="6fade30c_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="6fade30c_cross-entropy-loss">
   <rdf:type rdf:resource="Cross-Entropy Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -4508,15 +4517,6 @@
   <rdf:type rdf:resource="L2 Regularization"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalizes large weights to prevent overfitting.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="6fade30c_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="4b55c674_lenet_cnn">
@@ -4648,6 +4648,17 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="4b55c674_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="4b55c674_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="4b55c674_dataset-pipe-2"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="4b55c674_cumulative-penalty-loss">
   <rdf:type rdf:resource="Cumulative Penalty Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -4670,17 +4681,6 @@
   <rdf:type rdf:resource="Discriminative Forward Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Minimizes the forward penalty of the constrained interpretation while maximizing the forward penalty of the whole interpretation graph.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="4b55c674_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="4b55c674_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="4b55c674_dataset-pipe-2"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="4b55c674_dataset-pipe-1">
@@ -4811,6 +4811,15 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="1df4bed9_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="1df4bed9_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="1df4bed9_dataset-pipe-2"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.001</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="1df4bed9_l1-loss">
   <rdf:type rdf:resource="L1 Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -4821,15 +4830,6 @@
   <rdf:type rdf:resource="Sparsity Penalty"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Controls the sparsity of the reconstruction by penalizing non-zero coefficients.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="1df4bed9_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="1df4bed9_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="1df4bed9_dataset-pipe-2"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.001</learning_rate_decay>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="1df4bed9_dataset-pipe-1">
@@ -5083,6 +5083,16 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="d53410e0_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="d53410e0_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="d53410e0_dataset-pipe-2"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="d53410e0_residual-loss">
   <rdf:type rdf:resource="Residual Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
@@ -5093,16 +5103,6 @@
   <rdf:type rdf:resource="Weight Decay"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that penalizes large weights to prevent overfitting.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="d53410e0_training-single">
-  <rdf:type rdf:resource="TrainingSingle"/>
-  <trainingSingleHasIOPipe rdf:resource="d53410e0_dataset-pipe-1"/>
-  <trainingSingleHasIOPipe rdf:resource="d53410e0_dataset-pipe-2"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
-  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">64</number_of_epochs>
-  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="d53410e0_dataset-pipe-1">
@@ -5217,20 +5217,21 @@
   <hasActivationFunction rdf:resource="35c32b31_sigmoid"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="35c32b31_fc1">
-  <rdf:type rdf:resource="Linear"/>
+<owl:NamedIndividual rdf:about="35c32b31_maximize-objective-function">
+  <rdf:type rdf:resource="MaxObjectiveFunction"/>
+  <hasCost rdf:resource="35c32b31_cost-function"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="35c32b31_relu">
-  <rdf:type rdf:resource="relu"/>
+<owl:NamedIndividual rdf:about="35c32b31_generation">
+  <rdf:type rdf:resource="Generation"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="35c32b31_fc21">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_fc22">
-  <rdf:type rdf:resource="Linear"/>
+<owl:NamedIndividual rdf:about="35c32b31_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="35c32b31_training-single"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="35c32b31_fc3">
@@ -5249,39 +5250,10 @@
   <rdf:type rdf:resource="sigmoid"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="35c32b31_maximize-objective-function">
-  <rdf:type rdf:resource="MaxObjectiveFunction"/>
-  <hasCost rdf:resource="35c32b31_cost-function"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_generation">
-  <rdf:type rdf:resource="Generation"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="35c32b31_cost-function">
   <rdf:type rdf:resource="CostFunction"/>
   <hasLoss rdf:resource="35c32b31_variational-lower-bound-loss"/>
   <hasRegularizer rdf:resource="35c32b31_kl-divergence-regularization"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_variational-lower-bound-loss">
-  <rdf:type rdf:resource="Variational Lower Bound Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A lower bound on the marginal likelihood, optimized to approximate the posterior distribution.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_kl-divergence-regularization">
-  <rdf:type rdf:resource="KL Divergence Regularization"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the approximate posterior to be close to the prior distribution.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_training-session">
-  <rdf:type rdf:resource="TrainingSession"/>
-  <hasPrimaryTrainingStep rdf:resource="35c32b31_training-single"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
@@ -5296,6 +5268,18 @@
   <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</batch_size>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="35c32b31_variational-lower-bound-loss">
+  <rdf:type rdf:resource="Variational Lower Bound Loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A lower bound on the marginal likelihood, optimized to approximate the posterior distribution.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_kl-divergence-regularization">
+  <rdf:type rdf:resource="KL Divergence Regularization"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the approximate posterior to be close to the prior distribution.</definition>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="35c32b31_dataset-pipe-1">
   <rdf:type rdf:resource="DatasetPipe"/>
   <joinsDataSet rdf:resource="35c32b31_mnist"/>
@@ -5308,6 +5292,22 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="35c32b31_fc1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_relu">
+  <rdf:type rdf:resource="relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_fc21">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_fc22">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="35c32b31_mnist">
   <rdf:type rdf:resource="Dataset"/>
   <hasLabels rdf:resource="35c32b31_label-set"/>
@@ -5316,6 +5316,15 @@
   <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST dataset containing images of handwritten digits, used for training generative models with 500 hidden units.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28x28</data_sample_dimensionality>
   <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_frey-face">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="35c32b31_label-set"/>
+  <hasDataType rdf:resource="35c32b31_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Frey Face dataset consisting of facial images, used for training generative models with 200 hidden units.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unknown</data_sample_dimensionality>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="35c32b31_label-set">
@@ -5327,15 +5336,6 @@
 <owl:NamedIndividual rdf:about="35c32b31_data-type">
   <rdf:type rdf:resource="Image"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_frey-face">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="35c32b31_label-set"/>
-  <hasDataType rdf:resource="35c32b31_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Frey Face dataset consisting of facial images, used for training generative models with 200 hidden units.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unknown</data_sample_dimensionality>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_dcgan">
@@ -5362,115 +5362,10 @@
   <total_network_params rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2763585</total_network_params>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_main_0">
-  <rdf:type rdf:resource="Conv2d"/>
-  <hasActivationFunction rdf:resource="63427150_main_1"/>
-  <nextLayer rdf:resource="63427150_main_2"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1088</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_1">
-  <rdf:type rdf:resource="LeakyReLU"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_2">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="63427150_main_3"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">131072</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_3">
-  <rdf:type rdf:resource="batch_norm"/>
-  <hasActivationFunction rdf:resource="63427150_main_4"/>
-  <nextLayer rdf:resource="63427150_main_5"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_4">
-  <rdf:type rdf:resource="LeakyReLU"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_5">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="63427150_main_6"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">524288</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_6">
-  <rdf:type rdf:resource="batch_norm"/>
-  <hasActivationFunction rdf:resource="63427150_main_7"/>
-  <nextLayer rdf:resource="63427150_main_8"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_7">
-  <rdf:type rdf:resource="LeakyReLU"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_8">
-  <rdf:type rdf:resource="Conv2d"/>
-  <nextLayer rdf:resource="63427150_main_9"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2097152</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_9">
-  <rdf:type rdf:resource="batch_norm"/>
-  <hasActivationFunction rdf:resource="63427150_main_10"/>
-  <nextLayer rdf:resource="63427150_main_11"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_10">
-  <rdf:type rdf:resource="LeakyReLU"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_11">
-  <rdf:type rdf:resource="Conv2d"/>
-  <hasActivationFunction rdf:resource="63427150_main_12"/>
-  <nextLayer rdf:resource="63427150_flatten"/>
-  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8193</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_12">
-  <rdf:type rdf:resource="Sigmoid"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_flatten">
-  <rdf:type rdf:resource="FlattenLayer"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="63427150_discriminator-network">
   <rdf:type rdf:resource="Network"/>
   <hasObjective rdf:resource="63427150_minimize-objective-function"/>
   <hasTaskType rdf:resource="63427150_adversarial"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_minimize-objective-function">
-  <rdf:type rdf:resource="MinObjectiveFunction"/>
-  <hasCost rdf:resource="63427150_cost-function"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_cost-function">
-  <rdf:type rdf:resource="CostFunction"/>
-  <hasLoss rdf:resource="63427150_binary-cross-entropy-loss"/>
-  <hasRegularizer rdf:resource="63427150_l2-regularization"/>
-  <hasLoss rdf:resource="63427150_adversarial-loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_binary-cross-entropy-loss">
-  <rdf:type rdf:resource="Binary Cross-Entropy Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the performance of a classification model whose output is a probability value between 0 and 1.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_l2-regularization">
-  <rdf:type rdf:resource="L2 Regularization"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adds a penalty equal to the square of the magnitude of coefficients to the loss function.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_adversarial">
-  <rdf:type rdf:resource="Adversarial"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
@@ -5491,6 +5386,77 @@
   <total_network_params rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3574657</total_network_params>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="63427150_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="63427150_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_0">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="63427150_main_1"/>
+  <nextLayer rdf:resource="63427150_main_2"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1088</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_2">
+  <rdf:type rdf:resource="Conv2d"/>
+  <nextLayer rdf:resource="63427150_main_3"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">131072</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_3">
+  <rdf:type rdf:resource="batch_norm"/>
+  <hasActivationFunction rdf:resource="63427150_main_4"/>
+  <nextLayer rdf:resource="63427150_main_5"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_5">
+  <rdf:type rdf:resource="Conv2d"/>
+  <nextLayer rdf:resource="63427150_main_6"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">524288</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_6">
+  <rdf:type rdf:resource="batch_norm"/>
+  <hasActivationFunction rdf:resource="63427150_main_7"/>
+  <nextLayer rdf:resource="63427150_main_8"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_8">
+  <rdf:type rdf:resource="Conv2d"/>
+  <nextLayer rdf:resource="63427150_main_9"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2097152</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_9">
+  <rdf:type rdf:resource="batch_norm"/>
+  <hasActivationFunction rdf:resource="63427150_main_10"/>
+  <nextLayer rdf:resource="63427150_main_11"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_11">
+  <rdf:type rdf:resource="Conv2d"/>
+  <hasActivationFunction rdf:resource="63427150_main_12"/>
+  <nextLayer rdf:resource="63427150_flatten"/>
+  <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8193</layer_num_units>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_flatten">
+  <rdf:type rdf:resource="FlattenLayer"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="63427150_cost-function"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_adversarial">
+  <rdf:type rdf:resource="Adversarial"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="63427150_main_0_inst">
   <rdf:type rdf:resource="ConvTranspose2d"/>
   <nextLayer rdf:resource="63427150_main_1_inst"/>
@@ -5501,10 +5467,6 @@
   <rdf:type rdf:resource="batch_norm"/>
   <hasActivationFunction rdf:resource="63427150_main_2_inst"/>
   <nextLayer rdf:resource="63427150_main_3_inst"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_2_inst">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_main_3_inst">
@@ -5519,10 +5481,6 @@
   <nextLayer rdf:resource="63427150_main_6_inst"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_main_5_inst">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="63427150_main_6_inst">
   <rdf:type rdf:resource="ConvTranspose2d"/>
   <nextLayer rdf:resource="63427150_main_7_inst"/>
@@ -5533,10 +5491,6 @@
   <rdf:type rdf:resource="batch_norm"/>
   <hasActivationFunction rdf:resource="63427150_main_8_inst"/>
   <nextLayer rdf:resource="63427150_main_9_inst"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_8_inst">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_main_9_inst">
@@ -5551,18 +5505,10 @@
   <nextLayer rdf:resource="63427150_main_12_inst"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_main_11_inst">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="63427150_main_12_inst">
   <rdf:type rdf:resource="ConvTranspose2d"/>
   <hasActivationFunction rdf:resource="63427150_main_13"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1025</layer_num_units>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_main_13">
-  <rdf:type rdf:resource="Tanh"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_maximize-objective-function">
@@ -5571,27 +5517,63 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_adversarial-loss">
-  <rdf:type rdf:resource="Adversarial Loss"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between the generated images and real images to improve the generator's performance.</definition>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="63427150_generation">
   <rdf:type rdf:resource="Generation"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_training-strategy">
-  <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="63427150_training-session"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_training-session">
   <rdf:type rdf:resource="TrainingSession"/>
   <hasPrimaryTrainingStep rdf:resource="63427150_training-single"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_1">
+  <rdf:type rdf:resource="LeakyReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_4">
+  <rdf:type rdf:resource="LeakyReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_7">
+  <rdf:type rdf:resource="LeakyReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_10">
+  <rdf:type rdf:resource="LeakyReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_12">
+  <rdf:type rdf:resource="Sigmoid"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="63427150_binary-cross-entropy-loss"/>
+  <hasRegularizer rdf:resource="63427150_l2-regularization"/>
+  <hasLoss rdf:resource="63427150_adversarial-loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_2_inst">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_5_inst">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_8_inst">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_11_inst">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_main_13">
+  <rdf:type rdf:resource="Tanh"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_training-single">
@@ -5606,9 +5588,51 @@
   <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="63427150_binary-cross-entropy-loss">
+  <rdf:type rdf:resource="Binary Cross-Entropy Loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the performance of a classification model whose output is a probability value between 0 and 1.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_l2-regularization">
+  <rdf:type rdf:resource="L2 Regularization"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adds a penalty equal to the square of the magnitude of coefficients to the loss function.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_adversarial-loss">
+  <rdf:type rdf:resource="Adversarial Loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between the generated images and real images to improve the generator's performance.</definition>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="63427150_dataset-pipe-1">
   <rdf:type rdf:resource="DatasetPipe"/>
   <joinsDataSet rdf:resource="63427150_svhn"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_dataset-pipe-2">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="63427150_mnist"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_dataset-pipe-3">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="63427150_lsun"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_dataset-pipe-4">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="63427150_faces"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_dataset-pipe-5">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="63427150_imagenet-1k"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
@@ -5618,6 +5642,43 @@
   <hasDataType rdf:resource="63427150_data-type"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The StreetView House Numbers dataset (SVHN) used for classifying digits with a DCGAN feature extractor, with a validation set of 10,000 examples.</data_description>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_mnist">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="63427150_label-set"/>
+  <hasDataType rdf:resource="63427150_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST dataset containing handwritten digits, used for training a DCGAN with a validation set of 10,000 examples.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28x28</data_sample_dimensionality>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_lsun">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="63427150_label-set"/>
+  <hasDataType rdf:resource="63427150_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The LSUN bedrooms dataset containing over 3 million training examples, used to evaluate the generative model's performance.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3000000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_faces">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="63427150_label-set"/>
+  <hasDataType rdf:resource="63427150_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dataset of human faces scraped from web image queries, containing approximately 350,000 face boxes for training.</data_description>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">350000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="63427150_imagenet-1k">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="63427150_label-set"/>
+  <hasDataType rdf:resource="63427150_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Imagenet-1k dataset used as a source of natural images for unsupervised training.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">32x32</data_sample_dimensionality>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="63427150_label-set">
@@ -5631,65 +5692,75 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_dataset-pipe-2">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="63427150_mnist"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_random">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="7ddf32e1_random-network"/>
+  <hasNetwork rdf:resource="7ddf32e1_lstm-cell"/>
+  <hasPrimaryTrainingSession rdf:resource="7ddf32e1_training-strategy"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="7ddf32e1_random-network">
+  <rdf:type rdf:resource="ParentNetwork"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_mnist">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="63427150_label-set"/>
-  <hasDataType rdf:resource="63427150_data-type"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_lstm-cell">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="7ddf32e1_minimize-objective-function"/>
+  <hasTaskType rdf:resource="7ddf32e1_generation"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The MNIST dataset containing handwritten digits, used for training a DCGAN with a validation set of 10,000 examples.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28x28</data_sample_dimensionality>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">70000</data_samples>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_dataset-pipe-3">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="63427150_lsun"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="7ddf32e1_cost-function"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_lsun">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="63427150_label-set"/>
-  <hasDataType rdf:resource="63427150_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The LSUN bedrooms dataset containing over 3 million training examples, used to evaluate the generative model's performance.</data_description>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3000000</data_samples>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="63427150_dataset-pipe-4">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="63427150_faces"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="7ddf32e1_cross-entropy-loss"/>
+  <hasRegularizer rdf:resource="7ddf32e1_l2-regularization"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_faces">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="63427150_label-set"/>
-  <hasDataType rdf:resource="63427150_data-type"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_cross-entropy-loss">
+  <rdf:type rdf:resource="Cross-Entropy Loss"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A dataset of human faces scraped from web image queries, containing approximately 350,000 face boxes for training.</data_description>
-  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">350000</data_samples>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the difference between the predicted probability distribution and the true distribution.</definition>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_dataset-pipe-5">
-  <rdf:type rdf:resource="DatasetPipe"/>
-  <joinsDataSet rdf:resource="63427150_imagenet-1k"/>
+<owl:NamedIndividual rdf:about="7ddf32e1_l2-regularization">
+  <rdf:type rdf:resource="L2 Regularization"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalizes large weights to prevent overfitting.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="7ddf32e1_generation">
+  <rdf:type rdf:resource="Generation"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="7ddf32e1_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="7ddf32e1_training-session"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="63427150_imagenet-1k">
-  <rdf:type rdf:resource="Dataset"/>
-  <hasLabels rdf:resource="63427150_label-set"/>
-  <hasDataType rdf:resource="63427150_data-type"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Imagenet-1k dataset used as a source of natural images for unsupervised training.</data_description>
-  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">32x32</data_sample_dimensionality>
+<owl:NamedIndividual rdf:about="7ddf32e1_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="7ddf32e1_training-single"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="7ddf32e1_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <learning_rate_decay_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</learning_rate_decay_epochs>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">32</batch_size>
 </owl:NamedIndividual>
 
 <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
@@ -5700,68 +5771,33 @@
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Linear"/>
-    <rdf:Description rdf:about="NonDiff"/>
-    <rdf:Description rdf:about="Regularization"/>
-    <rdf:Description rdf:about="Smooth"/>
+    <rdf:Description rdf:about="Accuracy"/>
+    <rdf:Description rdf:about="LogLikelihood"/>
+    <rdf:Description rdf:about="MeanSquaredError"/>
+    <rdf:Description rdf:about="Precision"/>
+    <rdf:Description rdf:about="Recall"/>
+    <rdf:Description rdf:about="TrueOrFalseExamples"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="L1L2RegularizerFunction"/>
-    <rdf:Description rdf:about="L1RegularizerFunction"/>
-    <rdf:Description rdf:about="L2RegularizerFunction"/>
+    <rdf:Description rdf:about="ActivationFunction"/>
+    <rdf:Description rdf:about="CostFunction"/>
+    <rdf:Description rdf:about="LossFunction"/>
+    <rdf:Description rdf:about="Metric"/>
+    <rdf:Description rdf:about="ObjectiveFunction"/>
+    <rdf:Description rdf:about="ProbabilityDistributionFunction"/>
+    <rdf:Description rdf:about="RegularizerFunction"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Elu"/>
-    <rdf:Description rdf:about="Relu"/>
-    <rdf:Description rdf:about="Relu6"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ConvolutionLayer"/>
-    <rdf:Description rdf:about="DeconvolutionLayer"/>
-    <rdf:Description rdf:about="FullyConnectedLayer"/>
-    <rdf:Description rdf:about="RNNLayer"/>
-    <rdf:Description rdf:about="SeparableConvolutionLayer"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ConcatLayer"/>
-    <rdf:Description rdf:about="MultiplyLayer"/>
-    <rdf:Description rdf:about="SumLayer"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Categorical"/>
-    <rdf:Description rdf:about="Exponential"/>
-    <rdf:Description rdf:about="Uniform"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="BinaryCrossEntropy"/>
-    <rdf:Description rdf:about="CategoricalCrossEntropy"/>
-    <rdf:Description rdf:about="MSE"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="BatchNormLayer"/>
-    <rdf:Description rdf:about="DropoutLayer"/>
-    <rdf:Description rdf:about="FlattenLayer"/>
+    <rdf:Description rdf:about="ActivationLayer"/>
+    <rdf:Description rdf:about="AggregationLayer"/>
+    <rdf:Description rdf:about="ModificationLayer"/>
+    <rdf:Description rdf:about="SeparationLayer"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
@@ -5782,33 +5818,68 @@
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ActivationLayer"/>
-    <rdf:Description rdf:about="AggregationLayer"/>
-    <rdf:Description rdf:about="ModificationLayer"/>
-    <rdf:Description rdf:about="SeparationLayer"/>
+    <rdf:Description rdf:about="BatchNormLayer"/>
+    <rdf:Description rdf:about="DropoutLayer"/>
+    <rdf:Description rdf:about="FlattenLayer"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ActivationFunction"/>
-    <rdf:Description rdf:about="CostFunction"/>
-    <rdf:Description rdf:about="LossFunction"/>
-    <rdf:Description rdf:about="Metric"/>
-    <rdf:Description rdf:about="ObjectiveFunction"/>
-    <rdf:Description rdf:about="ProbabilityDistributionFunction"/>
-    <rdf:Description rdf:about="RegularizerFunction"/>
+    <rdf:Description rdf:about="BinaryCrossEntropy"/>
+    <rdf:Description rdf:about="CategoricalCrossEntropy"/>
+    <rdf:Description rdf:about="MSE"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Accuracy"/>
-    <rdf:Description rdf:about="LogLikelihood"/>
-    <rdf:Description rdf:about="MeanSquaredError"/>
-    <rdf:Description rdf:about="Precision"/>
-    <rdf:Description rdf:about="Recall"/>
-    <rdf:Description rdf:about="TrueOrFalseExamples"/>
+    <rdf:Description rdf:about="Categorical"/>
+    <rdf:Description rdf:about="Exponential"/>
+    <rdf:Description rdf:about="Uniform"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="ConcatLayer"/>
+    <rdf:Description rdf:about="MultiplyLayer"/>
+    <rdf:Description rdf:about="SumLayer"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="ConvolutionLayer"/>
+    <rdf:Description rdf:about="DeconvolutionLayer"/>
+    <rdf:Description rdf:about="FullyConnectedLayer"/>
+    <rdf:Description rdf:about="RNNLayer"/>
+    <rdf:Description rdf:about="SeparableConvolutionLayer"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="Elu"/>
+    <rdf:Description rdf:about="Relu"/>
+    <rdf:Description rdf:about="Relu6"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="L1L2RegularizerFunction"/>
+    <rdf:Description rdf:about="L1RegularizerFunction"/>
+    <rdf:Description rdf:about="L2RegularizerFunction"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="Linear"/>
+    <rdf:Description rdf:about="NonDiff"/>
+    <rdf:Description rdf:about="Regularization"/>
+    <rdf:Description rdf:about="Smooth"/>
   </owl:members>
 </owl:AllDisjointClasses>
 

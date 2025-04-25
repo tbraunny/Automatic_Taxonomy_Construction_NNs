@@ -22,6 +22,7 @@ def show_error(e):
         # if error_data.get("code"):
         #     st.caption(f"Error Code: {error_data['code']}")
     except Exception as e:
+        logger.error(f"ERROR: {e}",exc_info=True)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
 
 
@@ -44,7 +45,7 @@ def import_ontology_to_neo4j():
                 try:
                     session.run(query)
                 except Exception as e:
-                    print(f"Error executing query: {e}")
+                    logger.error(f"ERROR: {e}", exc_info=True)
 
         importQuery = f'CALL n10s.rdf.import.fetch("file://{file_path}", "RDF/XML");'
         queryNeo4j(driver, "MATCH(n) DETACH DELETE n;")
@@ -58,6 +59,7 @@ def import_ontology_to_neo4j():
         SET n.uri = SPLIT(n.uri, '/')[SIZE(SPLIT(n.uri, '/')) - 1]
         """)
     except Exception as e:
+        logger.error(f"ERROR: {e}", exc_info=True)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
 
 def import_page():
@@ -189,7 +191,7 @@ def import_page():
                                         try:
                                             remove_ann_config_from_user_owl(arch)
                                         except Exception:
-                                            pass
+                                            logger.error(f"ERROR: {e}", exc_info=True)
                                         os.remove(file_path)
                                         st.success(f"Deleted `{file}` from `{arch}`")
                                         st.rerun()
@@ -199,8 +201,8 @@ def import_page():
                         if st.button(f"🧹 Delete entire `{arch}` folder", key=f"delete_folder_{arch}"):
                             try:
                                 remove_ann_config_from_user_owl(arch)
-                            except Exception:
-                                pass 
+                            except Exception as e:
+                                logger.error(f"ERROR: {e}", exc_info=True)
                             shutil.rmtree(arch_path)
                             st.success(f"Deleted entire architecture folder: `{arch}`")
                             st.rerun()
@@ -209,20 +211,21 @@ def import_page():
         else:
             st.warning("User input directory does not exist.")
     except Exception as e:
+        logger.error(f"ERROR: {e}", exc_info=True)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
 
-    # animation_html = """
-    # <a href="http://100.102.166.78:8866/" target="_blank">
-    #     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-    #     <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
-    # </a>
-    # """
     animation_html = """
-    <a href="http://172.24.218.133:8866/" target="_blank">
+    <a href="http://100.102.166.78:8866/" target="_blank">
         <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
         <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
     </a>
     """
+    # animation_html = """
+    # <a href="http://172.24.218.133:8866/" target="_blank">
+    #     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+    #     <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+    # </a>
+    # """
     st.markdown("<h1 style='font-family: Arial, sans-serif; color: #fb8c00;'>Click below to view the graph in a new tab!</h1>", unsafe_allow_html=True)
 
     components.html(animation_html, height=400)

@@ -235,7 +235,7 @@ class LLMQueryEngine:
         self.llm_client = (
             OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
-                gen_model=OPENAI_GENERATION_MODEL,
+                gen_model="gpt-4o-mini-2024-07-18",
                 api_key=OPENAI_API_KEY,
                 **kwargs
             )
