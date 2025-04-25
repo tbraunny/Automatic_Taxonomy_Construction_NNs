@@ -1,7 +1,9 @@
 import streamlit as st
-from graphpage import display_graph
+from importpage import import_page
 from LLMchat import chat_page
-import webbrowser
+from graphvis import display_graph
+from mcpconnection import mcp_connector
+st.set_page_config(layout="wide")
 
 # Page 1: Home
 def home_page():
@@ -12,11 +14,11 @@ def home_page():
         We are a research project for the Computer Science & Engineering [capstone program](https://www.unr.edu/engineering/student-resources/innovation-day/get-involved) at University of Nevada, Reno.
                     
         We present the newest tool for classifying & visualizing neural networks. We can classify, detail, visualize & summarize all things machine learning.
-        We utilize a hierarchical organization technique called a taxonomy to organize the structures of neural networks. Think of the tree of life, with all living
-        things in a hierarchy, perfectly organized for understanding what comes from where, and what it may relate to. Our tool will provide this organization, but
-        for neural networks. You may be wondering what kind of inputs are compatible with this tool. Poorly documented code? We can classify it. Lengthy academic
+        We utilize a hierarchical organization technique called a taxonomy to organize the structures of neural networks. 
+        <br> Think of the tree of life, with all living things in a hierarchy, perfectly organized for understanding what comes from where, and what it may relate to. 
+        <br> Our tool will provide this organization, but for neural networks. You may be wondering what kind of inputs are compatible with this tool. Poorly documented code? We can classify it. Lengthy academic
         papers? We got you covered. Just have weights & biases saved? You bet your buns we can do that too.
-             """)
+             """, unsafe_allow_html=True)
     
     with st.container():
         st.header('News & Updates')
@@ -66,12 +68,16 @@ def home_page():
 # Sidebar for navigation
 st.sidebar.markdown("## Welcome to TaxonNeuro!")
 
-page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📊 Graph"))
+page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "📊 Graph", "Test"))
 
 # Conditional rendering of pages based on selection
 if page == "🏠 Home":
     home_page()
 elif page == "🤖 Chat with AI":
     chat_page()
+elif page == "📥 Import":
+    import_page()
 elif page == "📊 Graph":
     display_graph()
+elif page == "Test":
+    mcp_connector()

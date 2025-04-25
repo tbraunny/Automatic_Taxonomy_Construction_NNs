@@ -24,8 +24,9 @@ from dotenv import load_dotenv
 
 T = TypeVar("T", bound=BaseModel)
 
-load_dotenv()
+load_dotenv(override=True)
 
+#os.environ["USE_LLM_API"] = "False"
 # In-memory embedding cache
 embedding_cache = {}
 
@@ -203,7 +204,6 @@ class OpenAIClient(BaseLLMClient):
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
             raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
 def load_environment_llm(**kwargs):
-     
     llm_client = ( OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
                 gen_model=OPENAI_GENERATION_MODEL,
@@ -242,7 +242,7 @@ class LLMQueryEngine:
 
         # Log LLMQueryEngine Inputs
         self.logger.info(
-            f"Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"
+            f"""Using {"LLM API" if USE_LLM_API else "Local LLM"} with name embed_model: {self.llm_client.embed_model} and gen_model: {self.llm_client.gen_model}"""
         )
 
         # Load and chunk documents

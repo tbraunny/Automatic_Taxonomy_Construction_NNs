@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformers import BertTokenizer, BertModel, AdamW, get_linear_schedule_with_warmup
+from transformers import BertTokenizer, BertModel, get_linear_schedule_with_warmup
 
 from torch.utils.data import random_split
 from torch_geometric.data import Data, DataLoader

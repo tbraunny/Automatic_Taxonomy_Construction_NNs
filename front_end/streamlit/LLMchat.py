@@ -1,75 +1,110 @@
 import streamlit as st
 
 def chat_page():
-    
-    
+    import re
+    import time
     from langchain_neo4j import Neo4jGraph
     from neo4j import GraphDatabase
+    from langchain_experimental.graph_transformers import LLMGraphTransformer
+    from langchain_ollama.llms import OllamaLLM
+    from langchain.prompts import PromptTemplate
+    from langchain.chains import LLMChain
+    from langchain_neo4j import GraphCypherQAChain
+    from front_end.instances import list_of_class_instances
+
+    # Helper to remove internal thoughts
+    def strip_think_block(text):
+        """Remove <think>...</think> blocks from LLM output."""
+        return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+    # Get ontology instance names
+    instances = list_of_class_instances()
+    instance_names = ", ".join([instance.name for instance in instances])
+
+    # Database & LLM Setup
     url = "bolt://localhost:7687"
     username = "neo4j"
-    password= "neo4j"
-
+    password = "neo4j"
     graph = Neo4jGraph(url=url, username=username, password=password)
     driver = GraphDatabase.driver(url, auth=(username, password))
     session = driver.session()
+    llm = OllamaLLM(model="gemma3:27b-it-q4_K_M")
+
+    # Question validation prompt
+    QUESTION_VALIDATION_TEMPLATE = f"""
+    You are an assistant that checks whether a user's question is relevant and answerable based on the following ontology instances of neural network architectures:
+    {instance_names}
+
+    Your job is to find if the question is valid or invalid based on:
+    - Is related to the ontology domain (based on the instance names)
+    - Is well-formed and understandable
+    - Can likely be answered with data from the ontology graph
     
-    from langchain_experimental.graph_transformers import LLMGraphTransformer
-    from langchain_ollama.llms import OllamaLLM
-
-    llm = OllamaLLM(model = "llama3.1:8b-instruct-fp16") 
-
-    llm_transformer = LLMGraphTransformer(llm=llm)
-
-    from langchain.prompts import PromptTemplate
-    from langchain_core.prompts import PromptTemplate
-    from langchain_neo4j import GraphCypherQAChain
-
-    CYPHER_GENERATION_TEMPLATE = """
-    You are an AI system that generates Cypher queries to retrieve data from a graph database. 
-    The graph schema consists of nodes and relationships related to the following ontologies:
-    - Adversarial Autoencoders (AAEs)
-    - Generative Adversarial Networks (GANs)
-    - Simple Classification
-    You will receive a question related to the domain. Based on that, generate a Cypher query that answers the question.
-
-    Here is the schema:
-    {schema}
-
-    For example if you are to retrieve the nodes to a specific naming convention:
-
-    MATCH (n)
-    WHERE n.uri IS NOT NULL AND n.uri CONTAINS 'GAN'
-    RETURN n
-
-    Based on the above, answer the following question by creating a Cypher query to retrieve the relevant data from the graph. 
-    (Do not change the structure of the graph)
+    only if the question is invalid, provide types of valid questions based on the instance names.
     
-    If there is no relevant Cypher query return nothing.
+    end your answer with one of these two lines:
+    ✅ This is a valid question.
+    ❌ This is not a valid question.
 
-    Question: {question}
+    Question: {{question}}
+    """
+
+    VALIDATION_PROMPT = PromptTemplate(
+        input_variables=["question"], template=QUESTION_VALIDATION_TEMPLATE
+    )
+    validation_chain = LLMChain(llm=llm, prompt=VALIDATION_PROMPT)
+
+    # Cypher generation prompt
+    CYPHER_GENERATION_TEMPLATE = f"""
+    You are an AI system that generates Cypher queries for retrieving data from a graph database. 
+
+    These are the exact instance names: {instance_names}
+
+    You will receive a question related to this domain. Based on the question insert the correct instance name relevant to the question.
+
+    Example Cypher Queries:
+        single instances:
+            MATCH (a) 
+            WHERE a.uri CONTAINS "instance_name"
+            MATCH (a)-[r*1..2]->(b) 
+            RETURN a, r, b;
+
+        multiple instances:
+            MATCH (a) 
+            WHERE a.uri CONTAINS "instance_name1" or a.uri CONTAINS "instance_name2"
+            MATCH (a)-[r*1..2]->(b) 
+            RETURN a, r, b;
+
+    For efficiency, please consider changing the depth of the query, example:
+    MATCH (a)-[r*1..2]->(b) to MATCH (a)-[r*1..5]->(b)
+
+    If no specific instance name is relevant to the question, return:
+    MATCH (a) 
+    WHERE a.uri IN ["nonexistent_instance"] 
+    RETURN a
+
+    Question: {{question}}
     """
 
     CYPHER_GENERATION_PROMPT = PromptTemplate(
-        input_variables=["schema", "question"], template=CYPHER_GENERATION_TEMPLATE
+        input_variables=["question"], template=CYPHER_GENERATION_TEMPLATE
     )
 
-    CYPHER_QA_TEMPLATE = """
-    You are an assistant that helps to provide human-readable answers to questions based on classes and relationships in the graph.
-    The graph is related to three ontology instances on:
-    - Adversarial Autoencoders (AAEs)
-    - Generative Adversarial Networks (GANs)
-    - Simple Classification
+    # QA prompt
+    CYPHER_QA_TEMPLATE = f"""
+    You are a helpful assistant providing clear, natural-language answers based on a graph of ontology instances on neural network architectures specifically: {instance_names}.
 
-    You will receive the context (results of a Cypher query) and a question. Based on that, return an understandable answer.
-    
-    If there is no context provided, try to answer the question pertaining to aspects in the graph. 
-    
-    Do not mention anything about the context in the answer.
-    
-    
+    You’ll be given the results of a Cypher query (as context) and a user question.
 
-    Context: {context}
-    Question: {question}
+    Your task is to generate a well-structured and informative answer to the question. Base your response on the provided context. Reference the relevant nodes and relationships in your explanation where appropriate, but do not mention that the data comes from a graph or Cypher.
+
+    Focus on clarity, completeness, and relevance to the question.
+
+    Context:
+    {{context}}
+
+    Question:
+    {{question}}
     """
 
     CYPHER_QA_PROMPT = PromptTemplate(
@@ -77,32 +112,74 @@ def chat_page():
     )
 
     graphCypher_chain = GraphCypherQAChain.from_llm(
-        OllamaLLM(model = "llama3.1:8b-instruct-fp16", temperature=0.0), 
-        graph=graph, 
-        cypher_prompt=CYPHER_GENERATION_PROMPT, 
+        llm,
+        graph=graph,
+        cypher_prompt=CYPHER_GENERATION_PROMPT,
         qa_prompt=CYPHER_QA_PROMPT,
         verbose=True,
-        allow_dangerous_requests = True
+        allow_dangerous_requests=True
     )
 
-    st.title("Chat with AI")
-    st.write("Enter a prompt, and the model will generate a response.")
-    messages = st.container()
+    # Initialize chat history
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
 
-    # Create a chat input field
-    user_input = st.chat_input("Enter your prompt:")
+    st.title("Chat with AI on your Ontology")
+    st.write("Ask about neural network classes or instances from the ontology.")
+
+    # Display previous messages
+    for msg in st.session_state.chat_history:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+
+    # Chat input
+    user_input = st.chat_input("Ask something about the ontology...")
 
     if user_input:
-        try:
-            # Replace 'graphCypher_chain.invoke' with your actual function to generate a response
-            answer = graphCypher_chain.invoke({"schema": graph.get_schema, "query": user_input})
-            # Display the user's message
-            messages.chat_message("user").write(user_input)
-            # Display the model's response
-            messages.chat_message("assistant").write(f"Answer: {answer['result']}")
-        except Exception as e:
-            st.write("An error occurred while processing your request. Please ask questions related to the taxonomy.")
-    else:
-        st.write("Please enter a prompt!")
+        st.session_state.chat_history.append({"role": "user", "content": user_input})
+        with st.chat_message("user"):
+            st.markdown(user_input)
 
-        
+        try:
+            # Step 1: Validate question
+            with st.spinner("Validating your input..."):
+                validation_response = validation_chain.run({"question": user_input}).strip()
+
+            with st.chat_message("assistant"):
+                st.markdown(validation_response)
+
+            if not validation_response.endswith("This is a valid question."):
+                st.session_state.chat_history.append(
+                    {"role": "assistant", "content": validation_response}
+                )
+                return
+
+            # Step 2: Process the valid query
+            with st.chat_message("assistant"):
+                with st.spinner("Thinking..."):
+                    answer = graphCypher_chain.invoke({"query": user_input})
+                    raw_result = answer["result"]
+                    clean_result = strip_think_block(raw_result)
+
+                    streamed_output = []
+
+                    def stream_text(text):
+                        for line in text.splitlines(keepends=True):
+                            streamed_output.append(line)
+                            yield line
+                            time.sleep(0.05)
+
+                    st.write_stream(stream_text(clean_result))
+
+                    # Save final output to chat history
+                    full_response = "".join(streamed_output).strip()
+                    st.session_state.chat_history.append(
+                        {"role": "assistant", "content": full_response}
+                    )
+
+        except Exception as e:
+            error_msg = f"Error: {str(e)}"
+            st.session_state.chat_history.append(
+                {"role": "assistant", "content": error_msg}
+            )
+            st.chat_message("assistant").write(error_msg)
