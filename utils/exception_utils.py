@@ -1,44 +1,22 @@
 class AppError(Exception):
     def __init__(self, message, code=None, context=None):
-        super().__init__(message)
         self.message = message
         self.code = code
-        self.context = context or {}
+        self.context = context
+        super().__init__(message)
 
     def to_dict(self):
         return {
-            "error": self.message,
+            "error": self.__class__.__name__,
+            "message": self.message,
             "code": self.code,
             "context": self.context
         }
-    
-class CodeExtractionError(AppError):
-    def __init__(self, message, code=None, context=None):
-        super().__init__(message)
-        self.message = message
-        self.code = code
-        self.context = context or {}
 
-    def to_dict(self):
-        return {
-            "error": self.message,
-            "code": self.code,
-            "context": self.context
-        }
-    
-class DatabaseError(AppError):
-    def __init__(self, message, code=None, context=None):
-        super().__init__(message)
-        self.message = message
-        self.code = code
-        self.context = context or {}
-        
-    def to_dict(self):
-        return {
-            "error": self.message,
-            "code": self.code,
-            "context": self.context
-        }
+class CodeExtractionError(AppError): pass
+class PDFError(AppError): pass
+class LLMAPIError(AppError): pass
+class DatabaseError(AppError): pass
 
 # raise AppError(
 #     message="Could not parse ontology due to unsupported datatype.",

@@ -181,7 +181,7 @@ class OpenAIClient(BaseLLMClient):
             model=self.embed_model,
             openai_api_key=self.api_key,
         )
-        # self.test_connection()
+        self.test_connection()
 
     def embedding(self, text: str) -> list:
         return self.embedder.embed_query(text)
@@ -201,8 +201,13 @@ class OpenAIClient(BaseLLMClient):
                 raise ValueError("Invalid dummy chat model response.")
             logger.info("Successfully connected to OpenAI API")
         except Exception as e:
+            from utils.exception_utils import LLMAPIError
             logger.exception("Failed to connect to OpenAI API: %s", str(e), exc_info=True)
-            raise ConnectionError(f"Failed to connect to OpenAI API: {e}")
+            raise LLMAPIError(
+            message="Failed to connect to OpenAI API",
+            code="OPENAI_API_CONNECTION_ERROR",
+            context={"datatype": "423", "property": "openai_api_key"})
+        
 def load_environment_llm(**kwargs):
     llm_client = ( OpenAIClient(
                 embed_model=OPENAI_EMBEDDING_MODEL,
