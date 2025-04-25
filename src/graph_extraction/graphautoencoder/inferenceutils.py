@@ -41,7 +41,7 @@ def loadModel(selected_model,device='cuda'):
         path = 'src/graph_extraction/graphautoencoder/test.pt'
     else:
         path = 'src/graph_extraction/graphautoencoder/testbert.pt'
-    model = torch.load(path)#GraphAutoencoder(num_tokens=num_tokens, embed_dim=8, hidden_dim=16, latent_dim=8)
+    model = torch.load(path, weights_only=False)#GraphAutoencoder(num_tokens=num_tokens, embed_dim=8, hidden_dim=16, latent_dim=8)
     model = model.to(device)
     model.eval()
     return model
