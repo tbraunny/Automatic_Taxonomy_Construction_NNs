@@ -755,14 +755,14 @@
   <owl:disjointWith rdf:resource="OutputLayer"/>
 </owl:Class>
 
+<owl:Class rdf:about="Layer">
+  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ANN layer. Layers can be IO or hidden. Each network described using the ontology must define at least an input layer.</rdfs:comment>
+</owl:Class>
+
 <owl:Class rdf:about="Labelset">
   <rdfs:subClassOf rdf:resource="Dataset"/>
   <owl:disjointWith rdf:resource="RandomNoiseDataset"/>
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The labels associated with a DataSet. A LabelSet is itself a dataset.</rdfs:comment>
-</owl:Class>
-
-<owl:Class rdf:about="Layer">
-  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ANN layer. Layers can be IO or hidden. Each network described using the ontology must define at least an input layer.</rdfs:comment>
 </owl:Class>
 
 <owl:Class rdf:about="TrainingLoop">
@@ -917,6 +917,11 @@
   <owl:disjointWith rdf:resource="TrainingSingleForwardOnly"/>
 </owl:Class>
 
+<owl:Class rdf:about="WeightInitialization">
+  <rdfs:subClassOf rdf:resource="Algorithm"/>
+  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Weight initialisation algorithms, e.g. the Xavier algorithm.</rdfs:comment>
+</owl:Class>
+
 <owl:Class rdf:about="DropoutLayer">
   <rdfs:subClassOf rdf:resource="ModificationLayer"/>
 </owl:Class>
@@ -944,10 +949,6 @@
   <rdfs:subClassOf rdf:resource="Metric"/>
 </owl:Class>
 
-<owl:Class rdf:about="Accuracy">
-  <rdfs:subClassOf rdf:resource="Metric"/>
-</owl:Class>
-
 <owl:Class rdf:about="HiddenLayer">
   <rdfs:subClassOf rdf:resource="Layer"/>
   <rdfs:subClassOf>
@@ -966,26 +967,6 @@
   </rdfs:subClassOf>
   <owl:disjointWith rdf:resource="InOutLayer"/>
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hidden layer of an ANN. Layers are classified into Activation, Aggregation and Modification layers.</rdfs:comment>
-</owl:Class>
-
-<owl:Class rdf:about="AdaDelta">
-  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
-</owl:Class>
-
-<owl:Class rdf:about="AdaGrad">
-  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
-</owl:Class>
-
-<owl:Class rdf:about="AdaGradDA">
-  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Adam">
-  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
-</owl:Class>
-
-<owl:Class rdf:about="Adversarial">
-  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
 
 <owl:Class rdf:about="AggregationLayer">
@@ -1011,19 +992,6 @@
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An algorithm, such as a training algorithm.</rdfs:comment>
 </owl:Class>
 
-<owl:Class rdf:about="Astronomy">
-  <rdfs:subClassOf rdf:resource="Physics"/>
-</owl:Class>
-
-<owl:Class rdf:about="Physics">
-  <rdfs:subClassOf rdf:resource="Science"/>
-</owl:Class>
-
-<owl:Class rdf:about="BatchNormLayer">
-  <rdfs:subClassOf rdf:resource="ModificationLayer"/>
-  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Batch normalization layer</rdfs:comment>
-</owl:Class>
-
 <owl:Class rdf:about="ModificationLayer">
   <rdfs:subClassOf rdf:resource="HiddenLayer"/>
   <rdfs:subClassOf>
@@ -1043,16 +1011,61 @@
   <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A modification layer will in modify its input in some static (untrainable) way.</rdfs:comment>
 </owl:Class>
 
+<owl:Class rdf:about="TrainingSingleForwardOnly">
+  <rdfs:subClassOf rdf:resource="NetworkSpecific"/>
+</owl:Class>
+
+<owl:Class rdf:about="Normal">
+  <rdfs:subClassOf rdf:resource="ProbabilityDistributionFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="Accuracy">
+  <rdfs:subClassOf rdf:resource="Metric"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaDelta">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaGrad">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
+
+<owl:Class rdf:about="AdaGradDA">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Adam">
+  <rdfs:subClassOf rdf:resource="TrainingOptimizer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Adversarial">
+  <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
+</owl:Class>
+
+<owl:Class rdf:about="Astronomy">
+  <rdfs:subClassOf rdf:resource="Physics"/>
+</owl:Class>
+
+<owl:Class rdf:about="Physics">
+  <rdfs:subClassOf rdf:resource="Science"/>
+</owl:Class>
+
+<owl:Class rdf:about="Science">
+  <rdfs:subClassOf rdf:resource="DataCharacterization"/>
+</owl:Class>
+
+<owl:Class rdf:about="BatchNormLayer">
+  <rdfs:subClassOf rdf:resource="ModificationLayer"/>
+  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Batch normalization layer</rdfs:comment>
+</owl:Class>
+
 <owl:Class rdf:about="BinaryCrossEntropy">
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
 <owl:Class rdf:about="Biology">
   <rdfs:subClassOf rdf:resource="Science"/>
-</owl:Class>
-
-<owl:Class rdf:about="Science">
-  <rdfs:subClassOf rdf:resource="DataCharacterization"/>
 </owl:Class>
 
 <owl:Class rdf:about="Buildings">
@@ -1097,11 +1110,6 @@
 
 <owl:Class rdf:about="Constant">
   <rdfs:subClassOf rdf:resource="WeightInitialization"/>
-</owl:Class>
-
-<owl:Class rdf:about="WeightInitialization">
-  <rdfs:subClassOf rdf:resource="Algorithm"/>
-  <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Weight initialisation algorithms, e.g. the Xavier algorithm.</rdfs:comment>
 </owl:Class>
 
 <owl:Class rdf:about="ConvolutionLayer">
@@ -1178,10 +1186,6 @@
   <rdfs:subClassOf rdf:resource="RNNLayer"/>
 </owl:Class>
 
-<owl:Class rdf:about="Normal">
-  <rdfs:subClassOf rdf:resource="ProbabilityDistributionFunction"/>
-</owl:Class>
-
 <owl:Class rdf:about="Generation">
   <rdfs:subClassOf rdf:resource="TaskCharacterization"/>
 </owl:Class>
@@ -1196,6 +1200,10 @@
 
 <owl:Class rdf:about="NumericalDigits">
   <rdfs:subClassOf rdf:resource="NumbersAndLetters"/>
+</owl:Class>
+
+<owl:Class rdf:about="NumbersAndLetters">
+  <rdfs:subClassOf rdf:resource="DataCharacterization"/>
 </owl:Class>
 
 <owl:Class rdf:about="He">
@@ -1228,10 +1236,6 @@
 
 <owl:Class rdf:about="LettersDigits">
   <rdfs:subClassOf rdf:resource="NumbersAndLetters"/>
-</owl:Class>
-
-<owl:Class rdf:about="NumbersAndLetters">
-  <rdfs:subClassOf rdf:resource="DataCharacterization"/>
 </owl:Class>
 
 <owl:Class rdf:about="Linear">
@@ -1395,10 +1399,6 @@
   <rdfs:subClassOf rdf:resource="Smooth"/>
 </owl:Class>
 
-<owl:Class rdf:about="TrainingSingleForwardOnly">
-  <rdfs:subClassOf rdf:resource="NetworkSpecific"/>
-</owl:Class>
-
 <owl:Class rdf:about="TrueExamples">
   <rdfs:subClassOf rdf:resource="TrueOrFalseExamples"/>
 </owl:Class>
@@ -1527,7 +1527,111 @@
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
-<owl:Class rdf:about="Label Smoothing Regularization (LSR)">
+<owl:Class rdf:about="LeakyReLU">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="hidden1_x_1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="hidden1_context_1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="cat_sub">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="hidden2_1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Log-Likelihood Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="hidden1_z_1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Log Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="sigmoid">
+  <rdfs:subClassOf rdf:resource="ActivationFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="conv1">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="bn2">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="bn3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="bn4">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="conv5">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="GAN Discriminator Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="Reconstruction Loss">
+  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="ConvTranspose2d">
+  <rdfs:subClassOf rdf:resource="Layer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_0">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_3">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_6">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_9">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_12">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_15">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_18">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="main_20">
+  <rdfs:subClassOf rdf:resource="ActivationLayer"/>
+</owl:Class>
+
+<owl:Class rdf:about="Reconstruction Loss_sub">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="GAN Loss">
   <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
 </owl:Class>
 
@@ -1907,11 +2011,23 @@
   <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="219ceb2c_hidden1_x_0">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="219ceb2c_hidden1_context_0">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="219ceb2c_hidden1_z_0">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
+
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Matrix"/>
-
-<rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">

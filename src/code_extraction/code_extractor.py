@@ -225,7 +225,7 @@ class _CodeProcessor(ast.NodeVisitor):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
-            # '__name__': '__main__',  # hope this helps (might have to take out)
+            '__name__': '__main__',  # hope this helps (might have to take out)
             # '__file__': filepath,
             # '__package__': None,
             # '__builtins__': __builtins__,
