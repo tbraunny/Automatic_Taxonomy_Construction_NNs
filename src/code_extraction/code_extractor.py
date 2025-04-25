@@ -100,7 +100,7 @@ class _CodeProcessor(ast.NodeVisitor):
             if base.attr == "Module" and ( # check for nn.Module base class
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
-                logging.info("PyTorch instantiation found")
+                logger.info("PyTorch instantiation found")
                 self.pytorch_module_names.append(node.name)
                 mappings: dict = {}
 
@@ -126,10 +126,12 @@ class _CodeProcessor(ast.NodeVisitor):
                 #     self.pytorch_model_graphs[node.name] = graph
 
                 class_code = self.extract_code_lines(node.lineno , node.end_lineno) # fetch code associated w class
+                print("CLASS CODE " , class_code)
                 exec("\n".join(class_code) , globals() , mappings) # load code into memory
                 model_class = mappings.get(node.name)
 
                 if model_class:
+                    print("NODE NAME" , node.name)
                     model = instantiate_with_dummy_args(model_class)
 
                     if model is None and node.name in dir(tmodels):
@@ -137,10 +139,14 @@ class _CodeProcessor(ast.NodeVisitor):
                             model = tmodels.get_model(node.name, weights='DEFAULT')
                         except Exception as e:
                             logging.warning(f"Could not load torchvision model {node.name}: {e}")
+                            
+                    print("MODEL " , model)
                     
                     if model:
+                        print("MARKER2")
                         self.model_name = node.name
-                        self.pytorch_graph = extract_graph(model)              
+                        graph = extract_graph(model)
+                        self.pytorch_model_graphs[node.name] = graph         
 
             # Tensorflow check
             elif hasattr(base, "attr") and base.attr == "Model":
@@ -354,7 +360,7 @@ class CodeExtractor():
                     output = processor.parse_code()
                     self.save_json(output_file , output)
             if not code_files_present:
-                logger.error(f"No code file(s) of any type found")
+                logger.error(f"No code file(s) of any type found",exc_info=True)
 
                 raise CodeExtractionError(
                     message=f"No code/model files found in directory {file_path}",
@@ -388,7 +394,7 @@ class CodeExtractor():
                             return True
             return False
         except Exception as e:
-            logger.error(f"Check for PyTorch failed, {e}")
+            logger.error(f"Check for PyTorch failed, {e}",exc_info=True)
             return False
 
 def main():

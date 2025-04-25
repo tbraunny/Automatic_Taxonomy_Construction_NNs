@@ -38,7 +38,7 @@ def instantiate_with_dummy_args(cls):
             continue
         if param.default == inspect.Parameter.empty: #only required parameters get dummy values
             dummy_args[name] = create_dummy_value(param)
-
+    print("DUMMY VARS" , cls(**dummy_args))
     try:
         return cls(**dummy_args)
     except Exception as e:

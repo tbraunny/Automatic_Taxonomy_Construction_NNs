@@ -138,12 +138,12 @@ def import_page():
                             st.session_state.is_main_running = False
                             st.session_state.is_processing = False
                     
-                    # Once processing is done, display info and import ontology to Neo4j
-                    info_placeholder = st.empty()
-                    info_placeholder.info("Finished processing files. Now importing ontology into Neo4j...")
-                    import_ontology_to_neo4j()
-                    info_placeholder.empty()
-                    st.success("Ontology successfully imported into Neo4j!")
+                            # Once processing is done, display info and import ontology to Neo4j
+                            info_placeholder = st.empty()
+                            info_placeholder.info("Finished processing files. Now importing ontology into Neo4j...")
+                            import_ontology_to_neo4j()
+                            info_placeholder.empty()
+                            st.success("Ontology successfully imported into Neo4j!")
 
                 st.header("View Uploaded Files")
 
