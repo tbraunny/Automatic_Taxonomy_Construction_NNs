@@ -1071,6 +1071,16 @@ def main():
         ]
     ))
 
+    # --- Empty Criteria---
+    test_criterias.append(Criteria(
+    Name="Units > 10000000",
+    Searchs=[SearchOperator(
+        Name="layer_num_units",
+        Value=[ValueOperator(Name="layer_num_units", Op="geq", Value=[10000000])],
+        HashOn="found"
+        )]
+    ))
+
     # Create taxonomy
     taxonomy_creator = TaxonomyCreator(ontology, criteria=test_criterias)
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='json', faceted=True)
