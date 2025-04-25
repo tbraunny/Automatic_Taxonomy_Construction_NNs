@@ -1,0 +1,164 @@
+{
+   "total_num_params": 295424,
+   "graph": {
+      "node": [
+         {
+            "name": "x",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "conv1",
+               "add"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "conv1",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "bn1"
+            ],
+            "input": [
+               "x"
+            ],
+            "attributes": {
+               "weight": [
+                  128,
+                  128,
+                  3,
+                  3
+               ]
+            },
+            "num_params": 147456
+         },
+         {
+            "name": "bn1",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "relu"
+            ],
+            "input": [
+               "conv1"
+            ],
+            "attributes": {
+               "weight": [
+                  128
+               ],
+               "bias": [
+                  128
+               ],
+               "running_mean": [
+                  128
+               ],
+               "running_var": [
+                  128
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 256
+         },
+         {
+            "name": "relu",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "conv2"
+            ],
+            "input": [
+               "bn1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv2",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "bn2"
+            ],
+            "input": [
+               "relu"
+            ],
+            "attributes": {
+               "weight": [
+                  128,
+                  128,
+                  3,
+                  3
+               ]
+            },
+            "num_params": 147456
+         },
+         {
+            "name": "bn2",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "add"
+            ],
+            "input": [
+               "conv2"
+            ],
+            "attributes": {
+               "weight": [
+                  128
+               ],
+               "bias": [
+                  128
+               ],
+               "running_mean": [
+                  128
+               ],
+               "running_var": [
+                  128
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 256
+         },
+         {
+            "name": "add",
+            "op_type": "add",
+            "op": "call_function",
+            "output": [
+               "relu_1"
+            ],
+            "input": [
+               "bn2",
+               "x"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "relu_1",
+            "op_type": "ReLU",
+            "op": "call_module",
+            "output": [
+               "output"
+            ],
+            "input": [
+               "add"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "relu_1"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}
