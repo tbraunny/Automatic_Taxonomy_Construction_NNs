@@ -1,0 +1,273 @@
+{
+   "total_num_params": 2765568,
+   "graph": {
+      "node": [
+         {
+            "name": "input_1",
+            "op_type": null,
+            "op": "placeholder",
+            "output": [
+               "conv1"
+            ],
+            "input": [],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "conv1",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "relu1"
+            ],
+            "input": [
+               "input_1"
+            ],
+            "attributes": {
+               "weight": [
+                  64,
+                  3,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 3072
+         },
+         {
+            "name": "relu1",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "conv2"
+            ],
+            "input": [
+               "conv1"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv2",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "bn2"
+            ],
+            "input": [
+               "relu1"
+            ],
+            "attributes": {
+               "weight": [
+                  128,
+                  64,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 131072
+         },
+         {
+            "name": "bn2",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "relu2"
+            ],
+            "input": [
+               "conv2"
+            ],
+            "attributes": {
+               "weight": [
+                  128
+               ],
+               "bias": [
+                  128
+               ],
+               "running_mean": [
+                  128
+               ],
+               "running_var": [
+                  128
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 256
+         },
+         {
+            "name": "relu2",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "conv3"
+            ],
+            "input": [
+               "bn2"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv3",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "bn3"
+            ],
+            "input": [
+               "relu2"
+            ],
+            "attributes": {
+               "weight": [
+                  256,
+                  128,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 524288
+         },
+         {
+            "name": "bn3",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "relu3"
+            ],
+            "input": [
+               "conv3"
+            ],
+            "attributes": {
+               "weight": [
+                  256
+               ],
+               "bias": [
+                  256
+               ],
+               "running_mean": [
+                  256
+               ],
+               "running_var": [
+                  256
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 512
+         },
+         {
+            "name": "relu3",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "conv4"
+            ],
+            "input": [
+               "bn3"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv4",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "bn4"
+            ],
+            "input": [
+               "relu3"
+            ],
+            "attributes": {
+               "weight": [
+                  512,
+                  256,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 2097152
+         },
+         {
+            "name": "bn4",
+            "op_type": "BatchNorm2d",
+            "op": "call_module",
+            "output": [
+               "relu4"
+            ],
+            "input": [
+               "conv4"
+            ],
+            "attributes": {
+               "weight": [
+                  512
+               ],
+               "bias": [
+                  512
+               ],
+               "running_mean": [
+                  512
+               ],
+               "running_var": [
+                  512
+               ],
+               "num_batches_tracked": []
+            },
+            "num_params": 1024
+         },
+         {
+            "name": "relu4",
+            "op_type": "LeakyReLU",
+            "op": "call_module",
+            "output": [
+               "conv5"
+            ],
+            "input": [
+               "bn4"
+            ],
+            "attributes": {},
+            "num_params": 0
+         },
+         {
+            "name": "conv5",
+            "op_type": "Conv2d",
+            "op": "call_module",
+            "output": [
+               "sigmoid"
+            ],
+            "input": [
+               "relu4"
+            ],
+            "attributes": {
+               "weight": [
+                  1,
+                  512,
+                  4,
+                  4
+               ]
+            },
+            "num_params": 8192
+         },
+         {
+            "name": "sigmoid",
+            "op_type": "sigmoid",
+            "op": "call_function",
+            "output": [],
+            "input": [
+               "conv5"
+            ],
+            "attributes": {},
+            "num_params": null
+         },
+         {
+            "name": "output",
+            "op_type": null,
+            "op": "output",
+            "output": [],
+            "input": [
+               "(sigmoid, [relu2, relu3, relu4])"
+            ],
+            "attributes": {},
+            "num_params": null
+         }
+      ]
+   }
+}

@@ -1,0 +1,30 @@
+[
+   {
+      "page_content": "",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "import argparse\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport torch\nimport torch.nn as nn\nimport torch.optim as optim\nfrom sklearn.datasets import make_blobs\ndef train(X, Y, model, args):\n\tX = torch.FloatTensor(X)\n\tY = torch.FloatTensor(Y)\n\tN = len(Y)\n\toptimizer = optim.SGD(model.parameters(), lr=args.lr)\n\tmodel.train()\n\tfor epoch in range(args.epoch):\n\t\tperm = torch.randperm(N)\n\t\tsum_loss = 0\n\t\tfor i in range(0, N, args.batchsize):\n\t\t\tx = X[perm[i : i + args.batchsize]].to(args.device)\n\t\t\ty = Y[perm[i : i + args.batchsize]].to(args.device)\n\t\t\toptimizer.zero_grad()\n\t\t\toutput = model(x).squeeze()\n\t\t\tweight = model.weight.squeeze()\n\t\t\tloss = torch.mean(torch.clamp(1 - y * output, min=0))\n\t\t\tloss += args.c * (weight.t() @ weight) / 2.0\n\t\t\tloss.backward()\n\t\t\toptimizer.step()\n\t\t\tsum_loss += float(loss)\n\t\tprint(\"Epoch: {:4d}\\tloss: {}\".format(epoch, sum_loss / N))\ndef visualize(X, Y, model):\n\tW = model.weight.squeeze().detach().cpu().numpy()\n\tb = model.bias.squeeze().detach().cpu().numpy()\n\tdelta = 0.001\n\tx = np.arange(X[:, 0].min(), X[:, 0].max(), delta)\n\ty = np.arange(X[:, 1].min(), X[:, 1].max(), delta)\n\tx, y = np.meshgrid(x, y)\n\txy = list(map(np.ravel, [x, y]))\n\tz = (W.dot(xy) + b).reshape(x.shape)\n\tz[np.where(z > 1.0)] = 4\n\tz[np.where((z > 0.0) & (z <= 1.0))] = 3\n\tz[np.where((z > -1.0) & (z <= 0.0))] = 2\n\tz[np.where(z <= -1.0)] = 1\n\tplt.figure(figsize=(10, 10))\n\tplt.xlim([X[:, 0].min() + delta, X[:, 0].max() - delta])\n\tplt.ylim([X[:, 1].min() + delta, X[:, 1].max() - delta])\n\tplt.contourf(x, y, z, alpha=0.8, cmap=\"Greys\")\n\tplt.scatter(x=X[:, 0], y=X[:, 1], c=\"black\", s=10)\n\tplt.tight_layout()\n\tplt.show()\nif __name__ == \"__main__\":\n\tparser = argparse.ArgumentParser()\n\tparser.add_argument(\"--c\", type=float, default=0.01)\n\tparser.add_argument(\"--lr\", type=float, default=0.1)\n\tparser.add_argument(\"--batchsize\", type=int, default=5)\n\tparser.add_argument(\"--epoch\", type=int, default=10)\n\tparser.add_argument(\"--device\", default=\"cuda\", choices=[\"cpu\", \"cuda\"])\n\targs = parser.parse_args()\n\targs.device = torch.device(args.device if torch.cuda.is_available() else \"cpu\")\n\tprint(args)\n\tX, Y = make_blobs(n_samples=500, centers=2, random_state=0, cluster_std=0.4)\n\tX = (X - X.mean()) / X.std()\n\tY[np.where(Y == 0)] = -1\n\tmodel = nn.Linear(2, 1)\n\tmodel.to(args.device)\n\ttrain(X, Y, model, args)\n\tvisualize(X, Y, model)",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "def train(X, Y, model, args):\n\tX = torch.FloatTensor(X)\n\tY = torch.FloatTensor(Y)\n\tN = len(Y)\n\toptimizer = optim.SGD(model.parameters(), lr=args.lr)\n\tmodel.train()\n\tfor epoch in range(args.epoch):\n\t\tperm = torch.randperm(N)\n\t\tsum_loss = 0\n\t\tfor i in range(0, N, args.batchsize):\n\t\t\tx = X[perm[i : i + args.batchsize]].to(args.device)\n\t\t\ty = Y[perm[i : i + args.batchsize]].to(args.device)\n\t\t\toptimizer.zero_grad()\n\t\t\toutput = model(x).squeeze()\n\t\t\tweight = model.weight.squeeze()\n\t\t\tloss = torch.mean(torch.clamp(1 - y * output, min=0))\n\t\t\tloss += args.c * (weight.t() @ weight) / 2.0\n\t\t\tloss.backward()\n\t\t\toptimizer.step()\n\t\t\tsum_loss += float(loss)\n\t\tprint(\"Epoch: {:4d}\\tloss: {}\".format(epoch, sum_loss / N))",
+      "metadata": {
+         "section_header": "train",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def visualize(X, Y, model):\n\tW = model.weight.squeeze().detach().cpu().numpy()\n\tb = model.bias.squeeze().detach().cpu().numpy()\n\tdelta = 0.001\n\tx = np.arange(X[:, 0].min(), X[:, 0].max(), delta)\n\ty = np.arange(X[:, 1].min(), X[:, 1].max(), delta)\n\tx, y = np.meshgrid(x, y)\n\txy = list(map(np.ravel, [x, y]))\n\tz = (W.dot(xy) + b).reshape(x.shape)\n\tz[np.where(z > 1.0)] = 4\n\tz[np.where((z > 0.0) & (z <= 1.0))] = 3\n\tz[np.where((z > -1.0) & (z <= 0.0))] = 2\n\tz[np.where(z <= -1.0)] = 1\n\tplt.figure(figsize=(10, 10))\n\tplt.xlim([X[:, 0].min() + delta, X[:, 0].max() - delta])\n\tplt.ylim([X[:, 1].min() + delta, X[:, 1].max() - delta])\n\tplt.contourf(x, y, z, alpha=0.8, cmap=\"Greys\")\n\tplt.scatter(x=X[:, 0], y=X[:, 1], c=\"black\", s=10)\n\tplt.tight_layout()\n\tplt.show()",
+      "metadata": {
+         "section_header": "visualize",
+         "type": "python function"
+      }
+   }
+]

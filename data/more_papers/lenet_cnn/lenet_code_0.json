@@ -1,0 +1,37 @@
+[
+   {
+      "page_content": "",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "from torch.nn import Module\nfrom torch import nn\nclass Model(nn.Module):\n\tdef __init__(self):\n\t\tsuper(Model, self).__init__()\n\t\tself.conv1 = nn.Conv2d(1, 6, 5)\n\t\tself.relu1 = nn.ReLU()\n\t\tself.pool1 = nn.MaxPool2d(2)\n\t\tself.conv2 = nn.Conv2d(6, 16, 5)\n\t\tself.relu2 = nn.ReLU()\n\t\tself.pool2 = nn.MaxPool2d(2)\n\t\tself.fc1 = nn.Linear(256, 120)\n\t\tself.relu3 = nn.ReLU()\n\t\tself.fc2 = nn.Linear(120, 84)\n\t\tself.relu4 = nn.ReLU()\n\t\tself.fc3 = nn.Linear(84, 10)\n\t\tself.relu5 = nn.ReLU()\n\tdef forward(self, x):\n\t\ty = self.conv1(x)\n\t\ty = self.relu1(y)\n\t\ty = self.pool1(y)\n\t\ty = self.conv2(y)\n\t\ty = self.relu2(y)\n\t\ty = self.pool2(y)\n\t\ty = y.view(y.shape[0], -1)\n\t\ty = self.fc1(y)\n\t\ty = self.relu3(y)\n\t\ty = self.fc2(y)\n\t\ty = self.relu4(y)\n\t\ty = self.fc3(y)\n\t\ty = self.relu5(y)\n\t\treturn y",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Model",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self):\n\t\tsuper(Model, self).__init__()\n\t\tself.conv1 = nn.Conv2d(1, 6, 5)\n\t\tself.relu1 = nn.ReLU()\n\t\tself.pool1 = nn.MaxPool2d(2)\n\t\tself.conv2 = nn.Conv2d(6, 16, 5)\n\t\tself.relu2 = nn.ReLU()\n\t\tself.pool2 = nn.MaxPool2d(2)\n\t\tself.fc1 = nn.Linear(256, 120)\n\t\tself.relu3 = nn.ReLU()\n\t\tself.fc2 = nn.Linear(120, 84)\n\t\tself.relu4 = nn.ReLU()\n\t\tself.fc3 = nn.Linear(84, 10)\n\t\tself.relu5 = nn.ReLU()",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x):\n\t\ty = self.conv1(x)\n\t\ty = self.relu1(y)\n\t\ty = self.pool1(y)\n\t\ty = self.conv2(y)\n\t\ty = self.relu2(y)\n\t\ty = self.pool2(y)\n\t\ty = y.view(y.shape[0], -1)\n\t\ty = self.fc1(y)\n\t\ty = self.relu3(y)\n\t\ty = self.fc2(y)\n\t\ty = self.relu4(y)\n\t\ty = self.fc3(y)\n\t\ty = self.relu5(y)\n\t\treturn y",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   }
+]
