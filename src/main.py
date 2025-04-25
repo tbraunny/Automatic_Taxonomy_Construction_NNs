@@ -19,6 +19,7 @@ import warnings
 import json
 from typing import List
 from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
+import json
 
 from utils.logger_util import get_logger
 
@@ -115,12 +116,12 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
     pytorch_module_names = process_code.pytorch_module_names
     logger.info(f"Extracted code from to JSON.")
 
-    # # insert model into db 
-    # # NOTE: This is for Chase
-    # db_runner = DBUtils()
-    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    # paper_id: int = db_runner.insert_papers(ann_path)
-    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    # # # insert model into db 
+    # # # NOTE: This is for Chase
+    # # db_runner = DBUtils()
+    # # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # # paper_id: int = db_runner.insert_papers(ann_path)
+    # # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
     if test_input_ontology_filepath:
         logger.info("Using parameter passed ontology.")
@@ -151,14 +152,14 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
 
     # Define split criteria via llm
     ontology = load_annetto_ontology(return_onto_from_path=output_ontology_filepath)
-    thecriteria = llm_create_taxonomy('What would you say is the taxonomy that represents all neural network?', ontology)
+    thecriteria = llm_create_taxonomy('Please generate split criteria that can be used to uniquely seperate neural networks models?', ontology)
+    print(f"The criteria: {thecriteria}")
     taxonomy_creator = TaxonomyCreator(ontology,criteria=thecriteria.criteriagroup)
     format='json'
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format=format,faceted=True)
     
     # Create faceted taxonomy as df
     df = create_tabular_view_from_faceted_taxonomy(taxonomy_str=json.dumps(serialize(facetedTaxonomy)), format=format)
-    
     df.to_csv("./data/taxonomy/faceted/generic/generic_taxonomy.csv")
 
 
