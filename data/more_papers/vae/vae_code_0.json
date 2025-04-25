@@ -1,0 +1,65 @@
+[
+   {
+      "page_content": "parser = argparse.ArgumentParser(description='VAE MNIST Example')\nargs = parser.parse_args()\nargs.cuda = not args.no_cuda and torch.cuda.is_available()\nuse_mps = not args.no_mps and torch.backends.mps.is_available()\nkwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}\ntrain_loader = torch.utils.data.DataLoader(\n\tdatasets.MNIST('../data', train=True, download=True,\n\t\t\t\t   transform=transforms.ToTensor()),\n\tbatch_size=args.batch_size, shuffle=True, **kwargs)\ntest_loader = torch.utils.data.DataLoader(\n\tdatasets.MNIST('../data', train=False, transform=transforms.ToTensor()),\n\tbatch_size=args.batch_size, shuffle=False, **kwargs)\nmodel = VAE().to(device)\noptimizer = optim.Adam(model.parameters(), lr=1e-3)",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "from __future__ import print_function\nimport argparse\nimport torch\nimport torch.utils.data\nfrom torch import nn, optim\nfrom torch.nn import functional as F\nfrom torchvision import datasets, transforms\nfrom torchvision.utils import save_image\nparser.add_argument('--batch-size', type=int, default=128, metavar='N',\n\t\t\t\t\thelp='input batch size for training (default: 128)')\nparser.add_argument('--epochs', type=int, default=10, metavar='N',\n\t\t\t\t\thelp='number of epochs to train (default: 10)')\nparser.add_argument('--no-cuda', action='store_true', default=False,\n\t\t\t\t\thelp='disables CUDA training')\nparser.add_argument('--no-mps', action='store_true', default=False,\n\t\t\t\t\t\thelp='disables macOS GPU training')\nparser.add_argument('--seed', type=int, default=1, metavar='S',\n\t\t\t\t\thelp='random seed (default: 1)')\nparser.add_argument('--log-interval', type=int, default=10, metavar='N',\n\t\t\t\t\thelp='how many batches to wait before logging training status')\ntorch.manual_seed(args.seed)\nif args.cuda:\n\tdevice = torch.device(\"cuda\")\nelif use_mps:\n\tdevice = torch.device(\"mps\")\nelse:\n\tdevice = torch.device(\"cpu\")\nclass VAE(nn.Module):\n\tdef __init__(self):\n\t\tsuper(VAE, self).__init__()\n\t\tself.fc1 = nn.Linear(784, 400)\n\t\tself.fc21 = nn.Linear(400, 20)\n\t\tself.fc22 = nn.Linear(400, 20)\n\t\tself.fc3 = nn.Linear(20, 400)\n\t\tself.fc4 = nn.Linear(400, 784)\n\tdef encode(self, x):\n\t\th1 = F.relu(self.fc1(x))\n\t\treturn self.fc21(h1), self.fc22(h1)\n\tdef reparameterize(self, mu, logvar):\n\t\tstd = torch.exp(0.5*logvar)\n\t\teps = torch.randn_like(std)\n\t\treturn mu + eps*std\n\tdef decode(self, z):\n\t\th3 = F.relu(self.fc3(z))\n\t\treturn torch.sigmoid(self.fc4(h3))\n\tdef forward(self, x):\n\t\tmu, logvar = self.encode(x.view(-1, 784))\n\t\tz = self.reparameterize(mu, logvar)\n\t\treturn self.decode(z), mu, logvar\ndef loss_function(recon_x, x, mu, logvar):\n\tBCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduction='sum')\n\t# see Appendix B from VAE paper:\n\t# Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014\n\t# https://arxiv.org/abs/1312.6114\n\t# 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)\n\tKLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())\n\treturn BCE + KLD\nif __name__ == \"__main__\":\n\tfor epoch in range(1, args.epochs + 1):\n\t\ttrain(epoch)\n\t\ttest(epoch)\n\t\twith torch.no_grad():\n\t\t\tsample = torch.randn(64, 20).to(device)\n\t\t\tsample = model.decode(sample).cpu()\n\t\t\tsave_image(sample.view(64, 1, 28, 28),\n\t\t\t\t\t   'results/sample_' + str(epoch) + '.png')",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, encode, reparameterize, decode, forward",
+      "metadata": {
+         "section_header": "VAE",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self):\n\t\tsuper(VAE, self).__init__()\n\t\tself.fc1 = nn.Linear(784, 400)\n\t\tself.fc21 = nn.Linear(400, 20)\n\t\tself.fc22 = nn.Linear(400, 20)\n\t\tself.fc3 = nn.Linear(20, 400)\n\t\tself.fc4 = nn.Linear(400, 784)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef encode(self, x):\n\t\th1 = F.relu(self.fc1(x))\n\t\treturn self.fc21(h1), self.fc22(h1)",
+      "metadata": {
+         "section_header": "encode",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef reparameterize(self, mu, logvar):\n\t\tstd = torch.exp(0.5*logvar)\n\t\teps = torch.randn_like(std)\n\t\treturn mu + eps*std",
+      "metadata": {
+         "section_header": "reparameterize",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef decode(self, z):\n\t\th3 = F.relu(self.fc3(z))\n\t\treturn torch.sigmoid(self.fc4(h3))",
+      "metadata": {
+         "section_header": "decode",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x):\n\t\tmu, logvar = self.encode(x.view(-1, 784))\n\t\tz = self.reparameterize(mu, logvar)\n\t\treturn self.decode(z), mu, logvar",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def loss_function(recon_x, x, mu, logvar):\n\tBCE = F.binary_cross_entropy(recon_x, x.view(-1, 784), reduction='sum')\n\t# see Appendix B from VAE paper:\n\t# Kingma and Welling. Auto-Encoding Variational Bayes. ICLR, 2014\n\t# https://arxiv.org/abs/1312.6114\n\t# 0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)\n\tKLD = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())\n\treturn BCE + KLD",
+      "metadata": {
+         "section_header": "loss_function",
+         "type": "python function"
+      }
+   }
+]

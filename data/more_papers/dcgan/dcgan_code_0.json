@@ -1,0 +1,72 @@
+[
+   {
+      "page_content": "__all__ = [\n\t\"Discriminator\", \"Generator\"\n]",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "import torch\nimport torch.nn as nn\nfrom torch import Tensor\nclass Discriminator(nn.Module):\n\tdef __init__(self) -> None:\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.main = nn.Sequential(\n\t\t\t# Input is 1 x 64 x 64\n\t\t\tnn.Conv2d(1, 64, (4, 4), (2, 2), (1, 1), bias=True),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 64 x 32 x 32\n\t\t\tnn.Conv2d(64, 128, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(128),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 128 x 16 x 16\n\t\t\tnn.Conv2d(128, 256, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(256),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 256 x 8 x 8\n\t\t\tnn.Conv2d(256, 512, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(512),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 512 x 4 x 4\n\t\t\tnn.Conv2d(512, 1, (4, 4), (1, 1), (0, 0), bias=True),\n\t\t\tnn.Sigmoid()\n\t\t)\n\tdef forward(self, x: Tensor) -> Tensor:\n\t\tout = self.main(x)\n\t\tout = torch.flatten(out, 1)\n\t\treturn out\nclass Generator(nn.Module):\n\tdef __init__(self) -> None:\n\t\tsuper(Generator, self).__init__()\n\t\tself.main = nn.Sequential(\n\t\t\t# Input is 100, going into a convolution.\n\t\t\tnn.ConvTranspose2d(100, 512, (4, 4), (1, 1), (0, 0), bias=False),\n\t\t\tnn.BatchNorm2d(512),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 512 x 4 x 4\n\t\t\tnn.ConvTranspose2d(512, 256, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(256),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 256 x 8 x 8\n\t\t\tnn.ConvTranspose2d(256, 128, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(128),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 128 x 16 x 16\n\t\t\tnn.ConvTranspose2d(128, 64, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(64),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 64 x 32 x 32\n\t\t\tnn.ConvTranspose2d(64, 1, (4, 4), (2, 2), (1, 1), bias=True),\n\t\t\tnn.Tanh()\n\t\t\t# state size. 1 x 64 x 64\n\t\t)\n\tdef forward(self, x: Tensor) -> Tensor:\n\t\treturn self._forward_impl(x)\n\t# Support PyTorch.script function.\n\tdef _forward_impl(self, x: Tensor) -> Tensor:\n\t\tout = self.main(x)\n\t\treturn out\n\tdef _initialize_weights(self) -> None:\n\t\tfor m in self.modules():\n\t\t\tif isinstance(m, nn.Conv2d):\n\t\t\t\tnn.init.normal_(m.weight, 0.0, 0.02)\n\t\t\t\tif m.bias is not None:\n\t\t\t\t\tnn.init.constant_(m.bias, 0)\n\t\t\telif isinstance(m, nn.BatchNorm2d):\n\t\t\t\tnn.init.normal_(m.weight, 1.0, 0.02)\n\t\t\t\tif m.bias is not None:\n\t\t\t\t\tnn.init.constant_(m.bias, 0)",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "Discriminator",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self) -> None:\n\t\tsuper(Discriminator, self).__init__()\n\t\tself.main = nn.Sequential(\n\t\t\t# Input is 1 x 64 x 64\n\t\t\tnn.Conv2d(1, 64, (4, 4), (2, 2), (1, 1), bias=True),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 64 x 32 x 32\n\t\t\tnn.Conv2d(64, 128, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(128),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 128 x 16 x 16\n\t\t\tnn.Conv2d(128, 256, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(256),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 256 x 8 x 8\n\t\t\tnn.Conv2d(256, 512, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(512),\n\t\t\tnn.LeakyReLU(0.2, True),\n\t\t\t# State size. 512 x 4 x 4\n\t\t\tnn.Conv2d(512, 1, (4, 4), (1, 1), (0, 0), bias=True),\n\t\t\tnn.Sigmoid()\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x: Tensor) -> Tensor:\n\t\tout = self.main(x)\n\t\tout = torch.flatten(out, 1)\n\t\treturn out",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward, _forward_impl, _initialize_weights",
+      "metadata": {
+         "section_header": "Generator",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(self) -> None:\n\t\tsuper(Generator, self).__init__()\n\t\tself.main = nn.Sequential(\n\t\t\t# Input is 100, going into a convolution.\n\t\t\tnn.ConvTranspose2d(100, 512, (4, 4), (1, 1), (0, 0), bias=False),\n\t\t\tnn.BatchNorm2d(512),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 512 x 4 x 4\n\t\t\tnn.ConvTranspose2d(512, 256, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(256),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 256 x 8 x 8\n\t\t\tnn.ConvTranspose2d(256, 128, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(128),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 128 x 16 x 16\n\t\t\tnn.ConvTranspose2d(128, 64, (4, 4), (2, 2), (1, 1), bias=False),\n\t\t\tnn.BatchNorm2d(64),\n\t\t\tnn.ReLU(True),\n\t\t\t# state size. 64 x 32 x 32\n\t\t\tnn.ConvTranspose2d(64, 1, (4, 4), (2, 2), (1, 1), bias=True),\n\t\t\tnn.Tanh()\n\t\t\t# state size. 1 x 64 x 64\n\t\t)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x: Tensor) -> Tensor:\n\t\treturn self._forward_impl(x)",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef _forward_impl(self, x: Tensor) -> Tensor:\n\t\tout = self.main(x)\n\t\treturn out",
+      "metadata": {
+         "section_header": "_forward_impl",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef _initialize_weights(self) -> None:\n\t\tfor m in self.modules():\n\t\t\tif isinstance(m, nn.Conv2d):\n\t\t\t\tnn.init.normal_(m.weight, 0.0, 0.02)\n\t\t\t\tif m.bias is not None:\n\t\t\t\t\tnn.init.constant_(m.bias, 0)\n\t\t\telif isinstance(m, nn.BatchNorm2d):\n\t\t\t\tnn.init.normal_(m.weight, 1.0, 0.02)\n\t\t\t\tif m.bias is not None:\n\t\t\t\t\tnn.init.constant_(m.bias, 0)",
+      "metadata": {
+         "section_header": "_initialize_weights",
+         "type": "python function"
+      }
+   }
+]

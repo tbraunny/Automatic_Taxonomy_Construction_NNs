@@ -163,9 +163,18 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
 
 
 if __name__ == "__main__":
-    ann_name = "alexnet"
-    user_path = "data/userinput"
+    ann_list = ["cgan_gan" , "discogan_gan" , "gat_gnn" , "inceptionv3_cnn" , "lenet" , "lstm_rnn" , "pin_svm" , "sparse_ae" , "stackgan_gan" , "unet_cnn" , "xception_cnn"]
+
+    ann_name = "alexnet"   
+    user_path = "data/owl_testing"
     user_ann_path = os.path.join(user_path, ann_name)
     os.makedirs(user_ann_path, exist_ok=True)
-    main(ann_name, user_ann_path, use_user_owl=False)
-    remove_ann_config_from_user_owl(ann_name)
+    main(ann_name, user_ann_path, use_user_owl=True)
+    #remove_ann_config_from_user_owl(ann_name)
+
+        # ann_name = "hopfield_rnn"
+        # user_path = "data/more_papers"
+        # user_ann_path = os.path.join(user_path, ann_name)
+        # os.makedirs(user_ann_path, exist_ok=True)
+        # main(ann_name, user_ann_path, use_user_owl=True)
+        # remove_ann_config_from_user_owl(ann_name)

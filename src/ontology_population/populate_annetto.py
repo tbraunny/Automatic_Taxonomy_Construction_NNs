@@ -551,13 +551,16 @@ class OntologyProcessor:
             if module_names: # PyTorch only
                 for module in module_names:
                     json_files.extend(glob.glob(f"{self.ann_path}/*{module}*.json"))
+
+                    if not json_files:
+                        self.logger.error(f"Could not find module name {module} in {self.ann_path}")
             else:
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*torch*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*pb*.json" , recursive=True))
                 json_files.extend(glob.glob(f"{self.ann_path}/**/*onnx*.json" , recursive=True))
 
             if not json_files:
-                self.logger.error(f"No relevant JSON files (parsed code) found {module_names}")
+                self.logger.error(f"No relevant JSON files (parsed code) found {module_names}, {self.ann_path}")
                 return
 
             # fetch ontology subclasses
@@ -1266,8 +1269,18 @@ A **subnetwork** is a block that\n
                 self._process_parsed_code(parentnetwork_instance, unused_pt_networks)
             elif unused_subnetwork_names and not unused_pt_networks:
                 print("case 4")
+                # parse layers into Parent Network
+                parentnetwork_instance = self._instantiate_and_format_class(
+                    self.ontology.ParentNetwork, ann_config_instance_name + " network", "default"
+                )
+                self._link_instances(
+                    ann_config_instance,
+                    parentnetwork_instance,
+                    self.ontology.hasNetwork,
+                )
+                self._process_parsed_code(parentnetwork_instance)
                 # process remaining subnetwork components
-                networks_to_process = unused_subnetwork_names     
+                networks_to_process = unused_subnetwork_names    
 
             # add mapped networks to networks to process
             networks_to_process.extend(network_matches.keys())

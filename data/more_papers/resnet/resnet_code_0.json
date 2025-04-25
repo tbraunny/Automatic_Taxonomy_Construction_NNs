@@ -1,0 +1,135 @@
+[
+   {
+      "page_content": "__all__ = [\n\t\"ResNet\",\n\t\"resnet18\",\n]",
+      "metadata": {
+         "section_header": "Global Variables",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "from typing import Any, List, Type, Union, Optional\nimport torch\nfrom torch import Tensor\nfrom torch import nn\nclass _BasicBlock(nn.Module):\n\texpansion: int = 1\n\tdef __init__(\n\t\t\tself,\n\t\t\tin_channels: int,\n\t\t\tout_channels: int,\n\t\t\tstride: int,\n\t\t\tdownsample: Optional[nn.Module] = None,\n\t\t\tgroups: int = 1,\n\t\t\tbase_channels: int = 64,\n\t) -> None:\n\t\tsuper(_BasicBlock, self).__init__()\n\t\tself.stride = stride\n\t\tself.downsample = downsample\n\t\tself.groups = groups\n\t\tself.base_channels = base_channels\n\t\tself.conv1 = nn.Conv2d(in_channels, out_channels, (3, 3), (stride, stride), (1, 1), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(out_channels)\n\t\tself.relu = nn.ReLU(True)\n\t\tself.conv2 = nn.Conv2d(out_channels, out_channels, (3, 3), (1, 1), (1, 1), bias=False)\n\t\tself.bn2 = nn.BatchNorm2d(out_channels)\n\tdef forward(self, x: Tensor) -> Tensor:\n\t\tidentity = x\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv2(out)\n\t\tout = self.bn2(out)\n\t\tif self.downsample is not None:\n\t\t\tidentity = self.downsample(x)\n\t\tout = torch.add(out, identity)\n\t\tout = self.relu(out)\n\t\treturn out\nclass _Bottleneck(nn.Module):\n\texpansion: int = 4\n\tdef __init__(\n\t\t\tself,\n\t\t\tin_channels: int,\n\t\t\tout_channels: int,\n\t\t\tstride: int,\n\t\t\tdownsample: Optional[nn.Module] = None,\n\t\t\tgroups: int = 1,\n\t\t\tbase_channels: int = 64,\n\t) -> None:\n\t\tsuper(_Bottleneck, self).__init__()\n\t\tself.stride = stride\n\t\tself.downsample = downsample\n\t\tself.groups = groups\n\t\tself.base_channels = base_channels\n\t\tchannels = int(out_channels * (base_channels / 64.0)) * groups\n\t\tself.conv1 = nn.Conv2d(in_channels, channels, (1, 1), (1, 1), (0, 0), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(channels)\n\t\tself.conv2 = nn.Conv2d(channels, channels, (3, 3), (stride, stride), (1, 1), groups=groups, bias=False)\n\t\tself.bn2 = nn.BatchNorm2d(channels)\n\t\tself.conv3 = nn.Conv2d(channels, int(out_channels * self.expansion), (1, 1), (1, 1), (0, 0), bias=False)\n\t\tself.bn3 = nn.BatchNorm2d(int(out_channels * self.expansion))\n\t\tself.relu = nn.ReLU(True)\n\tdef forward(self, x: Tensor) -> Tensor:\n\t\tidentity = x\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv2(out)\n\t\tout = self.bn2(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv3(out)\n\t\tout = self.bn3(out)\n\t\tif self.downsample is not None:\n\t\t\tidentity = self.downsample(x)\n\t\tout = torch.add(out, identity)\n\t\tout = self.relu(out)\n\t\treturn out\nclass ResNet(nn.Module):\n\tdef __init__(\n\t\t\tself,\n\t\t\tarch_cfg: List[int],\n\t\t\tblock: Type[Union[_BasicBlock, _Bottleneck]],\n\t\t\tgroups: int = 1,\n\t\t\tchannels_per_group: int = 64,\n\t\t\tnum_classes: int = 1000,\n\t) -> None:\n\t\tsuper(ResNet, self).__init__()\n\t\tself.in_channels = 64\n\t\tself.dilation = 1\n\t\tself.groups = groups\n\t\tself.base_channels = channels_per_group\n\t\tself.conv1 = nn.Conv2d(3, self.in_channels, (7, 7), (2, 2), (3, 3), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(self.in_channels)\n\t\tself.relu = nn.ReLU(True)\n\t\tself.maxpool = nn.MaxPool2d((3, 3), (2, 2), (1, 1))\n\t\tself.layer1 = self._make_layer(arch_cfg[0], block, 64, 1)\n\t\tself.layer2 = self._make_layer(arch_cfg[1], block, 128, 2)\n\t\tself.layer3 = self._make_layer(arch_cfg[2], block, 256, 2)\n\t\tself.layer4 = self._make_layer(arch_cfg[3], block, 512, 2)\n\t\tself.avgpool = nn.AdaptiveAvgPool2d((1, 1))\n\t\tself.fc = nn.Linear(512 * block.expansion, num_classes)\n\t\t# Initialize neural network weights\n\t\tself._initialize_weights()\n\tdef _make_layer(\n\t\t\tself,\n\t\t\trepeat_times: int,\n\t\t\tblock: Type[Union[_BasicBlock, _Bottleneck]],\n\t\t\tchannels: int,\n\t\t\tstride: int = 1,\n\t) -> nn.Sequential:\n\t\tdownsample = None\n\t\tif stride != 1 or self.in_channels != channels * block.expansion:\n\t\t\tdownsample = nn.Sequential(\n\t\t\t\tnn.Conv2d(self.in_channels, channels * block.expansion, (1, 1), (stride, stride), (0, 0), bias=False),\n\t\t\t\tnn.BatchNorm2d(channels * block.expansion),\n\t\t\t)\n\t\tlayers = [\n\t\t\tblock(\n\t\t\t\tself.in_channels,\n\t\t\t\tchannels,\n\t\t\t\tstride,\n\t\t\t\tdownsample,\n\t\t\t\tself.groups,\n\t\t\t\tself.base_channels\n\t\t\t)\n\t\t]\n\t\tself.in_channels = channels * block.expansion\n\t\tfor _ in range(1, repeat_times):\n\t\t\tlayers.append(\n\t\t\t\tblock(\n\t\t\t\t\tself.in_channels,\n\t\t\t\t\tchannels,\n\t\t\t\t\t1,\n\t\t\t\t\tNone,\n\t\t\t\t\tself.groups,\n\t\t\t\t\tself.base_channels,\n\t\t\t\t)\n\t\t\t)\n\t\treturn nn.Sequential(*layers)\n\tdef forward(self, x: Tensor) -> Tensor:\n\t\tout = self._forward_impl(x)\n\t\treturn out\n\t# Support torch.script function\n\tdef _forward_impl(self, x: Tensor) -> Tensor:\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.maxpool(out)\n\t\tout = self.layer1(out)\n\t\tout = self.layer2(out)\n\t\tout = self.layer3(out)\n\t\tout = self.layer4(out)\n\t\tout = self.avgpool(out)\n\t\tout = torch.flatten(out, 1)\n\t\tout = self.fc(out)\n\t\treturn out\n\tdef _initialize_weights(self) -> None:\n\t\tfor module in self.modules():\n\t\t\tif isinstance(module, nn.Conv2d):\n\t\t\t\tnn.init.kaiming_normal_(module.weight, mode=\"fan_out\", nonlinearity=\"relu\")\n\t\t\telif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):\n\t\t\t\tnn.init.constant_(module.weight, 1)\n\t\t\t\tnn.init.constant_(module.bias, 0)\ndef resnet18(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([2, 2, 2, 2], _BasicBlock, **kwargs)\n\treturn model\ndef resnet34(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 6, 3], _BasicBlock, **kwargs)\n\treturn model\ndef resnet50(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 6, 3], _Bottleneck, **kwargs)\n\treturn model\ndef resnet101(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 23, 3], _Bottleneck, **kwargs)\n\treturn model\ndef resnet152(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 8, 36, 3], _Bottleneck, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "Global Other",
+         "type": "python global"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "_BasicBlock",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(\n\t\t\tself,\n\t\t\tin_channels: int,\n\t\t\tout_channels: int,\n\t\t\tstride: int,\n\t\t\tdownsample: Optional[nn.Module] = None,\n\t\t\tgroups: int = 1,\n\t\t\tbase_channels: int = 64,\n\t) -> None:\n\t\tsuper(_BasicBlock, self).__init__()\n\t\tself.stride = stride\n\t\tself.downsample = downsample\n\t\tself.groups = groups\n\t\tself.base_channels = base_channels\n\t\tself.conv1 = nn.Conv2d(in_channels, out_channels, (3, 3), (stride, stride), (1, 1), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(out_channels)\n\t\tself.relu = nn.ReLU(True)\n\t\tself.conv2 = nn.Conv2d(out_channels, out_channels, (3, 3), (1, 1), (1, 1), bias=False)\n\t\tself.bn2 = nn.BatchNorm2d(out_channels)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x: Tensor) -> Tensor:\n\t\tidentity = x\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv2(out)\n\t\tout = self.bn2(out)\n\t\tif self.downsample is not None:\n\t\t\tidentity = self.downsample(x)\n\t\tout = torch.add(out, identity)\n\t\tout = self.relu(out)\n\t\treturn out",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, forward",
+      "metadata": {
+         "section_header": "_Bottleneck",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(\n\t\t\tself,\n\t\t\tin_channels: int,\n\t\t\tout_channels: int,\n\t\t\tstride: int,\n\t\t\tdownsample: Optional[nn.Module] = None,\n\t\t\tgroups: int = 1,\n\t\t\tbase_channels: int = 64,\n\t) -> None:\n\t\tsuper(_Bottleneck, self).__init__()\n\t\tself.stride = stride\n\t\tself.downsample = downsample\n\t\tself.groups = groups\n\t\tself.base_channels = base_channels\n\t\tchannels = int(out_channels * (base_channels / 64.0)) * groups\n\t\tself.conv1 = nn.Conv2d(in_channels, channels, (1, 1), (1, 1), (0, 0), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(channels)\n\t\tself.conv2 = nn.Conv2d(channels, channels, (3, 3), (stride, stride), (1, 1), groups=groups, bias=False)\n\t\tself.bn2 = nn.BatchNorm2d(channels)\n\t\tself.conv3 = nn.Conv2d(channels, int(out_channels * self.expansion), (1, 1), (1, 1), (0, 0), bias=False)\n\t\tself.bn3 = nn.BatchNorm2d(int(out_channels * self.expansion))\n\t\tself.relu = nn.ReLU(True)",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x: Tensor) -> Tensor:\n\t\tidentity = x\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv2(out)\n\t\tout = self.bn2(out)\n\t\tout = self.relu(out)\n\t\tout = self.conv3(out)\n\t\tout = self.bn3(out)\n\t\tif self.downsample is not None:\n\t\t\tidentity = self.downsample(x)\n\t\tout = torch.add(out, identity)\n\t\tout = self.relu(out)\n\t\treturn out",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "Functions: __init__, _make_layer, forward, _forward_impl, _initialize_weights",
+      "metadata": {
+         "section_header": "ResNet",
+         "type": "python class"
+      }
+   },
+   {
+      "page_content": "\tdef __init__(\n\t\t\tself,\n\t\t\tarch_cfg: List[int],\n\t\t\tblock: Type[Union[_BasicBlock, _Bottleneck]],\n\t\t\tgroups: int = 1,\n\t\t\tchannels_per_group: int = 64,\n\t\t\tnum_classes: int = 1000,\n\t) -> None:\n\t\tsuper(ResNet, self).__init__()\n\t\tself.in_channels = 64\n\t\tself.dilation = 1\n\t\tself.groups = groups\n\t\tself.base_channels = channels_per_group\n\t\tself.conv1 = nn.Conv2d(3, self.in_channels, (7, 7), (2, 2), (3, 3), bias=False)\n\t\tself.bn1 = nn.BatchNorm2d(self.in_channels)\n\t\tself.relu = nn.ReLU(True)\n\t\tself.maxpool = nn.MaxPool2d((3, 3), (2, 2), (1, 1))\n\t\tself.layer1 = self._make_layer(arch_cfg[0], block, 64, 1)\n\t\tself.layer2 = self._make_layer(arch_cfg[1], block, 128, 2)\n\t\tself.layer3 = self._make_layer(arch_cfg[2], block, 256, 2)\n\t\tself.layer4 = self._make_layer(arch_cfg[3], block, 512, 2)\n\t\tself.avgpool = nn.AdaptiveAvgPool2d((1, 1))\n\t\tself.fc = nn.Linear(512 * block.expansion, num_classes)\n\t\t# Initialize neural network weights\n\t\tself._initialize_weights()",
+      "metadata": {
+         "section_header": "__init__",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef _make_layer(\n\t\t\tself,\n\t\t\trepeat_times: int,\n\t\t\tblock: Type[Union[_BasicBlock, _Bottleneck]],\n\t\t\tchannels: int,\n\t\t\tstride: int = 1,\n\t) -> nn.Sequential:\n\t\tdownsample = None\n\t\tif stride != 1 or self.in_channels != channels * block.expansion:\n\t\t\tdownsample = nn.Sequential(\n\t\t\t\tnn.Conv2d(self.in_channels, channels * block.expansion, (1, 1), (stride, stride), (0, 0), bias=False),\n\t\t\t\tnn.BatchNorm2d(channels * block.expansion),\n\t\t\t)\n\t\tlayers = [\n\t\t\tblock(\n\t\t\t\tself.in_channels,\n\t\t\t\tchannels,\n\t\t\t\tstride,\n\t\t\t\tdownsample,\n\t\t\t\tself.groups,\n\t\t\t\tself.base_channels\n\t\t\t)\n\t\t]\n\t\tself.in_channels = channels * block.expansion\n\t\tfor _ in range(1, repeat_times):\n\t\t\tlayers.append(\n\t\t\t\tblock(\n\t\t\t\t\tself.in_channels,\n\t\t\t\t\tchannels,\n\t\t\t\t\t1,\n\t\t\t\t\tNone,\n\t\t\t\t\tself.groups,\n\t\t\t\t\tself.base_channels,\n\t\t\t\t)\n\t\t\t)\n\t\treturn nn.Sequential(*layers)",
+      "metadata": {
+         "section_header": "_make_layer",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef forward(self, x: Tensor) -> Tensor:\n\t\tout = self._forward_impl(x)\n\t\treturn out",
+      "metadata": {
+         "section_header": "forward",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef _forward_impl(self, x: Tensor) -> Tensor:\n\t\tout = self.conv1(x)\n\t\tout = self.bn1(out)\n\t\tout = self.relu(out)\n\t\tout = self.maxpool(out)\n\t\tout = self.layer1(out)\n\t\tout = self.layer2(out)\n\t\tout = self.layer3(out)\n\t\tout = self.layer4(out)\n\t\tout = self.avgpool(out)\n\t\tout = torch.flatten(out, 1)\n\t\tout = self.fc(out)\n\t\treturn out",
+      "metadata": {
+         "section_header": "_forward_impl",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "\tdef _initialize_weights(self) -> None:\n\t\tfor module in self.modules():\n\t\t\tif isinstance(module, nn.Conv2d):\n\t\t\t\tnn.init.kaiming_normal_(module.weight, mode=\"fan_out\", nonlinearity=\"relu\")\n\t\t\telif isinstance(module, (nn.BatchNorm2d, nn.GroupNorm)):\n\t\t\t\tnn.init.constant_(module.weight, 1)\n\t\t\t\tnn.init.constant_(module.bias, 0)",
+      "metadata": {
+         "section_header": "_initialize_weights",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def resnet18(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([2, 2, 2, 2], _BasicBlock, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "resnet18",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def resnet34(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 6, 3], _BasicBlock, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "resnet34",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def resnet50(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 6, 3], _Bottleneck, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "resnet50",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def resnet101(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 4, 23, 3], _Bottleneck, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "resnet101",
+         "type": "python function"
+      }
+   },
+   {
+      "page_content": "def resnet152(**kwargs: Any) -> ResNet:\n\tmodel = ResNet([3, 8, 36, 3], _Bottleneck, **kwargs)\n\treturn model",
+      "metadata": {
+         "section_header": "resnet152",
+         "type": "python function"
+      }
+   }
+]

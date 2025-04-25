@@ -106,8 +106,7 @@ class _CodeProcessor(ast.NodeVisitor):
             if base.attr == "Module" and ( # check for nn.Module base class
                     (hasattr(base.value , "id") and base.value.id == "nn") or 
                     (hasattr(base.value , "value") and base.value.value.id == "torch" and base.value.attr == "nn")): 
-                logger.info("PyTorch instantiation found")
-                self.pytorch_module_names.append(node.name)
+                logging.info("PyTorch instantiation found")
                 mappings: dict = {}
 
                 model_class = self.module_namespace.get(node.name)
@@ -124,6 +123,7 @@ class _CodeProcessor(ast.NodeVisitor):
                         logging.warning(f"Could not load torchvision model {node.name}: {e}")
                 
                 if model:
+                    self.pytorch_module_names.append(node.name)
                     self.model_name = node.name
                     graph = extract_graph(model)
                     self.pytorch_model_graphs[node.name] = graph
@@ -225,7 +225,7 @@ class _CodeProcessor(ast.NodeVisitor):
         with open(filepath, 'r') as f:
             code = f.read()
         namespace = {
-            # '__name__': '__main__',  # hope this helps (might have to take out)
+            #'__name__': '__main__',  # hope this helps (might have to take out)
             # '__file__': filepath,
             # '__package__': None,
             # '__builtins__': __builtins__,
@@ -301,9 +301,9 @@ class CodeExtractor():
                         for model_name , graph in processor.pytorch_model_graphs.items(): # save each class individually
                             self.save_json(file.replace(".py" , f"_{model_name}_torch_{count}.json") , graph)
                         #self.save_json(file.replace(".py", f"_code_torch_{count}.json") , processor.pytorch_graph)
-                    elif processor.tf_graph:
-                        logger.info(f"TensorFlow code found within file {file}")
-                        self.save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
+                    # elif processor.tf_graph:
+                    #     logger.info(f"TensorFlow code found within file {file}")
+                    #     self.save_json(file.replace(".py" , f"_code_tf_{count}.json") , processor.tf_graph)
                     else:
                         logger.info(f"Model name '{processor.model_name}' is not PyTorch or TensorFlow")
                         self.pytorch_present = False
