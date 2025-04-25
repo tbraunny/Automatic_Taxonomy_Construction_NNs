@@ -1,4 +1,0 @@
-,Has Activation Function Criteria Unrecognized criteria,Has Loss Criteria Unrecognized criteria,Has Network Criteria Unrecognized criteria,Has Training Optimizer Criteria Unrecognized criteria,"Layer Num Units Includes {'Name': 'kmeans', 'Arguments': [4, 10]}"
-,not matching,hasLoss,hasNetwork,not matching,not matching
-Model,,,,,
-709942bd_alexnet,X,X,X,X,X
