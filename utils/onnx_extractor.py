@@ -118,6 +118,7 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
     outdata = {'model':model_name,'nodes':[],'library':'onnx'}
     parameters = []
     layers = []
+    total_num_parameters  = 0
     for node in graph.node:
         layer = {}
         layer['name'] = node.name or '<unnamed>'
@@ -132,13 +133,14 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         node_info['name'] = node.name or '<unnamed>'
         node_info['input'] = list(node.input) #[ {'name':inp, 'shape': shapes.get(inp,[]) } for inp in list(node.input)]
         node_info['target'] = list(node.output)
+        node_info['num_params'] = 0
         layer['attributes'] = node_info['attributes'] = parse_onnx_attributes(node)
         layer['parameters'] = []
         node_info['parameters'] = {}
-        for inp in list(node.input):
+        for inp in list(node.input) + list(node.output) + [node.name]: # use the output and the node itself 
             parameter = {}
             parameter['name'] = inp
-            parameter['shape'] = node_info['parameters'][inp] = shapes.get(inp,[])
+            parameter['shape'] = node_info['parameters'][inp] = shapes.get(inp,[0])
             initializer =  next((init for init in graph.initializer if init.name == inp), None)
             if initializer:
                 weight_data = numpy_helper.to_array(initializer).flatten()
@@ -152,6 +154,15 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
             if 'interpolated_vector' in parameter:
                 layer['parameters'].append(parameter)
         layers.append(layer)
+        num_params = 0
+        for parameter in node_info['parameters']:
+            product = 1
+            for param in node_info['parameters'][parameter]:
+                product *= int(param)
+            num_params += product
+        #num_params = sum([ int(param) for parameter in node_info['parameters'] for param in node_info['parameters'][parameter]])
+        node_info['num_params'] = num_params
+        total_num_parameters += num_params
         outdata['nodes'].append(node_info)
 
         if parameters:
@@ -178,12 +189,12 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         outdata['layers'] = layers
     outjson['network'] = layers
     #outjson['graph'] = outdata
-
+    outdata['total_num_parameters'] = total_num_parameters
     if writeFile:
         handle = open(f'{savePath}/{model_name}.json','w')
         handle.write(json.dumps(outdata))
         handle.close()
-    return outjson
+    return outdata # returning the graph which is outdata
 
 def fetch_input_layer_params(input_layer , model):
     """
@@ -478,64 +489,10 @@ class ONNXProgram:
     def compute_graph_extraction(self,onnx_file,outfile=None,savePath='') -> dict:
         model = onnx.load(onnx_file)
 
-        # params = count_onnx_params_by_layer(model)
-
-        # # Print summary
-        # for p in params:
-        #     print(f"{p['layer_name']} ({p['op_type']}): {p['params']} parameters")
-
-        # # less manual way of calculating parameters per layer
-        # inferred_model = SymbolicShapeInference.infer_shapes(model)
-
-        # # Map initializers by name for quick lookup
-        # initializer_map = {init.name: init for init in inferred_model.graph.initializer}
-
-        # layer_param_counts = {}
-
-        # for node in inferred_model.graph.node:
-        #     param_count = 0
-        #     for input_name in node.input:
-        #         if input_name in initializer_map:
-        #             param_count += count_params(initializer_map[input_name])
-            
-        #     if param_count > 0:
-        #         layer_param_counts[node.name or node.output[0]] = {
-        #             "op_type": node.op_type,
-        #             "params": param_count
-        # }
-
-
-        # for layer, info in layer_param_counts.items():
-        #     print(f"{layer}: {info['op_type']} → {info['params']} learnable parameters")
-
-
-        # # Calculate the parameters by layer
-        # layer_params = extract_params_by_layer(model)
-
-        # Convert the modified model to JSON format
-        model_json = MessageToJson(model)
-
-        #model.graph.ClearField("initializer") # OEM json output
-
-        model_json = MessageToJson(model)
-        model_json_dict = json.loads(model_json)
-
-        # modify onnx dict to include num params by corresponding layer
-        # for node in model_json_dict['graph']['node']:
-        #     layer_name = node.get('name', '')
-        #     if layer_name in layer_params:
-        #         node['num_param'] = layer_params[layer_name]
+        model_json_dict = extract_compute_graph_taxonomy_style(onnx_file,writeFile=False)
 
         return model_json_dict
 
-        #return json.dumps(model_json_dict , indent=4)
-
-        # Save as JSON
-        # if savePath == '':
-        #     savePath = '.'
-        # outfile = onnx_file.replace(".onnx" , "_parsed.json")
-        # with open(outfile , "w") as f:
-        #     json.dump(model_json_dict , f , indent=2)
 
 if __name__ == '__main__':
     #extract_properties('adv_inception_v3_Opset16.onnx',model_type="cnn",model_name="inception")
