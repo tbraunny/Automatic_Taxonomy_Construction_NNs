@@ -2,8 +2,8 @@ import streamlit as st
 
 def display_graph():
     try:
-        voila_url = "http://100.102.166.78:8866" # for tailscale
-        # voila_url = "http://172.24.218.133:8866"
+        # voila_url = "http://100.102.166.78:8866" # for tailscale
+        voila_url = "http://172.24.218.133:8866"
         
         # Ontology Visualization Section
         st.markdown(

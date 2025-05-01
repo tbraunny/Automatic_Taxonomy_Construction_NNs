@@ -1,0 +1,24 @@
+{
+  "name": "automatic_taxonomy_construction_nns",
+  "version": "1.0.0",
+  "description": "user-interactive application to answer questions about NN classification manifold, automatically classifies new input into the manifold thru papers, code, or bias &amp; weights",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs/issues"
+  },
+  "homepage": "https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs#readme"
+}
