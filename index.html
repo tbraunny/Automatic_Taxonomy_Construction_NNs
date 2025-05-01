@@ -1,79 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taxon Neuro</title>
-    <link rel="stylesheet" href="static/taxon_neuro_style.css">
-    <link rel="shortcut icon" href="static/favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.2.47/dist/vue.global.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>TaxonNeuro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #fff8e1;
+    }
+
+    .container {
+      padding: 30px;
+      margin: auto;
+      max-width: 900px;
+    }
+
+    .header {
+      background-color: #ffecb3;
+      padding: 30px;
+      border-radius: 10px;
+      border: 1px solid #fb8c00;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      color: #fb8c00;
+      font-size: 36px;
+      margin: 0;
+    }
+
+    .header span {
+      color: #ef6c00;
+    }
+
+    .description, .news, .contributors, .advisors, .instructors, .resources {
+      padding: 20px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    h2 {
+      color: #ef6c00;
+    }
+
+    a {
+      color: #fb8c00;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .github-logo {
+      display: flex;
+      align-items: center;
+      margin-top: 30px;
+    }
+
+    .github-logo img {
+      width: 221px;
+      height: 124px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .github-logo img:hover {
+      transform: scale(1.05);
+    }
+
+    details {
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div id="app"></div>
-
-        <div class="chat-options">
-            <button onclick="clearChat()" class="chat-button" title="Clear chat">Clear Chat</button>
-            <button onclick="copyChatText()" class="chat-button" title="Copy Response">Copy Response</button>
-            <button onclick="regenerateChat()" class="chat-button" title="Regenerate Response">Regenerate</button>
-        </div>
-
-        <div class="sidebar">
-            <h1>Menu</h1>
-            <a href="static/gen_ont.html">Generate Ontology</a>
-            <a href="static/gen_tax.html">Generate Taxonomy</a>
-            <a href="static/about.html">About / Open Source</a>
-
-
-            <div class="dropdown">
-                Definitions
-                <div class="dropdown-content">
-                    <div class="sub-dropdown">Layers
-                        <div class="nested-dropdown-content">
-                            <button onclick="layer_type('Convolutional')">Convolutional Layer</button>
-                            <button onclick="layer_type('Pooling')">Pooling Layer</button>
-                            <button onclick="layer_type('Fully Connected')">Fully Connected Layer</button>
-                            <button onclick="layer_type('ReLU')">ReLU Layer</button>
-                        </div>
-                    </div>
-                    <div class="sub-dropdown">Loss Functions
-                        <div class="nested-dropdown-content">
-                            <button onclick="layer_type('Hinge')">Hinge Loss</button>
-                            <button onclick="layer_type('Logistic')">Logistic</button>
-                            <button onclick="layer_type('Exponential')">Exponential</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="responses">
-                <h3 id="definition-title">Layer Definitions</h3>
-                <p id="layerInfo">Click on a layer type to see its definition.</p>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <h2>Responses</h2>
-            <div id="file_name"></div>
-
-            <img id="taxonomy-image" src="static/datacharacterization.png" alt="Generated Taxonomy Image" />
-            <img id="ontology-image" src="static/taxonomy_sample.png" alt="Generated Ontology Image" />
-            
-            <div id="about-section"></div>
-
-            <div id="chat-responses"></div>
-        </div>
-
-        <div class="prompt-container">
-            <input id="prompt-input" class="prompt-input"  type="text" placeholder="Type your prompt here...">
-        </div>
-
-        <form id="uploadForm" action="/uploadfile/" method="POST" enctype="multipart/form-data">
-            <label for="file" class="upload-button" title="Upload a PDF">+</label>
-            <input id="file" name="file" type="file" accept=".pdf , .py" style="display: none;" />
-        </form>
-
+  <div class="container">
+    <div class="header">
+      <h1>🧠 About <span>TaxonNeuro</span></h1>
+      <p>Automatic Taxonomy Construction for Neural Networks</p>
     </div>
-    
-    <script src="static/taxon_neuro_js.js"></script>
 
+    <div class="description">
+      <p>We are a research project for the Computer Science & Engineering <a href="https://www.unr.edu/engineering/student-resources/innovation-day/get-involved" target="_blank">capstone program</a> at the University of Nevada, Reno.</p>
+      <p><strong>TaxonNeuro</strong> is your new best friend when it comes to classifying and visualizing neural networks. We classify, detail, visualize, and summarize all things machine learning.</p>
+      <p>Our core methodology revolves around hierarchical organization — a technique called a <strong>taxonomy</strong>. Think of it like the tree of life for neural networks: a clean, logical breakdown of models and architectures, where everything has a place and a purpose.</p>
+      <p>Got poorly documented code? We’ll classify it. Reading a dense academic paper? We’ve got you covered. Just have saved weights & biases? You bet your buns we can work with that too.</p>
+    </div>
+
+    <div class="news">
+      <h2>📰 News & Updates</h2>
+      <ul>
+        <li><strong>Feb 1st:</strong> Welcome to the TaxonNeuro News Hub! Stay tuned for the latest features, bug fixes, and breakthroughs.</li>
+      </ul>
+    </div>
+
+    <div class="contributors">
+      <h2>🤝 Contributors from Team 3 (TaxonNeuro)</h2>
+      <ul>
+        <li><a href="https://www.linkedin.com/in/thomas-r-braun/" target="_blank">Thomas Braun</a></li>
+        <li><a href="https://www.linkedin.com/in/lukas-lac/" target="_blank">Lukas Lac</a></li>
+        <li><a href="https://www.linkedin.com/in/josuejochoa/" target="_blank">Josue Ochoa</a></li>
+        <li><a href="https://www.linkedin.com/in/richardwhitein/" target="_blank">Rich White</a></li>
+      </ul>
+    </div>
+
+    <div class="advisors">
+      <h2>📚 Advisors</h2>
+      <ul>
+        <li><a href="https://scholar.google.com/citations?user=X9yIPe4AAAAJ&hl=en" target="_blank">Chase Carthen</a> (PhD Student of CSE at UNR)</li>
+        <li><a href="https://www.unr.edu/cse/people/alireza-tavakkoli" target="_blank">Dr. Alireza Tavakkoli</a> (Associate Professor, UNR)</li>
+        <li><a href="https://www.unr.edu/cse/people/fred-harris" target="_blank">Dr. Fred Harris, Jr.</a> (Associate Dean, UNR)</li>
+      </ul>
+    </div>
+
+    <div class="instructors">
+      <h2>👩‍🏫 Instructors</h2>
+      <details>
+        <summary>List of Instructors</summary>
+        <ul>
+          <li>Sara Davis</li>
+          <li>David Feil-Seifer</li>
+          <li>Vinh Le</li>
+          <li>Levi Scully</li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="resources">
+      <h2>📂 Project-Related Resources</h2>
+      <details>
+        <summary>List of Resources</summary>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2411.01612" target="_blank">Ontology Population Using LLM's</a></li>
+          <li><a href="https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context" target="_blank">Semantic Similarity of Ontology Instances</a></li>
+          <li><a href="https://arxiv.org/pdf/1907.11569#page=1.50" target="_blank">Making Neural Networks FAIR</a></li>
+          <li><a href="https://ollama.com/library/deepseek-r1" target="_blank">deepseek-r1</a></li>
+          <li><a href="https://ollama.com/" target="_blank">ollama</a></li>
+        </ul>
+      </details>
+    </div>
+
+    <div class="github-logo">
+      <div>
+        <p style="color: #fb8c00; font-size: 18px; font-weight: bold;">🔗 Click the logo below to check out our GitHub Repository!</p>
+        <a href="https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs/" target="_blank">
+          <img src="front_end/streamlit/data/images/Taxon_Neuro_image.png" alt="GitHub Logo" />
+        </a>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
