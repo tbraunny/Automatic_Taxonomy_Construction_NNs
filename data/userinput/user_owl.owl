@@ -1815,6 +1815,14 @@
   <rdfs:subClassOf rdf:resource="LossFunction"/>
 </owl:Class>
 
+<owl:Class rdf:about="Multinomial Logistic Loss">
+  <rdfs:subClassOf rdf:resource="LossFunction"/>
+</owl:Class>
+
+<owl:Class rdf:about="Dropout">
+  <rdfs:subClassOf rdf:resource="RegularizerFunction"/>
+</owl:Class>
+
 <owl:NamedIndividual rdf:about="bfad730c_conv">
   <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
@@ -5292,22 +5300,6 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="35c32b31_fc1">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_relu">
-  <rdf:type rdf:resource="relu"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_fc21">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="35c32b31_fc22">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="35c32b31_mnist">
   <rdf:type rdf:resource="Dataset"/>
   <hasLabels rdf:resource="35c32b31_label-set"/>
@@ -5325,6 +5317,22 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Frey Face dataset consisting of facial images, used for training generative models with 200 hidden units.</data_description>
   <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">unknown</data_sample_dimensionality>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_fc1">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_relu">
+  <rdf:type rdf:resource="relu"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_fc21">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="35c32b31_fc22">
+  <rdf:type rdf:resource="Linear"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="35c32b31_label-set">
@@ -5712,10 +5720,21 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="7ddf32e1_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="7ddf32e1_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="7ddf32e1_minimize-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="7ddf32e1_cost-function"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="7ddf32e1_generation">
+  <rdf:type rdf:resource="Generation"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="7ddf32e1_cost-function">
@@ -5735,17 +5754,6 @@
   <rdf:type rdf:resource="L2 Regularization"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Penalizes large weights to prevent overfitting.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="7ddf32e1_generation">
-  <rdf:type rdf:resource="Generation"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="7ddf32e1_training-strategy">
-  <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="7ddf32e1_training-session"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="7ddf32e1_training-session">
@@ -5993,6 +6001,26 @@
   <total_network_params rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">23885405</total_network_params>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="20ec200f_inception-module">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="20ec200f_minimize-objective-function"/>
+  <hasTaskType rdf:resource="20ec200f_supervised-classification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_auxiliary-classifier">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="20ec200f_minimize-objective-function"/>
+  <hasTaskType rdf:resource="20ec200f_supervised-classification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="20ec200f_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
 <owl:NamedIndividual rdf:about="20ec200f_conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_conv/batchnorm"/>
@@ -6001,10 +6029,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_conv_1/conv2d">
@@ -6017,10 +6041,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_conv_2/batchnorm"/>
@@ -6029,10 +6049,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_pool">
@@ -6050,10 +6066,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_conv_3">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_conv_4/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_conv_4/batchnorm"/>
@@ -6062,10 +6074,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_conv_4/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_conv_4">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_pool_1">
@@ -6086,10 +6094,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed/tower/conv/batchnorm"/>
@@ -6098,10 +6102,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv_1/conv2d">
@@ -6114,10 +6114,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed/tower_1/conv/batchnorm"/>
@@ -6126,10 +6122,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_1/conv2d">
@@ -6142,10 +6134,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed/tower_1/conv_2/batchnorm"/>
@@ -6154,10 +6142,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_2/pool">
@@ -6173,10 +6157,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed/join">
@@ -6198,10 +6178,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_1/tower/conv/batchnorm"/>
@@ -6210,10 +6186,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv_1/conv2d">
@@ -6226,10 +6198,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_1/tower_1/conv/batchnorm"/>
@@ -6238,10 +6206,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_1/conv2d">
@@ -6254,10 +6218,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_1/tower_1/conv_2/batchnorm"/>
@@ -6266,10 +6226,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_2/pool">
@@ -6285,10 +6241,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_1/join">
@@ -6310,10 +6262,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_2/tower/conv/batchnorm"/>
@@ -6322,10 +6270,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv_1/conv2d">
@@ -6338,10 +6282,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_2/tower_1/conv/batchnorm"/>
@@ -6350,10 +6290,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_1/conv2d">
@@ -6366,10 +6302,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_2/tower_1/conv_2/batchnorm"/>
@@ -6378,10 +6310,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_2/pool">
@@ -6397,10 +6325,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_2/join">
@@ -6420,10 +6344,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_3/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_3/tower/conv/batchnorm"/>
@@ -6432,10 +6352,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_1/conv2d">
@@ -6448,10 +6364,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_3/tower/conv_2/batchnorm"/>
@@ -6460,10 +6372,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_3/pool">
@@ -6490,10 +6398,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_4/tower/conv/batchnorm"/>
@@ -6502,10 +6406,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_1/conv2d">
@@ -6518,10 +6418,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_4/tower/conv_2/batchnorm"/>
@@ -6530,10 +6426,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv/conv2d">
@@ -6546,10 +6438,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_4/tower_1/conv_1/batchnorm"/>
@@ -6558,10 +6446,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_2/conv2d">
@@ -6574,10 +6458,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_3/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_4/tower_1/conv_3/batchnorm"/>
@@ -6588,10 +6468,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_4/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_4/tower_1/conv_4/batchnorm"/>
@@ -6600,10 +6476,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_4/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_2/pool">
@@ -6619,10 +6491,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_4/join">
@@ -6644,10 +6512,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_5/tower/conv/batchnorm"/>
@@ -6656,10 +6520,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_1/conv2d">
@@ -6672,10 +6532,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_5/tower/conv_2/batchnorm"/>
@@ -6684,10 +6540,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv/conv2d">
@@ -6700,10 +6552,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_5/tower_1/conv_1/batchnorm"/>
@@ -6712,10 +6560,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_2/conv2d">
@@ -6728,10 +6572,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_3/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_5/tower_1/conv_3/batchnorm"/>
@@ -6742,10 +6582,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_4/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_5/tower_1/conv_4/batchnorm"/>
@@ -6754,10 +6590,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_4/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_2/pool">
@@ -6773,10 +6605,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_5/join">
@@ -6798,10 +6626,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_6/tower/conv/batchnorm"/>
@@ -6810,10 +6634,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_1/conv2d">
@@ -6826,10 +6646,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_6/tower/conv_2/batchnorm"/>
@@ -6838,10 +6654,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv/conv2d">
@@ -6854,10 +6666,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_6/tower_1/conv_1/batchnorm"/>
@@ -6866,10 +6674,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_2/conv2d">
@@ -6882,10 +6686,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_3/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_6/tower_1/conv_3/batchnorm"/>
@@ -6896,10 +6696,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_4/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_6/tower_1/conv_4/batchnorm"/>
@@ -6908,10 +6704,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_4/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_2/pool">
@@ -6927,10 +6719,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_6/join">
@@ -6952,10 +6740,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_7/tower/conv/batchnorm"/>
@@ -6964,10 +6748,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_1/conv2d">
@@ -6980,10 +6760,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_2/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_7/tower/conv_2/batchnorm"/>
@@ -6992,10 +6768,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_2/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv/conv2d">
@@ -7008,10 +6780,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_7/tower_1/conv_1/batchnorm"/>
@@ -7020,10 +6788,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_2/conv2d">
@@ -7036,10 +6800,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_3/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_7/tower_1/conv_3/batchnorm"/>
@@ -7050,10 +6810,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_4/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_7/tower_1/conv_4/batchnorm"/>
@@ -7062,10 +6818,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_4/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_4">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_2/pool">
@@ -7081,10 +6833,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_7/join">
@@ -7104,10 +6852,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_8/tower/conv_1/batchnorm"/>
@@ -7116,10 +6860,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv/conv2d">
@@ -7132,10 +6872,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_8/tower_1/conv_1/batchnorm"/>
@@ -7144,10 +6880,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_2/conv2d">
@@ -7160,10 +6892,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_2">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_3/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_8/tower_1/conv_3/batchnorm"/>
@@ -7172,10 +6900,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_3/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_3">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_8/pool">
@@ -7202,10 +6926,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_9/tower/conv/batchnorm"/>
@@ -7214,10 +6934,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv/conv2d">
@@ -7230,10 +6946,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_9/tower/mixed/conv_1/batchnorm"/>
@@ -7242,10 +6954,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv/conv2d">
@@ -7258,10 +6966,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_9/tower_1/conv_1/batchnorm"/>
@@ -7270,10 +6974,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv/conv2d">
@@ -7286,10 +6986,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_9/tower_1/mixed/conv_1/batchnorm"/>
@@ -7298,10 +6994,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_2/pool">
@@ -7317,10 +7009,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_9/join">
@@ -7341,10 +7029,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/conv/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_10/tower/conv/batchnorm"/>
@@ -7353,10 +7037,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv/conv2d">
@@ -7369,10 +7049,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_10/tower/mixed/conv_1/batchnorm"/>
@@ -7381,10 +7057,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv/conv2d">
@@ -7397,10 +7069,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_10/tower_1/conv_1/batchnorm"/>
@@ -7409,10 +7077,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv/conv2d">
@@ -7425,10 +7089,6 @@
   <rdf:type rdf:resource="batch_norm"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv">
-  <rdf:type rdf:resource="ReLU"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv_1/conv2d">
   <rdf:type rdf:resource="Conv2d"/>
   <nextLayer rdf:resource="20ec200f_mixed_10/tower_1/mixed/conv_1/batchnorm"/>
@@ -7437,10 +7097,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv_1/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv_1">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_2/pool">
@@ -7456,10 +7112,6 @@
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_2/conv/batchnorm">
   <rdf:type rdf:resource="batch_norm"/>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_2/conv">
-  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_mixed_10/join">
@@ -7480,31 +7132,405 @@
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</layer_num_units>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_softmax/logits/matmul">
-  <rdf:type rdf:resource="Linear"/>
-</owl:NamedIndividual>
-
 <owl:NamedIndividual rdf:about="20ec200f_softmax/logits">
   <rdf:type rdf:resource="Bias"/>
   <hasActivationFunction rdf:resource="20ec200f_softmax"/>
   <layer_num_units rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1008</layer_num_units>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_softmax">
-  <rdf:type rdf:resource="Softmax"/>
+<owl:NamedIndividual rdf:about="20ec200f_conv">
+  <rdf:type rdf:resource="ReLU"/>
 </owl:NamedIndividual>
 
-<owl:NamedIndividual rdf:about="20ec200f_inception-module">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="20ec200f_minimize-objective-function"/>
-  <hasTaskType rdf:resource="20ec200f_supervised-classification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+<owl:NamedIndividual rdf:about="20ec200f_conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_1/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_2/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_3/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_3/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_4/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_5/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_6/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_1/conv_4">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_7/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_2">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_8/tower_1/conv_3">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_1/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_9/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_1/mixed/conv_1">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_mixed_10/tower_2/conv">
+  <rdf:type rdf:resource="ReLU"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_softmax/logits/matmul">
+  <rdf:type rdf:resource="Linear"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_softmax">
+  <rdf:type rdf:resource="Softmax"/>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_minimize-objective-function">
   <rdf:type rdf:resource="MinObjectiveFunction"/>
   <hasCost rdf:resource="20ec200f_cost-function"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="20ec200f_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_cost-function">
@@ -7524,24 +7550,6 @@
   <rdf:type rdf:resource="Label Smoothing Regularization (LSR)"/>
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
   <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Encourages the model to be less confident by mixing the ground-truth label distribution with a uniform distribution.</definition>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_supervised-classification">
-  <rdf:type rdf:resource="SupervisedClassification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_auxiliary-classifier">
-  <rdf:type rdf:resource="Network"/>
-  <hasObjective rdf:resource="20ec200f_minimize-objective-function"/>
-  <hasTaskType rdf:resource="20ec200f_supervised-classification"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
-</owl:NamedIndividual>
-
-<owl:NamedIndividual rdf:about="20ec200f_training-strategy">
-  <rdf:type rdf:resource="TrainingStrategy"/>
-  <hasPrimaryTrainingSession rdf:resource="20ec200f_training-session"/>
-  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
 <owl:NamedIndividual rdf:about="20ec200f_training-session">
@@ -7586,6 +7594,137 @@
   <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
 </owl:NamedIndividual>
 
+<owl:NamedIndividual rdf:about="709942bd_alexnet">
+  <rdf:type rdf:resource="ANNConfiguration"/>
+  <hasNetwork rdf:resource="709942bd_alexnet-network"/>
+  <hasNetwork rdf:resource="709942bd_convolutional-network"/>
+  <hasPrimaryTrainingSession rdf:resource="709942bd_training-strategy"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">user</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_alexnet-network">
+  <rdf:type rdf:resource="ParentNetwork"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_convolutional-network">
+  <rdf:type rdf:resource="Network"/>
+  <hasObjective rdf:resource="709942bd_minimize-objective-function"/>
+  <hasTaskType rdf:resource="709942bd_supervised-classification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_minimize-objective-function">
+  <rdf:type rdf:resource="MinObjectiveFunction"/>
+  <hasCost rdf:resource="709942bd_cost-function"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_cost-function">
+  <rdf:type rdf:resource="CostFunction"/>
+  <hasLoss rdf:resource="709942bd_cross-entropy-loss"/>
+  <hasRegularizer rdf:resource="709942bd_weight-decay"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_cross-entropy-loss">
+  <rdf:type rdf:resource="Cross-Entropy Loss"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the performance of a classification model whose output is a probability value between 0 and 1.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_weight-decay">
+  <rdf:type rdf:resource="Weight Decay"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <definition rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A regularization technique that adds a penalty on the size of the coefficients to prevent overfitting.</definition>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_supervised-classification">
+  <rdf:type rdf:resource="SupervisedClassification"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_training-strategy">
+  <rdf:type rdf:resource="TrainingStrategy"/>
+  <hasPrimaryTrainingSession rdf:resource="709942bd_training-session"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_training-session">
+  <rdf:type rdf:resource="TrainingSession"/>
+  <hasPrimaryTrainingStep rdf:resource="709942bd_training-single"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_training-single">
+  <rdf:type rdf:resource="TrainingSingle"/>
+  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-1"/>
+  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-2"/>
+  <trainingSingleHasIOPipe rdf:resource="709942bd_dataset-pipe-3"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <learning_rate_decay rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.01</learning_rate_decay>
+  <number_of_epochs rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">90</number_of_epochs>
+  <batch_size rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">128</batch_size>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-1">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="709942bd_imagenet"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_imagenet">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="709942bd_label-set"/>
+  <hasDataType rdf:resource="709942bd_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ImageNet is a dataset of over 15 million labeled high-resolution images belonging to roughly 22,000 categories, used in the ILSVRC competitions.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_label-set">
+  <rdf:type rdf:resource="Labelset"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+  <labels_count rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</labels_count>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_data-type">
+  <rdf:type rdf:resource="Image"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-2">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="709942bd_ilsvrc-2010"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_ilsvrc-2010">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="709942bd_label-set"/>
+  <hasDataType rdf:resource="709942bd_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A subset of ImageNet used in the ILSVRC-2010 competition, containing roughly 1.2 million training images, 50,000 validation images, and 150,000 testing images.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
+  <data_samples rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1200000</data_samples>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_dataset-pipe-3">
+  <rdf:type rdf:resource="DatasetPipe"/>
+  <joinsDataSet rdf:resource="709942bd_ilsvrc-2012"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">default</sourceData>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="709942bd_ilsvrc-2012">
+  <rdf:type rdf:resource="Dataset"/>
+  <hasLabels rdf:resource="709942bd_label-set"/>
+  <hasDataType rdf:resource="709942bd_data-type"/>
+  <sourceData rdf:datatype="http://www.w3.org/2001/XMLSchema#string">llm</sourceData>
+  <data_description rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A subset of ImageNet used in the ILSVRC-2012 competition, similar in structure to ILSVRC-2010 but with test set labels unavailable.</data_description>
+  <data_sample_dimensionality rdf:datatype="http://www.w3.org/2001/XMLSchema#string">256x256</data_sample_dimensionality>
+</owl:NamedIndividual>
+
 <rdfs:Datatype rdf:about="http://www.w3.org/2001/XMLSchema#anyType"/>
 
 <rdfs:Datatype rdf:about="http://www.dmg.org/PMML-4_3#Array"/>
@@ -7594,33 +7733,68 @@
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Accuracy"/>
-    <rdf:Description rdf:about="LogLikelihood"/>
-    <rdf:Description rdf:about="MeanSquaredError"/>
-    <rdf:Description rdf:about="Precision"/>
-    <rdf:Description rdf:about="Recall"/>
-    <rdf:Description rdf:about="TrueOrFalseExamples"/>
+    <rdf:Description rdf:about="Linear"/>
+    <rdf:Description rdf:about="NonDiff"/>
+    <rdf:Description rdf:about="Regularization"/>
+    <rdf:Description rdf:about="Smooth"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ActivationFunction"/>
-    <rdf:Description rdf:about="CostFunction"/>
-    <rdf:Description rdf:about="LossFunction"/>
-    <rdf:Description rdf:about="Metric"/>
-    <rdf:Description rdf:about="ObjectiveFunction"/>
-    <rdf:Description rdf:about="ProbabilityDistributionFunction"/>
-    <rdf:Description rdf:about="RegularizerFunction"/>
+    <rdf:Description rdf:about="L1L2RegularizerFunction"/>
+    <rdf:Description rdf:about="L1RegularizerFunction"/>
+    <rdf:Description rdf:about="L2RegularizerFunction"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ActivationLayer"/>
-    <rdf:Description rdf:about="AggregationLayer"/>
-    <rdf:Description rdf:about="ModificationLayer"/>
-    <rdf:Description rdf:about="SeparationLayer"/>
+    <rdf:Description rdf:about="Elu"/>
+    <rdf:Description rdf:about="Relu"/>
+    <rdf:Description rdf:about="Relu6"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="ConvolutionLayer"/>
+    <rdf:Description rdf:about="DeconvolutionLayer"/>
+    <rdf:Description rdf:about="FullyConnectedLayer"/>
+    <rdf:Description rdf:about="RNNLayer"/>
+    <rdf:Description rdf:about="SeparableConvolutionLayer"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="ConcatLayer"/>
+    <rdf:Description rdf:about="MultiplyLayer"/>
+    <rdf:Description rdf:about="SumLayer"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="Categorical"/>
+    <rdf:Description rdf:about="Exponential"/>
+    <rdf:Description rdf:about="Uniform"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="BinaryCrossEntropy"/>
+    <rdf:Description rdf:about="CategoricalCrossEntropy"/>
+    <rdf:Description rdf:about="MSE"/>
+  </owl:members>
+</owl:AllDisjointClasses>
+
+<owl:AllDisjointClasses>
+  <owl:members rdf:parseType="Collection">
+    <rdf:Description rdf:about="BatchNormLayer"/>
+    <rdf:Description rdf:about="DropoutLayer"/>
+    <rdf:Description rdf:about="FlattenLayer"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
@@ -7641,68 +7815,33 @@
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="BatchNormLayer"/>
-    <rdf:Description rdf:about="DropoutLayer"/>
-    <rdf:Description rdf:about="FlattenLayer"/>
+    <rdf:Description rdf:about="ActivationLayer"/>
+    <rdf:Description rdf:about="AggregationLayer"/>
+    <rdf:Description rdf:about="ModificationLayer"/>
+    <rdf:Description rdf:about="SeparationLayer"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="BinaryCrossEntropy"/>
-    <rdf:Description rdf:about="CategoricalCrossEntropy"/>
-    <rdf:Description rdf:about="MSE"/>
+    <rdf:Description rdf:about="ActivationFunction"/>
+    <rdf:Description rdf:about="CostFunction"/>
+    <rdf:Description rdf:about="LossFunction"/>
+    <rdf:Description rdf:about="Metric"/>
+    <rdf:Description rdf:about="ObjectiveFunction"/>
+    <rdf:Description rdf:about="ProbabilityDistributionFunction"/>
+    <rdf:Description rdf:about="RegularizerFunction"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
 <owl:AllDisjointClasses>
   <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Categorical"/>
-    <rdf:Description rdf:about="Exponential"/>
-    <rdf:Description rdf:about="Uniform"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ConcatLayer"/>
-    <rdf:Description rdf:about="MultiplyLayer"/>
-    <rdf:Description rdf:about="SumLayer"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="ConvolutionLayer"/>
-    <rdf:Description rdf:about="DeconvolutionLayer"/>
-    <rdf:Description rdf:about="FullyConnectedLayer"/>
-    <rdf:Description rdf:about="RNNLayer"/>
-    <rdf:Description rdf:about="SeparableConvolutionLayer"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Elu"/>
-    <rdf:Description rdf:about="Relu"/>
-    <rdf:Description rdf:about="Relu6"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="L1L2RegularizerFunction"/>
-    <rdf:Description rdf:about="L1RegularizerFunction"/>
-    <rdf:Description rdf:about="L2RegularizerFunction"/>
-  </owl:members>
-</owl:AllDisjointClasses>
-
-<owl:AllDisjointClasses>
-  <owl:members rdf:parseType="Collection">
-    <rdf:Description rdf:about="Linear"/>
-    <rdf:Description rdf:about="NonDiff"/>
-    <rdf:Description rdf:about="Regularization"/>
-    <rdf:Description rdf:about="Smooth"/>
+    <rdf:Description rdf:about="Accuracy"/>
+    <rdf:Description rdf:about="LogLikelihood"/>
+    <rdf:Description rdf:about="MeanSquaredError"/>
+    <rdf:Description rdf:about="Precision"/>
+    <rdf:Description rdf:about="Recall"/>
+    <rdf:Description rdf:about="TrueOrFalseExamples"/>
   </owl:members>
 </owl:AllDisjointClasses>
 
