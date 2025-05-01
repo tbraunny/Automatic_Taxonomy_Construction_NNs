@@ -6,38 +6,22 @@
     <script src="https://cdn.jsdelivr.net/npm/stlite@0.43.0/dist/stlite.js"></script>
   </head>
   <body>
-    <!-- Plaintext Python Code Block -->
-    <script type="text/plain" id="my-python-code">
+    <div id="app"></div>
+
+    <!-- Python code in raw text form -->
+    <script type="text/plain" id="code">
 import streamlit as st
 
 st.set_page_config(layout="wide")
-st.title("🧠 About TaxonNeuro")
-st.markdown(
-    '''
-    ### Automatic Taxonomy Construction for Neural Networks
 
-    We are a research project for the Computer Science & Engineering 
-    [capstone program](https://www.unr.edu/engineering/student-resources/innovation-day/get-involved)
-    at the University of Nevada, Reno.
-
-    **TaxonNeuro** is your new best friend when it comes to classifying and visualizing neural networks.
-
-    We classify, detail, visualize, and summarize all things machine learning.
-
-    Our core methodology revolves around hierarchical organization — a technique called a 
-    **taxonomy**. Think of it like the tree of life for neural networks: a clean, logical breakdown 
-    of models and architectures, where everything has a place and a purpose.
-
-    Got poorly documented code? We’ll classify it. Reading a dense academic paper? We’ve got you covered. 
-    Just have saved weights & biases? You bet your buns we can work with that too.
-    '''
-)
+st.title("🧠 TaxonNeuro")
+st.markdown("Welcome to the static browser-run version of the app.")
+st.markdown("Streamlit is running entirely in your browser via Pyodide!")
     </script>
 
-    <!-- Embed the script via stlite -->
     <script>
-      const code = document.getElementById("my-python-code").textContent;
-      stlite.mount(code);
+      const code = document.getElementById("code").textContent;
+      stlite.mount(code, document.getElementById("app"));
     </script>
   </body>
 </html>
