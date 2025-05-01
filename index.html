@@ -1,31 +1,43 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>TaxonNeuro</title>
     <script src="https://cdn.jsdelivr.net/npm/stlite@0.43.0/dist/stlite.js"></script>
   </head>
   <body>
-    <div id="app"></div>
-
-    <!-- Python code embedded as plain text -->
-    <script type="text/plain" id="code">
+    <!-- Plaintext Python Code Block -->
+    <script type="text/plain" id="my-python-code">
 import streamlit as st
 
 st.set_page_config(layout="wide")
+st.title("🧠 About TaxonNeuro")
+st.markdown(
+    '''
+    ### Automatic Taxonomy Construction for Neural Networks
 
-st.markdown('<h1 style="color:#ef6c00;">🧠 TaxonNeuro</h1>', unsafe_allow_html=True)
-st.markdown("""
-<p style="font-family: Arial, sans-serif; font-size: 16px;">
-<b>TaxonNeuro</b> helps you classify, detail, visualize, and summarize machine learning models. Built as part of the UNR CSE capstone.
-</p>
-""", unsafe_allow_html=True)
+    We are a research project for the Computer Science & Engineering 
+    [capstone program](https://www.unr.edu/engineering/student-resources/innovation-day/get-involved)
+    at the University of Nevada, Reno.
+
+    **TaxonNeuro** is your new best friend when it comes to classifying and visualizing neural networks.
+
+    We classify, detail, visualize, and summarize all things machine learning.
+
+    Our core methodology revolves around hierarchical organization — a technique called a 
+    **taxonomy**. Think of it like the tree of life for neural networks: a clean, logical breakdown 
+    of models and architectures, where everything has a place and a purpose.
+
+    Got poorly documented code? We’ll classify it. Reading a dense academic paper? We’ve got you covered. 
+    Just have saved weights & biases? You bet your buns we can work with that too.
+    '''
+)
     </script>
 
-    <!-- Load and run the code -->
+    <!-- Embed the script via stlite -->
     <script>
-      const code = document.getElementById("code").textContent;
-      stlite.mount(code, document.getElementById("app"));
+      const code = document.getElementById("my-python-code").textContent;
+      stlite.mount(code);
     </script>
   </body>
 </html>
