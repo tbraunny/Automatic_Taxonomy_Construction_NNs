@@ -22,15 +22,7 @@
         from mcpconnection import mcp_connector
         import asyncio
         st.set_page_config(layout="wide")
-        st.markdown(
-            '''
-            <style>
-                .stAppDeployButton {display: none;}
-                
-            </style>
-            ''',
-            unsafe_allow_html=True
-        )
+        st.markdown("""<style>.stAppDeployButton {display: none;}</style>""",unsafe_allow_html=True)
         # Page 1: Home
         def home_page():
 
