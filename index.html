@@ -14,7 +14,7 @@
     />
   </head>
   <body>
-    <st-lite-embed>
+    <stlite-embed>
         import streamlit as st
         from importpage import import_page
         from LLMchat import chat_page
@@ -163,9 +163,9 @@
                                     transition: transform 0.3s ease-in-out;"/>
                     </a>
                     <style>
-                        a:hover img {{
+                        a:hover img {
                             transform: scale(1.05); /* Slight zoom effect on hover */
-                        }}
+                        }
                     </style>
                 """, unsafe_allow_html=True)
 
@@ -191,7 +191,7 @@
             
         except Exception as e:
                 st.error(f"An unexpected error occurred. Please try again later. 🚨")
-    </st-lite-embed>
+    </stlite-embed>
     </body>
 </html> 
     <!-- <div id="root"></div>
