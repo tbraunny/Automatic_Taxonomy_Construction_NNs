@@ -44,14 +44,25 @@ def readable_facet_criteria(search):
     
     return f"{name} {op} {value}"
 
+def unhash_instance_name(instance_name):
+    parts = instance_name.split("_", 1)
+    if len(parts) == 2:
+        return " ".join(
+            word.capitalize() for word in parts[1].replace("-", " ").split()
+        )
+    return instance_name
+
 def format_model(model_uri: str) -> str:
-    return model_uri.replace("http://w3id.org/annett-o/", "")
+    model_name = model_uri.replace("http://w3id.org/annett-o/", "")
+    
+    model_name = unhash_instance_name(model_name)
+    return model_name
 
 def format_characteristic(characteristic: str, facet: str) -> str:
     """
     Format the characteristic string to be more readable.
     """
-    if "cluster" in facet.lower():
+    if "cluster_" in facet.lower():
         return " ".join(characteristic.split('_')[:2]).capitalize()
     return characteristic.replace("http://w3id.org/annett-o/", "")
 
@@ -80,14 +91,16 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
     column_tuples = []
 
     for facet_key, group in data.items():        
+        splits = group.get('splits',[])
         criteria = group.get("criteria", {})
         searches = criteria.get("Searchs", [])
-        descs = [readable_facet_criteria(s) for s in searches]
+        # descs = [readable_facet_criteria(s) for s in searches]
+        # TODO: Update readable criteria??
         readable_facet = criteria.get("Name", facet_key)
-        if descs:
-            readable_facet = f"{readable_facet} {'; '.join(descs) if descs else ''}"
 
-        splits = group.get('splits',[])
+        # if descs:
+        #     readable_facet = f"{readable_facet} {'; '.join(descs) if descs else ''}"
+
         for characteristic, model_list in splits.items():
             if characteristic == "criteria":
                 continue
@@ -95,6 +108,7 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
                 characteristic = 'False'
                 #continue # skip empty subcategories
             characteristic = format_characteristic(characteristic, readable_facet)
+            
             col = (readable_facet, characteristic)
             if col not in column_tuples:
                 column_tuples.append(col)
@@ -112,12 +126,13 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
 
     # multi_index = pd.MultiIndex.from_tuples(all_columns)
     # Use LLM for renaming
-    llm_client = load_environment_llm()
-    renamed_columns = all_columns
-    print(f"ORIGINAL_COLUMNS: {all_columns}")
+    # llm_client = load_environment_llm()
+    # print(f"ORIGINAL_COLUMNS: {all_columns}")
     # renamed_columns = rename_columns_with_llm(llm_client, all_columns)
-    print(f"RENAMED_COLUMNS: {renamed_columns}")
-    multi_index = pd.MultiIndex.from_tuples(renamed_columns)
+    # print(f"RENAMED_COLUMNS: {renamed_columns}")
+
+    # renamed_columns = all_columns #TODO: REMOVE THIS
+    multi_index = pd.MultiIndex.from_tuples(all_columns)
 
     df = pd.DataFrame(row_data, columns=multi_index, index=[format_model(model_uri) for model_uri in all_models])
     df.index.name = "Model"
@@ -199,8 +214,8 @@ def rename_columns_with_llm(llm_client, columns: List[Tuple[str, str]]) -> List[
     {{
         "high_level": "Units < 64",
         "low_level": "True",
-        "readable_high": "Layer Unit Count Below Threshold",
-        "readable_low": "Fewer than 64 units"
+        "readable_high": "Layer Unit Count < 64,
+        "readable_low": "True"
     }}
     ]
     }}
@@ -224,7 +239,7 @@ def rename_columns_with_llm(llm_client, columns: List[Tuple[str, str]]) -> List[
         "high_level": "Has BatchNorm Layer",
         "low_level": "False",
         "readable_high": "Batch Normalization Layer",
-        "readable_low": "Not present"
+        "readable_low": "False"
     }}
     ]
     }}
@@ -247,8 +262,8 @@ def rename_columns_with_llm(llm_client, columns: List[Tuple[str, str]]) -> List[
     {{
         "high_level": "Learning Rate < 0.001",
         "low_level": "False",
-        "readable_high": "Learning Rate",
-        "readable_low": "Not below 0.001"
+        "readable_high": "Learning Rate < 0.001",
+        "readable_low": "False"
     }}
     ]
     }}
@@ -273,7 +288,7 @@ def rename_columns_with_llm(llm_client, columns: List[Tuple[str, str]]) -> List[
         "high_level": "Small Networks (Units 16-128, Layers < 5)",
         "low_level": "True",
         "readable_high": "Network Size: Units 16–128, Depth < 5",
-        "readable_low": "Meets unit and depth thresholds"
+        "readable_low": "True"
     }}
     ]
     }}
