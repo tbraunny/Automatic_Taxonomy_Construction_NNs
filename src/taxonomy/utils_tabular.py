@@ -113,8 +113,9 @@ def create_tabular_view_from_faceted_taxonomy(taxonomy_str: str = "", taxonomy_f
     # multi_index = pd.MultiIndex.from_tuples(all_columns)
     # Use LLM for renaming
     llm_client = load_environment_llm()
+    renamed_columns = all_columns
     print(f"ORIGINAL_COLUMNS: {all_columns}")
-    renamed_columns = rename_columns_with_llm(llm_client, all_columns)
+    # renamed_columns = rename_columns_with_llm(llm_client, all_columns)
     print(f"RENAMED_COLUMNS: {renamed_columns}")
     multi_index = pd.MultiIndex.from_tuples(renamed_columns)
 
