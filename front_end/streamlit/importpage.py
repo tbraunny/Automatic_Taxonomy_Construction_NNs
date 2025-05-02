@@ -55,13 +55,33 @@ def import_ontology_to_neo4j():
         queryNeo4j(driver, importQuery)
         queryNeo4j(driver, """
         MATCH (n)
-        WHERE n.uri STARTS WITH 'http://w3id.org/annett-o/'
-        SET n.uri = SPLIT(n.uri, '/')[SIZE(SPLIT(n.uri, '/')) - 1]
+        WHERE n.uri IS NOT NULL
+        SET n.display_name = n.uri  
         """)
+        queryNeo4j(driver, """
+        MATCH (n)
+        WHERE n.display_name STARTS WITH 'http://w3id.org/annett-o/'
+        SET n.display_name = replace(n.display_name, 'http://w3id.org/annett-o/', '');
+        """)
+        queryNeo4j(driver, """
+        MATCH (n)
+        WHERE n.display_name IS NOT NULL
+        SET n.display_name = reduce(s = '', x IN tail(split(n.display_name, '_')) | s + (CASE WHEN s = '' THEN '' ELSE '_' END) + x)
+    """)
+        queryNeo4j(driver, """
+        MATCH ()-[r]->()
+        SET r.display_name = type(r)
+    """)
+        queryNeo4j(driver, """
+        MATCH (a)-[r]->(b)
+        WHERE r.display_name IS NOT NULL
+        SET r.display_name = REPLACE(r.display_name, 'ns0__', '')
+    """)
+        
     except Exception as e:
         logger.error(f"ERROR: {e}", exc_info=True)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
-
+         
 def import_page():
     try:
         import time
@@ -190,6 +210,7 @@ def import_page():
                                     if st.button(f"🗑️ Delete {file}", key=f"delete_{arch}_{file}"):
                                         try:
                                             remove_ann_config_from_user_owl(arch)
+                                            import_ontology_to_neo4j()
                                         except Exception:
                                             logger.error(f"ERROR: {e}", exc_info=True)
                                         os.remove(file_path)
@@ -214,18 +235,18 @@ def import_page():
         logger.error(f"ERROR: {e}", exc_info=True)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
 
-    animation_html = """
-    <a href="http://100.102.166.78:8866/" target="_blank">
-        <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-        <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
-    </a>
-    """
     # animation_html = """
-    # <a href="http://172.24.218.133:8866/" target="_blank">
+    # <a href="http://100.102.166.78:8866/" target="_blank">
     #     <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
     #     <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
     # </a>
     # """
+    animation_html = """
+    <a href="http://172.24.218.133:8866/" target="_blank">
+        <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+        <dotlottie-player src="https://lottie.host/756ea83b-4c33-4d3a-a2ac-3fa9050f1c8f/j7jKHC8GEv.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+    </a>
+    """
     st.markdown("<h1 style='font-family: Arial, sans-serif; color: #fb8c00;'>Click below to view the graph in a new tab!</h1>", unsafe_allow_html=True)
 
     components.html(animation_html, height=400)

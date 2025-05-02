@@ -3,6 +3,7 @@ from importpage import import_page
 from LLMchat import chat_page
 from graphvis import display_graph
 from mcpconnection import mcp_connector
+from taxonomyvis import taxonomy_page
 import asyncio
 st.set_page_config(layout="wide")
 st.markdown(
@@ -21,21 +22,22 @@ def home_page():
         from PIL import Image
         import base64
         from io import BytesIO
-
+        
+        
         with st.container():
             # HTML and Markdown for the banner with logo on the left
             st.markdown(f"""
-                <div style='display: flex; align-items: center; justify-content: center; padding: 30px; background-color: #ffecb3; border-radius: 10px; border: 1px solid #fb8c00; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);'>
+                <div style='display: flex; align-items: center; justify-content: center; padding: 30px; background-color: #d4c7d5; border-radius: 10px; border: 1px solid #fb8c00; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);'>
                     <div style="text-align: center;">
-                        <h1 style='font-family: "Arial", sans-serif; color: #fb8c00; margin: 0; font-size: 36px;'>🧠 About <span style='color:#ef6c00;'>TaxonNeuro</span></h1>
-                        <p style='font-family: "Arial", sans-serif; font-size: 18px; color: #6d4c41; margin-top: 5px;'>Automatic Taxonomy Construction for Neural Networks</p>
+                        <h1 style='font-family: "Arial", sans-serif; color: #fb8c00; margin: 0; font-size: 55px;'>About <span style='color:#09355C;'>TaxonNeuro</span></h1>
+                        <p style='font-family: "Arial", sans-serif; font-size: 35px; color: #6d4c41; margin-top: 5px;'>Automatic Taxonomy Construction for Neural Networks</p>
                     </div>
                 </div>
             """, unsafe_allow_html=True)
 
             # PROJECT DESCRIPTION
             st.markdown("""
-            <div style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.7; color: #333; padding: 20px;">
+            <div style="font-family: Arial, sans-serif; font-size: 25px; line-height: 1.7; color: #333; padding: 20px;">
             <p>
                 We are a research project for the Computer Science & Engineering 
                 <a href="https://www.unr.edu/engineering/student-resources/innovation-day/get-involved" 
@@ -67,7 +69,7 @@ def home_page():
             with st.container():
                 st.markdown("""
                 <h2 style="color:#ef6c00;">📰 News & Updates</h2>
-                <ul style="font-family: Arial, sans-serif; font-size: 16px; color: #444;">
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
                     <li><strong>Feb 1st:</strong> Welcome to the TaxonNeuro News Hub! Stay tuned for the latest features, bug fixes, and breakthroughs.</li>
                 </ul>
                 """, unsafe_allow_html=True)
@@ -76,7 +78,7 @@ def home_page():
             with st.container():
                 st.markdown("""
                 <h2 style="color:#ef6c00;">🤝 Contributors from Team 3 (TaxonNeuro)</h2>
-                <ul style="font-family: Arial, sans-serif; font-size: 16px; color: #444;">
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
                     <li><a href="https://www.linkedin.com/in/thomas-r-braun/" target="_blank">Thomas Braun</a></li>
                     <li><a href="https://www.linkedin.com/in/lukas-lac/" target="_blank">Lukas Lac</a></li>
                     <li><a href="https://www.linkedin.com/in/josuejochoa/" target="_blank">Josue Ochoa</a></li>
@@ -88,7 +90,7 @@ def home_page():
             with st.container():
                 st.markdown("""
                 <h2 style="color:#ef6c00;">📚 Advisors</h2>
-                <ul style="font-family: Arial, sans-serif; font-size: 16px; color: #444;">
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
                     <li><a href="https://scholar.google.com/citations?user=X9yIPe4AAAAJ&hl=en" target="_blank">Chase Carthen</a> (PhD Student of CSE at UNR)</li>
                     <li><a href="https://www.unr.edu/cse/people/alireza-tavakkoli" target="_blank">Dr. Alireza Tavakkoli</a> (Associate Professor, UNR)</li>
                     <li><a href="https://www.unr.edu/cse/people/fred-harris" target="_blank">Dr. Fred Harris, Jr.</a> (Associate Dean, UNR)</li>
@@ -100,23 +102,27 @@ def home_page():
                 st.markdown("<h2 style='color:#ef6c00;'>👩‍🏫 Instructors</h2>", unsafe_allow_html=True)
                 with st.expander("List of Instructors"):
                     st.markdown("""
-                    - Sara Davis  
-                    - David Feil-Seifer  
-                    - Vinh Le  
-                    - Levi Scully  
-                    """)
+                    <ul style="font-size: 20px;">
+                        <li>Sara Davis</li>
+                        <li>David Feil-Seifer</li>
+                        <li>Vinh Le</li>
+                        <li>Levi Scully</li>
+                    </ul>
+                """, unsafe_allow_html=True)
 
             # RESOURCES
             with st.container():
                 st.markdown("<h2 style='color:#ef6c00;'>📂 Project-Related Resources</h2>", unsafe_allow_html=True)
                 with st.expander("List of Resources"):
                     st.markdown("""
-                    - [Ontology Population Using LLM's](https://arxiv.org/abs/2411.01612)  
-                    - [Semantic Similarity of Ontology Instances Tailored on the Application Context](https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context)  
-                    - [Making Neural Networks FAIR](https://arxiv.org/pdf/1907.11569#page=1.50)  
-                    - [deepseek-r1](https://ollama.com/library/deepseek-r1)  
-                    - [ollama](https://ollama.com/)  
-                    """)
+                    <ul style="font-size: 20px;">
+                        <li><a href="https://arxiv.org/abs/2411.01612" target="_blank">Ontology Population Using LLM's</a></li>
+                        <li><a href="https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context" target="_blank">Semantic Similarity of Ontology Instances Tailored on the Application Context</a></li>
+                        <li><a href="https://arxiv.org/pdf/1907.11569#page=1.50" target="_blank">Making Neural Networks FAIR</a></li>
+                        <li><a href="https://ollama.com/library/deepseek-r1" target="_blank">deepseek-r1</a></li>
+                        <li><a href="https://ollama.com/" target="_blank">ollama</a></li>
+                    </ul>
+                """, unsafe_allow_html=True)
 
         with st.container():
             # Load the image and convert it to base64
@@ -156,9 +162,13 @@ def home_page():
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
 try:
     # Sidebar for navigation
-    st.sidebar.markdown("<h2 style='font-family: Arial, sans-serif; color: #fb8c00;'>Welcome to TaxonNeuro!</h2>", unsafe_allow_html=True)
-
-    page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "📊 Graph", "Test"))
+    st.sidebar.markdown("""
+    <h2 style='font-family: Arial, sans-serif; color: #fb8c00; font-size: 35px;'>
+        Welcome to <span style='color: #09355C;'>TaxonNeuro!</span>
+    </h2>
+""", unsafe_allow_html=True)
+    
+    page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "🧠 Ontology Graph", "📊 Taxonomy Generator"))
 
     # Conditional rendering of pages based on selection
     if page == "🏠 Home":
@@ -167,10 +177,11 @@ try:
         chat_page()
     elif page == "📥 Import":
         import_page()
-    elif page == "📊 Graph":
+    elif page == "🧠 Ontology Graph":
         display_graph()
-    elif page == "Test":
-        asyncio.run( mcp_connector())
-    
+    # elif page == "Test":
+    #     asyncio.run( mcp_connector())
+    elif page == "📊 Taxonomy Generator":
+        taxonomy_page()
 except Exception as e:
         st.error(f"An unexpected error occurred. Please try again later. 🚨")

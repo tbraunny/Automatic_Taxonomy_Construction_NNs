@@ -21,6 +21,9 @@ def chat_page():
 
         # Get ontology instance names
         instances = list_of_class_instances()
+        instances = [str(instance).replace('user_owl.', '') for instance in instances]
+        instances = ['_'.join(instance.split('_')[1:]) for instance in instances]
+        instance_names = ", ".join(instances)
         
         if not instances:
             st.markdown("""
@@ -36,8 +39,6 @@ def chat_page():
             
             return
         
-        instance_names = ", ".join([instance.name for instance in instances])
-
         # Database & LLM Setup
         url = "bolt://localhost:7687"
         username = "neo4j"
@@ -56,7 +57,7 @@ def chat_page():
         - Is well-formed and understandable
         - Can likely be answered with data from the ontology graph
         
-        only if the question is invalid, provide types of valid questions based on the instance names.
+        only if the question is invalid, provide types of valid questions based on the question provided. In addition, list out the instances.
         
         end your answer with one of these two lines:
         ✅ This is a valid question.
@@ -81,20 +82,20 @@ def chat_page():
         Example Cypher Queries:
             single instances:
                 MATCH (a) 
-                WHERE a.uri CONTAINS "instance_name"
+                WHERE a.display_name = "instance_name"
                 MATCH (a)-[r*1..2]->(b) 
                 RETURN a, r, b;
 
             multiple instances:
                 MATCH (a)
-                WHERE a.uri CONTAINS "instance_name"
+                WHERE a.display_name = "instance_name"
                 MATCH (a)-[r*1..5]->(b)
                 RETURN "instance_name" AS type, a, r, b
                 
                 UNION ALL
 
                 MATCH (a)
-                WHERE a.uri CONTAINS "instance_name"
+                WHERE a.display_name = "instance_name"
                 MATCH (a)-[r*1..5]->(b)
                 RETURN "instance_name" AS type, a, r, b
                 
@@ -104,7 +105,7 @@ def chat_page():
 
         If no specific instance name is relevant to the question, return:
         MATCH (a) 
-        WHERE a.uri IN ["nonexistent_instance"] 
+        WHERE a.display_name IN ["nonexistent_instance"] 
         RETURN a
 
         Question: {{question}}
@@ -120,8 +121,10 @@ def chat_page():
 
         You’ll be given the results of a Cypher query (as context) and a user question.
 
-        Your task is to generate a well-structured and informative answer to the question. Base your response on the provided context. Reference the relevant nodes and relationships in your explanation where appropriate.
-
+        Your task is to generate a well-structured and informative answer to the question. 
+        Base your response on the provided context (do not mention the provided context in your answer). 
+        Reference the relevant nodes and relationships in your explanation where appropriate.
+        
         Focus on clarity, completeness, and relevance to the question.
 
         Context:
@@ -147,20 +150,22 @@ def chat_page():
         # Initialize chat history
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = []
-
+            
         st.markdown(f"""
             <h1 style="font-family: 'Arial', sans-serif; color: #fb8c00;">Chat with AI on your Ontology</h1>
-            <p style="font-family: 'Arial', sans-serif; font-size: 16px; color: inherit;">
+            <p style="font-family: 'Arial', sans-serif; font-size: 25px; color: inherit;">
                 🧠 Ask about neural network instances from the ontology! 💬<br><br>
                 📌 Be sure to include these instances in your question: {instance_names}
             </p>
         """, unsafe_allow_html=True)
-
-
+            
         # Display previous messages
         for msg in st.session_state.chat_history:
             with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+                st.markdown(
+                f"<div style='font-size:20px; font-family:Arial;'>{msg['content']}</div>",
+                unsafe_allow_html=True,
+            )
         
         # Initialize llm thinking to false
         if "thinking" not in st.session_state:
@@ -174,11 +179,11 @@ def chat_page():
         user_input = st.chat_input("Ask something about the ontology...", disabled= st.session_state.thinking, on_submit=disable_callback)
 
         if user_input:
-            
             st.session_state.thinking = True
             st.session_state.chat_history.append({"role": "user", "content": user_input})
             with st.chat_message("user"):
-                st.markdown(user_input)
+                st.markdown( f"<div style='font-size:20px; font-family:Arial;'>{user_input}</div>",
+        unsafe_allow_html=True,)
 
             try:
                 # Step 1: Validate question
@@ -186,7 +191,8 @@ def chat_page():
                     validation_response = validation_chain.run({"question": user_input}).strip()
 
                 with st.chat_message("assistant"):
-                    st.markdown(validation_response)
+                    st.markdown(f"<div style='font-size:20px; font-family:Arial;'>{validation_response}</div>",
+        unsafe_allow_html=True,)
 
                 if not validation_response.endswith("This is a valid question."):
                     st.session_state.chat_history.append(
@@ -203,21 +209,22 @@ def chat_page():
                         raw_result = answer["result"]
                         clean_result = strip_think_block(raw_result)
 
-                        streamed_output = []
+                        container = st.empty()
 
-                        def stream_text(text):
+                        def stream_and_style(text):
+                            output = ""
                             for line in text.splitlines(keepends=True):
-                                streamed_output.append(line)
-                                yield line
+                                output += line
+                                container.markdown(output)  # Stream plain text
                                 time.sleep(0.05)
+                            
+                            # Once done, replace with styled version
+                            styled_output = f"<div style='font-size:20px; font-family:Arial;'>{output}</div>"
+                            container.markdown(styled_output, unsafe_allow_html=True)
+                            return styled_output.strip()
 
-                        st.write_stream(stream_text(clean_result))
-
-                        # Save final output to chat history
-                        full_response = "".join(streamed_output).strip()
-                        st.session_state.chat_history.append(
-                            {"role": "assistant", "content": full_response}
-                        )
+                        full_response = stream_and_style(clean_result)
+                        st.session_state.chat_history.append({"role": "assistant", "content": full_response})
                 st.session_state.thinking = False
                 st.rerun()
 
@@ -228,5 +235,15 @@ def chat_page():
                 )
                 st.chat_message("assistant").write(error_msg)
                 st.rerun()
+                
+        with st.container():
+            if st.session_state.chat_history != []:
+                st.markdown("---")
+                if st.button("🧹 Clear Chat History"):
+                    st.session_state.chat_history = []
+                    st.rerun()
     except Exception as e:
+        print(e)
         st.error(f"An unexpected error occurred. Please try again later. 🚨")
+        
+        
