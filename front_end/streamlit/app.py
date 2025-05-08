@@ -3,81 +3,185 @@ from importpage import import_page
 from LLMchat import chat_page
 from graphvis import display_graph
 from mcpconnection import mcp_connector
+from taxonomyvis import taxonomy_page
+import asyncio
 st.set_page_config(layout="wide")
-
+st.markdown(
+    """
+    <style>
+        .stAppDeployButton {display: none;}
+        
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # Page 1: Home
 def home_page():
-    with st.container():
-        st.title("About TaxonNeuro:")
-        
-        st.markdown("""
-        We are a research project for the Computer Science & Engineering [capstone program](https://www.unr.edu/engineering/student-resources/innovation-day/get-involved) at University of Nevada, Reno.
-                    
-        We present the newest tool for classifying & visualizing neural networks. We can classify, detail, visualize & summarize all things machine learning.
-        We utilize a hierarchical organization technique called a taxonomy to organize the structures of neural networks. 
-        <br> Think of the tree of life, with all living things in a hierarchy, perfectly organized for understanding what comes from where, and what it may relate to. 
-        <br> Our tool will provide this organization, but for neural networks. You may be wondering what kind of inputs are compatible with this tool. Poorly documented code? We can classify it. Lengthy academic
-        papers? We got you covered. Just have weights & biases saved? You bet your buns we can do that too.
-             """, unsafe_allow_html=True)
-    
-    with st.container():
-        st.header('News & Updates')
-        st.markdown('Feb 1st: Welcome to the news & updates for TaxonNeuro, the most current information on this project will be posted here.')
-        
-    with st.container():
-        st.header('Contributors from Team 3 (TaxonNeuro):')
-        st.markdown("""
-        - [Thomas Braun](https://www.linkedin.com/in/thomas-r-braun/)
-        - [Lukas Lac](https://www.linkedin.com/in/lukas-lac/)
-        - [Josue Ochoa](https://www.linkedin.com/in/josuejochoa/)
-        - [Rich White](https://www.linkedin.com/in/richardwhitein/)
-        """)
 
-    with st.container():
-        st.header('Advisors:')
-        st.markdown("""
-        - [Chase Carthen (PhD Student of CSE at University of Nevada, Reno)](https://scholar.google.com/citations?user=X9yIPe4AAAAJ&hl=en)
-        - [Dr. Alireza Tavakkoli (Associate Professor of CSE at University of Nevada, Reno)](https://www.unr.edu/cse/people/alireza-tavakkoli)
-        - [Dr. Fred Harris, Jr. (Associate Dean of Faculty and Academic Affairs; Foundation Professor of Computer Science & Engineering)](https://www.unr.edu/cse/people/fred-harris)
-        """)
-    with st.container():
-        st.header('Instructors:')
-        with st.expander("list of Instructors"):
+    try:
+        from PIL import Image
+        import base64
+        from io import BytesIO
+        
+        
+        with st.container():
+            # HTML and Markdown for the banner with logo on the left
+            st.markdown(f"""
+                <div style='display: flex; align-items: center; justify-content: center; padding: 30px; background-color: #d4c7d5; border-radius: 10px; border: 1px solid #fb8c00; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);'>
+                    <div style="text-align: center;">
+                        <h1 style='font-family: "Arial", sans-serif; color: #fb8c00; margin: 0; font-size: 55px;'>About <span style='color:#09355C;'>TaxonNeuro</span></h1>
+                        <p style='font-family: "Arial", sans-serif; font-size: 35px; color: #6d4c41; margin-top: 5px;'>Automatic Taxonomy Construction for Neural Networks</p>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+
+            # PROJECT DESCRIPTION
             st.markdown("""
-            - [Sara Davis]
-            - [David Feil-Seifer]
-            - [Vinh Le]
-            - [Levi Scully]
-            """)
-        
-    with st.container():
-        st.header('Project-Related Resources')
-        
-        with st.expander("list of resources"):
+            <div style="font-family: Arial, sans-serif; font-size: 25px; line-height: 1.7; color: #333; padding: 20px;">
+            <p>
+                We are a research project for the Computer Science & Engineering 
+                <a href="https://www.unr.edu/engineering/student-resources/innovation-day/get-involved" 
+                target="_blank" style="color: #fb8c00; font-weight: bold;">
+                capstone program
+                </a> 
+                at the University of Nevada, Reno.
+            </p>
+
+            <p>
+                <strong>TaxonNeuro</strong> is your new best friend when it comes to classifying and visualizing neural networks. 
+                We classify, detail, visualize, and summarize all things machine learning.
+            </p>
+
+            <p>
+                Our core methodology revolves around hierarchical organization — a technique called a 
+                <strong>taxonomy</strong>. Think of it like the tree of life for neural networks: a clean, logical breakdown 
+                of models and architectures, where everything has a place and a purpose.
+            </p>
+
+            <p>
+                Got poorly documented code? We’ll classify it. Reading a dense academic paper? We’ve got you covered. 
+                Just have saved weights & biases? You bet your buns we can work with that too.
+            </p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # NEWS & UPDATES
+            with st.container():
+                st.markdown("""
+                <h2 style="color:#ef6c00;">📰 News & Updates</h2>
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
+                    <li><strong>Feb 1st:</strong> Welcome to the TaxonNeuro News Hub! Stay tuned for the latest features, bug fixes, and breakthroughs.</li>
+                </ul>
+                """, unsafe_allow_html=True)
+
+            # CONTRIBUTORS
+            with st.container():
+                st.markdown("""
+                <h2 style="color:#ef6c00;">🤝 Contributors from Team 3 (TaxonNeuro)</h2>
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
+                    <li><a href="https://www.linkedin.com/in/thomas-r-braun/" target="_blank">Thomas Braun</a></li>
+                    <li><a href="https://www.linkedin.com/in/lukas-lac/" target="_blank">Lukas Lac</a></li>
+                    <li><a href="https://www.linkedin.com/in/josuejochoa/" target="_blank">Josue Ochoa</a></li>
+                    <li><a href="https://www.linkedin.com/in/richardwhitein/" target="_blank">Rich White</a></li>
+                </ul>
+                """, unsafe_allow_html=True)
+
+            # ADVISORS
+            with st.container():
+                st.markdown("""
+                <h2 style="color:#ef6c00;">📚 Advisors</h2>
+                <ul style="font-family: Arial, sans-serif; font-size: 25px; color: #444;">
+                    <li><a href="https://scholar.google.com/citations?user=X9yIPe4AAAAJ&hl=en" target="_blank">Chase Carthen</a> (PhD Student of CSE at UNR)</li>
+                    <li><a href="https://www.unr.edu/cse/people/alireza-tavakkoli" target="_blank">Dr. Alireza Tavakkoli</a> (Associate Professor, UNR)</li>
+                    <li><a href="https://www.unr.edu/cse/people/fred-harris" target="_blank">Dr. Fred Harris, Jr.</a> (Associate Dean, UNR)</li>
+                </ul>
+                """, unsafe_allow_html=True)
+
+            # INSTRUCTORS
+            with st.container():
+                st.markdown("<h2 style='color:#ef6c00;'>👩‍🏫 Instructors</h2>", unsafe_allow_html=True)
+                with st.expander("List of Instructors"):
+                    st.markdown("""
+                    <ul style="font-size: 20px;">
+                        <li>Sara Davis</li>
+                        <li>David Feil-Seifer</li>
+                        <li>Vinh Le</li>
+                        <li>Levi Scully</li>
+                    </ul>
+                """, unsafe_allow_html=True)
+
+            # RESOURCES
+            with st.container():
+                st.markdown("<h2 style='color:#ef6c00;'>📂 Project-Related Resources</h2>", unsafe_allow_html=True)
+                with st.expander("List of Resources"):
+                    st.markdown("""
+                    <ul style="font-size: 20px;">
+                        <li><a href="https://arxiv.org/abs/2411.01612" target="_blank">Ontology Population Using LLM's</a></li>
+                        <li><a href="https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context" target="_blank">Semantic Similarity of Ontology Instances Tailored on the Application Context</a></li>
+                        <li><a href="https://arxiv.org/pdf/1907.11569#page=1.50" target="_blank">Making Neural Networks FAIR</a></li>
+                        <li><a href="https://ollama.com/library/deepseek-r1" target="_blank">deepseek-r1</a></li>
+                        <li><a href="https://ollama.com/" target="_blank">ollama</a></li>
+                    </ul>
+                """, unsafe_allow_html=True)
+
+        with st.container():
+            # Load the image and convert it to base64
+            image_path = 'front_end/streamlit/data/images/Taxon_Neuro_image.png'
+            image = Image.open(image_path)
+
+            # Convert the image to base64 so it can be embedded in the HTML
+            buffer = BytesIO()
+            image.save(buffer, format="PNG")
+            img_str = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+            # Display the link and image inside the text
             st.markdown("""
-            - [Ontology Population Using LLM's](https://arxiv.org/abs/2411.01612)
-            - [Semantic Similarity of Ontology Instances Tailored on the Application Context](https://www.researchgate.net/publication/220830109_Semantic_Similarity_of_Ontology_Instances_Tailored_on_the_Application_Context)
-            - [Making Neural Networks FAIR](https://arxiv.org/pdf/1907.11569#page=1.50)
-            - [deepseek-r1](https://ollama.com/library/deepseek-r1)
-            - [ollama](https://ollama.com/)
-            """)
+            <div style="text-align: left; font-family: Arial, sans-serif; margin-top: 10px;">
+                <p style="color: #fb8c00; font-size: 18px; font-weight: bold;">
+                    🔗 Click the logo below to check out our GitHub Repository!
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"""
+            <a href="https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs/" target="_blank">
+                <img src="data:image/png;base64,{img_str}" 
+                    style="width: 221px; height: 124px; vertical-align: middle; margin-left: 10px;
+                            border-radius: 10px; 
+                            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+                            transition: transform 0.3s ease-in-out;"/>
+            </a>
+            <style>
+                a:hover img {{
+                    transform: scale(1.05); /* Slight zoom effect on hover */
+                }}
+            </style>
+        """, unsafe_allow_html=True)
+
+    except Exception as e:
+        st.error(f"An unexpected error occurred. Please try again later. 🚨")
+try:
+    # Sidebar for navigation
+    st.sidebar.markdown("""
+    <h2 style='font-family: Arial, sans-serif; color: #fb8c00; font-size: 35px;'>
+        Welcome to <span style='color: #09355C;'>TaxonNeuro!</span>
+    </h2>
+""", unsafe_allow_html=True)
     
-    with st.container():
-        st.header('Check out our [GitHub repository](https://github.com/tbraunny/Automatic_Taxonomy_Construction_NNs/)!')
+    page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "🧠 Ontology Graph", "📊 Taxonomy Generator", "MCP"))
 
-# Sidebar for navigation
-st.sidebar.markdown("## Welcome to TaxonNeuro!")
-
-page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "📊 Graph", "Test"))
-
-# Conditional rendering of pages based on selection
-if page == "🏠 Home":
-    home_page()
-elif page == "🤖 Chat with AI":
-    chat_page()
-elif page == "📥 Import":
-    import_page()
-elif page == "📊 Graph":
-    display_graph()
-elif page == "Test":
-    mcp_connector()
+    # Conditional rendering of pages based on selection
+    if page == "🏠 Home":
+        home_page()
+    elif page == "🤖 Chat with AI":
+        chat_page()
+    elif page == "📥 Import":
+        import_page()
+    elif page == "🧠 Ontology Graph":
+        display_graph()
+    elif page == "MCP":
+         asyncio.run( mcp_connector())
+    elif page == "📊 Taxonomy Generator":
+        taxonomy_page()
+except Exception as e:
+        st.error(f"An unexpected error occurred. Please try again later. 🚨")

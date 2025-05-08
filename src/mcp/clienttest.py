@@ -28,6 +28,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+
 class ArgumentValues(ABC, BaseModel):
     argument: str
     value: str|int|float
@@ -280,8 +281,8 @@ class ChatSession:
     def __init__(self, servers: list[Server], llm_client: LLMClient) -> None:
         self.servers: list[Server] = servers
         self.llm_client: LLMClient = llm_client
-
         self.messages = []
+        self.all_tools = []
         
 
     async def cleanup_servers(self) -> None:
@@ -479,7 +480,7 @@ class ChatSession:
                 )
             else:
                 self.messages.append({"role": "assistant", "content": str(llm_response)})
-        except:
+        except Exception as e:
             print(f"EXCEPTION: {e}")
         return output
 

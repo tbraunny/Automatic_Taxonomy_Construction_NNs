@@ -1,0 +1,16 @@
+,Batch Size 16–64,Batch Size 16–64,Dropout Rate < 0.2,Includes BatchNormalization Layers,Includes Conv2D Layers,Includes Dense Layers,Includes Dropout Layers,Learning Rate < 0.01,Missing Activation Function,Missing Activation Function,No Training Strategy Declared,Shallow Networks (Layers < 4),Small Networks (Units < 64),Small Networks (Units < 64)
+,32,False,False,False,False,False,False,False,False,True,False,False,False,True
+Model,,,,,,,,,,,,,,
+Sparse_ae,,X,X,X,X,X,X,X,,X,X,X,X,
+Inception_rando,X,,X,X,X,X,X,X,,X,X,X,,X
+Cgan_gan,,X,X,X,X,X,X,X,,X,X,X,X,
+Vae,,X,X,X,X,X,X,X,,X,X,X,X,
+Lenet_cnn,X,,X,X,X,X,X,X,,X,X,X,X,
+Dcgan,,X,X,X,X,X,X,X,,X,X,X,,X
+Lstm_rnn,X,,X,X,X,X,X,X,X,,X,X,X,
+Discogan_gan,,X,X,X,X,X,X,X,,X,X,X,X,
+Unet_cnn,,X,X,X,X,X,X,X,X,,X,X,X,
+Inceptionv3_cnn,X,,X,X,X,X,X,X,,X,X,X,,X
+Leopard,,X,X,X,X,X,X,X,X,,X,X,X,
+Resnet,,X,X,X,X,X,X,X,,X,X,X,X,
+Gat_gnn,,X,X,X,X,X,X,X,X,,X,X,X,

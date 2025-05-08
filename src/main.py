@@ -16,6 +16,7 @@ from utils.constants import Constants as C
 from utils.annetto_utils import load_annetto_ontology
 from utils.exception_utils import CodeExtractionError, PDFError
 import warnings
+import json
 from typing import List
 from src.taxonomy.llm_generate_criteria import llm_create_taxonomy
 import json
@@ -108,20 +109,27 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
     extract_filter_pdf_to_json(ann_pdf, ann_path)
     logger.info(f"Extracted text from {ann_pdf} to JSON.")
 
-    # Extract code (give file path, glob is processed in the function), if any
+    # # Extract code (give file path, glob is processed in the function), if any
     pytorch_module_names: List[str] = []
     process_code = CodeExtractor()
     process_code.process_code_file(ann_path)
     pytorch_module_names = process_code.pytorch_module_names
     logger.info(f"Extracted code from to JSON.")
 
-    # # insert model into db 
-    # # NOTE: This is for Chase
-    # db_runner = DBUtils()
-    # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
-    # paper_id: int = db_runner.insert_papers(ann_path)
-    # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
+    # # # insert model into db 
+    # # # NOTE: This is for Chase
+    # # db_runner = DBUtils()
+    # # model_id: int = db_runner.insert_model_components(ann_path) # returns id of inserted model
+    # # paper_id: int = db_runner.insert_papers(ann_path)
+    # # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
+    # set the output ontology path
+    if test_output_ontology_filepath:
+        output_ontology_filepath = test_output_ontology_filepath
+    else:
+        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
+
+    # set the input onotlogy path
     if test_input_ontology_filepath:
         logger.info("Using parameter passed ontology.")
         input_ontology = load_annetto_ontology(
@@ -135,11 +143,6 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
         input_ontology = load_annetto_ontology(
             return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME
         )
-
-    if test_output_ontology_filepath:
-        output_ontology_filepath = test_output_ontology_filepath
-    else:
-        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
 
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
