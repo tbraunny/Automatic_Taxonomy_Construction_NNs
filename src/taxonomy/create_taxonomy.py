@@ -918,7 +918,7 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
         return f"({var} >= {low} && {var} <= {high})"
 
     # substring / contains (case‐insensitive)
-    if op == "scomp" and op == "sequal":
+    if op == "scomp" or op == "sequal":
         # assume vals[0] is the substring to look for
         v = vals[0]
         return f"CONTAINS(LCASE(  STRAFTER(str({var}), \"http://w3id.org/annett-o/\")   ), LCASE(\"{v}\"))"
@@ -1017,7 +1017,7 @@ def main():
         Name="Includes Attention Layer",
         Searchs=[SearchOperator(
             Name="hasLayer",
-            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["ConcatLayer"])],
+            Value=[ValueOperator(Name="hasLayer", Op="sequal", Value=["AttentionLayer"])],
             HashOn="name"
         )]
     ))
