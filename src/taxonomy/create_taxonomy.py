@@ -891,7 +891,7 @@ def _map_vo_to_filter(vo: ValueOperator, var: str) -> Optional[str]:
         v = vals[0]
         # if numeric, leave bare, else quote
         lit = f"\"{v}\"" if isinstance(v, str) else v
-        return f"{var} = {lit}"
+        return f" STRAFTER(str({var}), \"http://w3id.org/annett-o/\") = {lit}"
 
     # numeric comparisons
     if op == "less":
@@ -1042,7 +1042,7 @@ def main():
             ),
             SearchOperator(
                 Name="hasActivationFunction",
-                Value=[ValueOperator(Name="hasActivationFunction", Op="sequal", Value=["Softmax"])],
+                Value=[ValueOperator(Name="hasActivationFunction", Op="name", Value=["Softmax"])],
                 HashOn="value"
             )
         ]
@@ -1232,7 +1232,7 @@ def main():
     ))
 
     # --- Graph Clustering on Architecture Features ---
-    test_criterias.append(Criteria(
+    '''test_criterias.append(Criteria(
         Name="Graph Cluster on Layer + Strategy",
         Searchs=[SearchOperator(
             Name="graph_cluster_features",
@@ -1244,14 +1244,15 @@ def main():
             ],
             HashOn="type"
         )]
-    ))
+    ))'''
 
 
-
+    #input()
     # Create taxonomy
     taxonomy_creator = TaxonomyCreator(ontology, criteria=test_criterias)
     topnode, facetedTaxonomy, output = taxonomy_creator.create_taxonomy(format='json', faceted=True)
 
+    #input()
     # Generate tabular view
     df = create_tabular_view_from_faceted_taxonomy(
         taxonomy_str=json.dumps(serialize(facetedTaxonomy)),
