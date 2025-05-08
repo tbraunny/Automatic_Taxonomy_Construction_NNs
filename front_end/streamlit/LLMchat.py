@@ -1,5 +1,7 @@
 import streamlit as st
 from utils.llm_service import load_environment_llm
+from neo4j_connection import get_neo4j_credentials, get_driver
+
 
 def chat_page():
     try:
@@ -40,9 +42,8 @@ def chat_page():
             return
         
         # Database & LLM Setup
-        url = "bolt://localhost:7687"
-        username = "neo4j"
-        password = "neo4j"
+        url,username,password = get_neo4j_credentials()
+
         graph = Neo4jGraph(url=url, username=username, password=password)
         llm = load_environment_llm().llm
         #llm = OllamaLLM(model="gemma3:27b-it-q4_K_M")

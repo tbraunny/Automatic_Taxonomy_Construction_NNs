@@ -1,0 +1,2 @@
+.venv/bin/streamlit run front_end/streamlit/app.py &
+.venv/bin/voila front_end/voila/yfiles_graph.ipynb --Voila.tornado_settings='{"headers":{"Content-Security-Policy":"frame-ancestors *"}}' --Voila.ip=0.0.0.0

@@ -1,0 +1,37 @@
+# defining services
+services:
+  # defining neo4j coomunity edition
+  neo4j:
+    image: neo4j:5.20.0-community
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./neo4j_data:/data
+      - ./import:/import
+      - ./data:/app/data # leave this here in order to make sure that main container matches
+    environment:
+      - NEO4J_AUTH=none
+      - NEO4J_PLUGINS=["apoc-extended","apoc","n10s"]
+        #- NEO4J_dbms_security_procedures_unrestricted='n10s.*'
+        #- NEO4J_dbms_security_procedures_allowlist='n10s.*'
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*, semantics.*, n10s.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*, semantics.*, n10s.*
+        #- NEO4J_server.unmanaged_extension_classes=n10s.endpoint=/rdf
+      - NEO4J_dbms_unmanaged__extension__classes='semantics.extension'='/rdf'
+  main:
+    build: .
+    volumes: 
+      - .env:/app/.env
+      - ./front_end:/app/front_end
+      - ./src:/app/src
+      - ./data:/app/data
+    ports:
+      - 8501:8501
+      - 8866:8866
+    command: bash -c "./runapp.sh"
+  ollama: 
+    image: ollama/ollama
+    ports:
+      - 11434:11434

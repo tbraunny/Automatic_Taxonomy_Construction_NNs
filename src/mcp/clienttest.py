@@ -281,8 +281,8 @@ class ChatSession:
     def __init__(self, servers: list[Server], llm_client: LLMClient) -> None:
         self.servers: list[Server] = servers
         self.llm_client: LLMClient = llm_client
-
         self.messages = []
+        self.all_tools = []
         
 
     async def cleanup_servers(self) -> None:

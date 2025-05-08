@@ -53,12 +53,13 @@ def list_available_titles() -> str:
         with open(file, "r", encoding="utf-8") as f:
             data = json.load(f)
             for entry in data:
-                title = entry.get("metadata", {}).get("title")
-                if title:
-                    unique_titles.add(title)
-                    annname = os.path.dirname(file).split('/')[-1]
-                    index = options.index(os.path.dirname(file))
-                    title_to_path[title] = { 'annname': annname, "choice": index}
+                if type(entry) == dict:
+                    title = entry.get("metadata", {}).get("title")
+                    if title:
+                        unique_titles.add(title)
+                        annname = os.path.dirname(file).split('/')[-1]
+                        index = options.index(os.path.dirname(file))
+                        title_to_path[title] = { 'annname': annname, "choice": index}
     return str(title_to_path)
 
 @mcp.tool()
@@ -132,7 +133,7 @@ def create_ontology(directory_selection: int) -> str:
     option = options[directory_selection]
     annname = option.split('/')[-1]
     output_ontology_filepath= os.path.join('data/user/', C.ONTOLOGY.USER_OWL_FILENAME)
-    main(annname, option, use_user_owl=True, output_ontology_filepath = output_ontology_filepath )
+    main(annname, option, use_user_owl=True, test_output_ontology_filepath = output_ontology_filepath )
     print('after main')
     driver = get_neo4j_connection()
     with driver.session() as session:

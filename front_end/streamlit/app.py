@@ -168,7 +168,7 @@ try:
     </h2>
 """, unsafe_allow_html=True)
     
-    page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "🧠 Ontology Graph", "📊 Taxonomy Generator"))
+    page = st.sidebar.selectbox("Choose an Option", ("🏠 Home", "🤖 Chat with AI", "📥 Import", "🧠 Ontology Graph", "📊 Taxonomy Generator", "MCP"))
 
     # Conditional rendering of pages based on selection
     if page == "🏠 Home":
@@ -179,8 +179,8 @@ try:
         import_page()
     elif page == "🧠 Ontology Graph":
         display_graph()
-    # elif page == "Test":
-    #     asyncio.run( mcp_connector())
+    elif page == "MCP":
+         asyncio.run( mcp_connector())
     elif page == "📊 Taxonomy Generator":
         taxonomy_page()
 except Exception as e:

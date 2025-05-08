@@ -6,6 +6,8 @@ import os
 from utils.exception_utils import *
 
 from utils.logger_util import get_logger
+from neo4j_connection import get_neo4j_credentials, get_driver
+
 logger = get_logger("importpage", max_logs=3)
 
 # A global list to store success message placeholders
@@ -28,16 +30,13 @@ def show_error(e):
 
 def import_ontology_to_neo4j():
     try:
-        from neo4j import GraphDatabase
+
         
         base_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(base_dir, "../../data/userinput/user_owl.owl")
         file_path = os.path.normpath(file_path)
         
-        url = "bolt://0.0.0.0:7687"
-        username = "neo4j"
-        password = "neo4j"
-        driver = GraphDatabase.driver(url, auth=(username, password))
+        driver = get_driver()
 
         def queryNeo4j(driver, query):
             """Runs a single Cypher query."""

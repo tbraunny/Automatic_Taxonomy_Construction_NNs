@@ -123,6 +123,13 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
     # # paper_id: int = db_runner.insert_papers(ann_path)
     # # translation_id: int = db_runner.model_to_paper(model_id, paper_id)
 
+    # set the output ontology path
+    if test_output_ontology_filepath:
+        output_ontology_filepath = test_output_ontology_filepath
+    else:
+        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
+
+    # set the input onotlogy path
     if test_input_ontology_filepath:
         logger.info("Using parameter passed ontology.")
         input_ontology = load_annetto_ontology(
@@ -136,11 +143,6 @@ def main(ann_name: str, ann_path: str, use_user_owl: bool = True, test_input_ont
         input_ontology = load_annetto_ontology(
             return_onto_from_path=C.ONTOLOGY.USER_OWL_FILENAME
         )
-
-    if test_output_ontology_filepath:
-        output_ontology_filepath = test_output_ontology_filepath
-    else:
-        output_ontology_filepath = C.ONTOLOGY.USER_OWL_FILENAME
 
     # Initialize Annett-o with new classes and properties
     initialize_annetto(input_ontology, logger)
