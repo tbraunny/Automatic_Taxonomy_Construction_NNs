@@ -16,16 +16,6 @@ ENV PYTHONPATH="/app"
 COPY requirements.txt ./
 COPY requirements/ requirements/
 
-# Upgrade pip and install project requirements
-#RUN python -m pip install --upgrade pip && \
-#    pip install  -r requirements.txt
-RUN apt update
-RUN apt install gcc -y
-RUN python -m pip install --upgrade pip && pip install uv
-
-RUN uv venv 
-RUN uv pip install -r requirements.txt
-RUN uv pip install streamlit voila
 
 # ---------------------------
 # Copy application source code
@@ -37,6 +27,20 @@ COPY utils/ utils/
 COPY front_end/ front_end/
 COPY data/ data/
 COPY .streamlit .streamlit
+
+# Upgrade pip and install project requirements
+#RUN python -m pip install --upgrade pip && \
+#    pip install  -r requirements.txt
+RUN apt update
+RUN apt install gcc -y
+RUN python -m pip install --upgrade pip && pip install uv
+
+RUN uv venv 
+RUN uv pip install -r requirements.txt
+RUN uv pip install streamlit voila
+RUN uv pip install -U tensorflow
+
+
 
 RUN chmod +x runapp.sh
 # If your app exposes a port (uncomment if needed)
