@@ -25,8 +25,8 @@ class DBUtils:
     Must be run from WPEB machine to access server automatically (Tailscale network)
     """
     def __init__(self):
-        self.logger = get_logger("model-db-utils")
         self.engine , self.session = self._init_engine()
+        self.logger = get_logger("model-db-utils")
         self.layer_list = []
         self.model_list = []
         self.onto = 0

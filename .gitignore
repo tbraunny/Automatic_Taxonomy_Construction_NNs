@@ -13,3 +13,4 @@ outdata/
 *.env
 src/graph_rag/neo4j_data
 src/finetunning
+neo4j_data/

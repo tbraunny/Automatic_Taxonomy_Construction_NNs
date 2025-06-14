@@ -343,7 +343,7 @@ class CodeExtractor():
                             return True
             return False
         except Exception as e:
-            logger.error(f"Check for PyTorch failed, {e}")
+            logger.error(f"Check for PyTorch failed, {e}",exc_info=True)
             return False
 
 def main():

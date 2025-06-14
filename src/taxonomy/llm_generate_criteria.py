@@ -299,12 +299,13 @@ Your task is to **automatically generate a structured, multi-layer taxonomy** th
    - Only apply **Clustering (kmeans or agg)** for fine-grained splits when scalar splits are insufficient.
 
 5. **Ontology Fields**:
-   - Only use field names provided here: {properties}.
+   - Only use the follow field names provided here in the ValueOperator values: {properties}.
+   - You can query for the following classes: {types}.
+   - Underlying this criteria search is a sparql engine that will be used to query the ontology so please choose wisely which fields and searches to use.
 
 6. **Output Format**:
    - Return a valid `OutputCriteria` object.
    - Do not include any markdown formatting, explanations, or free text.
-   - Match the schema exactly: {schema}.
 
 ---
 ### RESPONSE FORMAT:
@@ -838,8 +839,10 @@ def llm_create_taxonomy(query: str, ontology) -> OutputCriteria:
     properties = (
         list(ontology.data_properties())
         + list(ontology.object_properties())
-        + list(ontology.classes())
     )
+    types = list(ontology.classes())
+    types = [type.name for type in types]
+
     properties = [prop.name for prop in properties]
     print(properties)
 
@@ -851,6 +854,7 @@ def llm_create_taxonomy(query: str, ontology) -> OutputCriteria:
             "valueoperator": json.dumps(ValueOperator.model_json_schema()),
             "typeoperator": json.dumps(TypeOperator.model_json_schema()),
             "properties": json.dumps(properties).replace('"', ""),
+            "types": json.dumps(types).replace('"', ""),
         }
     )  # .content
 

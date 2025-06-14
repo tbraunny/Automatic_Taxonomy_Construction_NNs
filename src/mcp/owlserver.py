@@ -7,6 +7,7 @@ import owlready2
 from owlready2 import *
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_graph
 from rdflib import Graph, URIRef
+import os
 
 import time
 import sys

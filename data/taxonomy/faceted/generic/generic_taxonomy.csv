@@ -1,4 +1,17 @@
-,Has Activation Function Criteria Unrecognized criteria,Has Loss Criteria Unrecognized criteria,Has Network Criteria Unrecognized criteria,Has Training Optimizer Criteria Unrecognized criteria,"Layer Num Units Includes {'Name': 'kmeans', 'Arguments': [4, 10]}"
-,not matching,hasLoss,hasNetwork,not matching,not matching
-Model,,,,,
-709942bd_alexnet,X,X,X,X,X
+,"Models Using Early Stopping hasTrainingStrategy  [{'Name': 'hasTrainingStrategy', 'Op': 'sequal', 'Value': ['EarlyStopping']}]","Models with Attention Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['AttentionLayer']}]","Models with Batch Size 32–128 batch_size  [{'Name': 'batch_size', 'Op': 'range', 'Value': [32, 128]}]","Models with Batch Size 32–128 batch_size  [{'Name': 'batch_size', 'Op': 'range', 'Value': [32, 128]}]","Models with Batch Size 32–128 batch_size  [{'Name': 'batch_size', 'Op': 'range', 'Value': [32, 128]}]","Models with Batch Size 32–128 batch_size  [{'Name': 'batch_size', 'Op': 'range', 'Value': [32, 128]}]","Models with BatchNormalization Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['BatchNormalization']}]","Models with Conv2D Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['Conv2D']}]","Models with Dense Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['Dense']}]","Models with Dropout Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['Dropout']}]","Models with Dropout Rate Between 0.2 and 0.5 dropout_rate  [{'Name': 'dropout_rate', 'Op': 'range', 'Value': [0.2, 0.5]}]","Models with Iterations > 100 num_of_iterations  [{'Name': 'num_of_iterations', 'Op': 'greater', 'Value': [100]}]","Models with L2 Regularization > 0.0001 hasRegularizer  [{'Name': 'hasRegularizer', 'Op': 'greater', 'Value': [0.0001]}]","Models with Learning Rate > 0.01 learning_rate  [{'Name': 'learning_rate', 'Op': 'greater', 'Value': [0.01]}]","Models with RNN Layer hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['RNNLayer']}]","Models with ReLU Activation hasActivationFunction  [{'Name': 'hasActivationFunction', 'Op': 'sequal', 'Value': ['ReLU']}]","Models with Residual Connections hasLayer  [{'Name': 'hasLayer', 'Op': 'sequal', 'Value': ['Residual']}]","Models with Total Params > 1M total_network_params  [{'Name': 'total_network_params', 'Op': 'greater', 'Value': [1000000]}]","Models with Total Params > 1M total_network_params  [{'Name': 'total_network_params', 'Op': 'greater', 'Value': [1000000]}]","Models with Units > 512 layer_num_units  [{'Name': 'layer_num_units', 'Op': 'greater', 'Value': [512]}]","Models with Units > 512 layer_num_units  [{'Name': 'layer_num_units', 'Op': 'greater', 'Value': [512]}]","Regression Models hasTaskType  [{'Name': 'hasTaskType', 'Op': 'sequal', 'Value': ['Regression']}]","Supervised Classification Models hasTaskType  [{'Name': 'hasTaskType', 'Op': 'sequal', 'Value': ['SupervisedClassification']}]","Unsupervised Learning Models hasTaskType  [{'Name': 'hasTaskType', 'Op': 'sequal', 'Value': ['UnsupervisedLearning']}]"
+,False,False,100,128,32,False,False,False,False,False,False,False,False,False,False,False,False,False,True,False,True,False,False,False
+Model,,,,,,,,,,,,,,,,,,,,,,,,
+1df4bed9_sparse_ae,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X,X
+20ec200f_inception_rando,X,X,,,X,,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X,X
+219ceb2c_cgan_gan,X,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,,X,X,,X,X,X
+35c32b31_vae,X,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X
+4b55c674_lenet_cnn,X,X,,,X,,X,X,X,X,X,X,X,X,X,X,X,X,,,X,X,X,X
+63427150_dcgan,X,X,,X,,,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X,X
+6fade30c_lstm_rnn,X,X,,,X,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X
+709942bd_alexnet,X,X,,X,,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X
+7ddf32e1_random,X,X,,,X,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X
+98709a6f_discogan_gan,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X,X
+b4ff1581_unet_cnn,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X
+bfad730c_inceptionv3_cnn,X,X,,,X,,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X,X
+d53410e0_resnet,X,X,,X,,,X,X,X,X,X,X,X,X,X,X,X,X,,,X,X,X,X
+e22d76b0_gat_gnn,X,X,,,,X,X,X,X,X,X,X,X,X,X,X,X,X,,X,,X,X,X

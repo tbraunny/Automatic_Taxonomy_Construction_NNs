@@ -115,7 +115,7 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
 
     graph = model.graph
     existing_names = [ node.name for node in graph.node]
-    outdata = {'model':model_name,'nodes':[],'library':'onnx'}
+    outdata = {'model':model_name,'graph':{'node':[]},'library':'onnx'}
     parameters = []
     layers = []
     total_num_parameters  = 0
@@ -129,10 +129,18 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         layer['parameters'] = {}
         layer['attribute'] = {}
         node_info = {}
-        node_info['op'] = node.op_type
+        node_info['op_type'] = node_info['op'] = node.op_type
         node_info['name'] = node.name or '<unnamed>'
         node_info['input'] = list(node.input) #[ {'name':inp, 'shape': shapes.get(inp,[]) } for inp in list(node.input)]
-        node_info['target'] = list(node.output)
+        
+        outputs = list(node.output)
+        outs = []
+        for node in graph.node: # TODO: Map it -- I am tired so this goes here for now :D
+            for inp in list(node.input) + [node.name]:
+                if inp in outputs:
+                    outs.append(node.name)
+                    break
+        node_info['output'] = outs #list(node.output)
         node_info['num_params'] = 0
         layer['attributes'] = node_info['attributes'] = parse_onnx_attributes(node)
         layer['parameters'] = []
@@ -163,7 +171,7 @@ def extract_compute_graph_taxonomy_style(filename,savePath='./outdata',model_nam
         #num_params = sum([ int(param) for parameter in node_info['parameters'] for param in node_info['parameters'][parameter]])
         node_info['num_params'] = num_params
         total_num_parameters += num_params
-        outdata['nodes'].append(node_info)
+        outdata['graph']['node'].append(node_info)
 
         if parameters:
             layers.append({'name':node.name})
